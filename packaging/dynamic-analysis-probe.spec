@@ -31,6 +31,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %make_install
 
 %files
+%manifest dynamic-analysis-probe.manifest
 %defattr(-,root,root,-)
 %{_prefix}/lib/da_probe_osp.so
 %{_prefix}/lib/libdaprobe.so
