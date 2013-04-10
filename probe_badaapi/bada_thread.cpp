@@ -38,6 +38,8 @@
 #include "probeinfo.h"
 #include "dahelper.h"
 
+static enum DaOptions _sopt = OPT_THREAD;
+
 extern	__thread unsigned int gProbeDepth;
 
 namespace Tizen {
@@ -148,7 +150,7 @@ private:
 //		probeBlockEnd();
 //	}
 //
-//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 //		setProbePoint(&probeInfo);
 //		preBlockEnd();
 //	}
@@ -239,7 +241,7 @@ _ThreadImpl::ThreadProc(void* params) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		log.type = 0;
 		log.length = 0;
@@ -331,7 +333,7 @@ _ThreadImpl::ThreadProc(void* params) {
 //		probeBlockEnd();
 //	}
 //
-//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 //		setProbePoint(&probeInfo);
 //		preBlockEnd();
 //	}
@@ -390,7 +392,7 @@ _ThreadImpl::ThreadProc(void* params) {
 //		probeBlockEnd();
 //	}
 //
-//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 //		setProbePoint(&probeInfo);
 //		preBlockEnd();
 //	}
@@ -448,7 +450,7 @@ _ThreadImpl::ThreadProc(void* params) {
 //		probeBlockEnd();
 //	}
 //
-//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 //		setProbePoint(&probeInfo);
 //		preBlockEnd();
 //	}
@@ -507,7 +509,7 @@ _ThreadImpl::ThreadProc(void* params) {
 //		probeBlockEnd();
 //	}
 //
-//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 //		setProbePoint(&probeInfo);
 //		preBlockEnd();
 //	}
@@ -566,7 +568,7 @@ result Thread::Sleep(long milliSeconds) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		log.type = 0;
 		log.length = 0;
@@ -652,7 +654,7 @@ Thread* Thread::GetCurrentThread(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -714,7 +716,7 @@ result Thread::Yield(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -778,7 +780,7 @@ result Thread::Exit(int exitCode) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		log.type = 0;
 		log.length = 0;
@@ -844,7 +846,7 @@ result Thread::Construct(ThreadType threadType, long stackSize,
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -904,7 +906,7 @@ result Thread::Construct(long stackSize, ThreadPriority priority) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -970,7 +972,7 @@ result Thread::Construct(const Tizen::Base::String &name, long stackSize,
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1037,7 +1039,7 @@ result Thread::Construct(const Tizen::Base::String &name, ThreadType threadType,
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1103,7 +1105,7 @@ result Thread::Construct(IRunnable &target, long stackSize,
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1169,7 +1171,7 @@ result Thread::Construct(const Tizen::Base::String &name, IRunnable &target,
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1233,7 +1235,7 @@ result Thread::GetExitCode(int &exitCode) const {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1295,7 +1297,7 @@ const Tizen::Base::String & Thread::GetName(void) const {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1357,7 +1359,7 @@ result Thread::Join(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		log.type = 0;
 		log.length = 0;
@@ -1451,7 +1453,7 @@ result Thread::Join(void) {
 //		probeBlockEnd();
 //	}
 //
-//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+//	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 //		setProbePoint(&probeInfo);
 //		preBlockEnd();
 //	}
@@ -1512,7 +1514,7 @@ result Thread::Start(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1570,7 +1572,7 @@ result Thread::Stop(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1630,7 +1632,7 @@ result EventDrivenThread::Construct(long stackSize, ThreadPriority priority) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1697,7 +1699,7 @@ result EventDrivenThread::Construct(const Tizen::Base::String &name, long stackS
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1759,7 +1761,7 @@ result EventDrivenThread::Quit() {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}

@@ -89,7 +89,7 @@ typedef struct
  * helper apis
  ***************************************************************************/
 
-int preBlockBegin(void* caller, bool bFiltering);
+int preBlockBegin(void* caller, bool bFiltering, enum DaOptions);
 void preBlockEnd();
 
 int postBlockBegin(int preresult);
@@ -102,9 +102,8 @@ unsigned int getCurrentEventIndex();
 unsigned int getCallDepth();
 unsigned long getTraceState();
 unsigned long getCurrentTime();
-bool isEnableSnapshot();
-bool isEnableInternalMalloc();
 bool setProbePoint(probeInfo_t * iProbe);
+int update_heap_memory_size(bool isAdd, size_t size);
 
 bool printLogStr(const char* str, int msgType);
 bool printLog(log_t* log, int msgType);
@@ -209,23 +208,10 @@ int getBacktraceString(log_t* log, int bufsize);
 #define GET_REAL_FUNC_RTLD_NEXT_CPP(FUNCNAME)	\
 		GET_REAL_FUNCP_RTLD_NEXT_CPP(FUNCNAME, FUNCNAME##p)
 
-// ======================== basic probe block define =======================
-#define PRE_BLOCK_BEGIN \
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
-
-#define PRE_BLOCK_END \
-		preBlockEnd(); }
-
-#define POST_BLOCK_BEGIN \
-	if(postBlockBegin(blockresult)) {
-
-#define POST_BLOCK_END \
-		postBlockEnd(); }
-
 // ======================= pre block macro ================================
 
-#define PRE_PROBEBLOCK_BEGIN()		 						\
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {	\
+#define PRE_PROBEBLOCK_BEGIN()		 											\
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {	\
 		setProbePoint(&probeInfo)
 
 #define PRE_PROBEBLOCK_END()	\

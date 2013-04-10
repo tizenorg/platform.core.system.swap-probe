@@ -57,12 +57,12 @@ extern "C" {
 		}														\
 	} while(0)
 
-#define PRE_PROBEBLOCK_OSP(FILTERING)										\
-	do {																	\
-		if((blockresult = preBlockBegin(CALLER_ADDRESS, FILTERING)) != 0) {	\
-			setProbePoint(&probeInfo);										\
-			preBlockEnd();													\
-		}																	\
+#define PRE_PROBEBLOCK_OSP(FILTER)												\
+	do {																		\
+		if((blockresult = preBlockBegin(CALLER_ADDRESS, FILTER, _sopt)) != 0) {	\
+			setProbePoint(&probeInfo);											\
+			preBlockEnd();														\
+		}																		\
 	} while(0)
 
 extern int SceneManagerUsed;

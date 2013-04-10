@@ -80,34 +80,37 @@ void SceneManagerEventListener::OnSceneTransitionCompleted(const SceneId &previo
 
 		if(scenemanager->GetCurrentSceneId() == currentSceneId)
 		{
-			DECLARE_COMMON_VARIABLE;
-			Scene* scene;
-			String sceneid, formid, panelid;
-			Form* pform;
-			Panel* ppanel;
-			unsigned long transition, user = 0;
+			if(isOptionEnabled(OPT_UI))
+			{
+				DECLARE_COMMON_VARIABLE;
+				Scene* scene;
+				String sceneid, formid, panelid;
+				Form* pform;
+				Panel* ppanel;
+				unsigned long transition, user = 0;
 
-			setProbePoint(&probeInfo);
-			INIT_LOG;
+				setProbePoint(&probeInfo);
+				INIT_LOG;
 
-			scene = scenemanager->GetCurrentScene();
-			sceneid = scene->GetSceneId();
-			formid = scene->GetFormId();
-			panelid = scene->GetPanelId();
-			pform = scene->GetForm();
-			ppanel = scene->GetPanel();
+				scene = scenemanager->GetCurrentScene();
+				sceneid = scene->GetSceneId();
+				formid = scene->GetFormId();
+				panelid = scene->GetPanelId();
+				pform = scene->GetForm();
+				ppanel = scene->GetPanel();
 
-			transition = (probeInfo.currentTime - startTime);
+				transition = (probeInfo.currentTime - startTime);
 
-			APPEND_LOG_BASIC_NAME(LC_SCENE, "OnSceneTransitionCompleted");
-			APPEND_LOG_COMMON_NONE(0);
-			log.length += sprintf(log.data + log.length, "`,%S",
-					const_cast<wchar_t*>(sceneid.GetPointer()));
-			APPEND_SCENE_ELEM(formid, pform);
-			APPEND_SCENE_ELEM(panelid, ppanel);
-			log.length += sprintf(log.data + log.length, "`,%lu`,%lu`,", transition, user);
+				APPEND_LOG_BASIC_NAME(LC_SCENE, "OnSceneTransitionCompleted");
+				APPEND_LOG_COMMON_NONE(0);
+				log.length += sprintf(log.data + log.length, "`,%S",
+						const_cast<wchar_t*>(sceneid.GetPointer()));
+				APPEND_SCENE_ELEM(formid, pform);
+				APPEND_SCENE_ELEM(panelid, ppanel);
+				log.length += sprintf(log.data + log.length, "`,%lu`,%lu`,", transition, user);
 
-			printLog(&log, MSG_LOG);
+				printLog(&log, MSG_LOG);
+			}
 		}
 		else
 		{

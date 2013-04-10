@@ -398,7 +398,6 @@ char** da_backtrace_symbols (void* const* array, int size)
 		}
 		else		// there is a entry for key
 		{
-//			printf("there is get k(%d)\n", k);
 			chararr[cnt] = foundsym;
 			if(chararr[cnt] != NULL)
 				total += (strlen(chararr[cnt]) + 1);

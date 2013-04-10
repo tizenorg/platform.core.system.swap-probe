@@ -43,6 +43,7 @@
 //#include <linux/input.h>
 
 #include "daprobe.h"
+#include "dahelper.h"
 #include "probeinfo.h"
 //#include "dautil.h"
 #include "da_event.h"
@@ -67,16 +68,19 @@ Eina_Bool ecore_event_evas_key_down(void *data, int type, void *event)
 
 	GET_REAL_FUNC(ecore_event_evas_key_down, LIBECOREINPUT);
 
-	probeBlockStart();
-	if(event != NULL)
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		Ecore_Event_Key* pEv = (Ecore_Event_Key*)event;
-		if(strcasestr(pEv->keyname, "volume") == NULL)
+		probeBlockStart();
+		if(event != NULL)
 		{
-			HW_EVENT_LOG(_EVENT_KEY, _KEY_PRESSED, 0, 0, pEv->keyname, 0);
+			Ecore_Event_Key* pEv = (Ecore_Event_Key*)event;
+			if(strcasestr(pEv->keyname, "volume") == NULL)
+			{
+				HW_EVENT_LOG(_EVENT_KEY, _KEY_PRESSED, 0, 0, pEv->keyname, 0);
+			}
 		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 
 	return ecore_event_evas_key_downp(data, type, event);
 }
@@ -88,16 +92,19 @@ Eina_Bool ecore_event_evas_key_up(void *data, int type, void *event)
 
 	GET_REAL_FUNC(ecore_event_evas_key_up, LIBECOREINPUT);
 
-	probeBlockStart();
-	if(event != NULL)
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		Ecore_Event_Key* pEv = (Ecore_Event_Key*)event;
-		if(strcasestr(pEv->keyname, "volume") == NULL) 
+		probeBlockStart();
+		if(event != NULL)
 		{
-			HW_EVENT_LOG(_EVENT_KEY, _KEY_RELEASED, 0, 0, pEv->keyname, 0);
+			Ecore_Event_Key* pEv = (Ecore_Event_Key*)event;
+			if(strcasestr(pEv->keyname, "volume") == NULL)
+			{
+				HW_EVENT_LOG(_EVENT_KEY, _KEY_RELEASED, 0, 0, pEv->keyname, 0);
+			}
 		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 
 	return ecore_event_evas_key_upp(data, type, event);
 }
@@ -109,14 +116,17 @@ Eina_Bool ecore_event_evas_mouse_button_down(void *data, int type, void *event)
 
 	GET_REAL_FUNC(ecore_event_evas_mouse_button_down, LIBECOREINPUT);
 
-	probeBlockStart();
-	if(event != NULL)
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		Ecore_Event_Mouse_Button* pEv = (Ecore_Event_Mouse_Button*)event;
-		touch_pressed = true;
-		HW_EVENT_LOG(_EVENT_TOUCH, _TOUCH_PRESSED, pEv->root.x, pEv->root.y, "", pEv->multi.device);
+		probeBlockStart();
+		if(event != NULL)
+		{
+			Ecore_Event_Mouse_Button* pEv = (Ecore_Event_Mouse_Button*)event;
+			touch_pressed = true;
+			HW_EVENT_LOG(_EVENT_TOUCH, _TOUCH_PRESSED, pEv->root.x, pEv->root.y, "", pEv->multi.device);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 
 	return ecore_event_evas_mouse_button_downp(data, type, event);
 }
@@ -128,14 +138,17 @@ Eina_Bool ecore_event_evas_mouse_button_up(void *data, int type, void *event)
 
 	GET_REAL_FUNC(ecore_event_evas_mouse_button_up, LIBECOREINPUT);
 
-	probeBlockStart();
-	if(event != NULL)
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		Ecore_Event_Mouse_Button* pEv = (Ecore_Event_Mouse_Button*)event;
-		touch_pressed = false;
-		HW_EVENT_LOG(_EVENT_TOUCH, _TOUCH_RELEASED, pEv->root.x, pEv->root.y, "", pEv->multi.device);
+		probeBlockStart();
+		if(event != NULL)
+		{
+			Ecore_Event_Mouse_Button* pEv = (Ecore_Event_Mouse_Button*)event;
+			touch_pressed = false;
+			HW_EVENT_LOG(_EVENT_TOUCH, _TOUCH_RELEASED, pEv->root.x, pEv->root.y, "", pEv->multi.device);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 
 	return ecore_event_evas_mouse_button_upp(data, type, event);
 }
@@ -147,16 +160,19 @@ Eina_Bool ecore_event_evas_mouse_move(void *data, int type, void *event)
 
 	GET_REAL_FUNC(ecore_event_evas_mouse_move, LIBECOREINPUT);
 
-	probeBlockStart();
-	if(touch_pressed)
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		if(event != NULL)
+		probeBlockStart();
+		if(touch_pressed)
 		{
-			Ecore_Event_Mouse_Move* pEv = (Ecore_Event_Mouse_Move*)event;
-			HW_EVENT_LOG(_EVENT_TOUCH, _TOUCH_MOVED, pEv->root.x, pEv->root.y, "", pEv->multi.device);
+			if(event != NULL)
+			{
+				Ecore_Event_Mouse_Move* pEv = (Ecore_Event_Mouse_Move*)event;
+				HW_EVENT_LOG(_EVENT_TOUCH, _TOUCH_MOVED, pEv->root.x, pEv->root.y, "", pEv->multi.device);
+			}
 		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 
 	return ecore_event_evas_mouse_movep(data, type, event);
 }

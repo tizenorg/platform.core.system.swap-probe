@@ -37,6 +37,8 @@
 #include "probeinfo.h"
 #include "dahelper.h"
 
+static enum DaOptions _sopt = OPT_THREAD;
+
 namespace Tizen {
 namespace Base {
 namespace Runtime {
@@ -133,7 +135,7 @@ result Mutex::Create(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -195,7 +197,7 @@ result Mutex::Create(const Tizen::Base::String& name) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -257,7 +259,7 @@ result Mutex::Release(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -318,7 +320,7 @@ result Mutex::Acquire(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		log.type = 0;
 		log.length = 0;
@@ -398,7 +400,7 @@ result Mutex::TryToAcquire(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -460,7 +462,7 @@ result Semaphore::Create(int count) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -522,7 +524,7 @@ result Semaphore::Create(const Tizen::Base::String& name, int count) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -585,7 +587,7 @@ result Semaphore::Acquire(long timeout) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		log.type = 0;
 		log.length = 0;
@@ -665,7 +667,7 @@ result Semaphore::TryToAcquire(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -726,7 +728,7 @@ result Semaphore::Release(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -787,7 +789,7 @@ result Monitor::Construct(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -848,7 +850,7 @@ result Monitor::Enter(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		log.type = 0;
 		log.length = 0;
@@ -928,7 +930,7 @@ result Monitor::Exit(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -989,7 +991,7 @@ result Monitor::Wait(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		log.type = 0;
 		log.length = 0;
@@ -1069,7 +1071,7 @@ result Monitor::Notify(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1130,7 +1132,7 @@ result Monitor::NotifyAll(void) {
 		probeBlockEnd();
 	}
 
-	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}

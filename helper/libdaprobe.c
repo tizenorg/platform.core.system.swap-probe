@@ -28,7 +28,7 @@
  * 
  */
 
-#include <stdio.h>			// for printf
+#include <stdio.h>			// for sprintf
 #include <stdlib.h>			// for getenv
 #include <string.h>			// for strstr
 #include <stdbool.h>		// for bool
@@ -42,6 +42,7 @@
 #include <sys/time.h>		// for gettimeofday
 #include <sys/socket.h>		// for socket, connect
 #include <sys/un.h>			// for sockaddr_un
+#include <sys/timerfd.h>	// for timerfd
 
 #include "probeinfo.h"
 #include "dautil.h"
@@ -50,10 +51,15 @@
 
 #define APP_INSTALL_PATH		"/opt/apps"
 #define UDS_NAME				"/tmp/da.socket"
+#define TIMERFD_INTERVAL		100000000		// 0.1 sec
 
 __thread int			gProbeDepth = 0;
 __thread unsigned int	gProbeBlockCount = 0;
 __thread pid_t			gTid = -1;
+
+int			g_timerfd = 0;
+long		g_total_alloc_size = 0;
+pthread_t	g_recvthread_id;
 
 int getExecutableMappingAddress();
 
@@ -61,13 +67,34 @@ int getExecutableMappingAddress();
  * internal functions
    (this means that these functions do not need to set enter/exit flag)
  ******************************************************************************/
- 
+
+// runtime configure the probe option
+static void _configure(char* configstr)
+{
+	char buf[64];
+	gTraceInfo.optionflag = atoi(configstr);
+
+	sprintf(buf, "configure in probe : %s, %lx\n", configstr, gTraceInfo.optionflag);
+	PRINTMSG(buf);
+
+	if(isOptionEnabled(OPT_FUNC))
+	{
+		__profil(1);
+	}
+	else
+	{
+		__profil(0);
+	}
+}
+
 // create sokcet to daemon and connect
 static int createSocket(void)
 {
+	ssize_t recvlen;
 	int clientLen, ret = 0;
 	struct sockaddr_un clientAddr;
 	char buf[16];
+	log_t log;
 
 	if((gTraceInfo.socket.daemonSock = socket(AF_UNIX, SOCK_STREAM,0)) != -1)
 	{
@@ -78,11 +105,41 @@ static int createSocket(void)
 		clientLen = sizeof(clientAddr);
 		if(connect(gTraceInfo.socket.daemonSock, (struct sockaddr *)&clientAddr, clientLen) >= 0)
 		{
-			PRINTMSG("createSocket connect() success\n");
-			sprintf(buf, "%d", getpid());
+			// recv initial configuration value
+			recvlen = recv(gTraceInfo.socket.daemonSock, &log,
+					sizeof(log.type) + sizeof(log.length), MSG_WAITALL);
+
+			if(recvlen > 0)	// recv succeed
+			{
+				if(log.length > 0)
+				{
+					recvlen = recv(gTraceInfo.socket.daemonSock, log.data,
+						log.length, MSG_WAITALL);
+				}
+				log.data[log.length] = '\0';
+
+				if(log.type == MSG_CONFIG)
+				{
+					_configure(log.data);
+				}
+				else
+				{
+					// unexpected case
+				}
+			}
+			else if(recvlen < 0)
+			{
+				char buf[64];
+				sprintf(buf, "recv failed in socket creation with error(%d)\n", recvlen);
+				PRINTMSG(buf);
+			}
+			else	// closed by other peer
+			{
+
+			}
+			sprintf(buf, "%d|%u", getpid(), gTraceInfo.app.startTime);
 			printLogStr(buf, MSG_PID);
-			sprintf(buf, "%u", gTraceInfo.app.startTime);
-			printLogStr(buf, MSG_TIME);
+			PRINTMSG("createSocket connect() success\n");
 		}
 		else
 		{
@@ -129,13 +186,112 @@ static pid_t _gettid()
 	return gTid;
 }
 
+static void* recvThread(void* data)
+{
+	fd_set readfds, workfds;
+	int maxfd = 0, rc;
+	uint64_t xtime;
+	ssize_t recvlen;
+	log_t log;
+
+	if(gTraceInfo.socket.daemonSock == -1)
+		return NULL;
+
+	FD_ZERO(&readfds);
+	if(g_timerfd > 0)
+	{
+		maxfd = g_timerfd;
+		FD_SET(g_timerfd, &readfds);
+	}
+	if(maxfd < gTraceInfo.socket.daemonSock)
+		maxfd = gTraceInfo.socket.daemonSock;
+	FD_SET(gTraceInfo.socket.daemonSock, &readfds);
+
+	while(1)
+	{
+		workfds = readfds;
+		rc = select(maxfd + 1, &workfds, NULL, NULL, NULL);
+		if(rc < 0)
+		{
+			continue;
+		}
+
+		if(g_timerfd > 0 && FD_ISSET(g_timerfd, &workfds))
+		{
+			recvlen = read(g_timerfd, &xtime, sizeof(xtime));
+			if(recvlen > 0)
+			{
+				log.length = sprintf(log.data, "%ld", g_total_alloc_size);
+				printLog(&log, MSG_ALLOC);
+			}
+			else
+			{
+				// read failed
+			}
+			continue;
+		}
+		else if(FD_ISSET(gTraceInfo.socket.daemonSock, &workfds))
+		{
+			recvlen = recv(gTraceInfo.socket.daemonSock, &log,
+					sizeof(log.type) + sizeof(log.length), MSG_WAITALL);
+
+			if(recvlen > 0)	// recv succeed
+			{
+				if(log.length > 0)
+				{
+					recvlen = recv(gTraceInfo.socket.daemonSock, log.data,
+						log.length, MSG_WAITALL);
+				}
+				log.data[log.length] = '\0';
+
+				if(log.type == MSG_CONFIG)
+				{
+					_configure(log.data);
+				}
+				else if(log.type == MSG_STOP)
+				{
+					exit(0);
+				}
+				else
+				{
+					char buf[64];
+					sprintf(buf, "recv unknown message(%d)\n", log.type);
+					PRINTMSG(buf);
+					continue;
+				}
+			}
+			else if(recvlen == 0)	// closed by other peer
+			{
+				close(gTraceInfo.socket.daemonSock);
+				gTraceInfo.socket.daemonSock = -1;
+				break;
+			}
+			else	// recv error
+			{
+				char buf[64];
+				sprintf(buf, "recv failed in recv thread with error(%d)\n", recvlen);
+				PRINTMSG(buf);
+				continue;
+			}
+		}
+		else	// unknown case
+		{
+			PRINTMSG("unknown fd in recvThread\n");
+			continue;
+		}
+	}
+
+	return NULL;
+}
+
 /*****************************************************************************
  * initialize / finalize function
  *****************************************************************************/
 
 void __attribute__((constructor)) _init_probe()
 {
-	struct timeval cTime;
+	struct timeval ttime;
+	struct itimerspec ctime;
 
 	TRACE_STATE_SET(TS_INIT);
 
@@ -148,16 +304,42 @@ void __attribute__((constructor)) _init_probe()
 	getExecutableMappingAddress();
 
 	// get app start time
-	gettimeofday(&cTime, NULL);
-	gTraceInfo.app.startTime = ((cTime.tv_sec * 10000 + (cTime.tv_usec/100)));
+	gettimeofday(&ttime, NULL);
+	gTraceInfo.app.startTime = ((ttime.tv_sec * 10000 + (ttime.tv_usec/100)));
 
 	// create socket for communication with da_daemon
-#ifndef PRINT_STDOUT
-	if(createSocket() >= 0)
-#endif
-	if(__atSharedMemory() < 0)
+	if(createSocket() == 0)
 	{
-		printLogStr("cannot at shared memory in helper", MSG_ERROR);
+		// create timerfd
+		g_timerfd = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
+		if(g_timerfd > 0)
+		{
+			ctime.it_value.tv_sec = 0;
+			ctime.it_value.tv_nsec = TIMERFD_INTERVAL;
+			ctime.it_interval.tv_sec = 0;
+			ctime.it_interval.tv_nsec = TIMERFD_INTERVAL;
+			if(0 > timerfd_settime(g_timerfd, 0, &ctime, NULL))
+			{
+				PRINTMSG("failed to set timerfd\n");
+				close(g_timerfd);
+				g_timerfd = 0;
+			}
+		}
+		else
+		{
+			PRINTMSG("failed to create timerdf\n");
+		}
+
+		// create recv Thread
+		if(pthread_create(&g_recvthread_id, NULL, recvThread, NULL) < 0)	// thread creation failed
+		{
+			PRINTMSG("failed to crate recv thread\n");
+		}
+		update_heap_memory_size(true, 0);
+	}
+	else
+	{
+
 	}
 
 	PRINTMSG("dynamic analyzer probe helper so loading...\n");
@@ -173,19 +355,19 @@ void __attribute__((destructor)) _fini_probe()
 	gTraceInfo.init_complete = -1;
 	PRINTMSG("dynamic analyzer probe helper so unloading...\n");
 
-	__dtSharedMemory();
-
 	remove_all_glist();
 
+	// close timerfd
+	if(g_timerfd > 0)
+		close(g_timerfd);
+
 	// close socket
-#ifndef PRINT_STDOUT
 	if(gTraceInfo.socket.daemonSock != -1)
 	{
 		printLogStr(NULL, MSG_TERMINATE);
 		close(gTraceInfo.socket.daemonSock);
 		gTraceInfo.socket.daemonSock = -1;
 	}
-#endif
 
 	finalize_event();
 
@@ -204,8 +386,10 @@ void __attribute__((destructor)) _fini_probe()
 /************************************************************************
  * manipulate and print log functions
  ************************************************************************/
+
 bool printLog(log_t* log, int msgType)
 {
+	int res;
 	if(unlikely(gTraceInfo.socket.daemonSock == -1))
 		return false;
 
@@ -213,18 +397,10 @@ bool printLog(log_t* log, int msgType)
 		return false;
 
 	TRACE_STATE_SET(TS_PRINT_LOG);
-
-#ifndef PRINT_STDOUT
 	log->type = msgType;
-
 	pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
-	send(gTraceInfo.socket.daemonSock, log, sizeof(log->type) + sizeof(log->length) + log->length, 0);
+	res = send(gTraceInfo.socket.daemonSock, log, sizeof(log->type) + sizeof(log->length) + log->length, 0);
 	pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
-
-#else
-	if(log != NULL && log->length > 0 && msgType == MSG_MSG)
-		printf("%s\n", log->data);
-#endif
 	TRACE_STATE_UNSET(TS_PRINT_LOG);
 
 	return true;
@@ -232,18 +408,15 @@ bool printLog(log_t* log, int msgType)
 
 bool printLogStr(const char* str, int msgType)
 {
-#ifndef PRINT_STDOUT
+	int res;
 	log_t log;
-#endif
 
 	if(unlikely(gTraceInfo.socket.daemonSock == -1))
 		return false;
 
 	TRACE_STATE_SET(TS_PRINT_LOG);
 
-#ifndef PRINT_STDOUT
 	log.type = msgType;
-
 	if(str)
 	{
 		sprintf(log.data, "%s", str);
@@ -255,13 +428,9 @@ bool printLogStr(const char* str, int msgType)
 	}
 
 	pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
-	send(gTraceInfo.socket.daemonSock, &log, sizeof(log.type) + sizeof(log.length) + log.length, 0);
+	res = send(gTraceInfo.socket.daemonSock, &log, sizeof(log.type) + sizeof(log.length) + log.length, MSG_DONTWAIT);
 	pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 
-#else
-	if(str != NULL && msgType == MSG_MSG)
-		printf("%s\n", str);
-#endif
 	TRACE_STATE_UNSET(TS_PRINT_LOG);
 
 	return true;
@@ -431,25 +600,10 @@ int getBacktraceString(log_t* log, int bufsize)
 	}
 }
 
-/*
-int printSamplingLog()
-{
-	log_t log;
-
-	TRACE_STATE_SET(TS_PRINT_SAMPLE_LOG);
-	log.length = sprintf(log.data, "%d`,%lu`,%d`,%Ld",
-			LC_ALLOCMEM, getCurrentTime(), getpid(), total_alloc_size);
-
-	printLog(&log, MSG_LOG);
-	TRACE_STATE_UNSET(TS_PRINT_SAMPLE_LOG);
-	return 0;
-}
-*/
-
 /*************************************************************************
  * probe block control functions
  *************************************************************************/
-int preBlockBegin(void* caller, bool bFiltering)
+int preBlockBegin(void* caller, bool bFiltering, enum DaOptions option)
 {
 	bool user = false;
 	void* tarray[1];
@@ -459,6 +613,9 @@ int preBlockBegin(void* caller, bool bFiltering)
 		return 0;
 
 	if(gTraceInfo.init_complete <= 0)
+		return 0;
+
+	if((gTraceInfo.optionflag & option) == 0)
 		return 0;
 
 	TRACE_STATE_SET(TS_ENTER_PROBE_BLOCK);
@@ -575,23 +732,6 @@ unsigned long getTraceState()
 	return gSTrace;
 }
 
-bool isEnableSnapshot()
-{
-	if(gTraceInfo.pprobeflag != NULL)
-		return (bool)(*gTraceInfo.pprobeflag & ENABLE_SNAPSHOT);
-	else
-		return false;
-}
-
-bool isEnableInternalMalloc()
-{
-	if(gTraceInfo.pprobeflag != NULL)
-		return (bool)(*gTraceInfo.pprobeflag & ENABLE_INTERNAL_MALLOC);
-	else
-		return false;
-}
-
-
 /******************************************************************
  * screen capture and event related functions
  ******************************************************************/
@@ -622,7 +762,7 @@ void detectTouchEvent(int touchID)
 	gTraceInfo.stateTouch = touchID;
 
 	TRACE_STATE_SET(TS_DETECT_TOUCH);
-	if(isEnableSnapshot())
+	if(isOptionEnabled(OPT_SNAPSHOT))
 	{
 		if(touchID == EVENT_TYPE_UP)
 		{
@@ -691,4 +831,23 @@ bool setProbePoint(probeInfo_t* iProbe)
 	TRACE_STATE_UNSET(TS_SET_PROBE_POINT);
 	return true;
 }
+
+// update heap memory size though socket
+// return 0 if size is updated though socket
+// return 1 if size is updated into global variable
+int update_heap_memory_size(bool isAdd, size_t size)
+{
+	long tmp;
+	if(isAdd)
+	{
+		tmp = __sync_add_and_fetch(&g_total_alloc_size, (long)size);
+	}
+	else
+	{
+		tmp = __sync_sub_and_fetch(&g_total_alloc_size, (long)size);
+	}
+
+	return 0;
+}
+
 

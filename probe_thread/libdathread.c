@@ -40,6 +40,8 @@ typedef struct thread_routine_call_t {
 	void *argument;
 } thread_routine_call;
 
+static enum DaOptions _sopt = OPT_THREAD;
+
 // called when pthread_exit, pthread_cancel is called
 void _da_cleanup_handler(void *data)
 {

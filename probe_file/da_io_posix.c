@@ -47,6 +47,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
+static enum DaOptions _sopt = OPT_FILE;
+
 int open(const char* path, int oflag, ...)
 {
 	static int (*openp)(const char* path, int oflag, ...);

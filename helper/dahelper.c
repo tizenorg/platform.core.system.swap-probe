@@ -32,31 +32,8 @@
 #include <unistd.h>			// for unlink
 #include <sys/types.h>
 #include <dirent.h>			// for opendir, readdir
-#include <sys/shm.h>		// for shared memory operation
 
 #include "dahelper.h"
-
-#define SHAREDMEMKEY			((key_t)463825)
-
-typedef struct
-{
-	long long allocsize;
-	long launch_flag;
-} __daSharedInfo;
-
-typedef struct
-{
-	int memid;				// shared mem id
-	__daSharedInfo* pvalue;		// total alloced heap size
-} __sharedMemInfo;
-
-static __sharedMemInfo sharedmem =
-{
-	-1,			// memid
-	(void*)-1	// pvalue
-};
-
-long long total_alloc_size = 0;
 
 /* trace info global variable */
 __traceInfo gTraceInfo =
@@ -84,71 +61,11 @@ __traceInfo gTraceInfo =
 	-1,								// int stateTouch
 	0,								// int init_complete
 	0,								// int custom_chart_callback_count
-	NULL							// long* pprobeflag
+	0								// unsigned long optionflag
 };
 
 __thread unsigned long	gSTrace = 0;
 
-// **************************************************************************************
-// shared memory management function
-// **************************************************************************************
-
-// return 0 for normal case
-// return -1 for error case
-int __atSharedMemory()
-{
-	sharedmem.memid = shmget(SHAREDMEMKEY, sizeof(__daSharedInfo), 0);
-	if(sharedmem.memid == -1)
-	{
-		return -1;
-	}
-	else
-	{
-		sharedmem.pvalue = (__daSharedInfo*)shmat(sharedmem.memid, NULL, 0);
-		if(sharedmem.pvalue == (void*)-1)
-		{
-			return -1;
-		}
-		else
-		{
-			sharedmem.pvalue->allocsize = total_alloc_size;
-			gTraceInfo.pprobeflag = &(sharedmem.pvalue->launch_flag);
-			return 0;
-		}
-	}
-}
-
-int __dtSharedMemory()
-{
-	int ret = 0;
-	if(sharedmem.pvalue != (void*)-1)
-	{
-		ret = shmdt(sharedmem.pvalue);
-		if(ret == 0)
-			sharedmem.pvalue = (void*)-1;
-	}
-	gTraceInfo.pprobeflag = NULL;
-	return ret;
-}
-
-// update heap memory size into shared memory
-// return 0 if size is updated into shared memory
-// return 1 if size is updated into global variable
-int update_heap_memory_size(bool isAdd, size_t size)
-{
-	if(likely(sharedmem.pvalue != (void*)-1))
-	{
-		if(isAdd) sharedmem.pvalue->allocsize += (long)size;
-		else sharedmem.pvalue->allocsize -= (long)size;
-		return 0;
-	}
-	else
-	{
-		if(isAdd) total_alloc_size += (long)size;
-		else total_alloc_size -= (long)size;
-		return 1;
-	}
-}
 
 void WcharToChar(char* pstrDest, const wchar_t* pwstrSrc)
 {

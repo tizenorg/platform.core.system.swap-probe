@@ -86,14 +86,17 @@ void on_orientation_changed(int angle, bool capi)
 	if(autoRotation)	// rotation is not locked
 	{
 		external_angle = internal_angle;
-		setProbePoint(&probeInfo);
 
-		INIT_LOG;
-		APPEND_LOG_BASIC_NAME(LC_UIEVENT, "OrientationChanged");
-		APPEND_LOG_COMMON_NONE(0);
-		log.length += sprintf(log.data + log.length, "`,%d`,`,`,`,%d`,",
-				_EVENT_ORIENTATION, convert_angle(external_angle));
-		printLog(&log, MSG_LOG);
+		if(isOptionEnabled(OPT_EVENT))
+		{
+			setProbePoint(&probeInfo);
+			INIT_LOG;
+			APPEND_LOG_BASIC_NAME(LC_UIEVENT, "OrientationChanged");
+			APPEND_LOG_COMMON_NONE(0);
+			log.length += sprintf(log.data + log.length, "`,%d`,`,`,`,%d`,",
+					_EVENT_ORIENTATION, convert_angle(external_angle));
+			printLog(&log, MSG_LOG);
+		}
 
 //		if(orientation_enabled)
 //		{

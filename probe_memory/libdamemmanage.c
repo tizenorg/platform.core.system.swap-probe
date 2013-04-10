@@ -40,6 +40,8 @@
 #include "dautil.h"
 #include "da_memory.h"
 
+static enum DaOptions _sopt = OPT_ALLOC;
+
 void *memset(void *memblock, int c, size_t n)
 {
 	static void *(*memsetp)(void *,int,size_t);

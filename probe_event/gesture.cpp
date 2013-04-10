@@ -29,6 +29,7 @@
  */
 
 #include "daprobe.h"
+#include "dahelper.h"
 #include "probeinfo.h"
 #include "osp_probe.h"
 #include "dacollection.h"
@@ -60,320 +61,386 @@ void GestureEventListener::OnCustomGestureCanceled (TouchGestureDetector &gestur
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
-	GESTURE_EVENT_LOG("canceled", _GESTURE_CUSTOM, 0, 0, 0, 0);
-	probeBlockEnd();
+	if(isOptionEnabled(OPT_EVENT))
+	{
+		probeBlockStart();
+		GESTURE_EVENT_LOG("canceled", _GESTURE_CUSTOM, 0, 0, 0, 0);
+		probeBlockEnd();
+	}
 }
 
 void GestureEventListener::OnCustomGestureChanged (TouchGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
-	GESTURE_EVENT_LOG("changed", _GESTURE_CUSTOM, 0, 0, 0, 0);
-	probeBlockEnd();
+	if(isOptionEnabled(OPT_EVENT))
+	{
+		probeBlockStart();
+		GESTURE_EVENT_LOG("changed", _GESTURE_CUSTOM, 0, 0, 0, 0);
+		probeBlockEnd();
+	}
 }
 
 void GestureEventListener::OnCustomGestureFinished (TouchGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
-	GESTURE_EVENT_LOG("finished", _GESTURE_CUSTOM, 0, 0, 0, 0);
-	probeBlockEnd();
+	if(isOptionEnabled(OPT_EVENT))
+	{
+		probeBlockStart();
+		GESTURE_EVENT_LOG("finished", _GESTURE_CUSTOM, 0, 0, 0, 0);
+		probeBlockEnd();
+	}
 }
 
 void GestureEventListener::OnCustomGestureStarted (TouchGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
-	GESTURE_EVENT_LOG("started", _GESTURE_CUSTOM, 0, 0, 0, 0);
-	probeBlockEnd();
+	if(isOptionEnabled(OPT_EVENT))
+	{
+		probeBlockStart();
+		GESTURE_EVENT_LOG("started", _GESTURE_CUSTOM, 0, 0, 0, 0);
+		probeBlockEnd();
+	}
 }
 
 void GestureEventListener::OnFlickGestureCanceled (TouchFlickGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int x = 0, y = 0, dur = 0;
-		FlickDirection direction = FLICK_DIRECTION_NONE;
+		probeBlockStart();
+		{
+			int x = 0, y = 0, dur = 0;
+			FlickDirection direction = FLICK_DIRECTION_NONE;
 
-		gestureDetector.GetDistance(x, y);
-		dur = gestureDetector.GetDuration();
-		direction = gestureDetector.GetDirection();
-		GESTURE_EVENT_LOG("canceled", _GESTURE_FLICK, x, y, dur, (int)direction);
+			gestureDetector.GetDistance(x, y);
+			dur = gestureDetector.GetDuration();
+			direction = gestureDetector.GetDirection();
+			GESTURE_EVENT_LOG("canceled", _GESTURE_FLICK, x, y, dur, (int)direction);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnFlickGestureDetected (TouchFlickGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int x = 0, y = 0, dur = 0;
-		FlickDirection direction = FLICK_DIRECTION_NONE;
+		probeBlockStart();
+		{
+			int x = 0, y = 0, dur = 0;
+			FlickDirection direction = FLICK_DIRECTION_NONE;
 
-		gestureDetector.GetDistance(x, y);
-		dur = gestureDetector.GetDuration();
-		direction = gestureDetector.GetDirection();
-		GESTURE_EVENT_LOG("detected", _GESTURE_FLICK, x, y, dur, (int)direction);
+			gestureDetector.GetDistance(x, y);
+			dur = gestureDetector.GetDuration();
+			direction = gestureDetector.GetDirection();
+			GESTURE_EVENT_LOG("detected", _GESTURE_FLICK, x, y, dur, (int)direction);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnLongPressGestureCanceled (TouchLongPressGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int moveallow = 0, tcount = 0, dur = 0;
+		probeBlockStart();
+		{
+			int moveallow = 0, tcount = 0, dur = 0;
 
-		moveallow = gestureDetector.GetMoveAllowance();
-		dur = gestureDetector.GetDuration();
-		tcount = gestureDetector.GetTouchCount();
-		GESTURE_EVENT_LOG("canceled", _GESTURE_LONGPRESS, moveallow, 0, dur, tcount);
+			moveallow = gestureDetector.GetMoveAllowance();
+			dur = gestureDetector.GetDuration();
+			tcount = gestureDetector.GetTouchCount();
+			GESTURE_EVENT_LOG("canceled", _GESTURE_LONGPRESS, moveallow, 0, dur, tcount);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnLongPressGestureDetected (TouchLongPressGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int moveallow = 0, tcount = 0, dur = 0;
+		probeBlockStart();
+		{
+			int moveallow = 0, tcount = 0, dur = 0;
 
-		moveallow = gestureDetector.GetMoveAllowance();
-		dur = gestureDetector.GetDuration();
-		tcount = gestureDetector.GetTouchCount();
-		GESTURE_EVENT_LOG("detected", _GESTURE_LONGPRESS, moveallow, 0, dur, tcount);
+			moveallow = gestureDetector.GetMoveAllowance();
+			dur = gestureDetector.GetDuration();
+			tcount = gestureDetector.GetTouchCount();
+			GESTURE_EVENT_LOG("detected", _GESTURE_LONGPRESS, moveallow, 0, dur, tcount);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnPanningGestureCanceled (TouchPanningGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int tcount = 0;
+		probeBlockStart();
+		{
+			int tcount = 0;
 
-		tcount = gestureDetector.GetTouchCount();
-		GESTURE_EVENT_LOG("canceled", _GESTURE_PANNING, 0, 0, 0, tcount);
+			tcount = gestureDetector.GetTouchCount();
+			GESTURE_EVENT_LOG("canceled", _GESTURE_PANNING, 0, 0, 0, tcount);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnPanningGestureChanged (TouchPanningGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int tcount = 0;
+		probeBlockStart();
+		{
+			int tcount = 0;
 
-		tcount = gestureDetector.GetTouchCount();
-		GESTURE_EVENT_LOG("changed", _GESTURE_PANNING, 0, 0, 0, tcount);
+			tcount = gestureDetector.GetTouchCount();
+			GESTURE_EVENT_LOG("changed", _GESTURE_PANNING, 0, 0, 0, tcount);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnPanningGestureFinished (TouchPanningGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int tcount = 0;
+		probeBlockStart();
+		{
+			int tcount = 0;
 
-		tcount = gestureDetector.GetTouchCount();
-		GESTURE_EVENT_LOG("finished", _GESTURE_PANNING, 0, 0, 0, tcount);
+			tcount = gestureDetector.GetTouchCount();
+			GESTURE_EVENT_LOG("finished", _GESTURE_PANNING, 0, 0, 0, tcount);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnPanningGestureStarted (TouchPanningGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int tcount = 0;
+		probeBlockStart();
+		{
+			int tcount = 0;
 
-		tcount = gestureDetector.GetTouchCount();
-		GESTURE_EVENT_LOG("started", _GESTURE_PANNING, 0, 0, 0, tcount);
+			tcount = gestureDetector.GetTouchCount();
+			GESTURE_EVENT_LOG("started", _GESTURE_PANNING, 0, 0, 0, tcount);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnPinchGestureCanceled (TouchPinchGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		Tizen::Graphics::Point point;
-		int scale = 0;
+		probeBlockStart();
+		{
+			Tizen::Graphics::Point point;
+			int scale = 0;
 
-		point = gestureDetector.GetCenterPoint();
-		scale = gestureDetector.GetScale();
-		GESTURE_EVENT_LOG("canceled", _GESTURE_PINCH, point.x, point.y, scale, 0);
+			point = gestureDetector.GetCenterPoint();
+			scale = gestureDetector.GetScale();
+			GESTURE_EVENT_LOG("canceled", _GESTURE_PINCH, point.x, point.y, scale, 0);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnPinchGestureChanged (TouchPinchGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		Tizen::Graphics::Point point;
-		int scale = 0;
+		probeBlockStart();
+		{
+			Tizen::Graphics::Point point;
+			int scale = 0;
 
-		point = gestureDetector.GetCenterPoint();
-		scale = gestureDetector.GetScale();
-		GESTURE_EVENT_LOG("changed", _GESTURE_PINCH, point.x, point.y, scale, 0);
+			point = gestureDetector.GetCenterPoint();
+			scale = gestureDetector.GetScale();
+			GESTURE_EVENT_LOG("changed", _GESTURE_PINCH, point.x, point.y, scale, 0);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnPinchGestureFinished (TouchPinchGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		Tizen::Graphics::Point point;
-		int scale = 0;
+		probeBlockStart();
+		{
+			Tizen::Graphics::Point point;
+			int scale = 0;
 
-		point = gestureDetector.GetCenterPoint();
-		scale = gestureDetector.GetScale();
-		GESTURE_EVENT_LOG("finished", _GESTURE_PINCH, point.x, point.y, scale, 0);
+			point = gestureDetector.GetCenterPoint();
+			scale = gestureDetector.GetScale();
+			GESTURE_EVENT_LOG("finished", _GESTURE_PINCH, point.x, point.y, scale, 0);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnPinchGestureStarted (TouchPinchGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		Tizen::Graphics::Point point;
-		int scale = 0;
+		probeBlockStart();
+		{
+			Tizen::Graphics::Point point;
+			int scale = 0;
 
-		point = gestureDetector.GetCenterPoint();
-		scale = gestureDetector.GetScale();
-		GESTURE_EVENT_LOG("started", _GESTURE_PINCH, point.x, point.y, scale, 0);
+			point = gestureDetector.GetCenterPoint();
+			scale = gestureDetector.GetScale();
+			GESTURE_EVENT_LOG("started", _GESTURE_PINCH, point.x, point.y, scale, 0);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnRotationGestureCanceled (TouchRotationGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int distance = 0;
-		float angle = 0.0f;
+		probeBlockStart();
+		{
+			int distance = 0;
+			float angle = 0.0f;
 
-		distance = gestureDetector.GetDistance();
-		angle = gestureDetector.GetAngle();
-		GESTURE_EVENT_LOG("canceled", _GESTURE_ROTATION, 0, 0, distance, static_cast<int>(angle));
+			distance = gestureDetector.GetDistance();
+			angle = gestureDetector.GetAngle();
+			GESTURE_EVENT_LOG("canceled", _GESTURE_ROTATION, 0, 0, distance, static_cast<int>(angle));
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnRotationGestureChanged (TouchRotationGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int distance = 0;
-		float angle = 0.0f;
+		probeBlockStart();
+		{
+			int distance = 0;
+			float angle = 0.0f;
 
-		distance = gestureDetector.GetDistance();
-		angle = gestureDetector.GetAngle();
-		GESTURE_EVENT_LOG("changed", _GESTURE_ROTATION, 0, 0, distance, static_cast<int>(angle));
+			distance = gestureDetector.GetDistance();
+			angle = gestureDetector.GetAngle();
+			GESTURE_EVENT_LOG("changed", _GESTURE_ROTATION, 0, 0, distance, static_cast<int>(angle));
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnRotationGestureFinished (TouchRotationGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int distance = 0;
-		float angle = 0.0f;
+		probeBlockStart();
+		{
+			int distance = 0;
+			float angle = 0.0f;
 
-		distance = gestureDetector.GetDistance();
-		angle = gestureDetector.GetAngle();
-		GESTURE_EVENT_LOG("finished", _GESTURE_ROTATION, 0, 0, distance, static_cast<int>(angle));
+			distance = gestureDetector.GetDistance();
+			angle = gestureDetector.GetAngle();
+			GESTURE_EVENT_LOG("finished", _GESTURE_ROTATION, 0, 0, distance, static_cast<int>(angle));
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnRotationGestureStarted (TouchRotationGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int distance = 0;
-		float angle = 0.0f;
+		probeBlockStart();
+		{
+			int distance = 0;
+			float angle = 0.0f;
 
-		distance = gestureDetector.GetDistance();
-		angle = gestureDetector.GetAngle();
-		GESTURE_EVENT_LOG("started", _GESTURE_ROTATION, 0, 0, distance, static_cast<int>(angle));
+			distance = gestureDetector.GetDistance();
+			angle = gestureDetector.GetAngle();
+			GESTURE_EVENT_LOG("started", _GESTURE_ROTATION, 0, 0, distance, static_cast<int>(angle));
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnTapGestureCanceled (TouchTapGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int move = 0, tapcount = 0, touchcount = 0, interval = 0;
+		probeBlockStart();
+		{
+			int move = 0, tapcount = 0, touchcount = 0, interval = 0;
 
-		move = gestureDetector.GetMoveAllowance();
-		tapcount = gestureDetector.GetTapCount();
-		interval = gestureDetector.GetTapInterval();
-		touchcount = gestureDetector.GetTouchCount();
-		GESTURE_EVENT_LOG("canceled", _GESTURE_TAP, move, tapcount, interval, touchcount);
+			move = gestureDetector.GetMoveAllowance();
+			tapcount = gestureDetector.GetTapCount();
+			interval = gestureDetector.GetTapInterval();
+			touchcount = gestureDetector.GetTouchCount();
+			GESTURE_EVENT_LOG("canceled", _GESTURE_TAP, move, tapcount, interval, touchcount);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 void GestureEventListener::OnTapGestureDetected (TouchTapGestureDetector &gestureDetector)
 {
 	DECLARE_COMMON_VARIABLE;
 
-	probeBlockStart();
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		int move = 0, tapcount = 0, touchcount = 0, interval = 0;
+		probeBlockStart();
+		{
+			int move = 0, tapcount = 0, touchcount = 0, interval = 0;
 
-		move = gestureDetector.GetMoveAllowance();
-		tapcount = gestureDetector.GetTapCount();
-		interval = gestureDetector.GetTapInterval();
-		touchcount = gestureDetector.GetTouchCount();
-		GESTURE_EVENT_LOG("detected", _GESTURE_TAP, move, tapcount, interval, touchcount);
+			move = gestureDetector.GetMoveAllowance();
+			tapcount = gestureDetector.GetTapCount();
+			interval = gestureDetector.GetTapInterval();
+			touchcount = gestureDetector.GetTouchCount();
+			GESTURE_EVENT_LOG("detected", _GESTURE_TAP, move, tapcount, interval, touchcount);
+		}
+		probeBlockEnd();
 	}
-	probeBlockEnd();
 }
 
 GestureEventListener& GestureEventListener::GetInstance()

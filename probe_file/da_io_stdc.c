@@ -39,6 +39,8 @@
 #include "dautil.h"
 #include "da_io.h"
 
+static enum DaOptions _sopt = OPT_FILE;
+
 FILE* fopen(const char* filename, const char* mode)
 {
 	static FILE* (*fopenp)(const char* filename, const char* mode);

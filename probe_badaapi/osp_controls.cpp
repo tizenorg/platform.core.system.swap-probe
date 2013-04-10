@@ -77,17 +77,19 @@ result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 	probeBlockStart();
 	if(ret == E_SUCCESS)
 	{
-		Control* parent = NULL;
-		setProbePoint(&probeInfo);
-		INIT_LOG;
-		APPEND_LOG_BASIC_NAME(LC_UICREATE, "AddFrame");
-		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-
 		frame.IsInTouchMode();
 
-		APPEND_LOG_CONTROL_OSP(parent);
-		APPEND_LOG_CONTROL_OSP(&frame);
-		printLog(&log, MSG_LOG);
+		if(isOptionEnabled(OPT_UI))
+		{
+			Control* parent = NULL;
+			setProbePoint(&probeInfo);
+			INIT_LOG;
+			APPEND_LOG_BASIC_NAME(LC_UICREATE, "AddFrame");
+			APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
+			APPEND_LOG_CONTROL_OSP(parent);
+			APPEND_LOG_CONTROL_OSP(&frame);
+			printLog(&log, MSG_LOG);
+		}
 	}
 	probeBlockEnd();
 
@@ -100,20 +102,23 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 	static methodType uiapp_removeframep;
 	DECLARE_COMMON_VARIABLE;
 	result ret;
+	bool bOption;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp11RemoveFrameERKNS_2Ui8Controls5FrameE, libosp-uifw.so, uiapp_removeframep);
 
 	probeBlockStart();
-	Control* parent = NULL;
-	setProbePoint(&probeInfo);
-	INIT_LOG;
-	APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveFrame");
-	APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-
 	frame.IsInTouchMode();
 
-	APPEND_LOG_CONTROL_OSP(parent);
-	APPEND_LOG_CONTROL_OSP(&frame);
+	if((bOption = isOptionEnabled(OPT_UI)))
+	{
+		Control* parent = NULL;
+		setProbePoint(&probeInfo);
+		INIT_LOG;
+		APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveFrame");
+		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
+		APPEND_LOG_CONTROL_OSP(parent);
+		APPEND_LOG_CONTROL_OSP(&frame);
+	}
 	probeBlockEnd();
 
 	ret = (this->*uiapp_removeframep)(frame);
@@ -121,7 +126,8 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 	probeBlockStart();
 	if(ret == E_SUCCESS)
 	{
-		printLog(&log, MSG_LOG);
+		if(bOption)
+			printLog(&log, MSG_LOG);
 	}
 	probeBlockEnd();
 
@@ -158,18 +164,19 @@ void Control::SetName(const Tizen::Base::String &name)
 	(this->*control_setnamep)(name);
 
 	probeBlockStart();
-	Control* parent = NULL;
-	setProbePoint(&probeInfo);
-	INIT_LOG;
-	APPEND_LOG_BASIC_NAME(LC_UICREATE, "SetName");
-	APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-
 	IsInTouchMode();
 
-	APPEND_LOG_CONTROL_OSP(this);
-	APPEND_LOG_CONTROL_OSP(parent);
-
-	printLog(&log, MSG_LOG);
+	if(isOptionEnabled(OPT_UI))
+	{
+		Control* parent = NULL;
+		setProbePoint(&probeInfo);
+		INIT_LOG;
+		APPEND_LOG_BASIC_NAME(LC_UICREATE, "SetName");
+		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
+		APPEND_LOG_CONTROL_OSP(this);
+		APPEND_LOG_CONTROL_OSP(parent);
+		printLog(&log, MSG_LOG);
+	}
 	probeBlockEnd();
 }
 
@@ -209,18 +216,19 @@ result Container::AddControl(const Control &control)
 	probeBlockStart();
 	if(ret == E_SUCCESS)
 	{
-		setProbePoint(&probeInfo);
-		INIT_LOG;
-		APPEND_LOG_BASIC_NAME(LC_UICREATE, "AddControl");
-		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-
 		IsInTouchMode();
 		control.IsInTouchMode();
 
-		APPEND_LOG_CONTROL_OSP(this);
-		APPEND_LOG_CONTROL_OSP(&control);
-
-		printLog(&log, MSG_LOG);
+		if(isOptionEnabled(OPT_UI))
+		{
+			setProbePoint(&probeInfo);
+			INIT_LOG;
+			APPEND_LOG_BASIC_NAME(LC_UICREATE, "AddControl");
+			APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
+			APPEND_LOG_CONTROL_OSP(this);
+			APPEND_LOG_CONTROL_OSP(&control);
+			printLog(&log, MSG_LOG);
+		}
 	}
 	probeBlockEnd();
 
@@ -233,19 +241,22 @@ result Container::RemoveControl(const Control &control)
 	static methodType container_removecontrolp;
 	DECLARE_COMMON_VARIABLE;
 	result ret;
+	bool bOption;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container13RemoveControlERKNS0_7ControlE, libosp-uifw.so, container_removecontrolp);
 
 	probeBlockStart();
-	setProbePoint(&probeInfo);
-	INIT_LOG;
-	APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveControl");
-	APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-
 	control.IsInTouchMode();
 
-	APPEND_LOG_CONTROL_OSP(this);
-	APPEND_LOG_CONTROL_OSP(&control);
+	if((bOption = isOptionEnabled(OPT_UI)))
+	{
+		setProbePoint(&probeInfo);
+		INIT_LOG;
+		APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveControl");
+		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
+		APPEND_LOG_CONTROL_OSP(this);
+		APPEND_LOG_CONTROL_OSP(&control);
+	}
 	probeBlockEnd();
 
 	ret = (this->*container_removecontrolp)(control);
@@ -253,7 +264,8 @@ result Container::RemoveControl(const Control &control)
 	probeBlockStart();
 	if(ret == E_SUCCESS)
 	{
-		printLog(&log, MSG_LOG);
+		if(bOption)
+			printLog(&log, MSG_LOG);
 	}
 	probeBlockEnd();
 
@@ -266,21 +278,23 @@ result Container::RemoveControl(int index)
 	static methodType container_removecontrolip;
 	DECLARE_COMMON_VARIABLE;
 	result ret;
+	bool bOption;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container13RemoveControlEi, libosp-uifw.so, container_removecontrolip);
 
 	probeBlockStart();
-	Control* pcontrol;
-	setProbePoint(&probeInfo);
-	INIT_LOG;
-	APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveControl");
-	APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-
-	pcontrol = GetControl(index);
+	Control* pcontrol = GetControl(index);
 	pcontrol->IsInTouchMode();
 
-	APPEND_LOG_CONTROL_OSP(this);
-	APPEND_LOG_CONTROL_OSP(pcontrol);
+	if((bOption = isOptionEnabled(OPT_UI)))
+	{
+		setProbePoint(&probeInfo);
+		INIT_LOG;
+		APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveControl");
+		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
+		APPEND_LOG_CONTROL_OSP(this);
+		APPEND_LOG_CONTROL_OSP(pcontrol);
+	}
 	probeBlockEnd();
 
 	ret = (this->*container_removecontrolip)(index);
@@ -288,7 +302,8 @@ result Container::RemoveControl(int index)
 	probeBlockStart();
 	if(ret == E_SUCCESS)
 	{
-		printLog(&log, MSG_LOG);
+		if(bOption)
+			printLog(&log, MSG_LOG);
 	}
 	probeBlockEnd();
 
@@ -304,15 +319,17 @@ void Container::RemoveAllControls(void)
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container17RemoveAllControlsEv, libosp-uifw.so, container_removeallcontrolp);
 
 	probeBlockStart();
-	Control* pcontrol = NULL;
-	setProbePoint(&probeInfo);
-	INIT_LOG;
-	APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveAllControl");
-	APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-
-	APPEND_LOG_CONTROL_OSP(this);
-	APPEND_LOG_CONTROL_OSP(pcontrol);
-	printLog(&log, MSG_LOG);
+	if(isOptionEnabled(OPT_UI))
+	{
+		Control* pcontrol = NULL;
+		setProbePoint(&probeInfo);
+		INIT_LOG;
+		APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveAllControl");
+		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
+		APPEND_LOG_CONTROL_OSP(this);
+		APPEND_LOG_CONTROL_OSP(pcontrol);
+		printLog(&log, MSG_LOG);
+	}
 	probeBlockEnd();
 
 	(this->*container_removeallcontrolp)();

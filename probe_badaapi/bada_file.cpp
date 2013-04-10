@@ -43,6 +43,8 @@ enum FileSeekPosition {
 /**<The end of the file */
 };
 
+static enum DaOptions _sopt = OPT_FILE;
+
 namespace Tizen {
 namespace Io {
 
@@ -166,7 +168,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -241,7 +243,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -315,7 +317,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -386,7 +388,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -460,7 +462,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -530,7 +532,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -602,7 +604,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -669,7 +671,7 @@ result File::Flush(void) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -733,7 +735,7 @@ Tizen::Base::String File::GetName(void) const{
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -800,7 +802,7 @@ result File::Read(Tizen::Base::String& buffer) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -867,7 +869,7 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -933,7 +935,7 @@ int File::Read(void *buffer, int length) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nRead = Tell();
 		preBlockEnd();
@@ -1002,7 +1004,7 @@ result File::Seek(FileSeekPosition position, long offset) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1075,7 +1077,7 @@ int File::Tell(void) const {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1140,7 +1142,7 @@ result File::Truncate(int length) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -1205,7 +1207,7 @@ result File::Write(const void *buffer, int length) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nWritten = Tell();
 		preBlockEnd();
@@ -1272,7 +1274,7 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nWritten = Tell();
 		preBlockEnd();
@@ -1339,7 +1341,7 @@ result File::Write(const Tizen::Base::String& buffer) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nWritten = Tell();
 		preBlockEnd();
@@ -1403,7 +1405,7 @@ File::~File(void) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering)) != 0) {
+	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}

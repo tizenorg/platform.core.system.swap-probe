@@ -86,7 +86,7 @@ extern "C"{
 		gTraceInfo.screenshot.state = -1;						\
 		pthread_mutex_unlock(&(gTraceInfo.screenshot.ssMutex));	\
 		if(old > 0) {											\
-			if(isEnableSnapshot())								\
+			if(isOptionEnabled(OPT_SNAPSHOT))					\
 				captureScreen();								\
 		}														\
 	} while(0)
@@ -107,7 +107,7 @@ extern "C"{
 			gTraceInfo.screenshot.state = 1;					\
 		pthread_mutex_unlock(&(gTraceInfo.screenshot.ssMutex));	\
 		if(old == 2) {											\
-			if(isEnableSnapshot())								\
+			if(isOptionEnabled(OPT_SNAPSHOT))					\
 				captureScreen();								\
 		}														\
 	} while(0)
@@ -135,7 +135,7 @@ extern "C"{
 		if(old == 1) {											\
 			activateCaptureTimer();								\
 		} else if(old == 2) {									\
-			if(isEnableSnapshot())								\
+			if(isOptionEnabled(OPT_SNAPSHOT))					\
 				captureScreen();								\
 		}														\
 	} while(0)
@@ -181,18 +181,17 @@ typedef struct
 	int					stateTouch;
 	int					init_complete;
 	int					custom_chart_callback_count;
-	long*				pprobeflag;
+	unsigned long		optionflag;
 } __traceInfo;
 
 extern __thread unsigned long	gSTrace;
 extern __traceInfo gTraceInfo;
 
-int __atSharedMemory();
-int __dtSharedMemory();
-
 char** da_backtrace_symbols (void* const* array, int size);
 char** cached_backtrace_symbols (void* const* array, int size);
-int update_heap_memory_size(bool isAdd, size_t size);
+
+// profil turned on
+int __profil(int mode);
 
 //wchar_t* -> char*
 void WcharToChar(char* pstrDest, const wchar_t* pwstrSrc);
@@ -212,6 +211,9 @@ void orientationEnabled();
 void on_orientation_changed(int angle, bool capi);
 
 int remove_indir(const char* dirname);
+
+// query functions
+#define isOptionEnabled(OPT)	((gTraceInfo.optionflag & OPT) != 0)
 
 #ifdef __cplusplus
 }

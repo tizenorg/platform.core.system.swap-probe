@@ -36,6 +36,8 @@
 #include "dahelper.h"
 #include "da_sync.h"
 
+static enum DaOptions _sopt = OPT_THREAD;
+
 int pthread_mutex_init(pthread_mutex_t *mutex, 
 		const pthread_mutexattr_t *attr) {
 	static int (*pthread_mutex_initp)(pthread_mutex_t *mutex,

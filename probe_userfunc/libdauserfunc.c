@@ -69,6 +69,7 @@ void *custom_cb_addr = (void*)-1;
 extern __thread unsigned long gSTrace;
 
 volatile int profil_turned_on = 0;
+volatile int profil_thread_on = 0;
 u_long low_pc, high_pc;
 
 typedef struct elapsed_time_t {
@@ -229,7 +230,7 @@ void *profil_log_func(void *data)
 
 	INIT_LOG;
 
-	while(profil_turned_on)
+	while(profil_thread_on)
 	{
 		while(!IS_EMPTY_SAMPLE_ARRAY)
 		{
@@ -268,7 +269,6 @@ void __cyg_profile_func_enter(void *this, void *callsite)
 				char **strings = BACKTRACE_SYMBOLS(&callsite, 1);
 				if(likely(strings != NULL))
 				{
-					printf("%s\n\n", strings[0]);
 					if(strstr(strings[0], CUSTOM_CB_FUNC_NAME) != NULL)
 					{
 						custom_cb_addr = callsite;
@@ -324,7 +324,6 @@ void __cyg_profile_func_exit(void *this, void *callsite)
 				char **strings = BACKTRACE_SYMBOLS(&callsite, 1);
 				if(likely(strings != NULL))
 				{
-					printf("%s\n\n", strings[0]);
 					if(strstr(strings[0], CUSTOM_CB_FUNC_NAME) != NULL)
 					{
 						custom_cb_addr = callsite;
@@ -455,6 +454,7 @@ static void profil_counter(int signo, const struct sigcontext scp)
 static void profil_counter(int signr, siginfo_t *si, struct ucontext *uctx)
 {
 	profil_count((void *) GET_PC(uctx));
+
 	/* This is a hack to prevent the compiler from implementing the
 	   above function call as a sibcall. The sibcall would overwrite
 	   the signal context */
@@ -504,6 +504,7 @@ int __profil(int mode)
 		profil_turned_on = 0;
 		return sigaction(SIGPROF, &oact, NULL);
 	}
+
 	if(profil_turned_on == 1)
 	{
 		if(setitimer(ITIMER_PROF, &otimer, NULL) < 0
@@ -511,7 +512,6 @@ int __profil(int mode)
 		{
 			return -1;
 		}
-
 	}
 	profil_turned_on = 1;
 
@@ -537,8 +537,8 @@ void __monstartup(u_long lowpc, u_long highpc)
 	high_pc = highpc;
 
 	pthread_mutex_init(&profil_log_mutex, NULL);
-	__profil(1);
 	probeBlockStart();
+	profil_thread_on = 1;
 	if(pthread_create(&profil_log_thread, NULL, &profil_log_func, NULL) < 0)
 	{
 		perror("Fail to create profil_log thread");
@@ -550,6 +550,7 @@ void __monstartup(u_long lowpc, u_long highpc)
 void _mcleanup(void)
 {
 	__profil(0);
+	profil_thread_on = 0;
 	return;
 }
 

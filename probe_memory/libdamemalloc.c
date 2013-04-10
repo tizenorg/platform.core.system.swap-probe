@@ -42,8 +42,10 @@
 #include "da_memory.h"
 
 #define EXTRA_MEM_SIZE		20
-#define MEMORYFILTERING		(!isEnableInternalMalloc())
+//#define INTERNALFILTERING		(!isEnableInternalMalloc())
+#define INTERNALFILTERING		true
 static char extra_mem[EXTRA_MEM_SIZE];
+static enum DaOptions _sopt = OPT_ALLOC;
 
 void *malloc(size_t size)
 {
@@ -53,7 +55,7 @@ void *malloc(size_t size)
 
 	GET_REAL_FUNC_RTLD_NEXT(malloc);
 
-	bfiltering = MEMORYFILTERING;
+	bfiltering = INTERNALFILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = mallocp(size);
@@ -78,7 +80,7 @@ void free(void *ptr)
 
 	GET_REAL_FUNC_RTLD_NEXT(free);
 
-	bfiltering = MEMORYFILTERING;
+	bfiltering = INTERNALFILTERING;
 	PRE_PROBEBLOCK();
 
 	if(ptr != NULL && getTraceState() == 0)
@@ -132,7 +134,7 @@ void *calloc(size_t nelem, size_t elsize)
 		probeBlockEnd();
 	}
 
-	bfiltering = MEMORYFILTERING;
+	bfiltering = INTERNALFILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = callocp(nelem, elsize);
@@ -158,7 +160,7 @@ void *realloc(void *memblock, size_t size)
 
 	GET_REAL_FUNC_RTLD_NEXT(realloc);
 
-	bfiltering = MEMORYFILTERING;
+	bfiltering = INTERNALFILTERING;
 	PRE_PROBEBLOCK();
 
 	if(memblock != NULL && getTraceState() == 0)

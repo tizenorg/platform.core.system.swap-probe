@@ -46,6 +46,8 @@
 #include "dautil.h"
 #include "da_socket.h"
 
+static enum DaOptions _sopt = OPT_FILE;
+
 int socket(int domain, int type, int protocol)
 {
 	static int (*socketp)(int domain, int type, int protocol);

@@ -1,6 +1,6 @@
 Name:       dynamic-analysis-probe
 Summary:    dynamic analyzer probe library
-Version:    2.1.0
+Version:    2.1.1
 Release:    1
 Group:      System/Libraries
 License:	GNU Lesser General Public License, Version 2.1

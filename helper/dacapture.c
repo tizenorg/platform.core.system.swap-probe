@@ -403,7 +403,6 @@ int finalize_screencapture()
 static Eina_Bool _captureTimer(void* data)
 {
 	probeBlockStart();
-//	PRINTMSG("_captureTimer");
 	SCREENSHOT_DONE();
 	probeBlockEnd();
 
@@ -419,7 +418,6 @@ int activateCaptureTimer()
 void _cb_render_post(void* data, Evas* e, void* eventinfo)
 {
 	probeBlockStart();
-//	PRINTMSG("_cb_render_post");
 	SCREENSHOT_DONE();
 	probeBlockEnd();
 }

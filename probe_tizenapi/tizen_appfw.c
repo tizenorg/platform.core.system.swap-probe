@@ -50,6 +50,7 @@ app_event_callback_s gAppCallback;
 	} while(0);																\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
+static enum DaOptions _sopt = OPT_ALWAYSON;
 
 static bool _dalc_app_create(void* user_data)
 {
