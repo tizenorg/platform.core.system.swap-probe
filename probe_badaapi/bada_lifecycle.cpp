@@ -84,7 +84,7 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 	result ret;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp7ExecuteEPFPS1_vEPKNS_4Base10Collection5IListE,
-		libosp-uifw.so, uiapp_executep);
+		LIBOSP_UIFW, uiapp_executep);
 
 	probeBlockStart();
 	LIFECYCLE_PROBE_BLOCK("INITIALIZING");
@@ -101,7 +101,7 @@ void _AppImpl::OnTerminate(void* user_data)
 	static methodType appimpl_onterminatep;
 	DECLARE_COMMON_VARIABLE;
 	
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppImpl11OnTerminateEPv, libosp-appfw.so, appimpl_onterminatep);
+	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppImpl11OnTerminateEPv, LIBOSP_APPFW, appimpl_onterminatep);
 
 	probeBlockStart();
 	LIFECYCLE_PROBE_BLOCK("TERMINATING");
@@ -116,7 +116,7 @@ void _AppImpl::OnDeviceOrientationChanged(app_device_orientation_e orientation, 
 	static methodType appimpl_ondeviceorientationchangedp;
 	
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppImpl26OnDeviceOrientationChangedE24app_device_orientation_ePv,
-			libosp-appfw.so, appimpl_ondeviceorientationchangedp);
+			LIBOSP_APPFW, appimpl_ondeviceorientationchangedp);
 
 	probeBlockStart();
 	on_orientation_changed((int)orientation, false);
@@ -131,7 +131,7 @@ void _AppInfo::SetAppState(AppState appState)
 	static methodType appinfo_setappstatep;
 	DECLARE_COMMON_VARIABLE;
 	
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppInfo11SetAppStateENS0_8AppStateE, libosp-appfw.so, appinfo_setappstatep);
+	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppInfo11SetAppStateENS0_8AppStateE, LIBOSP_APPFW, appinfo_setappstatep);
 
 	probeBlockStart();
 	if(appState == RUNNING)
@@ -149,7 +149,7 @@ void _UiAppImpl::OnBackground(void)
 	static methodType uiappimpl_onbackgroundp;
 	DECLARE_COMMON_VARIABLE;
 	
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnBackgroundEv, libosp-uifw.so, uiappimpl_onbackgroundp);
+	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnBackgroundEv, LIBOSP_UIFW, uiappimpl_onbackgroundp);
 
 	probeBlockStart();
 	SCREENSHOT_LOCK();
@@ -165,7 +165,7 @@ void _UiAppImpl::OnForeground(void)
 	static methodType uiappimpl_onforegroundp;
 	DECLARE_COMMON_VARIABLE;
 	
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnForegroundEv, libosp-uifw.so, uiappimpl_onforegroundp);
+	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnForegroundEv, LIBOSP_UIFW, uiappimpl_onforegroundp);
 
 	probeBlockStart();
 	LIFECYCLE_PROBE_BLOCK("RUNNING");
@@ -183,7 +183,7 @@ void _UiAppImpl::OnDeviceOrientationChanged(app_device_orientation_e orientation
 	static methodType uiappimpl_ondeviceorientationchangedp;
 	
 	GET_REAL_FUNC_OSP(_ZThn4_N5Tizen3App10_UiAppImpl26OnDeviceOrientationChangedE24app_device_orientation_e,
-			libosp-uifw.so, uiappimpl_ondeviceorientationchangedp);
+			LIBOSP_UIFW, uiappimpl_ondeviceorientationchangedp);
 
 	probeBlockStart();
 	on_orientation_changed((int)orientation, false);

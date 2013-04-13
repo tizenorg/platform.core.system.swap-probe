@@ -118,19 +118,21 @@ result Mutex::Create(void) {
 
 	if (!Createp) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime5Mutex6CreateEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime5Mutex6CreateEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Mutex::Create");
 			exit(0);
 		}
 
-		memcpy(&Createp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Createp, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -180,19 +182,21 @@ result Mutex::Create(const Tizen::Base::String& name) {
 
 	if (!Createp) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime5Mutex6CreateERKNS0_6StringE");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime5Mutex6CreateERKNS0_6StringE");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Mutex::Create");
 			exit(0);
 		}
 
-		memcpy(&Createp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Createp, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -242,19 +246,21 @@ result Mutex::Release(void) {
 
 	if (!Releasep) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime5Mutex7ReleaseEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime5Mutex7ReleaseEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Mutex::Release");
 			exit(0);
 		}
 
-		memcpy(&Releasep, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Releasep, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -303,19 +309,21 @@ result Mutex::Acquire(void) {
 
 	if (!Acquirep) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime5Mutex7AcquireEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime5Mutex7AcquireEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Mutex::Acquire");
 			exit(0);
 		}
 
-		memcpy(&Acquirep, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Acquirep, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -383,19 +391,21 @@ result Mutex::TryToAcquire(void) {
 
 	if (!TryToAcquirep) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime5Mutex12TryToAcquireEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime5Mutex12TryToAcquireEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Mutex::TryToAcquire");
 			exit(0);
 		}
 
-		memcpy(&TryToAcquirep, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&TryToAcquirep, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -445,19 +455,21 @@ result Semaphore::Create(int count) {
 
 	if (!Createp) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime9Semaphore6CreateEi");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime9Semaphore6CreateEi");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Semaphore::Create");
 			exit(0);
 		}
 
-		memcpy(&Createp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Createp, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -507,19 +519,21 @@ result Semaphore::Create(const Tizen::Base::String& name, int count) {
 
 	if (!Createp) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime9Semaphore6CreateERKNS0_6StringEi");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime9Semaphore6CreateERKNS0_6StringEi");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Semaphore::Create");
 			exit(0);
 		}
 
-		memcpy(&Createp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Createp, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -570,19 +584,21 @@ result Semaphore::Acquire(long timeout) {
 
 	if (!Acquirep) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime9Semaphore7AcquireEl");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime9Semaphore7AcquireEl");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Semaphore::Acquire");
 			exit(0);
 		}
 
-		memcpy(&Acquirep, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Acquirep, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -650,19 +666,21 @@ result Semaphore::TryToAcquire(void) {
 
 	if (!TryToAcquirep) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime9Semaphore12TryToAcquireEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime9Semaphore12TryToAcquireEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Semaphore::TryToAcquire");
 			exit(0);
 		}
 
-		memcpy(&TryToAcquirep, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&TryToAcquirep, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -711,19 +729,21 @@ result Semaphore::Release(void) {
 
 	if (!Releasep) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime9Semaphore7ReleaseEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime9Semaphore7ReleaseEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Semaphore::Release");
 			exit(0);
 		}
 
-		memcpy(&Releasep, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Releasep, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -773,19 +793,21 @@ result Monitor::Construct(void) {
 
 	if (!Constructp) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime7Monitor9ConstructEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime7Monitor9ConstructEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Monitor::Construct");
 			exit(0);
 		}
 
-		memcpy(&Constructp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Constructp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -833,19 +855,21 @@ result Monitor::Enter(void) {
 
 	if (!Enterp) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime7Monitor5EnterEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime7Monitor5EnterEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Monitor::Enter");
 			exit(0);
 		}
 
-		memcpy(&Enterp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Enterp, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -913,19 +937,21 @@ result Monitor::Exit(void) {
 
 	if (!Exitp) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime7Monitor4ExitEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime7Monitor4ExitEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Monitor::Exit");
 			exit(0);
 		}
 
-		memcpy(&Exitp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Exitp, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -974,19 +1000,21 @@ result Monitor::Wait(void) {
 
 	if (!Waitp) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime7Monitor4WaitEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime7Monitor4WaitEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Monitor::Wait");
 			exit(0);
 		}
 
-		memcpy(&Waitp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Waitp, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -1054,19 +1082,21 @@ result Monitor::Notify(void) {
 
 	if (!Notifyp) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime7Monitor6NotifyEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime7Monitor6NotifyEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Monitor::Notify");
 			exit(0);
 		}
 
-		memcpy(&Notifyp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Notifyp, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -1115,19 +1145,21 @@ result Monitor::NotifyAll(void) {
 
 	if (!NotifyAllp) {
 		probeBlockStart();
-		void* lib_handle = dlopen("libosp-appfw.so", RTLD_LAZY);
-		if (lib_handle == NULL) {
-			perror("dlopen failed : libosp-appfw.so");
-			exit(0);
+		if(lib_handle[LIBOSP_APPFW] == NULL) {
+			lib_handle[LIBOSP_APPFW] = dlopen(lib_string[LIBOSP_APPFW], RTLD_LAZY);
+			if (lib_handle[LIBOSP_APPFW] == NULL) {
+				perror("dlopen failed : libosp-appfw.so");
+				exit(0);
+			}
 		}
-		tmpPtr = dlsym(lib_handle, "_ZN5Tizen4Base7Runtime7Monitor9NotifyAllEv");
+		tmpPtr = dlsym(lib_handle[LIBOSP_APPFW], "_ZN5Tizen4Base7Runtime7Monitor9NotifyAllEv");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Base::Runtime::Monitor::NotifyAll");
 			exit(0);
 		}
 
-		memcpy(&NotifyAllp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&NotifyAllp, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}

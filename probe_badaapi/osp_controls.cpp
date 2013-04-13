@@ -70,7 +70,7 @@ result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 	DECLARE_COMMON_VARIABLE;
 	result ret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp8AddFrameERKNS_2Ui8Controls5FrameE, libosp-uifw.so, uiapp_addframep);
+	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp8AddFrameERKNS_2Ui8Controls5FrameE, LIBOSP_UIFW, uiapp_addframep);
 
 	ret = (this->*uiapp_addframep)(frame);
 
@@ -104,7 +104,7 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 	result ret;
 	bool bOption;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp11RemoveFrameERKNS_2Ui8Controls5FrameE, libosp-uifw.so, uiapp_removeframep);
+	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp11RemoveFrameERKNS_2Ui8Controls5FrameE, LIBOSP_UIFW, uiapp_removeframep);
 
 	probeBlockStart();
 	frame.IsInTouchMode();
@@ -144,7 +144,7 @@ bool Control::IsInTouchMode(void) const
 	typedef bool (Control::*methodType)(void) const;
 	static methodType control_isintouchmodep;
 
-	GET_REAL_FUNC_OSP(_ZNK5Tizen2Ui7Control13IsInTouchModeEv, libosp-uifw.so, control_isintouchmodep);
+	GET_REAL_FUNC_OSP(_ZNK5Tizen2Ui7Control13IsInTouchModeEv, LIBOSP_UIFW, control_isintouchmodep);
 
 	probeBlockStart();
 	add_object_hash_class((void*)(this), typeid(*this).name());
@@ -159,7 +159,7 @@ void Control::SetName(const Tizen::Base::String &name)
 	static methodType control_setnamep;
 	DECLARE_COMMON_VARIABLE;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui7Control7SetNameERKNS_4Base6StringE, libosp-uifw.so, control_setnamep);
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui7Control7SetNameERKNS_4Base6StringE, LIBOSP_UIFW, control_setnamep);
 
 	(this->*control_setnamep)(name);
 
@@ -187,7 +187,7 @@ result Container::AddControl(const Control &control)
 	DECLARE_COMMON_VARIABLE;
 	result ret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container10AddControlERKNS0_7ControlE, libosp-uifw.so, container_addcontrolp);
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container10AddControlERKNS0_7ControlE, LIBOSP_UIFW, container_addcontrolp);
 
 	probeBlockStart();
 	if(unlikely(IsRegisteredFrameAnimatorEventListener == false))
@@ -243,7 +243,7 @@ result Container::RemoveControl(const Control &control)
 	result ret;
 	bool bOption;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container13RemoveControlERKNS0_7ControlE, libosp-uifw.so, container_removecontrolp);
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container13RemoveControlERKNS0_7ControlE, LIBOSP_UIFW, container_removecontrolp);
 
 	probeBlockStart();
 	control.IsInTouchMode();
@@ -280,7 +280,7 @@ result Container::RemoveControl(int index)
 	result ret;
 	bool bOption;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container13RemoveControlEi, libosp-uifw.so, container_removecontrolip);
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container13RemoveControlEi, LIBOSP_UIFW, container_removecontrolip);
 
 	probeBlockStart();
 	Control* pcontrol = GetControl(index);
@@ -316,7 +316,7 @@ void Container::RemoveAllControls(void)
 	static methodType container_removeallcontrolp;
 	DECLARE_COMMON_VARIABLE;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container17RemoveAllControlsEv, libosp-uifw.so, container_removeallcontrolp);
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container17RemoveAllControlsEv, LIBOSP_UIFW, container_removeallcontrolp);
 
 	probeBlockStart();
 	if(isOptionEnabled(OPT_UI))

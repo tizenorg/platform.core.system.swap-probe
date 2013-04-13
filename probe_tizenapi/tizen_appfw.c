@@ -133,7 +133,7 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 	static int (*app_efl_mainp)(int* argc, char*** argv, app_event_callback_s* callback, void* user_data);
 	int ret;
 
-	GET_REAL_FUNC(app_efl_main, libcapi-appfw-application.so.0);
+	GET_REAL_FUNC(app_efl_main, LIBCAPI_APPFW_APPLICATION);
 
 	gAppCallback.create = callback->create;
 	gAppCallback.terminate = callback->terminate;

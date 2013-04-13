@@ -50,8 +50,6 @@
 
 bool touch_pressed = false;
 
-#define LIBECOREINPUT libecore_input_evas.so.1
-
 #define HW_EVENT_LOG(_EVENTTYPE, _DETAILTYPE, _X, _Y, _KEYCODE, _EXTRA)			\
 	setProbePoint(&probeInfo);													\
 	INIT_LOG;																	\
@@ -66,7 +64,7 @@ Eina_Bool ecore_event_evas_key_down(void *data, int type, void *event)
 	static Eina_Bool (*ecore_event_evas_key_downp)(void *data, int type, void *event);
 	DECLARE_COMMON_VARIABLE;
 
-	GET_REAL_FUNC(ecore_event_evas_key_down, LIBECOREINPUT);
+	GET_REAL_FUNC(ecore_event_evas_key_down, LIBECORE_INPUT_EVAS);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -90,7 +88,7 @@ Eina_Bool ecore_event_evas_key_up(void *data, int type, void *event)
 	static Eina_Bool (*ecore_event_evas_key_upp)(void *data, int type, void *event);
 	DECLARE_COMMON_VARIABLE;
 
-	GET_REAL_FUNC(ecore_event_evas_key_up, LIBECOREINPUT);
+	GET_REAL_FUNC(ecore_event_evas_key_up, LIBECORE_INPUT_EVAS);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -114,7 +112,7 @@ Eina_Bool ecore_event_evas_mouse_button_down(void *data, int type, void *event)
 	static Eina_Bool (*ecore_event_evas_mouse_button_downp)(void *data, int type, void *event);
 	DECLARE_COMMON_VARIABLE;
 
-	GET_REAL_FUNC(ecore_event_evas_mouse_button_down, LIBECOREINPUT);
+	GET_REAL_FUNC(ecore_event_evas_mouse_button_down, LIBECORE_INPUT_EVAS);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -136,7 +134,7 @@ Eina_Bool ecore_event_evas_mouse_button_up(void *data, int type, void *event)
 	static Eina_Bool (*ecore_event_evas_mouse_button_upp)(void *data, int type, void *event);
 	DECLARE_COMMON_VARIABLE;
 
-	GET_REAL_FUNC(ecore_event_evas_mouse_button_up, LIBECOREINPUT);
+	GET_REAL_FUNC(ecore_event_evas_mouse_button_up, LIBECORE_INPUT_EVAS);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -158,7 +156,7 @@ Eina_Bool ecore_event_evas_mouse_move(void *data, int type, void *event)
 	static Eina_Bool (*ecore_event_evas_mouse_movep)(void *data, int type, void *event);
 	DECLARE_COMMON_VARIABLE;
 
-	GET_REAL_FUNC(ecore_event_evas_mouse_move, LIBECOREINPUT);
+	GET_REAL_FUNC(ecore_event_evas_mouse_move, LIBECORE_INPUT_EVAS);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{

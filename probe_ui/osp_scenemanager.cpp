@@ -149,7 +149,7 @@ SceneManager* SceneManager::GetInstance(void)
 	static int initialized = 0;
 	SceneManager* ret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui6Scenes12SceneManager11GetInstanceEv, libosp-uifw.so, scenemanager_getinstancep);
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui6Scenes12SceneManager11GetInstanceEv, LIBOSP_UIFW, scenemanager_getinstancep);
 
 	ret = scenemanager_getinstancep();
 

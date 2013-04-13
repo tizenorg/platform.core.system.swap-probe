@@ -161,16 +161,10 @@ static int createSocket(void)
 // return 0 if caller is user binary, otherwise return 1
 static int determineCaller(char* tracestring)
 {
-	char *apppath, *substr;
+	char *substr;
 
 	// determine whether saveptr (caller binary name) is user binary or not
-//	apppath = getenv("APP_PATH");
-	apppath = NULL;
-
-	if(apppath == NULL)
-		substr = strstr(tracestring, APP_INSTALL_PATH);
-	else
-		substr = strstr(tracestring, apppath);
+	substr = strstr(tracestring, APP_INSTALL_PATH);
 
 	if(substr == NULL)	// not user binary
 		return 1;
@@ -350,6 +344,7 @@ void __attribute__((constructor)) _init_probe()
 
 void __attribute__((destructor)) _fini_probe()
 {
+	int i;
 	TRACE_STATE_SET(TS_FINIT);
 
 	gTraceInfo.init_complete = -1;
@@ -374,6 +369,14 @@ void __attribute__((destructor)) _fini_probe()
 	finalize_screencapture();
 
 	finalize_hash_table();
+
+	for(i = 0; i < NUM_ORIGINAL_LIBRARY; i++)
+	{
+		if(lib_handle[i] != NULL)
+		{
+			dlclose(lib_handle[i]);
+		}
+	}
 
 	TRACE_STATE_UNSET(TS_FINIT);
 }
@@ -832,8 +835,8 @@ bool setProbePoint(probeInfo_t* iProbe)
 	return true;
 }
 
-// update heap memory size though socket
-// return 0 if size is updated though socket
+// update heap memory size through socket
+// return 0 if size is updated through socket
 // return 1 if size is updated into global variable
 int update_heap_memory_size(bool isAdd, size_t size)
 {

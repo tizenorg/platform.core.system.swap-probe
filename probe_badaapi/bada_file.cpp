@@ -164,7 +164,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 			exit(0);
 		}
 
-		memcpy(&Constructp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Constructp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -239,7 +239,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 			exit(0);
 		}
 
-		memcpy(&Constructp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Constructp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -313,7 +313,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 			exit(0);
 		}
 
-		memcpy(&Constructp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Constructp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -384,7 +384,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 			exit(0);
 		}
 
-		memcpy(&Constructp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Constructp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -458,7 +458,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 			exit(0);
 		}
 
-		memcpy(&Constructp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Constructp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -528,7 +528,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 			exit(0);
 		}
 
-		memcpy(&Constructp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Constructp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -600,7 +600,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 			exit(0);
 		}
 
-		memcpy(&Constructp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Constructp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -667,7 +667,7 @@ result File::Flush(void) {
 			exit(0);
 		}
 
-		memcpy(&Flushp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Flushp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -731,7 +731,7 @@ Tizen::Base::String File::GetName(void) const{
 			exit(0);
 		}
 
-		memcpy(&GetNamep, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&GetNamep, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -798,7 +798,7 @@ result File::Read(Tizen::Base::String& buffer) {
 			exit(0);
 		}
 
-		memcpy(&Readp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Readp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -865,7 +865,7 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 			exit(0);
 		}
 
-		memcpy(&Readp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Readp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -931,7 +931,7 @@ int File::Read(void *buffer, int length) {
 			exit(0);
 		}
 
-		memcpy(&Readp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Readp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -999,7 +999,7 @@ result File::Seek(FileSeekPosition position, long offset) {
 			exit(0);
 		}
 
-		memcpy(&Seekp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Seekp, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -1072,7 +1072,7 @@ int File::Tell(void) const {
 			exit(0);
 		}
 
-		memcpy(&Tellp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Tellp, &tmpPtr, sizeof(tmpPtr));
 
 		probeBlockEnd();
 	}
@@ -1138,7 +1138,7 @@ result File::Truncate(int length) {
 			exit(0);
 		}
 
-		memcpy(&Truncatep, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Truncatep, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -1203,7 +1203,7 @@ result File::Write(const void *buffer, int length) {
 			exit(0);
 		}
 
-		memcpy(&Writep, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Writep, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -1270,7 +1270,7 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 			exit(0);
 		}
 
-		memcpy(&Writep, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Writep, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -1337,7 +1337,7 @@ result File::Write(const Tizen::Base::String& buffer) {
 			exit(0);
 		}
 
-		memcpy(&Writep, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&Writep, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -1401,7 +1401,7 @@ File::~File(void) {
 			exit(0);
 		}
 
-		memcpy(&FileDp, &tmpPtr, sizeof(&tmpPtr));
+		memcpy(&FileDp, &tmpPtr, sizeof(tmpPtr));
 		probeBlockEnd();
 	}
 
@@ -1500,7 +1500,7 @@ File::~File(void) {
 //				exit(0);
 //			}
 //
-//			memcpy(&GetFileNamep, &tmpPtr, sizeof(&tmpPtr));
+//			memcpy(&GetFileNamep, &tmpPtr, sizeof(tmpPtr));
 //			probeBlockEnd();
 //		}
 //	ret = (File::(*GetFileNamep))(filePath);

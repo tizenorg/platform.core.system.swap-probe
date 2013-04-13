@@ -128,7 +128,9 @@
 #define AFTER_ORIGINAL_FILEP_RET(RTYPE, RVAL, SIZE, FILEP, APITYPE, INPUTFORMAT, ...)	\
 	POST_PROBEBLOCK_BEGIN(LC_RESOURCE, RTYPE, RVAL,	INPUTFORMAT, __VA_ARGS__);			\
 	GET_FD_FROM_FILEP(FILEP);															\
-	_fstatret = fstat(_fd, &_statbuf);													\
+	if(_fd != -1) { 																	\
+		_fstatret = fstat(_fd, &_statbuf);												\
+	}																					\
 	if(_fstatret != 0) PRINTMSG("ERROR : fstat error\n");								\
 	POST_PROBEBLOCK_MIDDLE_FD(SIZE, _fd, APITYPE);										\
 	POST_PROBEBLOCK_CALLSTACK_RESOURCE(APITYPE);										\

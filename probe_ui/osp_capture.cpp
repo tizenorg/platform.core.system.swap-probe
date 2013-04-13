@@ -237,7 +237,7 @@ void _EcoreEvasMgr::SetEcoreEvas(const _EcoreEvas& ecoreevas)
 	static methodType _ecoreevasmgr_setecoreevasp;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui13_EcoreEvasMgr12SetEcoreEvasERKNS0_10_EcoreEvasE,
-			libosp-uifw.so, _ecoreevasmgr_setecoreevasp);
+			LIBOSP_UIFW, _ecoreevasmgr_setecoreevasp);
 
 	probeBlockStart();
 	evas_event_callback_add(ecoreevas.GetEvas(),
@@ -255,7 +255,7 @@ result Control::SetShowState(bool state)
 	result ret;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui7Control12SetShowStateEb,
-			libosp-uifw.so, control_setshowstatep);
+			LIBOSP_UIFW, control_setshowstatep);
 
 	ret = (this->*control_setshowstatep)(state);
 
@@ -293,7 +293,7 @@ result Frame::SetCurrentForm(const Form& form)
 	result ret;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls5Frame14SetCurrentFormERKNS1_4FormE,
-			libosp-uifw.so, frame_setcurrentformp);
+			LIBOSP_UIFW, frame_setcurrentformp);
 
 	ret = (this->*frame_setcurrentformp)(form);
 
@@ -316,7 +316,7 @@ result FrameAnimator::SetCurrentForm(const Tizen::Ui::Controls::Form& form)
 	result ret;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations13FrameAnimator14SetCurrentFormERKNS0_8Controls4FormE,
-			libosp-uifw.so, frameanimator_setcurrentformp);
+			LIBOSP_UIFW, frameanimator_setcurrentformp);
 
 	ret = (this->*frameanimator_setcurrentformp)(form);
 

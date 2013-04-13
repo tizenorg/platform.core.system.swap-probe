@@ -48,6 +48,7 @@ extern "C"{
 
 #define NUM_OF_MONITOR		3
 #define DA_LOG_MAX			4096
+#define PERROR_MSG_MAX		128
 
 #define DEFAULT_TOKEN	"`,"
 
@@ -158,12 +159,16 @@ int getBacktraceString(log_t* log, int bufsize);
 		do {														\
 			if(!FUNCTIONPOINTER) {									\
 				probeBlockStart();									\
-				void* lib_handle = dlopen(#SONAME, RTLD_LAZY);		\
-				if(lib_handle == NULL) {							\
-					perror("dlopen failed : " #SONAME );			\
-					exit(0);										\
+				if(lib_handle[SONAME] == NULL) {					\
+					lib_handle[SONAME] = dlopen(lib_string[SONAME], RTLD_LAZY);			\
+					if(lib_handle[SONAME] == NULL) {				\
+						char perror_msg[PERROR_MSG_MAX];			\
+						sprintf(perror_msg, "dlopen failed : %s", lib_string[SONAME]);	\
+						perror(perror_msg);							\
+						exit(0);									\
+					}												\
 				}													\
-				FUNCTIONPOINTER = dlsym(lib_handle, #FUNCNAME);		\
+				FUNCTIONPOINTER = dlsym(lib_handle[SONAME], #FUNCNAME);		\
 				if(FUNCTIONPOINTER == NULL || dlerror() != NULL) {	\
 					perror("dlsym failed : " #FUNCNAME);			\
 					exit(0);										\

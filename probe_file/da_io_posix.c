@@ -34,6 +34,7 @@
 #include "daprobe.h"
 #include "probeinfo.h"
 #include "dautil.h"
+#include "dahelper.h"
 #include "da_io.h"
 
 #include <fcntl.h>
@@ -54,7 +55,7 @@ int open(const char* path, int oflag, ...)
 	static int (*openp)(const char* path, int oflag, ...);
 	int mode = 0;
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(open, libc.so.6);
+	BEFORE_ORIGINAL_FILE_NOFILTER(open, LIBC);
 	_filepath = (char*)path;
 
 	if(oflag & O_CREAT)
@@ -77,7 +78,7 @@ int openat(int fd, const char* path, int oflag, ...)
 	static int (*openatp)(int fd, const char* path, int oflag, ...);
 	int mode = 0;
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(openat, libc.so.6);
+	BEFORE_ORIGINAL_FILE_NOFILTER(openat, LIBC);
 	_filepath = (char*)path;
 
 	if(oflag & O_CREAT)
@@ -99,7 +100,7 @@ int creat(const char* path, mode_t mode)
 {
 	static int (*creatp)(const char* path, mode_t mode);
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(creat, libc.so.6);
+	BEFORE_ORIGINAL_FILE_NOFILTER(creat, LIBC);
 	_filepath = (char*)path;
 
 	ret = creatp(path, mode);
@@ -114,7 +115,7 @@ int close(int fd)
 	static int (*closep)(int fd);
 	DECLARE_VARIABLE_FD;
 
-	GET_REAL_FUNC(close, libc.so.6);
+	GET_REAL_FUNC(close, LIBC);
 
 	bfiltering = false;
 	PRE_PROBEBLOCK_BEGIN();
@@ -135,7 +136,7 @@ int access(const char *path, int amode)
 {
 	static int (*accessp)(const char *path, int amode);
 
-	BEFORE_ORIGINAL_FILE(access, libc.so.6);
+	BEFORE_ORIGINAL_FILE(access, LIBC);
 	_filepath = (char*)path;
 
 	ret = accessp(path, amode);
@@ -149,7 +150,7 @@ int faccessat(int fd, const char *path, int amode, int flag)
 {
 	static int (*faccessatp)(int fd, const char *path, int amode, int flag);
 
-	BEFORE_ORIGINAL_FILE(faccessat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(faccessat, LIBC);
 	_filepath = (char*)path;
 
 	ret = faccessatp(fd, path, amode, flag);
@@ -165,7 +166,7 @@ off_t lseek(int fd, off_t offset, int whence)
 	static int (*lseekp)(int fd, off_t offset, int whence);
 	off_t offret;
 
-	BEFORE_ORIGINAL_FILE(lseek, libc.so.6);
+	BEFORE_ORIGINAL_FILE(lseek, LIBC);
 
 	offret = lseekp(fd, offset, whence);
 
@@ -179,7 +180,7 @@ int fsync(int fd)
 {
 	static int (*fsyncp)(int fd);
 
-	BEFORE_ORIGINAL_FILE(fsync, libc.so.6);
+	BEFORE_ORIGINAL_FILE(fsync, LIBC);
 
 	ret = fsyncp(fd);
 
@@ -192,7 +193,7 @@ int fdatasync(int fd)
 {
 	static int (*fdatasyncp)(int fd);
 
-	BEFORE_ORIGINAL_FILE(fdatasync, libc.so.6);
+	BEFORE_ORIGINAL_FILE(fdatasync, LIBC);
 
 	ret = fdatasyncp(fd);
 
@@ -205,7 +206,7 @@ int truncate(const char *path, off_t length)
 {
 	static int (*truncatep)(const char *path, off_t length);
 
-	BEFORE_ORIGINAL_FILE(truncate, libc.so.6);
+	BEFORE_ORIGINAL_FILE(truncate, LIBC);
 	_filepath = (char*)path;
 
 	ret = truncatep(path, length);
@@ -220,7 +221,7 @@ int ftruncate(int fd, off_t length)
 {
 	static int (*ftruncatep)(int fd, off_t length);
 
-	BEFORE_ORIGINAL_FILE(ftruncate, libc.so.6);
+	BEFORE_ORIGINAL_FILE(ftruncate, LIBC);
 
 	ret = ftruncatep(fd, length);
 
@@ -236,7 +237,7 @@ int mkfifo(const char *path, mode_t mode)
 {
 	static int (*mkfifop)(const char *path, mode_t mode);
 
-	BEFORE_ORIGINAL_FILE(mkfifo, libc.so.6);
+	BEFORE_ORIGINAL_FILE(mkfifo, LIBC);
 	_filepath = (char*)path;
 
 	ret = mkfifop(path, mode);
@@ -250,7 +251,7 @@ int mkfifoat(int fd, const char *path, mode_t mode)
 {
 	static int (*mkfifoatp)(int fd, const char *path, mode_t mode);
 
-	BEFORE_ORIGINAL_FILE(mkfifoat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(mkfifoat, LIBC);
 	_filepath = (char*)path;
 
 	ret = mkfifoatp(fd, path, mode);
@@ -265,7 +266,7 @@ int mknod(const char *path, mode_t mode, dev_t dev)
 {
 	static int (*mknodp)(const char *path, mode_t mode, dev_t dev);
 
-	BEFORE_ORIGINAL_FILE(mknod, libc.so.6);
+	BEFORE_ORIGINAL_FILE(mknod, LIBC);
 	_filepath = (char*)path;
 
 	ret = mknodp(path, mode, dev);
@@ -280,7 +281,7 @@ int mknodat(int fd, const char *path, mode_t mode, dev_t dev)
 {
 	static int (*mknodatp)(int fd, const char *path, mode_t mode, dev_t dev);
 
-	BEFORE_ORIGINAL_FILE(mknodat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(mknodat, LIBC);
 	_filepath = (char*)path;
 
 	ret = mknodatp(fd,path, mode,dev);
@@ -299,7 +300,7 @@ int chown(const char *path, uid_t owner, gid_t group)
 {
 	static int (*chownp)(const char *path, uid_t owner, gid_t group);
 
-	BEFORE_ORIGINAL_FILE(chown, libc.so.6);
+	BEFORE_ORIGINAL_FILE(chown, LIBC);
 	_filepath = (char*)path;
 	ret = chownp(path, owner, group);
 	AFTER_ORIGINAL_NOFD(0, FD_API_PERMISSION, "%s, %u, %u", path, owner, group);
@@ -310,7 +311,7 @@ int fchownat(int fd, const char *path, uid_t owner, gid_t group, int flag)
 {
 	static int (*fchownatp)(int fd, const char *path, uid_t owner, gid_t group, int flag);
 
-	BEFORE_ORIGINAL_FILE(fchownat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(fchownat, LIBC);
 	_filepath = (char*)path;
 	ret = fchownatp(fd, path, owner, group, flag);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_PERMISSION,
@@ -322,7 +323,7 @@ int fchown(int fd, uid_t owner, gid_t group)
 {
 	static int (*fchownp)(int fd, uid_t owner, gid_t group);
 
-	BEFORE_ORIGINAL_FILE(fchown, libc.so.6);
+	BEFORE_ORIGINAL_FILE(fchown, LIBC);
 	ret = fchownp(fd, owner, group);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_PERMISSION, "%d, %u, %u", fd, owner, group);
 	return ret;
@@ -332,7 +333,7 @@ int lchown(const char *path, uid_t owner, gid_t group)
 {
 	static int (*lchownp)(const char *path, uid_t owner, gid_t group);
 
-	BEFORE_ORIGINAL_FILE(lchown, libc.so.6);
+	BEFORE_ORIGINAL_FILE(lchown, LIBC);
 	_filepath = (char*)path;
 	ret = lchownp(path, owner, group);
 	AFTER_ORIGINAL_NOFD(0, FD_API_PERMISSION, "%s, %u, %u", path, owner, group);
@@ -343,7 +344,7 @@ int lockf(int fd, int function, off_t size)
 {
 	static int (*lockfp)(int fd, int function, off_t size);
 
-	BEFORE_ORIGINAL_FILE(lockf, libc.so.6);
+	BEFORE_ORIGINAL_FILE(lockf, LIBC);
 	ret = lockfp(fd, function, size);
 	AFTER_ORIGINAL_FD((unsigned int)size, fd, FD_API_PERMISSION,
 			"%d, %d, %ld", fd, function, size);
@@ -354,7 +355,7 @@ int chmod(const char *path, mode_t mode)
 {
 	static int (*chmodp)(const char *path, mode_t mode);
 
-	BEFORE_ORIGINAL_FILE(chmod, libc.so.6);
+	BEFORE_ORIGINAL_FILE(chmod, LIBC);
 	_filepath = (char*)path;
 	ret = chmodp(path, mode);
 	AFTER_ORIGINAL_NOFD(0, FD_API_PERMISSION, "%s, %u", path, mode);
@@ -365,7 +366,7 @@ int fchmodat(int fd, const char *path, mode_t mode, int flag)
 {
 	static int (*fchmodatp)(int fd, const char *path, mode_t mode, int flag);
 
-	BEFORE_ORIGINAL_FILE(fchmodat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(fchmodat, LIBC);
 	_filepath = (char*)path;
 	ret = fchmodatp(fd, path, mode, flag);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_PERMISSION,
@@ -377,7 +378,7 @@ int fchmod(int fd, mode_t mode)
 {
 	static int (*fchmodp)(int fd, mode_t mode);
 
-	BEFORE_ORIGINAL_FILE(fchmod, libc.so.6);
+	BEFORE_ORIGINAL_FILE(fchmod, LIBC);
 	ret = fchmodp(fd, mode);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_PERMISSION, "%d, %u", fd, mode);
 	return ret;
@@ -392,7 +393,7 @@ ssize_t pread(int fd, void *buf, size_t nbyte, off_t offset)
 	static ssize_t (*preadp)(int fd, void *buf, size_t nbyte, off_t offset);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(pread, libc.so.6);
+	BEFORE_ORIGINAL_FILE(pread, LIBC);
 
 	sret = preadp(fd, buf, nbyte, offset);
 
@@ -406,7 +407,7 @@ ssize_t read(int fd, void *buf, size_t nbyte)
 	static ssize_t (*readp)(int fildes, void *buf, size_t nbyte);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(read, libc.so.6);
+	BEFORE_ORIGINAL_FILE(read, LIBC);
 
 	sret = readp(fd, buf, nbyte);
 
@@ -421,7 +422,7 @@ ssize_t pwrite(int fd, const void *buf, size_t nbyte, off_t offset)
 	static ssize_t (*pwritep)(int fd, const void *buf, size_t nbyte, off_t offset);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(pwrite, libc.so.6);
+	BEFORE_ORIGINAL_FILE(pwrite, LIBC);
 
 	sret = pwritep(fd, buf, nbyte, offset);
 
@@ -436,7 +437,7 @@ ssize_t write(int fd, const void *buf, size_t nbyte)
 	static ssize_t (*writep)(int fildes, const void *buf, size_t nbyte);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(write, libc.so.6);
+	BEFORE_ORIGINAL_FILE(write, LIBC);
 
 	sret = writep(fd, buf, nbyte);
 
@@ -452,7 +453,7 @@ ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
 	static ssize_t (*readvp)(int fd, const struct iovec *iov, int iovcnt);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(readv, libc.so.6);
+	BEFORE_ORIGINAL_FILE(readv, LIBC);
 	sret = readvp(fd,iov,iovcnt);
 
 	AFTER_ORIGINAL_FD_RET(VT_SSIZE_T, sret, (unsigned int)sret, fd, FD_API_READ,
@@ -467,7 +468,7 @@ ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 {
 	static ssize_t (*writevp)(int fd, const struct iovec *iov, int iovcnt);
 
-	MAKE_RESOURCE_PREBLOCK(writev, libc.so.6,3,VT_INT,fd,VT_PTR,iov,VT_INT,iovcnt);
+	MAKE_RESOURCE_PREBLOCK(writev, LIBC,3,VT_INT,fd,VT_PTR,iov,VT_INT,iovcnt);
 	ssize_t ret;
 	ret = writevp(fd,iov,iovcnt);
 	MAKE_RESOURCE_POSTBLOCK(VT_SSIZE_T,ret,VT_SSIZE_T,ret,VT_INT,fd, FD_API_WRITE);
@@ -483,7 +484,7 @@ int rmdir(const char *path)
 {
 	static int (*rmdirp)(const char *path);
 
-	BEFORE_ORIGINAL_FILE(rmdir, libc.so.6);
+	BEFORE_ORIGINAL_FILE(rmdir, LIBC);
 	_filepath = (char*)path;
 	ret = rmdirp(path);
 	AFTER_ORIGINAL_NOFD(0, FD_API_DIRECTORY, "%s", path);
@@ -494,7 +495,7 @@ int fchdir(int fd)
 {
 	static int (*fchdirp)(int fd);
 
-	BEFORE_ORIGINAL_FILE(fchdir, libc.so.6);
+	BEFORE_ORIGINAL_FILE(fchdir, LIBC);
 	ret = fchdirp(fd);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_DIRECTORY, "%d", fd);
 	return ret;
@@ -504,7 +505,7 @@ int chdir(const char *path)
 {
 	static int (*chdirp)(const char *path);
 
-	BEFORE_ORIGINAL_FILE(chdir, libc.so.6);
+	BEFORE_ORIGINAL_FILE(chdir, LIBC);
 	_filepath = (char*)path;
 	ret = chdirp(path);
 	AFTER_ORIGINAL_NOFD(0, FD_API_DIRECTORY, "%s", path);
@@ -515,7 +516,7 @@ int link(const char *path1, const char *path2)
 {
 	static int (*linkp)(const char *path1, const char *path2);
 
-	BEFORE_ORIGINAL_FILE(link, libc.so.6);
+	BEFORE_ORIGINAL_FILE(link, LIBC);
 	_filepath = (char*)path1;
 	ret = linkp(path1, path2);
 	AFTER_ORIGINAL_NOFD(0, FD_API_DIRECTORY, "%s, %s", path1, path2);
@@ -526,7 +527,7 @@ int linkat(int fd1, const char *path1, int fd2, const char *path2, int flag)
 {
 	static int (*linkatp)(int fd1, const char *path1, int fd2, const char *path2, int flag);
 
-	BEFORE_ORIGINAL_FILE(linkat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(linkat, LIBC);
 	_filepath = (char*)path1;
 	ret = linkatp(fd1, path1, fd2, path2, flag);
 	AFTER_ORIGINAL_FD(0, fd2, FD_API_DIRECTORY,
@@ -538,7 +539,7 @@ int unlink(const char *path)
 {
 	static int (*unlinkp)(const char *path);
 
-	BEFORE_ORIGINAL_FILE(unlink, libc.so.6);
+	BEFORE_ORIGINAL_FILE(unlink, LIBC);
 	_filepath = (char*)path;
 	ret = unlinkp(path);
 	AFTER_ORIGINAL_NOFD(0, FD_API_DIRECTORY, "%s", path);
@@ -549,7 +550,7 @@ int unlinkat(int fd, const char *path, int flag)
 {
 	static int (*unlinkatp)(int fd, const char *path, int flag);
 
-	BEFORE_ORIGINAL_FILE(unlinkat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(unlinkat, LIBC);
 	_filepath = (char*)path;
 	ret = unlinkatp(fd, path, flag);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_DIRECTORY, "%d, %s, %d", fd, path, flag);
@@ -560,7 +561,7 @@ int symlink(const char *path1, const char *path2)
 {
 	static int (*symlinkp)(const char *path1, const char *path2);
 
-	BEFORE_ORIGINAL_FILE(symlink, libc.so.6);
+	BEFORE_ORIGINAL_FILE(symlink, LIBC);
 	_filepath = (char*)path1;
 	ret = symlinkp(path1, path2);
 	AFTER_ORIGINAL_NOFD(0, FD_API_DIRECTORY, "%s, %s", path1, path2);
@@ -571,7 +572,7 @@ int symlinkat(const char *path1, int fd, const char *path2)
 {
 	static int (*symlinkatp)(const char *path1, int fd, const char *path2);
 
-	BEFORE_ORIGINAL_FILE(symlinkat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(symlinkat, LIBC);
 	_filepath = (char*)path1;
 	ret = symlinkatp(path1, fd, path2);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_DIRECTORY, "%s, %d, %s", path1, fd, path2);
@@ -583,7 +584,7 @@ ssize_t readlink(const char* path, char* buf, size_t bufsize)
 	static int (*readlinkp)(const char* path, char* buf, size_t bufsize);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(readlink, libc.so.6);
+	BEFORE_ORIGINAL_FILE(readlink, LIBC);
 	_filepath = (char*)path;
 
 	sret = readlinkp(path, buf, bufsize);
@@ -599,7 +600,7 @@ ssize_t readlinkat(int fd, const char * path, char * buf, size_t bufsize)
 	static int (*readlinkatp)(int fd, const char * path, char * buf, size_t bufsize);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(readlinkat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(readlinkat, LIBC);
 	_filepath = (char*)path;
 
 	sret = readlinkatp(fd, path, buf, bufsize);
@@ -614,7 +615,7 @@ int mkdir(const char *path, mode_t mode)
 {
 	static int (*mkdirp)(const char *path, mode_t mode);
 
-	BEFORE_ORIGINAL_FILE(mkdir, libc.so.6);
+	BEFORE_ORIGINAL_FILE(mkdir, LIBC);
 	_filepath = (char*)path;
 	ret = mkdirp(path, mode);
 	AFTER_ORIGINAL_NOFD(0, FD_API_DIRECTORY, "%s, %u", path, mode);
@@ -625,7 +626,7 @@ int mkdirat(int fd, const char *path, mode_t mode)
 {
 	static int (*mkdiratp)(int fd, const char *path, mode_t mode);
 
-	BEFORE_ORIGINAL_FILE(mkdirat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(mkdirat, LIBC);
 	_filepath = (char*)path;
 	ret = mkdiratp(fd, path, mode);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_DIRECTORY, "%d, %s, %u", fd, path, mode);
@@ -636,7 +637,7 @@ int closedir(DIR *dirp)
 {
 	static int (*closedirp)(DIR *dirp);
 
-	BEFORE_ORIGINAL_FILE(closedir, libc.so.6);
+	BEFORE_ORIGINAL_FILE(closedir, LIBC);
 	ret = closedirp(dirp);
 	AFTER_ORIGINAL_NOFD(0, FD_API_DIRECTORY, "%p", dirp);
 	return ret;
@@ -647,7 +648,7 @@ DIR *fdopendir(int fd)
 	static DIR* (*fdopendirp)(int fd);
 	DIR* dret;
 
-	BEFORE_ORIGINAL_FILE(fdopendir, libc.so.6);
+	BEFORE_ORIGINAL_FILE(fdopendir, LIBC);
 
 	dret = fdopendirp(fd);
 
@@ -661,7 +662,7 @@ DIR *opendir(const char *dirname)
 	static DIR* (*opendirp)(const char *dirname);
 	DIR* dret;
 
-	BEFORE_ORIGINAL_FILE(opendir, libc.so.6);
+	BEFORE_ORIGINAL_FILE(opendir, LIBC);
 	_filepath = (char*)dirname;
 
 	dret = opendirp(dirname);
@@ -676,7 +677,7 @@ struct dirent *readdir(DIR *dirp)
 	static struct dirent* (*readdirp)(DIR *dirp);
 	struct dirent* dret;
 
-	BEFORE_ORIGINAL_FILE(readdir, libc.so.6);
+	BEFORE_ORIGINAL_FILE(readdir, LIBC);
 
 	dret = readdirp(dirp);
 	
@@ -689,7 +690,7 @@ int readdir_r(DIR * dirp, struct dirent * entry, struct dirent ** result)
 {
 	static int (*readdir_rp)(DIR * dirp, struct dirent * entry, struct dirent ** result);
 
-	BEFORE_ORIGINAL_FILE(readdir_r, libc.so.6);
+	BEFORE_ORIGINAL_FILE(readdir_r, LIBC);
 	ret = readdir_rp(dirp, entry, result);
 	AFTER_ORIGINAL_NOFD(0, FD_API_DIRECTORY, "%p, %p, %p", dirp, entry, result);
 	return ret;
@@ -699,7 +700,7 @@ void rewinddir(DIR *dirp)
 {
 	static void (*rewinddirp)(DIR *dirp);
 
-	BEFORE_ORIGINAL_FILE(rewinddir, libc.so.6);
+	BEFORE_ORIGINAL_FILE(rewinddir, LIBC);
 
 	rewinddirp(dirp);
 	
@@ -710,7 +711,7 @@ void seekdir(DIR *dirp, long loc)
 {
 	static void (*seekdirp)(DIR *dirp, long loc);
 
-	BEFORE_ORIGINAL_FILE(seekdir, libc.so.6);
+	BEFORE_ORIGINAL_FILE(seekdir, LIBC);
 
 	seekdirp(dirp, loc);
 
@@ -723,7 +724,7 @@ long telldir(DIR *dirp)
 	static int (*telldirp)(DIR *dirp);
 	long lret;
 
-	BEFORE_ORIGINAL_FILE(telldir, libc.so.6);
+	BEFORE_ORIGINAL_FILE(telldir, LIBC);
 
 	lret = telldirp(dirp);
 
@@ -741,7 +742,7 @@ int fcntl(int fd, int cmd, ...)
 	static int (*fcntlp)(int fd, int cmd, ...);
 	int arg = 0;
 
-	BEFORE_ORIGINAL_FILE(fcntl, libc.so.6);
+	BEFORE_ORIGINAL_FILE(fcntl, LIBC);
 
 	va_list argl;
 	va_start(argl, cmd);
@@ -759,7 +760,7 @@ int dup(int fd)
 {
 	static int (*dupp)(int fd);
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(dup, libc.so.6);
+	BEFORE_ORIGINAL_FILE_NOFILTER(dup, LIBC);
 
 	ret = dupp(fd);
 
@@ -772,7 +773,7 @@ int dup2(int fd, int fd2)
 {
 	static int (*dup2p)(int fd, int fd2);
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(dup2, libc.so.6);
+	BEFORE_ORIGINAL_FILE_NOFILTER(dup2, LIBC);
 
 	ret = dup2p(fd, fd2);
 
@@ -782,13 +783,13 @@ int dup2(int fd, int fd2)
 }
 
 //FIXME dlsym error
-// fstat is not in libc.so.6
+// fstat is not in LIBC
 #if 0
 int fstat(int fd, struct stat *buf)
 {
 	static int (*fstatp)(int fd, struct stat *buf);
 
-	BEFORE_ORIGINAL_FILE(fstat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(fstat, LIBC);
 	ret = fstatp(fd, buf);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_OTHER, "%d, %p", fd, buf);
 	return ret;
@@ -798,7 +799,7 @@ int stat(const char * path, struct stat * buf)
 {
 	static int (*statp)(const char * path, struct stat * buf);
 
-	BEFORE_ORIGINAL_FILE(stat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(stat, LIBC);
 	_filepath = (char*)path;
 	ret = statp(path, buf);
 	AFTER_ORIGINAL_NOFD(0, FD_API_OTHER, "%s, %p", path, buf);
@@ -811,7 +812,7 @@ int fstatat(int fd, const char * path, struct stat * buf, int flag)
 {
 	static int (*fstatatp)(int fd, const char * path, struct stat * buf, int flag);
 
-	BEFORE_ORIGINAL_FILE(fstatat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(fstatat, LIBC);
 	_filepath = (char*)path;
 	ret = fstatatp(fd, path, buf, flag);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_OTHER, "%d, %s, %p, %d", fd, path, buf, flag);
@@ -822,7 +823,7 @@ int lstat(const char * path, struct stat * buf)
 {
 	static int (*lstatp)(const char * path, struct stat * buf);
 
-	BEFORE_ORIGINAL_FILE(lstat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(lstat, LIBC);
 	_filepath = (char*)path;
 	ret = lstatp(path, buf);
 	AFTER_ORIGINAL_NOFD(0, FD_API_OTHER, "%s, %p", path, buf);
@@ -833,7 +834,7 @@ int futimens(int fd, const struct timespec times[2])
 {
 	static int (*futimensp)(int fd, const struct timespec times[2]);
 
-	BEFORE_ORIGINAL_FILE(futimens, libc.so.6);
+	BEFORE_ORIGINAL_FILE(futimens, LIBC);
 	ret = futimensp(fd, times);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_OTHER, "%d, %p", fd, times);
 	return ret;
@@ -843,7 +844,7 @@ int utimensat(int fd, const char *path, const struct timespec times[2], int flag
 {
 	static int (*utimensatp)(int fd, const char *path, const struct timespec times[2], int flag);
 
-	BEFORE_ORIGINAL_FILE(utimensat, libc.so.6);
+	BEFORE_ORIGINAL_FILE(utimensat, LIBC);
 	_filepath = (char*)path;
 	ret = utimensatp(fd, path, times, flag);
 	AFTER_ORIGINAL_FD(0, fd, FD_API_OTHER,
@@ -855,7 +856,7 @@ int utimes(const char *path, const struct timeval times[2])
 {
 	static int (*utimesp)(const char *path, const struct timeval times[2]);
 
-	BEFORE_ORIGINAL_FILE(utimes, libc.so.6);
+	BEFORE_ORIGINAL_FILE(utimes, LIBC);
 	_filepath = (char*)path;
 	ret = utimesp(path, times);
 	AFTER_ORIGINAL_NOFD(0, FD_API_OTHER, "%s, %p", path, times);
@@ -866,7 +867,7 @@ int utime(const char *path, const struct utimbuf *times)
 {
 	static int (*utimep)(const char *path, const struct utimbuf *times);
 
-	BEFORE_ORIGINAL_FILE(utime, libc.so.6);
+	BEFORE_ORIGINAL_FILE(utime, LIBC);
 	_filepath = (char*)path;
 	ret = utimep(path, times);
 	AFTER_ORIGINAL_NOFD(0, FD_API_OTHER, "%s, %p", path, times);

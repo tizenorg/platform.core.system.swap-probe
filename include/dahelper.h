@@ -140,6 +140,24 @@ extern "C"{
 		}														\
 	} while(0)
 
+#define	NUM_ORIGINAL_LIBRARY	9
+
+typedef enum
+{
+	LIBC = 0,
+	LIBPTHREAD = 1,
+	LIBELEMENTARY = 2,
+	LIBOSP_UIFW = 3,
+	LIBOSP_APPFW = 4,
+	LIBOSP_WEB = 5,
+	LIBECORE_INPUT_EVAS = 6,
+	LIBDAEMON = 7,
+	LIBCAPI_APPFW_APPLICATION = 8
+} ORIGINAL_LIBRARY;
+
+extern char *lib_string[NUM_ORIGINAL_LIBRARY];
+extern void *lib_handle[NUM_ORIGINAL_LIBRARY];
+
 // type definition for global variable
 typedef struct
 {

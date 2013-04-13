@@ -41,7 +41,7 @@ int daemon_close_allv(const int except_fds[])
 	int i, saved_errno, ret;
 	int* fds;
 
-	GET_REAL_FUNCP(daemon_close_allv, libdaemon.so.0, daemon_close_allvp);
+	GET_REAL_FUNCP(daemon_close_allv, LIBDAEMON, daemon_close_allvp);
 
 	probeBlockStart();
 	// get number of fds

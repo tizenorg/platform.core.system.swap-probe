@@ -43,7 +43,7 @@ int pthread_mutex_init(pthread_mutex_t *mutex,
 	static int (*pthread_mutex_initp)(pthread_mutex_t *mutex,
 			const pthread_mutexattr_t *attr);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutex_init, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutex_init, LIBPTHREAD);
 
 	ret = pthread_mutex_initp(mutex, attr);
 
@@ -56,7 +56,7 @@ int pthread_mutex_init(pthread_mutex_t *mutex,
 int pthread_mutex_destroy(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_destroyp)(pthread_mutex_t *mutex);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutex_destroy, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutex_destroy, LIBPTHREAD);
 
 	ret = pthread_mutex_destroyp(mutex);
 
@@ -69,7 +69,7 @@ int pthread_mutex_destroy(pthread_mutex_t *mutex) {
 int real_pthread_mutex_lock(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_lockp)(pthread_mutex_t *mutex);
 
-	GET_REAL_FUNC(pthread_mutex_lock, libpthread.so.0);
+	GET_REAL_FUNC(pthread_mutex_lock, LIBPTHREAD);
 
 	return pthread_mutex_lockp(mutex);
 }
@@ -78,7 +78,7 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_lockp)(pthread_mutex_t *mutex);
 	
 	DECLARE_VARIABLE_STANDARD;
-	GET_REAL_FUNC(pthread_mutex_lock, libpthread.so.0);
+	GET_REAL_FUNC(pthread_mutex_lock, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
 	// send WAIT_START log
@@ -122,7 +122,7 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 			const struct timespec *abs_timeout);
 
 	DECLARE_VARIABLE_STANDARD;
-	GET_REAL_FUNC(pthread_mutex_timedlock, libpthread.so.0);
+	GET_REAL_FUNC(pthread_mutex_timedlock, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
 	// send WAIT_START log
@@ -163,7 +163,7 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 int pthread_mutex_trylock(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_trylockp)(pthread_mutex_t *mutex);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutex_trylock, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutex_trylock, LIBPTHREAD);
 
 	ret = pthread_mutex_trylockp(mutex);
 
@@ -176,7 +176,7 @@ int pthread_mutex_trylock(pthread_mutex_t *mutex) {
 int real_pthread_mutex_unlock(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_unlockp)(pthread_mutex_t *mutex);
 
-	GET_REAL_FUNC(pthread_mutex_unlock, libpthread.so.0);
+	GET_REAL_FUNC(pthread_mutex_unlock, LIBPTHREAD);
 
 	return pthread_mutex_unlockp(mutex);
 }
@@ -184,7 +184,7 @@ int real_pthread_mutex_unlock(pthread_mutex_t *mutex) {
 int pthread_mutex_unlock(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_unlockp)(pthread_mutex_t *mutex);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutex_unlock, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutex_unlock, LIBPTHREAD);
 
 	ret = pthread_mutex_unlockp(mutex);
 
@@ -197,7 +197,7 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex) {
 int pthread_mutexattr_init(pthread_mutexattr_t *attr) {
 	static int (*pthread_mutexattr_initp)(pthread_mutexattr_t *attr);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_init, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_init, LIBPTHREAD);
 
 	ret = pthread_mutexattr_initp(attr);
 
@@ -210,7 +210,7 @@ int pthread_mutexattr_init(pthread_mutexattr_t *attr) {
 int pthread_mutexattr_destroy(pthread_mutexattr_t *attr) {
 	static int (*pthread_mutexattr_destroyp)(pthread_mutexattr_t *attr);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_destroy, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_destroy, LIBPTHREAD);
 
 	ret = pthread_mutexattr_destroyp(attr);
 
@@ -225,7 +225,7 @@ int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *attr,
 	static int (*pthread_mutexattr_getprioceilingp)(
 			const pthread_mutexattr_t *attr, int *prioceiling);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_getprioceiling, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_getprioceiling, LIBPTHREAD);
 
 	ret = pthread_mutexattr_getprioceilingp(attr, prioceiling);
 
@@ -240,7 +240,7 @@ int pthread_mutexattr_setprioceiling(pthread_mutexattr_t *attr,
 	static int (*pthread_mutexattr_setprioceilingp)(
 			pthread_mutexattr_t *attr, int prioceiling);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_setprioceiling, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_setprioceiling, LIBPTHREAD);
 
 	ret = pthread_mutexattr_setprioceilingp(attr, prioceiling);
 
@@ -255,7 +255,7 @@ int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *attr,
 	static int (*pthread_mutexattr_getprotocolp)(
 			const pthread_mutexattr_t *attr, int *protocol);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_getprotocol, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_getprotocol, LIBPTHREAD);
 
 	ret = pthread_mutexattr_getprotocolp(attr, protocol);
 
@@ -270,7 +270,7 @@ int pthread_mutexattr_setprotocol(pthread_mutexattr_t *attr,
 	static int (*pthread_mutexattr_setprotocolp)(
 			pthread_mutexattr_t *attr, int protocol);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_setprotocol, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_setprotocol, LIBPTHREAD);
 
 	ret = pthread_mutexattr_setprotocolp(attr, protocol);
 
@@ -285,7 +285,7 @@ int pthread_mutexattr_getpshared(const pthread_mutexattr_t *attr,
 	static int (*pthread_mutexattr_getpsharedp)(
 			const pthread_mutexattr_t *attr, int *pshared);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_getpshared, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_getpshared, LIBPTHREAD);
 
 	ret = pthread_mutexattr_getpsharedp(attr, pshared);
 
@@ -300,7 +300,7 @@ int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr,
 	static int (*pthread_mutexattr_setpsharedp)(
 			pthread_mutexattr_t *attr, int pshared);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_setpshared, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_setpshared, LIBPTHREAD);
 
 	ret = pthread_mutexattr_setpsharedp(attr, pshared);
 
@@ -314,7 +314,7 @@ int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int *type) {
 	static int (*pthread_mutexattr_gettypep)(
 			const pthread_mutexattr_t *attr, int *type);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_gettype, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_gettype, LIBPTHREAD);
 
 	ret = pthread_mutexattr_gettypep(attr, type);
 
@@ -328,7 +328,7 @@ int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type) {
 	static int (*pthread_mutexattr_settypep)(
 			pthread_mutexattr_t *attr, int type);
 
-	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_settype, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_settype, LIBPTHREAD);
 
 	ret = pthread_mutexattr_settypep(attr, type);
 
@@ -349,7 +349,7 @@ int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr) {
 	static int (*pthread_cond_initp)(pthread_cond_t *cond,
 			const pthread_condattr_t *attr);
 
-	BEFORE_ORIGINAL_SYNC(pthread_cond_init, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_cond_init, LIBPTHREAD);
 
 	ret = pthread_cond_initp(cond, attr);
 
@@ -362,7 +362,7 @@ int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr) {
 int pthread_cond_destroy(pthread_cond_t *cond) {
 	static int (*pthread_cond_destroyp)(pthread_cond_t *cond);
 
-	BEFORE_ORIGINAL_SYNC(pthread_cond_destroy, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_cond_destroy, LIBPTHREAD);
 
 	ret = pthread_cond_destroyp(cond);
 
@@ -377,7 +377,7 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 			pthread_mutex_t *mutex);
 
 	DECLARE_VARIABLE_STANDARD;
-	GET_REAL_FUNC(pthread_cond_wait, libpthread.so.0);
+	GET_REAL_FUNC(pthread_cond_wait, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
 	// send WAIT_START log
@@ -421,7 +421,7 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 				pthread_mutex_t *mutex, const struct timespec *abstime);
 
 	DECLARE_VARIABLE_STANDARD;
-	GET_REAL_FUNC(pthread_cond_timedwait, libpthread.so.0);
+	GET_REAL_FUNC(pthread_cond_timedwait, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
 	// send WAIT_START log
@@ -462,7 +462,7 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 int pthread_cond_signal(pthread_cond_t *cond) {
 	static int (*pthread_cond_signalp)(pthread_cond_t *cond);
 
-	BEFORE_ORIGINAL_SYNC(pthread_cond_signal, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_cond_signal, LIBPTHREAD);
 
 	ret = pthread_cond_signalp(cond);
 
@@ -475,7 +475,7 @@ int pthread_cond_signal(pthread_cond_t *cond) {
 int pthread_cond_broadcast(pthread_cond_t *cond) {
 	static int (*pthread_cond_broadcastp)(pthread_cond_t *cond);
 
-	BEFORE_ORIGINAL_SYNC(pthread_cond_broadcast, libpthread.so.0);
+	BEFORE_ORIGINAL_SYNC(pthread_cond_broadcast, LIBPTHREAD);
 
 	ret = pthread_cond_broadcastp(cond);
 

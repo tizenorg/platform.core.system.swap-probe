@@ -44,6 +44,7 @@
 #include "daprobe.h"
 #include "probeinfo.h"
 #include "dautil.h"
+#include "dahelper.h"
 #include "da_socket.h"
 
 static enum DaOptions _sopt = OPT_FILE;
@@ -52,7 +53,7 @@ int socket(int domain, int type, int protocol)
 {
 	static int (*socketp)(int domain, int type, int protocol);
 	
-	BEFORE_ORIGINAL_NOFILTER(socket, libc.so.6);
+	BEFORE_ORIGINAL_NOFILTER(socket, LIBC);
 
 	ret = socketp(domain, type, protocol);
 	
@@ -68,7 +69,7 @@ int socketpair(int domain, int type, int protocol,int socket_vector[2])
 {
 	static int (*socketpairp)(int domain, int type, int protocol,int socket_vector[2]);
 	
-	BEFORE_ORIGINAL_NOFILTER(socketpair, libc.so.6);
+	BEFORE_ORIGINAL_NOFILTER(socketpair, LIBC);
 	
 	ret = socketpairp(domain, type, protocol, socket_vector);
 	
@@ -86,7 +87,7 @@ int shutdown(int socket, int how)
 {
 	static int (*shutdownp)(int socket, int how);
 	
-	BEFORE_ORIGINAL_NOFILTER(shutdown, libc.so.6);
+	BEFORE_ORIGINAL_NOFILTER(shutdown, LIBC);
 	
 	ret = shutdownp(socket, how);
 	
@@ -99,7 +100,7 @@ int bind(int socket, const struct sockaddr *address, socklen_t address_len)
 {
 	static int (*bindp)(int socket, const struct sockaddr *address, socklen_t address_len);
 	
-	BEFORE_ORIGINAL(bind, libc.so.6);
+	BEFORE_ORIGINAL(bind, LIBC);
 	
 	ret = bindp(socket, address, address_len);
 
@@ -113,7 +114,7 @@ int listen(int socket, int backlog)
 {
 	static int (*listenp)(int socket, int backlog);
 	
-	BEFORE_ORIGINAL(listen, libc.so.6);
+	BEFORE_ORIGINAL(listen, LIBC);
 	
 	ret = listenp(socket, backlog);
 	
@@ -126,7 +127,7 @@ int accept(int socket, struct sockaddr *address, socklen_t *address_len)
 {
 	static int (*acceptp)(int socket, struct sockaddr *address, socklen_t *address_len);
 	
-	BEFORE_ORIGINAL_NOFILTER(accept, libc.so.6);
+	BEFORE_ORIGINAL_NOFILTER(accept, LIBC);
 	
 	ret = acceptp(socket, address, address_len);
 	
@@ -140,7 +141,7 @@ int accept4(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags)
 {
 	static int (*accept4p)(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags);
 	
-	BEFORE_ORIGINAL_NOFILTER(accept4, libc.so.6);
+	BEFORE_ORIGINAL_NOFILTER(accept4, LIBC);
 	
 	ret = accept4p(sockfd, addr, addrlen, flags);
 	
@@ -154,7 +155,7 @@ int connect(int socket, const struct sockaddr *address, socklen_t address_len)
 {
 	static int (*connectp)(int socket, const struct sockaddr *address, socklen_t address_len);
 	
-	BEFORE_ORIGINAL(connect, libc.so.6);
+	BEFORE_ORIGINAL(connect, LIBC);
 	
 	ret = connectp(socket, address, address_len);
 	
@@ -168,7 +169,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 {
 	static int (*selectp)(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
 	
-	BEFORE_ORIGINAL(select, libc.so.6);
+	BEFORE_ORIGINAL(select, LIBC);
 	
 	ret = selectp(nfds, readfds, writefds,exceptfds, timeout);
 	
@@ -182,7 +183,7 @@ int pselect(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, const
 {
 	static int (*pselectp)(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, const struct timespec *ntimeout, const sigset_t *sigmask);
 
-	BEFORE_ORIGINAL(pselect, libc.so.6);
+	BEFORE_ORIGINAL(pselect, LIBC);
 	
 	ret = pselectp(nfds, readfds, writefds,exceptfds, ntimeout, sigmask);
 	
@@ -197,7 +198,7 @@ ssize_t send(int socket, const void *message, size_t length, int flags)
 	static ssize_t (*sendp)(int socket, const void *message, size_t length, int flags);
 	ssize_t sret;
  
-	BEFORE_ORIGINAL(send, libc.so.6);
+	BEFORE_ORIGINAL(send, LIBC);
 	
 	sret = sendp(socket, message, length, flags);
 	
@@ -212,7 +213,7 @@ ssize_t sendmsg(int socket, const struct msghdr *message, int flags)
 	static ssize_t (*sendmsgp)(int socket, const struct msghdr *message, int flags);
 	ssize_t sret;
  
-	BEFORE_ORIGINAL(sendmsg, libc.so.6);
+	BEFORE_ORIGINAL(sendmsg, LIBC);
 	
 	sret = sendmsgp(socket, message, flags);
 	
@@ -227,7 +228,7 @@ ssize_t sendto(int socket, const void *message, size_t length, int flags,const s
 	static ssize_t (*sendtop)(int socket, const void *message, size_t length, int flags,const struct sockaddr *dest_addr, socklen_t dest_len);
 	ssize_t sret;
  
-	BEFORE_ORIGINAL(sendto, libc.so.6);
+	BEFORE_ORIGINAL(sendto, LIBC);
 	
 	sret = sendtop(socket, message, length, flags, dest_addr, dest_len);
 	
@@ -242,7 +243,7 @@ ssize_t recv(int socket, void *buffer, size_t length, int flags)
 	static ssize_t (*recvp)(int socket, void *buffer, size_t length, int flags);
 	ssize_t sret;
  
-	BEFORE_ORIGINAL(recv, libc.so.6);
+	BEFORE_ORIGINAL(recv, LIBC);
 
 	sret = recvp(socket, buffer, length, flags);
 	
@@ -257,7 +258,7 @@ ssize_t recvfrom(int socket, void *buffer, size_t length, int flags, struct sock
 	static ssize_t (*recvfromp)(int socket, void *buffer, size_t length, int flags, struct sockaddr *address, socklen_t *address_len);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL(recvfrom, libc.so.6);
+	BEFORE_ORIGINAL(recvfrom, LIBC);
 	
 	sret = recvfromp(socket, buffer, length, flags, address, address_len);
 	
@@ -272,7 +273,7 @@ ssize_t recvmsg(int socket, struct msghdr *message, int flags)
 	static ssize_t (*recvmsgp)(int socket, struct msghdr *message, int flags);
 	ssize_t sret;
  
-	BEFORE_ORIGINAL(recvmsg, libc.so.6);
+	BEFORE_ORIGINAL(recvmsg, LIBC);
 	
 	sret = recvmsgp(socket, message, flags);
 		
@@ -287,7 +288,7 @@ uint32_t htonl(uint32_t hostlong)
 	static uint32_t (*htonlp)(uint32_t hostlong);
 	uint32_t uret;
  
-	BEFORE_ORIGINAL(htonl, libc.so.6);
+	BEFORE_ORIGINAL(htonl, LIBC);
 	
 	uret = htonlp(hostlong);
 			
@@ -301,7 +302,7 @@ uint16_t htons(uint16_t hostshort)
 	static uint16_t (*htonsp)(uint16_t hostshort);
 	uint16_t uret;
  
-	BEFORE_ORIGINAL(htons, libc.so.6);
+	BEFORE_ORIGINAL(htons, LIBC);
 	
 	uret = htonsp(hostshort);
 				
@@ -315,7 +316,7 @@ uint32_t ntohl(uint32_t netlong)
 	static uint32_t (*ntohlp)(uint32_t netlong);
 	uint32_t uret;
  
-	BEFORE_ORIGINAL(ntohl, libc.so.6);
+	BEFORE_ORIGINAL(ntohl, LIBC);
 	
 	uret = ntohlp(netlong);
 				
@@ -329,7 +330,7 @@ uint16_t ntohs(uint16_t netshort)
 	static uint16_t (*ntohsp)(uint16_t netshort);
 	uint16_t uret;
  
-	BEFORE_ORIGINAL(ntohs, libc.so.6);
+	BEFORE_ORIGINAL(ntohs, LIBC);
 	
 	uret = ntohsp(netshort);
 				
@@ -344,7 +345,7 @@ uint16_t htobe16(uint16_t host_16bits)
 	static uint16_t (*htobe16p)(uint16_t host_16bits);
 	uint16_t uret;
  
-	BEFORE_ORIGINAL(htobe16, libc.so.6);
+	BEFORE_ORIGINAL(htobe16, LIBC);
 	
 	uret = htobe16p(host_16bits);
 				
@@ -358,7 +359,7 @@ uint16_t htole16(uint16_t host_16bits)
 	static uint16_t (*htole16p)(uint16_t host_16bits);
 	uint16_t uret;
  
-	BEFORE_ORIGINAL(htole16, libc.so.6);
+	BEFORE_ORIGINAL(htole16, LIBC);
 	
 	uret = htole16p(host_16bits);
 				
@@ -372,7 +373,7 @@ uint16_t be16toh(uint16_t big_endian_16bits)
 	static uint16_t (*be16tohp)(uint16_t big_endian_16bits);
 	uint16_t uret;
  
-	BEFORE_ORIGINAL(be16toh, libc.so.6);
+	BEFORE_ORIGINAL(be16toh, LIBC);
 	
 	uret = be16tohp(big_endian_16bits);
 				
@@ -387,7 +388,7 @@ uint16_t le16toh(uint16_t little_endian_16bits)
 	static uint16_t (*le16tohp)(uint16_t little_endian_16bits);
 	uint16_t uret;
  
-	BEFORE_ORIGINAL(le16toh, libc.so.6);
+	BEFORE_ORIGINAL(le16toh, LIBC);
 	
 	uret = le16tohp(little_endian_16bits);
 				
@@ -402,7 +403,7 @@ uint32_t htobe32(uint32_t host_32bits)
 	static uint32_t (*htobe32p)(uint32_t host_32bits);
 	uint32_t uret;
  
-	BEFORE_ORIGINAL(htobe32, libc.so.6);
+	BEFORE_ORIGINAL(htobe32, LIBC);
 
 	uret = htobe32p(host_32bits);
  
@@ -417,7 +418,7 @@ uint32_t htole32(uint32_t host_32bits)
 	static uint32_t (*htole32p)(uint32_t host_32bits);
 	uint32_t uret;
  
-	BEFORE_ORIGINAL(htole32, libc.so.6);
+	BEFORE_ORIGINAL(htole32, LIBC);
 
 	uret = htole32p(host_32bits);
  
@@ -432,7 +433,7 @@ uint32_t be32toh(uint32_t big_endian_32bits)
 	static uint32_t (*be32tohp)(uint32_t big_endian_32bits);
 	uint32_t uret;
  
-	BEFORE_ORIGINAL(be32toh, libc.so.6);
+	BEFORE_ORIGINAL(be32toh, LIBC);
 
 	uret = be32tohp(big_endian_32bits);
  
@@ -447,7 +448,7 @@ uint32_t le32toh(uint32_t little_endian_32bits)
 	static uint32_t (*le32tohp)(uint32_t little_endian_32bits);
 	uint32_t uret;
  
-	BEFORE_ORIGINAL(le32toh, libc.so.6);
+	BEFORE_ORIGINAL(le32toh, LIBC);
 
 	uret = le32tohp(little_endian_32bits);
  
@@ -462,7 +463,7 @@ uint64_t htobe64(uint64_t host_64bits)
 	static uint64_t (*htobe64p)(uint64_t host_64bits);
 	uint64_t uret;
 
-	BEFORE_ORIGINAL(htobe64, libc.so.6);
+	BEFORE_ORIGINAL(htobe64, LIBC);
 
 	uret = htobe64p(host_64bits);
  
@@ -477,7 +478,7 @@ uint64_t htole64(uint64_t host_64bits)
 	static uint64_t (*htole64p)(uint64_t host_64bits);
 	uint64_t uret;
  
-	BEFORE_ORIGINAL(htole64, libc.so.6);
+	BEFORE_ORIGINAL(htole64, LIBC);
 
 	uret = htole64p(host_64bits);
  
@@ -492,7 +493,7 @@ uint64_t be64toh(uint64_t big_endian_64bits)
 	static uint64_t (*be64tohp)(uint64_t big_endian_64bits);
 	uint64_t uret;
  
-	BEFORE_ORIGINAL(be64toh, libc.so.6);
+	BEFORE_ORIGINAL(be64toh, LIBC);
 
 	uret = be64tohp(big_endian_64bits);
  
@@ -507,7 +508,7 @@ uint64_t le64toh(uint64_t little_endian_64bits)
 	static uint64_t (*le64tohp)(uint64_t little_endian_64bits);
 	uint64_t uret;
  
-	BEFORE_ORIGINAL(le64toh, libc.so.6);
+	BEFORE_ORIGINAL(le64toh, LIBC);
 
 	uret = le64tohp(little_endian_64bits);
  
@@ -523,7 +524,7 @@ int inet_aton(const char *cp, struct in_addr *inp)
 {
 	static int (*inet_atonp)(const char *cp, struct in_addr *inp);
 
-	BEFORE_ORIGINAL(inet_aton, libc.so.6);
+	BEFORE_ORIGINAL(inet_aton, LIBC);
 	
 	ret = inet_atonp(cp,inp);
 
@@ -537,7 +538,7 @@ in_addr_t inet_addr(const char *cp)
 	static in_addr_t (*inet_addrp)(const char *cp);
 	in_addr_t iret;
  
-	BEFORE_ORIGINAL(inet_addr, libc.so.6);
+	BEFORE_ORIGINAL(inet_addr, LIBC);
  
 	iret = inet_addrp(cp);
 	
@@ -551,7 +552,7 @@ in_addr_t inet_network(const char *cp)
 	static in_addr_t (*inet_networkp)(const char *cp);
 	in_addr_t iret;
  
-	BEFORE_ORIGINAL(inet_network, libc.so.6);
+	BEFORE_ORIGINAL(inet_network, LIBC);
  
 	iret = inet_networkp(cp);
  
@@ -565,7 +566,7 @@ char *inet_ntoa(struct in_addr in)
 	static char * (*inet_ntoap)(struct in_addr in);
 	char* sret;
  
-	BEFORE_ORIGINAL(inet_ntoa, libc.so.6);
+	BEFORE_ORIGINAL(inet_ntoa, LIBC);
  
 	sret = inet_ntoap(in);
 
@@ -580,7 +581,7 @@ struct in_addr inet_makeaddr(int net, int host)
 	static struct in_addr (*inet_makeaddrp)(int net, int host);
 	struct in_addr iret;
  
-	BEFORE_ORIGINAL(inet_makeaddr, libc.so.6);
+	BEFORE_ORIGINAL(inet_makeaddr, LIBC);
  
 	iret = inet_makeaddrp(net,host);
  
@@ -596,7 +597,7 @@ in_addr_t inet_lnaof(struct in_addr in)
 	static in_addr_t (*inet_lnaofp)(struct in_addr in);
 	in_addr_t iret;
  
-	BEFORE_ORIGINAL(inet_lnaof, libc.so.6);
+	BEFORE_ORIGINAL(inet_lnaof, LIBC);
  
 	iret = inet_lnaofp(in);
 
@@ -610,7 +611,7 @@ in_addr_t inet_netof(struct in_addr in)
 	static in_addr_t (*inet_netofp)(struct in_addr in);
 	in_addr_t iret;
  
-	BEFORE_ORIGINAL(inet_netof, libc.so.6);
+	BEFORE_ORIGINAL(inet_netof, LIBC);
  
 	iret = inet_netofp(in);
 
@@ -624,7 +625,7 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size)
 	static const char* (*inet_ntopp)(int af, const void *src, char *dst, socklen_t size);
 	const char* cret;
  
-	BEFORE_ORIGINAL(inet_ntop, libc.so.6);
+	BEFORE_ORIGINAL(inet_ntop, LIBC);
  
 	cret = inet_ntopp(af, src, dst, size);
 
@@ -638,7 +639,7 @@ int inet_pton(int af, const char *src, void *dst)
 {
 	static int (*inet_ptonp)(int af, const char *src, void *dst);
  
-	BEFORE_ORIGINAL(inet_pton, libc.so.6);
+	BEFORE_ORIGINAL(inet_pton, LIBC);
  
 	ret = inet_ptonp(af, src, dst);
 
@@ -651,7 +652,7 @@ int getaddrinfo(const char *node, const char *service, const struct addrinfo *hi
 {
 	static int (*getaddrinfop)(const char *node, const char *service, const struct addrinfo *hints, struct addrinfo **res);
  
-	BEFORE_ORIGINAL_NOFILTER(getaddrinfo, libc.so.6);
+	BEFORE_ORIGINAL_NOFILTER(getaddrinfo, LIBC);
  
 	ret = getaddrinfop(node, service, hints, res);
 
@@ -664,7 +665,7 @@ void freeaddrinfo(struct addrinfo *res)
 {
 	static void (*freeaddrinfop)(struct addrinfo *res);
 
-	BEFORE_ORIGINAL_NOFILTER(freeaddrinfo, libc.so.6);
+	BEFORE_ORIGINAL_NOFILTER(freeaddrinfo, LIBC);
  
  	freeaddrinfop(res);
 
@@ -676,7 +677,7 @@ const char *gai_strerror(int errcode)
 	static const char * (*gai_strerrorp)(int errcode);
 	const char * cret;
  
-	BEFORE_ORIGINAL(gai_strerror, libc.so.6);
+	BEFORE_ORIGINAL(gai_strerror, LIBC);
  
 	cret = gai_strerrorp(errcode);
 
@@ -689,7 +690,7 @@ int gai_suspend(const struct gaicb* const list[], int nitems, const struct times
 {
 	static int (*gai_suspendp)(const struct gaicb* const list[], int nitems, const struct timespec *timeout);
 
-	BEFORE_ORIGINAL(gai_suspend, libc.so.6);
+	BEFORE_ORIGINAL(gai_suspend, LIBC);
  
 	ret = gai_suspendp(list,nitems,timeout);
 
@@ -702,7 +703,7 @@ int gai_error(struct gaicb *req)
 {
 	static int (*gai_errorp)(struct gaicb *req);
  
-	BEFORE_ORIGINAL(gai_error, libc.so.6);
+	BEFORE_ORIGINAL(gai_error, LIBC);
  
 	ret = gai_errorp(req);
 
@@ -715,7 +716,7 @@ int gai_cancel(struct gaicb *req)
 {
 	static int (*gai_cancelp)(struct gaicb *req);
  
-	BEFORE_ORIGINAL(gai_cancel, libc.so.6);
+	BEFORE_ORIGINAL(gai_cancel, LIBC);
  
 	ret = gai_cancelp(req);
 
@@ -728,7 +729,7 @@ int getaddrinfo_a(int mode, struct gaicb *list[], int nitems, struct sigevent *s
 {
 	static int (*getaddrinfo_ap)(int mode, struct gaicb *list[], int nitems, struct sigevent *sevp);
  
-	BEFORE_ORIGINAL(getaddrinfo_a, libc.so.6);
+	BEFORE_ORIGINAL(getaddrinfo_a, LIBC);
  
 	ret = getaddrinfo_ap(mode, list,nitems, sevp);
 
@@ -742,7 +743,7 @@ int getsockopt(int socket, int level, int option_name, void *option_value, sockl
 {
 	static int (*getsockoptp)(int socket, int level, int option_name, void *option_value, socklen_t *option_len);
  
-	BEFORE_ORIGINAL(getsockopt, libc.so.6);
+	BEFORE_ORIGINAL(getsockopt, LIBC);
  
 	ret = getsockoptp(socket, level, option_name, option_value, option_len);
 
@@ -756,7 +757,7 @@ int setsockopt(int socket, int level, int option_name, const void *option_value,
 {
 	static int (*setsockoptp)(int socket, int level, int option_name, const void *option_value, socklen_t option_len);
  
-	BEFORE_ORIGINAL(setsockopt, libc.so.6);
+	BEFORE_ORIGINAL(setsockopt, LIBC);
 
 	ret = setsockoptp(socket, level, option_name, option_value, option_len);
 
@@ -771,7 +772,7 @@ int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen )
 {
 	static int (*getsocknamep)(int sockfd, struct sockaddr *addr, socklen_t *addrlen );
  
-	BEFORE_ORIGINAL(getsockname, libc.so.6);
+	BEFORE_ORIGINAL(getsockname, LIBC);
  
 	ret = getsocknamep(sockfd, addr, addrlen);
 
@@ -784,7 +785,7 @@ int getdomainname(char *name, size_t len)
 {
 	static int (*getdomainnamep)(char *name, size_t len);
  
-	BEFORE_ORIGINAL(getdomainname, libc.so.6);
+	BEFORE_ORIGINAL(getdomainname, LIBC);
  
 	ret = getdomainnamep(name, len);
 
@@ -797,7 +798,7 @@ int setdomainname(const char *name, size_t len)
 {
 	static int (*setdomainnamep)(const char *name, size_t len);
  
-	BEFORE_ORIGINAL(setdomainname, libc.so.6);
+	BEFORE_ORIGINAL(setdomainname, LIBC);
  
 	ret = setdomainnamep(name, len);
 
@@ -810,7 +811,7 @@ int gethostname(char *name, size_t len)
 {
 	static int (*gethostnamep)(char *name, size_t len);
  
-	BEFORE_ORIGINAL(gethostname, libc.so.6);
+	BEFORE_ORIGINAL(gethostname, LIBC);
  
 	ret = gethostnamep(name, len);
 
@@ -823,7 +824,7 @@ int sethostname(const char *name, size_t len)
 {
 	static int (*sethostnamep)(const char *name, size_t len);
  
-	BEFORE_ORIGINAL(sethostname, libc.so.6);
+	BEFORE_ORIGINAL(sethostname, LIBC);
  
 	ret = sethostnamep(name, len);
 
@@ -836,7 +837,7 @@ int getpeername(int s, struct sockaddr *addr, socklen_t *len)
 {
 	static int (*getpeernamep)(int s, struct sockaddr *addr, socklen_t *len);
 
-	BEFORE_ORIGINAL(getpeername, libc.so.6);
+	BEFORE_ORIGINAL(getpeername, LIBC);
  
 	ret = getpeernamep(s, addr, len);
 
@@ -849,7 +850,7 @@ int getnameinfo(const struct sockaddr *sa, socklen_t salen, char *host, socklen_
 {
 	static int (*getnameinfop)(const struct sockaddr *sa, socklen_t salen, char *host, socklen_t hostlen, char *serv, socklen_t servlen, unsigned int flags);
  
-	BEFORE_ORIGINAL(getnameinfo, libc.so.6);
+	BEFORE_ORIGINAL(getnameinfo, LIBC);
  
 	ret = getnameinfop(sa, salen,host, hostlen, serv, servlen, flags);
 
@@ -864,7 +865,7 @@ struct hostent *gethostbyname(const char *name)
 	static struct hostent * (*gethostbynamep)(const char *name);
 	struct hostent* pret;
  
-	BEFORE_ORIGINAL(gethostbyname, libc.so.6);
+	BEFORE_ORIGINAL(gethostbyname, LIBC);
 
 	pret = gethostbynamep(name);
 
@@ -878,7 +879,7 @@ struct hostent *gethostbyaddr(const void *addr, socklen_t len, int type)
 	static struct hostent * (*gethostbyaddrp)(const void *addr, socklen_t len, int type);
 	struct hostent* pret;
  
-	BEFORE_ORIGINAL(gethostbyaddr, libc.so.6);
+	BEFORE_ORIGINAL(gethostbyaddr, LIBC);
  
 	pret = gethostbyaddrp(addr, len, type);
 
@@ -892,7 +893,7 @@ void sethostent(int stayopen)
 {
 	static void (*sethostentp)(int stayopen);
 
-	BEFORE_ORIGINAL(sethostent, libc.so.6);
+	BEFORE_ORIGINAL(sethostent, LIBC);
  
 	sethostentp(stayopen);
  
@@ -903,7 +904,7 @@ void endhostent(void)
 {
 	static void (*endhostentp)(void);
 
-	BEFORE_ORIGINAL(endhostent, libc.so.6);
+	BEFORE_ORIGINAL(endhostent, LIBC);
 
 	endhostentp();
  
@@ -914,7 +915,7 @@ void herror(const char *s)
 {
 	static void (*herrorp)(const char *s);
 
-	BEFORE_ORIGINAL(herror, libc.so.6);
+	BEFORE_ORIGINAL(herror, LIBC);
  
 	herrorp(s);
  
@@ -926,7 +927,7 @@ const char *hstrerror(int err)
 	static const char* (*hstrerrorp)(int err);
 	const char* cret;
  
-	BEFORE_ORIGINAL(hstrerror, libc.so.6);
+	BEFORE_ORIGINAL(hstrerror, LIBC);
  
 	cret = hstrerrorp(err);
 
@@ -940,7 +941,7 @@ struct hostent *gethostent(void)
 	static struct hostent* (*gethostentp)(void);
 	struct hostent* pret;
  
-	BEFORE_ORIGINAL(gethostent, libc.so.6);
+	BEFORE_ORIGINAL(gethostent, LIBC);
  
 	pret = gethostentp();
 
@@ -954,7 +955,7 @@ struct hostent *gethostbyname2(const char *name, int af)
 	static struct hostent * (*gethostbyname2p)(const char *name, int af);
 	struct hostent* pret;
  
-	BEFORE_ORIGINAL(gethostbyname2, libc.so.6);
+	BEFORE_ORIGINAL(gethostbyname2, LIBC);
  
 	pret = gethostbyname2p(name, af);
 
@@ -967,7 +968,7 @@ int gethostent_r(struct hostent *rret, char *buf, size_t buflen, struct hostent 
 {
 	static int (*gethostent_rp)(struct hostent *rret, char *buf, size_t buflen, struct hostent **result, int *h_errnop);
  
-	BEFORE_ORIGINAL(gethostent_r, libc.so.6);
+	BEFORE_ORIGINAL(gethostent_r, LIBC);
 	
 	ret = gethostent_rp(rret, buf, buflen, result, h_errnop);
  
@@ -981,7 +982,7 @@ int gethostbyaddr_r(const void *addr, socklen_t len, int type, struct hostent *r
 {
 	static int (*gethostbyaddr_rp)(const void *addr, socklen_t len, int type, struct hostent *rret, char *buf, size_t buflen, struct hostent **result, int *h_errnop);
 
-	BEFORE_ORIGINAL(gethostbyaddr_r, libc.so.6);
+	BEFORE_ORIGINAL(gethostbyaddr_r, LIBC);
 
 	ret = gethostbyaddr_rp(addr, len, type, rret, buf, buflen, result, h_errnop);
  
@@ -995,7 +996,7 @@ int gethostbyname_r(const char *name, struct hostent *rret, char *buf, size_t bu
 {
 	static int (*gethostbyname_rp)(const char *name, struct hostent *rret, char *buf, size_t buflen, struct hostent **result, int *h_errnop);
  
-	BEFORE_ORIGINAL(gethostbyname_r, libc.so.6);
+	BEFORE_ORIGINAL(gethostbyname_r, LIBC);
 
 	ret = gethostbyname_rp(name, rret, buf, buflen, result, h_errnop);
 
@@ -1009,7 +1010,7 @@ int gethostbyname2_r(const char *name, int af, struct hostent *rret, char *buf, 
 {
 	static int (*gethostbyname2_rp)(const char *name, int af, struct hostent *rret, char *buf, size_t buflen, struct hostent **result, int *h_errnop);
  
-	BEFORE_ORIGINAL(gethostbyname2_r, libc.so.6);
+	BEFORE_ORIGINAL(gethostbyname2_r, LIBC);
  
 	ret = gethostbyname2_rp(name, af, rret, buf, buflen, result, h_errnop);
 
@@ -1024,7 +1025,7 @@ struct servent *getservbyname(const char *name, const char *proto)
 	static struct servent * (*getservbynamep)(const char *name, const char *proto);
 	struct servent* pret;
  
-	BEFORE_ORIGINAL(getservbyname, libc.so.6);
+	BEFORE_ORIGINAL(getservbyname, LIBC);
  
 	pret = getservbynamep(name, proto);
 
@@ -1037,7 +1038,7 @@ void setservent(int stayopen)
 {
 	static void (*setserventp)(int stayopen);
 
-	BEFORE_ORIGINAL(setservent, libc.so.6);
+	BEFORE_ORIGINAL(setservent, LIBC);
  
 	setserventp(stayopen);
  
@@ -1048,7 +1049,7 @@ void endservent(void)
 {
 	static void (*endserventp)(void);
 
-	BEFORE_ORIGINAL(endservent, libc.so.6);
+	BEFORE_ORIGINAL(endservent, LIBC);
  
 	endserventp();
  
@@ -1060,7 +1061,7 @@ struct servent *getservent(void)
 	static struct servent * (*getserventp)(void);
 	struct servent* pret;
  
-	BEFORE_ORIGINAL(getservent, libc.so.6);
+	BEFORE_ORIGINAL(getservent, LIBC);
  
 	pret = getserventp();
 	
@@ -1074,7 +1075,7 @@ struct servent *getservbyport(int port, const char *proto)
 	static struct servent * (*getservbyportp)(int port, const char *proto);
 	struct servent* pret;
  
-	BEFORE_ORIGINAL(getservbyport, libc.so.6);
+	BEFORE_ORIGINAL(getservbyport, LIBC);
  
 	pret = getservbyportp(port, proto);
 
@@ -1087,7 +1088,7 @@ int getservent_r(struct servent *result_buf, char *buf, size_t buflen, struct se
 {
 	static int (*getservent_rp)(struct servent *result_buf, char *buf, size_t buflen, struct servent **result);
  
-	BEFORE_ORIGINAL(getservent_r, libc.so.6);
+	BEFORE_ORIGINAL(getservent_r, LIBC);
  
 	ret = getservent_rp(result_buf, buf, buflen, result);
 
@@ -1101,7 +1102,7 @@ int getservbyname_r(const char *name, const char *proto, struct servent *result_
 {
 	static int (*getservbyname_rp)(const char *name, const char *proto, struct servent *result_buf, char *buf, size_t buflen, struct servent **result);
  
-	BEFORE_ORIGINAL(getservbyname_r, libc.so.6);
+	BEFORE_ORIGINAL(getservbyname_r, LIBC);
  
 	ret = getservbyname_rp(name, proto, result_buf, buf, buflen, result);
 
@@ -1115,7 +1116,7 @@ int getservbyport_r(int port, const char *proto, struct servent *result_buf, cha
 {
 	static int (*getservbyport_rp)(int port, const char *proto, struct servent *result_buf, char *buf, size_t buflen, struct servent **result);
  
-	BEFORE_ORIGINAL(getservbyport_r, libc.so.6);
+	BEFORE_ORIGINAL(getservbyport_r, LIBC);
  
 	ret = getservbyport_rp(port, proto, result_buf, buf, buflen, result);
 	
@@ -1130,7 +1131,7 @@ struct netent* getnetent(void)
 	static struct netent * (*getnetentp)(void);
 	struct netent* pret;
  
-	BEFORE_ORIGINAL(getnetent, libc.so.6);
+	BEFORE_ORIGINAL(getnetent, LIBC);
  
 	pret = getnetentp();
 
@@ -1144,7 +1145,7 @@ struct netent *getnetbyname(const char *name)
 	static struct netent * (*getnetbynamep)(const char *name);
 	struct netent* pret;
  
-	BEFORE_ORIGINAL(getnetbyname, libc.so.6);
+	BEFORE_ORIGINAL(getnetbyname, LIBC);
  
 	pret = getnetbynamep(name);
 
@@ -1158,7 +1159,7 @@ struct netent *getnetbyaddr(uint32_t net, int type)
 	static struct netent * (*getnetbyaddrp)(uint32_t net, int type);
 	struct netent * pret;
  
-	BEFORE_ORIGINAL(getnetbyaddr, libc.so.6);
+	BEFORE_ORIGINAL(getnetbyaddr, LIBC);
 
 	pret = getnetbyaddrp(net, type);
 
@@ -1171,7 +1172,7 @@ void setnetent(int stayopen)
 {
 	static void (*setnetentp)(int stayopen);
 
-	BEFORE_ORIGINAL(setnetent, libc.so.6);
+	BEFORE_ORIGINAL(setnetent, LIBC);
  
 	setnetentp(stayopen);
  
@@ -1182,7 +1183,7 @@ void endnetent(void)
 {
 	static void (*endnetentp)(void);
 
-	BEFORE_ORIGINAL(endnetent, libc.so.6);
+	BEFORE_ORIGINAL(endnetent, LIBC);
  
 	endnetentp();
  
@@ -1193,7 +1194,7 @@ int getnetent_r(struct netent *result_buf, char *buf, size_t buflen, struct nete
 {
 	static int (*getnetent_rp)(struct netent *result_buf, char *buf, size_t buflen, struct netent **result, int *h_errnop);
  
-	BEFORE_ORIGINAL(getnetent_r, libc.so.6);
+	BEFORE_ORIGINAL(getnetent_r, LIBC);
  
 	ret = getnetent_rp(result_buf, buf, buflen, result, h_errnop);
 
@@ -1207,7 +1208,7 @@ int getnetbyname_r(const char *name, struct netent *result_buf, char *buf, size_
 {
 	static int (*getnetbyname_rp)(const char *name, struct netent *result_buf, char *buf, size_t buflen, struct netent **result, int *h_errnop);
  
-	BEFORE_ORIGINAL(getnetbyname_r, libc.so.6);
+	BEFORE_ORIGINAL(getnetbyname_r, LIBC);
  
 	ret = getnetbyname_rp(name,result_buf, buf, buflen, result, h_errnop);
 
@@ -1221,7 +1222,7 @@ int getnetbyaddr_r(uint32_t net, int type, struct netent *result_buf, char *buf,
 {
 	static int (*getnetbyaddr_rp)(uint32_t net, int type, struct netent *result_buf, char *buf, size_t buflen, struct netent **result, int *h_errnop);
  
-	BEFORE_ORIGINAL(getnetbyaddr_r, libc.so.6);
+	BEFORE_ORIGINAL(getnetbyaddr_r, LIBC);
  
 	ret = getnetbyaddr_rp(net, type, result_buf, buf, buflen, result, h_errnop);
 
@@ -1236,7 +1237,7 @@ struct protoent *getprotoent(void)
 	static struct protoent * (*getprotoentp)(void);
 	struct protoent * pret;
  
-	BEFORE_ORIGINAL(getprotoent, libc.so.6);
+	BEFORE_ORIGINAL(getprotoent, LIBC);
  
 	pret = getprotoentp();
 
@@ -1250,7 +1251,7 @@ struct protoent *getprotobyname(const char *name)
 	static struct protoent * (*getprotobynamep)(const char *name);
 	struct protoent * pret;
  
-	BEFORE_ORIGINAL(getprotobyname, libc.so.6);
+	BEFORE_ORIGINAL(getprotobyname, LIBC);
  
 	pret = getprotobynamep(name);
 
@@ -1264,7 +1265,7 @@ struct protoent *getprotobynumber(int proto)
 	static struct protoent * (*getprotobynumberp)(int proto);
 	struct protoent * pret;
  
-	BEFORE_ORIGINAL(getprotobynumber, libc.so.6);
+	BEFORE_ORIGINAL(getprotobynumber, LIBC);
  
 	pret = getprotobynumberp(proto);
 
@@ -1277,7 +1278,7 @@ void setprotoent(int stayopen)
 {
 	static void (*setprotoentp)(int stayopen);
 
-	BEFORE_ORIGINAL(setprotoent, libc.so.6);
+	BEFORE_ORIGINAL(setprotoent, LIBC);
  
 	setprotoentp(stayopen);
  
@@ -1288,7 +1289,7 @@ void endprotoent(void)
 {
 	static void (*endprotoentp)(void);
 
-	BEFORE_ORIGINAL(endprotoent, libc.so.6);
+	BEFORE_ORIGINAL(endprotoent, LIBC);
  
 	endprotoentp();
  
@@ -1299,7 +1300,7 @@ int getprotoent_r(struct protoent *result_buf, char *buf, size_t buflen, struct 
 {
 	static int (*getprotoent_rp)(struct protoent *result_buf, char *buf, size_t buflen, struct protoent **result);
  
-	BEFORE_ORIGINAL(getprotoent_r, libc.so.6);
+	BEFORE_ORIGINAL(getprotoent_r, LIBC);
  
 	ret = getprotoent_rp(result_buf, buf, buflen, result);
 
@@ -1313,7 +1314,7 @@ int getprotobyname_r(const char *name, struct protoent *result_buf, char *buf, s
 {
 	static int (*getprotobyname_rp)(const char *name, struct protoent *result_buf, char *buf, size_t buflen, struct protoent **result);
  
-	BEFORE_ORIGINAL(getprotobyname_r, libc.so.6);
+	BEFORE_ORIGINAL(getprotobyname_r, LIBC);
  
 	ret = getprotobyname_rp(name, result_buf, buf, buflen, result);
 
@@ -1327,7 +1328,7 @@ int getprotobynumber_r(int proto, struct protoent *result_buf, char *buf, size_t
 {
 	static int (*getprotobynumber_rp)(int proto, struct protoent *result_buf, char *buf, size_t buflen, struct protoent **result);
  
-	BEFORE_ORIGINAL(getprotobynumber_r, libc.so.6);
+	BEFORE_ORIGINAL(getprotobynumber_r, LIBC);
  
 	ret = getprotobynumber_rp(proto, result_buf, buf, buflen, result);
 
@@ -1342,7 +1343,7 @@ unsigned int if_nametoindex (__const char *__ifname)
 	static unsigned int (*if_nametoindexp)(__const char *__ifname);
 	unsigned int uret;
  
-	BEFORE_ORIGINAL(if_nametoindex, libc.so.6);
+	BEFORE_ORIGINAL(if_nametoindex, LIBC);
  
 	uret = if_nametoindexp(__ifname);
 
@@ -1356,7 +1357,7 @@ char *if_indextoname (unsigned int __ifindex, char *__ifname)
 	static char * (*if_indextonamep)(unsigned int __ifindex, char *__ifname);
 	char * cret;
 	
-	BEFORE_ORIGINAL(if_indextoname, libc.so.6);
+	BEFORE_ORIGINAL(if_indextoname, LIBC);
  
 	cret = if_indextonamep(__ifindex, __ifname);
  
@@ -1371,7 +1372,7 @@ struct if_nameindex *if_nameindex (void)
 	static struct if_nameindex * (*if_nameindexp)(void);
 	struct if_nameindex * pret;
  
-	BEFORE_ORIGINAL_NOFILTER(if_nameindex, libc.so.6);
+	BEFORE_ORIGINAL_NOFILTER(if_nameindex, LIBC);
 	
 	pret = if_nameindexp();
  
@@ -1384,7 +1385,7 @@ void if_freenameindex (struct if_nameindex *__ptr)
 {
 	static void (*if_freenameindexp)(struct if_nameindex *__ptr);
 
-	BEFORE_ORIGINAL_NOFILTER(if_freenameindex, libc.so.6);
+	BEFORE_ORIGINAL_NOFILTER(if_freenameindex, LIBC);
  
 	if_freenameindexp(__ptr);
  
@@ -1395,7 +1396,7 @@ int getifaddrs(struct ifaddrs **ifap)
 {
 	static int (*getifaddrsp)(struct ifaddrs **ifap);
  
-	BEFORE_ORIGINAL_NOFILTER(getifaddrs, libc.so.6);
+	BEFORE_ORIGINAL_NOFILTER(getifaddrs, LIBC);
  
 	ret = getifaddrsp(ifap);
 
@@ -1408,7 +1409,7 @@ void freeifaddrs(struct ifaddrs *ifa)
 {
 	static void (*freeifaddrsp)(struct ifaddrs *ifa);
 
-	BEFORE_ORIGINAL_NOFILTER(freeifaddrs, libc.so.6);
+	BEFORE_ORIGINAL_NOFILTER(freeifaddrs, LIBC);
  
 	freeifaddrsp(ifa);
  
@@ -1420,7 +1421,7 @@ int poll(struct pollfd *ufds, unsigned int nfds, int timeout)
 {
 	static int (*pollp)(struct pollfd *ufds, unsigned int nfds, int timeout);
  
-	BEFORE_ORIGINAL(poll, libc.so.6);
+	BEFORE_ORIGINAL(poll, LIBC);
  
 	ret = pollp(ufds, nfds, timeout);
 
@@ -1433,7 +1434,7 @@ int ppoll(struct pollfd *fds, nfds_t nfds, const struct timespec *timeout_ts, co
 {
 	static int (*ppollp)(struct pollfd *fds, nfds_t nfds, const struct timespec *timeout_ts, const sigset_t *sigmask);
  
-	BEFORE_ORIGINAL(ppoll, libc.so.6);
+	BEFORE_ORIGINAL(ppoll, LIBC);
  
 	ret = ppollp(fds, nfds, timeout_ts, sigmask);
 

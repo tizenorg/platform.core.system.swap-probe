@@ -42,12 +42,16 @@ extern "C" {
 	do {														\
 		if(!FUNCTIONPOINTER) {									\
 			probeBlockStart();									\
-			void* lib_handle = dlopen(#LIBNAME, RTLD_LAZY);		\
-			if(lib_handle == NULL) {							\
-				perror("dlopen failed : " #LIBNAME );			\
-				exit(0);										\
+			if(lib_handle[LIBNAME] == NULL) {					\
+				lib_handle[LIBNAME] = dlopen(lib_string[LIBNAME], RTLD_LAZY);		\
+				if(lib_handle[LIBNAME] == NULL) {				\
+					char perror_msg[PERROR_MSG_MAX];			\
+					sprintf(perror_msg, "dlopen failed : %s", lib_string[LIBNAME]);	\
+					perror(perror_msg);							\
+					exit(0);									\
+				}												\
 			}													\
-			void* funcp = dlsym(lib_handle, #FUNCNAME);			\
+			void* funcp = dlsym(lib_handle[LIBNAME], #FUNCNAME);			\
 			if(funcp == NULL || dlerror() != NULL) {			\
 				perror("dlsym failed : " #FUNCNAME);			\
 				exit(0);										\

@@ -25,7 +25,7 @@ bool _DisplayManager::RenderAll(bool check)
 	static methodtype mp;
 	bool ret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations15_DisplayManager9RenderAllEb, libosp-uifw.so, mp);
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations15_DisplayManager9RenderAllEb, LIBOSP_UIFW, mp);
 	probeBlockStart();
 	probeBlockEnd();
 
@@ -43,7 +43,7 @@ bool _DisplayManager::Render(_RootVisualElement& root, bool check)
 	static methodtype mp;
 	bool ret;
 	
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations15_DisplayManager6RenderERNS1_18_RootVisualElementEb, libosp-uifw.so, mp);
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations15_DisplayManager6RenderERNS1_18_RootVisualElementEb, LIBOSP_UIFW, mp);
 	probeBlockStart();
 	probeBlockEnd();
 	ret = (this->*mp)(root, check);
@@ -59,7 +59,7 @@ result _DisplayManager::PostRender(_RootVisualElement& root)
 	static methodtype mp;
 	result ret;
 	
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations15_DisplayManager10PostRenderERNS1_18_RootVisualElementE, libosp-uifw.so, mp);
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations15_DisplayManager10PostRenderERNS1_18_RootVisualElementE, LIBOSP_UIFW, mp);
 	probeBlockStart();
 	probeBlockEnd();
 
@@ -78,7 +78,7 @@ result _DisplayManager::Flush(void)
 	static methodtype mp;
 	result ret;
 	
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations15_DisplayManager5FlushEv, libosp-uifw.so, mp);
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations15_DisplayManager5FlushEv, LIBOSP_UIFW, mp);
 	probeBlockStart();
 	probeBlockEnd();
 	ret = (this->*mp)();
@@ -94,7 +94,7 @@ bool _DisplayManager::UpdateScene(bool force)
 	static methodtype mp;
 	bool ret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations15_DisplayManager11UpdateSceneEb, libosp-uifw.so, mp);
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations15_DisplayManager11UpdateSceneEb, LIBOSP_UIFW, mp);
 	probeBlockStart();
 	probeBlockEnd();
 	ret = (this->*mp)(force);
