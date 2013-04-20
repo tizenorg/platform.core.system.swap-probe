@@ -87,7 +87,7 @@ static void _configure(char* configstr)
 	}
 }
 
-// create sokcet to daemon and connect
+// create socket to daemon and connect
 static int createSocket(void)
 {
 	ssize_t recvlen;
@@ -113,9 +113,16 @@ static int createSocket(void)
 			{
 				if(log.length > 0)
 				{
+					if(log.length >= DA_LOG_MAX)
+						log.length = DA_LOG_MAX - 1;
 					recvlen = recv(gTraceInfo.socket.daemonSock, log.data,
 						log.length, MSG_WAITALL);
 				}
+				else
+				{
+					log.length = 0;
+				}
+
 				log.data[log.length] = '\0';
 
 				if(log.type == MSG_CONFIG)
@@ -233,9 +240,16 @@ static void* recvThread(void* data)
 			{
 				if(log.length > 0)
 				{
+					if(log.length >= DA_LOG_MAX)
+						log.length = DA_LOG_MAX - 1;
 					recvlen = recv(gTraceInfo.socket.daemonSock, log.data,
 						log.length, MSG_WAITALL);
 				}
+				else
+				{
+					log.length = 0;
+				}
+
 				log.data[log.length] = '\0';
 
 				if(log.type == MSG_CONFIG)

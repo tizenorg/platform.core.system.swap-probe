@@ -253,7 +253,7 @@ _ThreadImpl::ThreadProc(void* params) {
 				probeInfo.pID, probeInfo.tID);
 
 		_ThreadImpl* pSelf =(_ThreadImpl*)params;
-		const Thread* pThread;
+		const Thread* pThread = NULL;
 		if(pSelf != null){
 			pThread = pSelf->GetThread();
 		}
@@ -287,7 +287,7 @@ _ThreadImpl::ThreadProc(void* params) {
 				probeInfo.pID, probeInfo.tID);
 
 		_ThreadImpl* pSelf =(_ThreadImpl*)params;
-		const Thread* pThread;
+		const Thread* pThread = NULL;
 		if(pSelf != null){
 			pThread = pSelf->GetThread();
 		}

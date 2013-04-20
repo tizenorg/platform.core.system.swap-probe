@@ -311,6 +311,7 @@ int captureScreen()
 	probeBlockStart();
 
 	setProbePoint(&probeInfo);
+	sdata.ximage = NULL;
 	scrimage = captureScreenShotX(&width, &height, &sdata);
 	if(scrimage != NULL)
 	{
