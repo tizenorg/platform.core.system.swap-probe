@@ -107,7 +107,9 @@ int fclose(FILE* stream)
 	bfiltering = false;
 	PRE_PROBEBLOCK_BEGIN();
 	GET_FD_FROM_FILEP(stream);
-	_fstatret = fstat(_fd, &_statbuf);
+	if(_fd != -1) { 																	
+		_fstatret = fstat(_fd, &_statbuf);
+	}																				
 	PRE_PROBEBLOCK_END();
 
 	ret = fclosep(stream);
