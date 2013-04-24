@@ -68,6 +68,7 @@ void *custom_cb_addr = (void*)-1;
 
 extern __thread unsigned long gSTrace;
 
+int is_profil_allowed = 0;
 volatile int profil_turned_on = 0;
 volatile int profil_thread_on = 0;
 u_long low_pc, high_pc;
@@ -492,6 +493,9 @@ int __profil(int mode)
 	static struct sigaction oact;
 	static struct itimerval otimer;
 
+	if(is_profil_allowed != 1)
+		return 0;
+
 	if(mode == 0)
 	{
 		if(profil_turned_on == 0)
@@ -535,6 +539,7 @@ void __monstartup(u_long lowpc, u_long highpc)
 {
 	low_pc = lowpc;
 	high_pc = highpc;
+	is_profil_allowed = 1;
 
 	pthread_mutex_init(&profil_log_mutex, NULL);
 	probeBlockStart();
