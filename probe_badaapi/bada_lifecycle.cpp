@@ -87,6 +87,11 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 		LIBOSP_UIFW, uiapp_executep);
 
 	probeBlockStart();
+	if(gTraceInfo.exec_map.map_start == NULL)
+	{
+		get_map_address(CALLER_ADDRESS, &(gTraceInfo.exec_map.map_start),
+						&(gTraceInfo.exec_map.map_end));
+	}
 	LIFECYCLE_PROBE_BLOCK("INITIALIZING");
 	probeBlockEnd();
 

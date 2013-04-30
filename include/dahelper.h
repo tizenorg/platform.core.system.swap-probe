@@ -205,6 +205,7 @@ typedef struct
 extern __thread unsigned long	gSTrace;
 extern __traceInfo gTraceInfo;
 
+int get_map_address(void* symbol, void** map_start, void** map_end);
 char** da_backtrace_symbols (void* const* array, int size);
 char** cached_backtrace_symbols (void* const* array, int size);
 

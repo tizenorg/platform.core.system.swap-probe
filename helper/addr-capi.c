@@ -48,7 +48,7 @@ int getExecutableMappingAddress()
 	}
 	else
 	{
-		perror("failed to get address of main");
+		PRINTMSG("failed to get address of main");
 		ret = 0;
 	}
 	probeBlockEnd();
