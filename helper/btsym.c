@@ -104,7 +104,7 @@ static symdata_t* _get_symboldata(char* filepath)
 		return pdata;
 	}
 
-	fd = open(filepath, O_RDONLY);
+	fd = open(filepath, O_RDONLY | O_CLOEXEC);
 	if(fd == -1)
 	{
 		return pdata;

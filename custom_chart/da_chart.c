@@ -118,9 +118,14 @@ void* _chart_timerThread(void* data)
 	ssize_t readsize;
 	chart_interval_callback* cur;
 	float value;
+	sigset_t profsigmask;
 	interval_manager* pmanager = (interval_manager*)data;
 
 	probeBlockStart();
+
+	sigemptyset(&profsigmask);
+	sigaddset(&profsigmask, SIGPROF);
+	pthread_sigmask(SIG_BLOCK, &profsigmask, NULL);
 
 	while((readsize = read(pmanager->timerfd, &exp, sizeof(uint64_t))) > 0)
 	{

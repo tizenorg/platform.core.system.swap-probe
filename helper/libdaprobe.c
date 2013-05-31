@@ -37,6 +37,7 @@
 #include <execinfo.h>		// for backtrace, backtrace_symbols
 #include <unistd.h>			// for write, alarm function, syscall
 #include <pthread.h>		// for pthread_mutex_lock
+#include <signal.h>
 
 #include <sys/syscall.h>	// for syscall
 #include <sys/time.h>		// for gettimeofday
@@ -96,7 +97,7 @@ static int createSocket(void)
 	char buf[16];
 	log_t log;
 
-	if((gTraceInfo.socket.daemonSock = socket(AF_UNIX, SOCK_STREAM,0)) != -1)
+	if((gTraceInfo.socket.daemonSock = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0)) != -1)
 	{
 		bzero(&clientAddr, sizeof(clientAddr));
 		clientAddr.sun_family = AF_UNIX;
@@ -194,9 +195,16 @@ static void* recvThread(void* data)
 	uint64_t xtime;
 	ssize_t recvlen;
 	log_t log;
+	sigset_t profsigmask;
 
 	if(gTraceInfo.socket.daemonSock == -1)
 		return NULL;
+
+	TRACE_STATE_SET(TS_RECV_THREAD);
+
+	sigemptyset(&profsigmask);
+	sigaddset(&profsigmask, SIGPROF);
+	pthread_sigmask(SIG_BLOCK, &profsigmask, NULL);
 
 	FD_ZERO(&readfds);
 	if(g_timerfd > 0)
@@ -289,6 +297,7 @@ static void* recvThread(void* data)
 		}
 	}
 
+	TRACE_STATE_UNSET(TS_RECV_THREAD);
 	return NULL;
 }
 
@@ -748,80 +757,6 @@ unsigned long getTraceState()
 {
 	return gSTrace;
 }
-
-/******************************************************************
- * screen capture and event related functions
- ******************************************************************/
-
-/*
-// TRACE_STATE_SET is not necessary because this function is called in probe block only
-int registeScreenChange(int renderID)
-{
-	if(gTraceInfo.snapshot.isTouchDown == 0)
-	{
-		return 0;
-	}
-
-	if(gTraceInfo.snapshot.snapshotAPICallStartTime == 0){
-		gTraceInfo.snapshot.snapshotAPICallStartTime = getCurrentTime();
-		gTraceInfo.snapshot.snapshotAPICallCount = 1;
-	}
-	else
-		gTraceInfo.snapshot.snapshotAPICallCount++;
-
-	gTraceInfo.snapshot.renderID = renderID;
-
-	return 1;
-}
-
-void detectTouchEvent(int touchID)
-{
-	gTraceInfo.stateTouch = touchID;
-
-	TRACE_STATE_SET(TS_DETECT_TOUCH);
-	if(isOptionEnabled(OPT_SNAPSHOT))
-	{
-		if(touchID == EVENT_TYPE_UP)
-		{
-			if(gTraceInfo.snapshot.isTouchDown == 1)
-			{
-				gTraceInfo.snapshot.snapshotAPICallStartTime = getCurrentTime();
-				captureProbe();
-			}
-			gTraceInfo.snapshot.isTouchDown = 1;
-		}
-	}
-	TRACE_STATE_UNSET(TS_DETECT_TOUCH);
-}
-
-int getTouchState()
-{
-	return gTraceInfo.stateTouch;
-}
-
-// TRACE_STATE_SET is not necessary because this function is called in probe block only
-int isPossibleCapture()
-{
-	if(gTraceInfo.snapshot.isTouchDown == 0)
-	{
-		return 0;
-	}
-	else
-		gTraceInfo.snapshot.snapshotAPICallCount--;
-
-	if(((getCurrentTime() - gTraceInfo.snapshot.snapshotAPICallStartTime) < SNAPSHOT_WAIT_TIME_MAX) && (gTraceInfo.snapshot.snapshotAPICallCount > 0))
-	{
-		return 0;
-	}
-
-	gTraceInfo.snapshot.isTouchDown = 0;
-	gTraceInfo.snapshot.snapshotAPICallStartTime = 0;
-	gTraceInfo.snapshot.snapshotAPICallCount = 0;
-	gTraceInfo.snapshot.renderID = -1;
-
-	return 1;
-}
-*/
 
 /************************************************************************
  * probe functions
