@@ -384,10 +384,10 @@ int captureScreen()
 int initialize_screencapture()
 {
 	// remove all previous screenshot in dir
-	remove_indir(SCREENSHOT_DIRECTORY);
+//	remove_indir(SCREENSHOT_DIRECTORY);
 
 	// make screenshot directory
-	mkdir(SCREENSHOT_DIRECTORY, 0777);
+//	mkdir(SCREENSHOT_DIRECTORY, 0777);
 
 	return 0;
 }
