@@ -39,6 +39,7 @@
 #include "probeinfo.h"
 #include "dacollection.h"
 #include "da_memory.h"
+#include "binproto.h"
 
 //#define INTERNALFILTERING		(!isEnableInternalMalloc())
 #define INTERNALFILTERING		true
@@ -66,6 +67,13 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 	POST_PROBEBLOCK_BEGIN_MEM(LC_MEMORY, "new", VT_PTR, pret, "%u", size);
 	POST_PROBEBLOCK_MIDDLE_MEM(size, MEMORY_API_ALLOC, pret);
 	APPEND_LOG_CALLSTACK();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(p, LC_MEMORY, "d", size);
+	PACK_COMMON_END(p, pret, newp);
+	PACK_MEMORY(p, size, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+
 	POST_PROBEBLOCK_END();
 
 	return pret;

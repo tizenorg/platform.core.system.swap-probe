@@ -50,6 +50,8 @@
 #include "dahelper.h"
 #include "dacollection.h"
 
+#include "binproto.h"
+
 #define APP_INSTALL_PATH		"/opt/apps"
 #define UDS_NAME				"/tmp/da.socket"
 #define TIMERFD_INTERVAL		100000000		// 0.1 sec
@@ -61,6 +63,8 @@ __thread pid_t			gTid = -1;
 int			g_timerfd = 0;
 long		g_total_alloc_size = 0;
 pthread_t	g_recvthread_id;
+
+int log_fd = 0;
 
 int getExecutableMappingAddress();
 
@@ -363,10 +367,15 @@ void __attribute__((constructor)) _init_probe()
 
 	gTraceInfo.init_complete = 1;
 	TRACE_STATE_UNSET(TS_INIT);
+
+	OPEN_LOG();
 }
 
 void __attribute__((destructor)) _fini_probe()
 {
+	if (log_fd > 0) {
+		close(log_fd);
+	}
 	int i;
 	TRACE_STATE_SET(TS_FINIT);
 
