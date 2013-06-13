@@ -96,13 +96,8 @@ static  char *pack_args(char *to, const char *fmt, ...)
 	uint32_t num = strlen(fmt);
 	const char *t = fmt;
 
-	/* printf("num = %d\n", num); */
-
 	memcpy(to, &num, sizeof(num));
 	to += sizeof(num);
-
-	memcpy(to, fmt, num);
-	to += num;
 
 	va_start(args, fmt);
 
@@ -119,43 +114,43 @@ static  char *pack_args(char *to, const char *fmt, ...)
 		switch (*t) {
 		case 'c':
 			c = (uint8_t)va_arg(args, uint32_t);
-			/* printf("char = %c\n", c); */
+			*to++ = *t;
 			memcpy(to, &c, sizeof(c));
 			to += sizeof(c);
 			break;
 		case 'd':
 			d = va_arg(args, uint32_t);
-			/* printf("int = %d\n", d); */
+			*to++ = *t;
 			memcpy(to, &d, sizeof(d));
 			to += sizeof(d);
 			break;
 		case 'x':
 			x = va_arg(args, uint64_t);
-			/* printf("long = %lld\n", x); */
+			*to++ = *t;
 			memcpy(to, &x, sizeof(x));
 			to += sizeof(x);
 			break;
 		case 'p':
 			p = va_arg(args, uint64_t);
-			/* printf("pointer = %p\n", (void *)p); */
+			*to++ = *t;
 			memcpy(to, &p, sizeof(p));
 			to += sizeof(p);
 			break;
 		case 'f':
 			f = (float)va_arg(args, double);
-			/* printf("float = %f\n", f); */
+			*to++ = *t;
 			memcpy(to, &f, sizeof(f));
 			to += sizeof(f);
 			break;
 		case 'w':
 			w = va_arg(args, double);
-			/* printf("double = %e\n", w); */
+			*to++ = *t;
 			memcpy(to, &w, sizeof(w));
 			to += sizeof(w);
 			break;
 		case 's':
 			s = va_arg(args, char *);
-			/* printf("string = %s\n", s); */
+			*to++ = *t;
 			n = strlen(s) + 1;
 			strncpy(to, s, n);
 			to += n;
