@@ -48,6 +48,8 @@
 //#include "dautil.h"
 #include "da_event.h"
 
+#include "binproto.h"
+
 bool touch_pressed = false;
 
 #define HW_EVENT_LOG(_EVENTTYPE, _DETAILTYPE, _X, _Y, _KEYCODE, _EXTRA)			\
@@ -167,6 +169,21 @@ Eina_Bool ecore_event_evas_mouse_move(void *data, int type, void *event)
 			{
 				Ecore_Event_Mouse_Move* pEv = (Ecore_Event_Mouse_Move*)event;
 				HW_EVENT_LOG(_EVENT_TOUCH, _TOUCH_MOVED, pEv->root.x, pEv->root.y, "", pEv->multi.device);
+
+				PREPARE_LOCAL_BUF();
+				PACK_COMMON_BEGIN(p,
+						  MSG_PROBE_UIEVENT,
+						  LC_UIEVENT,
+						  "pdp", data, type, event);
+				PACK_COMMON_END(p, 0, ecore_event_evas_mouse_movep, 0);
+				PACK_UIEVENT(p,
+					     _EVENT_TOUCH,
+					     _TOUCH_MOVED,
+					     pEv->root.x,
+					     pEv->root.y,
+					     "",
+					     pEv->multi.device);
+				FLUSH_LOCAL_BUF();
 			}
 		}
 		probeBlockEnd();

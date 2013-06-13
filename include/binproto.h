@@ -241,7 +241,7 @@ static  char *pack_caller_pc(char *to)
 	to = pack_int32(to, detail_type); \
 	to = pack_int32(to, x); \
 	to = pack_int32(to, y); \
-	to = pack_int32(to, info1); \
+	to = pack_string(to, info1); \
 	to = pack_int32(to, info2);
 
 #define PACK_RESOURCE(to, size, fd_value, fd_type, fd_api_type, \
