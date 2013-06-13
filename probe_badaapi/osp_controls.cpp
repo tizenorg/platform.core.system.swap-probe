@@ -37,6 +37,8 @@
 #include "dahelper.h"
 #include "osp_probe.h"
 
+#include "binproto.h"
+
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Animations;
@@ -89,6 +91,17 @@ result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 			APPEND_LOG_CONTROL_OSP(parent);
 			APPEND_LOG_CONTROL_OSP(&frame);
 			printLog(&log, MSG_LOG);
+
+			PREPARE_LOCAL_BUF();
+			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+					  LC_UICREATE,
+					  "p", &frame);
+			// PACK_COMMON_END(ret, uiapp_addframep, 0);
+			// TODO: type cast for function pointer
+			PACK_COMMON_END(ret, 0, 0);
+			PACK_UICONTROL(parent);
+			PACK_UICONTROL(&frame);
+			FLUSH_LOCAL_BUF();
 		}
 	}
 	probeBlockEnd();

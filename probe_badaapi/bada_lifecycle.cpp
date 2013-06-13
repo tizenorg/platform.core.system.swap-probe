@@ -37,6 +37,8 @@
 #include "probeinfo.h"
 #include "osp_probe.h"
 
+#include "binproto.h"
+
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
 
@@ -96,6 +98,12 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 	probeBlockEnd();
 
 	ret = uiapp_executep(pUiAppFactory, pArguments);
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE,
+			  "pp", pUiAppFactory, pArguments);
+	PACK_COMMON_END(ret, uiapp_executep, 0);
+	FLUSH_LOCAL_BUF();
 
 	return ret;
 }

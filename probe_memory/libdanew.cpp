@@ -69,9 +69,9 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 	APPEND_LOG_CALLSTACK();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(p, MSG_PROBE_MEMORY, LC_MEMORY, "d", size);
-	PACK_COMMON_END(p, pret, newp, newerrno);
-	PACK_MEMORY(p, size, MEMORY_API_ALLOC, pret);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "d", size);
+	PACK_COMMON_END(pret, newp, newerrno);
+	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 
 	POST_PROBEBLOCK_END();

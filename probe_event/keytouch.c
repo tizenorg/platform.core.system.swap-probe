@@ -171,13 +171,11 @@ Eina_Bool ecore_event_evas_mouse_move(void *data, int type, void *event)
 				HW_EVENT_LOG(_EVENT_TOUCH, _TOUCH_MOVED, pEv->root.x, pEv->root.y, "", pEv->multi.device);
 
 				PREPARE_LOCAL_BUF();
-				PACK_COMMON_BEGIN(p,
-						  MSG_PROBE_UIEVENT,
+				PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT,
 						  LC_UIEVENT,
 						  "pdp", data, type, event);
-				PACK_COMMON_END(p, 0, ecore_event_evas_mouse_movep, 0);
-				PACK_UIEVENT(p,
-					     _EVENT_TOUCH,
+				PACK_COMMON_END(0, ecore_event_evas_mouse_movep, 0);
+				PACK_UIEVENT(_EVENT_TOUCH,
 					     _TOUCH_MOVED,
 					     pEv->root.x,
 					     pEv->root.y,

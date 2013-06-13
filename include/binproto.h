@@ -32,7 +32,7 @@
 #define MSG_PROBE_SYNC 0x3010
 
 // TODO: remove this copy-paste
-#define CALLER_ADDRESS	\
+#define CALLER_ADDRESS							\
 	((void*) __builtin_extract_return_addr(__builtin_return_address(0)))
 
 
@@ -50,28 +50,11 @@ static  char *pack_int64(char *to, uint64_t val)
 	return to + sizeof(uint64_t);
 }
 
-static  char *pack_addr(char *to, unsigned long addr)
-{
-	return pack_int64(to, (intptr_t)addr);
-}
-
 static  char *pack_string(char *to, const char *str)
 {
 	size_t len = strlen(str) + 1;
 	strncpy(to, str, len);
 	return to + len;
-}
-
-
-static  char *pack_msg_id(char *to, uint32_t msg_id)
-{
-	return pack_int32(to, msg_id);
-}
-
-static  char *pack_seq_num(char *to)
-{
-	// TODO: get seq num
-	return pack_int32(to, 0);
 }
 
 static  char *pack_timestamp(char *to)
@@ -83,11 +66,6 @@ static  char *pack_timestamp(char *to)
 	to = pack_int32(to, tv.tv_usec * 1000);
 
 	return to;
-}
-
-static  char *pack_api_id(char *to, uint32_t api_id)
-{
-	return pack_int32(to, api_id);
 }
 
 static  char *pack_args(char *to, const char *fmt, ...)
@@ -165,152 +143,149 @@ static  char *pack_args(char *to, const char *fmt, ...)
 	return to;
 }
 
-static  char *pack_pid(char *to)
-{
-	return pack_int32(to, getpid());
-}
+#define BUF_PTR p
+#define PACK_INT32(val)				\
+	BUF_PTR = pack_int32(BUF_PTR, val);
+#define PACK_INT64(val)				\
+	BUF_PTR = pack_int64(BUF_PTR, val);
+#define PACK_STRING(str)			\
+	BUF_PTR = pack_string(BUF_PTR, str);
 
-static  char *pack_tid(char *to)
-{
-	return pack_int32(to, syscall(__NR_gettid));
-}
+#define PACK_COMMON_BEGIN(msg_id, api_id, fmt, ...)		\
+	do {							\
+		BUF_PTR = pack_int32(BUF_PTR, msg_id);		\
+		BUF_PTR = pack_int32(BUF_PTR, 0);		\
+		BUF_PTR = pack_timestamp(BUF_PTR);		\
+		BUF_PTR = pack_int32(BUF_PTR, 0);		\
+		BUF_PTR = pack_int32(BUF_PTR, api_id);		\
+		BUF_PTR = pack_int32(BUF_PTR, getpid());		\
+		BUF_PTR = pack_int32(BUF_PTR, syscall(__NR_gettid));	\
+		BUF_PTR = pack_args(BUF_PTR, fmt, __VA_ARGS__);	\
+	} while (0)
 
-static  char *pack_return(char *to, uint64_t ret)
-{
-	return pack_int64(to, ret);
-}
+#define PACK_COMMON_END(ret, pc, errn)				\
+	do {							\
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(ret));	\
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(pc));	\
+		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)errn);	\
+		BUF_PTR = pack_int32(BUF_PTR, 0);		\
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); \
+		BUF_PTR = pack_int32(BUF_PTR, 0);		\
+		BUF_PTR = pack_int32(BUF_PTR, 0);		\
+	} while (0)
 
-static  char *pack_pc(char *to, uint64_t pc)
-{
-	return pack_int64(to, pc);
-}
+#define PACK_MEMORY(size, memory_api_type, addr)		\
+	do {							\
+		BUF_PTR = pack_int32(p, size);			\
+		BUF_PTR = pack_int32(p, memory_api_type);	\
+		BUF_PTR = pack_int64(p, (uintptr_t)addr);	\
+	} while (0)
 
-static  char *pack_errno(char *to, uint32_t en)
-{
-	return pack_int32(to, en);
-}
+#define PACK_UICONTROL(control)						\
+	do {								\
+		if (unlikely(control == NULL)) {			\
+			BUF_PTR = pack_string(BUF_PTR, "");		\
+			BUF_PTR = pack_string(BUF_PTR, "");		\
+			BUF_PTR = pack_int64(BUF_PTR, 0);		\
+		} else {						\
+			char *type = NULL, *name = NULL;		\
+			if (find_object_hash((void*)(control),		\
+					     &type, &name) == 1) {	\
+				BUF_PTR = pack_string(BUF_PTR, type);	\
+				BUF_PTR = pack_string(BUF_PTR, name);	\
+			} else {					\
+				BUF_PTR = pack_string(BUF_PTR, "");	\
+				BUF_PTR = pack_string(BUF_PTR, "");	\
+			}						\
+			BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(control)); \
+		}							\
+	} while(0)
 
-static  char *pack_internal_call(char *to)
-{
-	// TODO: where to get int call?
-	return pack_int32(to, 0);
-}
+#define PACK_UIEVENT(event_type, detail_type, x, y, info1, info2)	\
+	do {								\
+		BUF_PTR = pack_int32(BUF_PTR, event_type);		\
+		BUF_PTR = pack_int32(BUF_PTR, detail_type);		\
+		BUF_PTR = pack_int32(BUF_PTR, x);			\
+		BUF_PTR = pack_int32(BUF_PTR, y);			\
+		BUF_PTR = pack_string(BUF_PTR, info1);			\
+		BUF_PTR = pack_int32(BUF_PTR, info2);			\
+	} while (0)
 
-static  char *pack_caller_pc(char *to)
-{
-	return pack_int64(to, (uintptr_t)CALLER_ADDRESS);
-}
+/* #define PACK_RESOURCE(size, fd_value, fd_type, fd_api_type, file_size,	\ */
+/* 		      file_path)					\ */
+/* 	do {								\ */
+/* 		BUF_PTR = pack_int32(BUF_PTR, size);			\ */
+/* 		BUF_PTR = pack_int32(BUF_PTR, fd_value);		\ */
+/* 		BUF_PTR = pack_int32(BUF_PTR, fd_type);			\ */
+/* 		BUF_PTR = pack_int32(BUF_PTR, fd_api_type);		\ */
+/* 		BUF_PTR = pack_int32(BUF_PTR, file_size);		\ */
+/* 		BUF_PTR = pack_string(BUF_PTR, file_path);		\ */
+/* 	} while (0) */
 
+/* #define PACK_SCREENSHOT(image_file_path, orienation)			\ */
+/* 		do {							\ */
+/* 			  BUF_PTR = pack_string(BUF_PTR, image_file_path); \ */
+/* 			  BUF_PTR = pack_int32(BUF_PTR, orienation);	\ */
+/* 		  } while (0) */
 
-#define PACK_COMMON_BEGIN(to, msg_id, api_id, fmt, ...)	\
-	to = pack_msg_id(to, msg_id);			\
-	to = pack_seq_num(to);				\
-	to = pack_timestamp(to);			\
-	to = pack_int32(to, 0);				\
-	to = pack_api_id(to, api_id);			\
-	to = pack_pid(to);				\
-	to = pack_tid(to);				\
-	to = pack_args(to, fmt, __VA_ARGS__)
+/* #define PACK_SCENE(scene_name, form_name, form_pointer,		\ */
+/* 		   panel_name, panel_pointer, transition_time,	\ */
+/* 		   user_transition_time)			\ */
+/* 		do {							\ */
+/* 	BUF_PTR = pack_string(BUF_PTR, scene_name);				\ */
+/* 	BUF_PTR = pack_string(BUF_PTR, form_name);				\ */
+/* 	BUF_PTR = pack_int64(BUF_PTR, form_pointer);			\ */
+/* 	BUF_PTR = pack_string(BUF_PTR, panel_name);				\ */
+/* 	BUF_PTR = pack_int64(BUF_PTR, panel_pointer);			\ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, transition_time);			\ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, user_transition_time);		\ */
+/* 		} while (0) */
 
-#define PACK_COMMON_END(to, ret, pc, errn)	      \
-	to = pack_return(to, (uintptr_t)ret);	      \
-	to = pack_pc(to, (uintptr_t)pc);	      \
-	to = pack_errno(to, (uint32_t)errn);	      \
-	to = pack_internal_call(to);		      \
-	to = pack_caller_pc(to);		      \
-	to = pack_int32(to, 0);			      \
-	to = pack_int32(to, 0);
+/* #define PACK_THREAD(BUF_PTRthread_id, osp_thread_id, thread_type, api_type)	\ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, pthread_id);					\ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, osp_thread_id);				\ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, thread_type);					\ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, api_type); */
 
-#define PACK_MEMORY(to, size, memory_api_type, addr) \
-	to = pack_int32(to, size); \
-	to = pack_int32(to, memory_api_type); \
-	to = pack_int64(to, (uintptr_t)addr);
+/* #define PACK_CUSTOM(handle, type, name, color, value)	\ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, handle);			\ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, type);			\ */
+/* 	BUF_PTR = pack_string(BUF_PTR, name);			\ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, color);			\ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, value); */
 
-#define PACK_UICONTROL(to, parent_name, parent_class_name,		\
-		       parent_pointer, child_name, child_class_name,	\
-		       child_pointer) \
-	to = pack_string(to, parent_name); \
-	to = pack_string(to, parent_class_name); \
-	to = pack_int64(to, parent_pointer); \
-	to = pack_string(to, child_name); \
-	to = pack_string(to, child_class_name); \
-	to = pack_int64(to, child_pointer);
-
-#define PACK_UIEVENT(to, event_type, detail_type, x, y, info1, info2) \
-	to = pack_int32(to, event_type); \
-	to = pack_int32(to, detail_type); \
-	to = pack_int32(to, x); \
-	to = pack_int32(to, y); \
-	to = pack_string(to, info1); \
-	to = pack_int32(to, info2);
-
-#define PACK_RESOURCE(to, size, fd_value, fd_type, fd_api_type, \
-		      file_size, file_path) \
-	to = pack_int32(to, size); \
-	to = pack_int32(to, fd_value); \
-	to = pack_int32(to, fd_type); \
-	to = pack_int32(to, fd_api_type); \
-	to = pack_int32(to, file_size); \
-	to = pack_string(to, file_path);
-
-#define PACK_LIFECYCLE(to)
-
-#define PACK_SCREENSHOT(to, image_file_path, orienation) \
-	to = pack_string(to, image_file_path); \
-	to = pack_int32(to, orienation);
-
-#define PACK_SCENE(to, scene_name, form_name, form_pointer,	\
-		   panel_name, panel_pointer, transition_time,	\
-		   user_transition_time)			\
-	to = pack_string(to, scene_name); \
-	to = pack_string(to, form_name); \
-	to = pack_int64(to, form_pointer); \
-	to = pack_string(to, panel_name); \
-	to = pack_int64(to, panel_pointer); \
-	to = pack_int32(to, transition_time); \
-	to = pack_int32(to, user_transition_time);
-
-#define PACK_THREAD(to, pthread_id, osp_thread_id, thread_type, api_type) \
-	to = pack_int32(to, pthread_id); \
-	to = pack_int32(to, osp_thread_id); \
-	to = pack_int32(to, thread_type); \
-	to = pack_int32(to, api_type);
-
-#define PACK_CUSTOM(to, handle, type, name, color, value) \
-	to = pack_int32(to, handle); \
-	to = pack_int32(to, type); \
-	to = pack_string(to, name); \
-	to = pack_int32(to, color); \
-	to = pack_int32(to, value);
-
-#define PACK_SYNC(to, sync_val, sync_type, api_type) \
-	to = pack_int32(to, sync_val);		     \
-	to = pack_int32(to, sync_type);		     \
-	to = pack_int32(to, api_type);
+/* #define PACK_SYNC(sync_val, sync_type, api_type)     \ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, sync_val);		     \ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, sync_type);		     \ */
+/* 	BUF_PTR = pack_int32(BUF_PTR, api_type); */
 
 #define LOG_PATH "/tmp/trace.bin"
-#define OPEN_LOG()				\
-	log_fd = creat(LOG_PATH, 0644);		\
-	if (log_fd == -1) {			\
-		exit(1);			\
-	}
-
+#define OPEN_LOG()					\
+		do {					\
+			log_fd = creat(LOG_PATH, 0644);	\
+			if (log_fd == -1) {		\
+				exit(1);		\
+			}				\
+		} while (0)
 #define CLOSE_LOG()				\
-	if (log_fd > 0) {			\
-		close(log_fd);			\
-	}
+		do {				\
+			if (log_fd > 0) {	\
+				close(log_fd);	\
+			}			\
+		} while (0)
+
 
 
 #define LOCAL_BUF_SIZE 1024
 #define PREPARE_LOCAL_BUF()			\
-	char buf[LOCAL_BUF_SIZE];		\
-	char *p = buf;
+		char buf[LOCAL_BUF_SIZE];	\
+		char *p = buf;
 
 #define MSG_LEN_OFFSET 16
 #define MSG_HDR_LEN 20
-#define FLUSH_LOCAL_BUF()			\
-	*(uint32_t *)(buf + MSG_LEN_OFFSET) = (p - buf) - MSG_HDR_LEN;	\
-	write(log_fd, buf, p - buf);
+#define FLUSH_LOCAL_BUF()						\
+		*(uint32_t *)(buf + MSG_LEN_OFFSET) = (p - buf) - MSG_HDR_LEN; \
+		write(log_fd, buf, p - buf);
 
 
 /* data */
