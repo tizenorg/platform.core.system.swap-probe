@@ -18,6 +18,19 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
+#include <sys/time.h>
+
+#define MSG_PROBE_MEMORY 0x3001
+#define MSG_PROBE_UICONTROL 0x3002
+#define MSG_PROBE_UIEVENT 0x3003
+#define MSG_PROBE_RESOUCE 0x3004
+#define MSG_PROBE_LIFECYCLE 0x30015
+#define MSG_PROBE_SCREENSHOT 0x3006
+#define MSG_PROBE_SCENE 0x3007
+#define MSG_PROBE_THREAD 0x3008
+#define MSG_PROBE_CUSTOM 0x3009
+#define MSG_PROBE_SYNC 0x3010
+
 // TODO: remove this copy-paste
 #define CALLER_ADDRESS	\
 	((void*) __builtin_extract_return_addr(__builtin_return_address(0)))
@@ -49,6 +62,28 @@ static  char *pack_string(char *to, const char *str)
 	return to + len;
 }
 
+
+static  char *pack_msg_id(char *to, uint32_t msg_id)
+{
+	return pack_int32(to, msg_id);
+}
+
+static  char *pack_seq_num(char *to)
+{
+	// TODO: get seq num
+	return pack_int32(to, 0);
+}
+
+static  char *pack_timestamp(char *to)
+{
+	struct timeval tv;
+
+	gettimeofday(&tv, NULL);
+	to = pack_int32(to, tv.tv_sec);
+	to = pack_int32(to, tv.tv_usec * 1000);
+
+	return to;
+}
 
 static  char *pack_api_id(char *to, uint32_t api_id)
 {
@@ -172,18 +207,24 @@ static  char *pack_caller_pc(char *to)
 }
 
 
-#define PACK_COMMON_BEGIN(to, api_id, fmt, ...) \
-	to = pack_api_id(to, api_id); \
-	to = pack_pid(to); \
-	to = pack_tid(to); \
+#define PACK_COMMON_BEGIN(to, msg_id, api_id, fmt, ...)	\
+	to = pack_msg_id(to, msg_id);			\
+	to = pack_seq_num(to);				\
+	to = pack_timestamp(to);			\
+	to = pack_int32(to, 0);				\
+	to = pack_api_id(to, api_id);			\
+	to = pack_pid(to);				\
+	to = pack_tid(to);				\
 	to = pack_args(to, fmt, __VA_ARGS__)
 
-#define PACK_COMMON_END(to, ret, pc)	     \
-	to = pack_return(to, (uintptr_t)ret); \
-	to = pack_pc(to, (uintptr_t)pc);	     \
-	to = pack_errno(to, (uint32_t)newerrno);     \
-	to = pack_internal_call(to); \
-	to = pack_caller_pc(to);
+#define PACK_COMMON_END(to, ret, pc, errn)	      \
+	to = pack_return(to, (uintptr_t)ret);	      \
+	to = pack_pc(to, (uintptr_t)pc);	      \
+	to = pack_errno(to, (uint32_t)errn);	      \
+	to = pack_internal_call(to);		      \
+	to = pack_caller_pc(to);		      \
+	to = pack_int32(to, 0);			      \
+	to = pack_int32(to, 0);
 
 #define PACK_MEMORY(to, size, memory_api_type, addr) \
 	to = pack_int32(to, size); \
@@ -270,7 +311,10 @@ static  char *pack_caller_pc(char *to)
 	char buf[LOCAL_BUF_SIZE];		\
 	char *p = buf;
 
+#define MSG_LEN_OFFSET 16
+#define MSG_HDR_LEN 20
 #define FLUSH_LOCAL_BUF()			\
+	*(uint32_t *)(buf + MSG_LEN_OFFSET) = (p - buf) - MSG_HDR_LEN;	\
 	write(log_fd, buf, p - buf);
 
 
