@@ -254,10 +254,12 @@ static  char *pack_args(char *to, const char *fmt, ...)
 /* 	BUF_PTR = pack_int32(BUF_PTR, color);			\ */
 /* 	BUF_PTR = pack_int32(BUF_PTR, value); */
 
-/* #define PACK_SYNC(sync_val, sync_type, api_type)     \ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, sync_val);		     \ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, sync_type);		     \ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, api_type); */
+#define PACK_SYNC(sync_val, sync_type, api_type)		     \
+	do {						     \
+		BUF_PTR = pack_int32(BUF_PTR, sync_val);	     \
+		BUF_PTR = pack_int32(BUF_PTR, sync_type);	     \
+		BUF_PTR = pack_int32(BUF_PTR, api_type);	     \
+	} while (0)
 
 #define LOG_PATH "/tmp/trace.bin"
 #define OPEN_LOG()					\

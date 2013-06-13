@@ -36,6 +36,8 @@
 #include "dahelper.h"
 #include "da_sync.h"
 
+#include "binproto.h"
+
 static enum DaOptions _sopt = OPT_THREAD;
 
 int pthread_mutex_init(pthread_mutex_t *mutex, 
@@ -95,6 +97,12 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 	PRE_PROBEBLOCK_END();
 
 	ret = pthread_mutex_lockp(mutex);
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "p", mutex);
+	PACK_COMMON_END(ret, pthread_mutex_lockp, newerrno);
+	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
+	FLUSH_LOCAL_BUF();
 
 	// send WAIT_END log
 	newerrno = errno;
