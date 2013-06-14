@@ -88,7 +88,7 @@ static void *malloc_hook(size_t size, const void* caller)
 
 	if(pret != NULL && getTraceState() == 0)
 	{
-		add_memory_hash(pret, size);
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
@@ -118,7 +118,7 @@ static void free_hook(void *ptr, const void *caller)
 
 	if(ptr != NULL && getTraceState() == 0)
 	{
-		del_memory_hash(ptr);
+		del_memory_hash(ptr, MEMTYPE_FREE, NULL);
 	}
 
 	free(ptr);
@@ -149,14 +149,14 @@ static void* realloc_hook(void *memblock, size_t size, const void* caller)
 
 	if(memblock != NULL && getTraceState() == 0)
 	{
-		del_memory_hash(memblock);
+		del_memory_hash(memblock, MEMTYPE_FREE, NULL);
 	}
 
 	pret = realloc(memblock, size);
 
 	if(pret != NULL && getTraceState() == 0)
 	{
-		add_memory_hash(pret, size);
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
@@ -196,8 +196,8 @@ void *calloc(size_t nelem, size_t elsize)
 
 	if(pret != NULL && getTraceState() == 0)
 	{
-		add_memory_hash(pret, nelem * elsize);
-	}
+		add_memory_hash(pret, nelem * elsize, MEMTYPE_ALLOC, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
+    }
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 

@@ -44,7 +44,7 @@
 
 static enum DaOptions _sopt = OPT_THREAD;
 
-extern	__thread unsigned int gProbeDepth;
+extern	__thread int gProbeDepth;
 
 namespace Tizen {
 namespace Base {

@@ -83,7 +83,8 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 {
 	typedef result (*methodType)(UiAppInstanceFactory pFactory, const IList* pArgs);
 	static methodType uiapp_executep;
-	DECLARE_VARIABLE_STANDARD;
+	probeInfo_t	probeInfo;
+	int __attribute__((unused)) ret;
 	Ecore_Event_Handler* handler;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp7ExecuteEPFPS1_vEPKNS_4Base10Collection5IListE,

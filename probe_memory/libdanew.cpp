@@ -43,6 +43,8 @@
 #include "da_memory.h"
 #include "binproto.h"
 
+extern __thread int gProbeDepth;
+
 static enum DaOptions _sopt = OPT_ALLOC;
 
 void *operator new(std::size_t size) throw (std::bad_alloc)
@@ -60,7 +62,7 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 
 	if(pret != NULL && getTraceState() == 0)
 	{
-		add_memory_hash(pret, size);
+		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
@@ -93,7 +95,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 
 	if(pret != NULL && getTraceState() == 0)
 	{
-		add_memory_hash(pret, size);
+		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
@@ -115,6 +117,7 @@ void operator delete(void *ptr) throw()
 {
 	static void (*deletep)(void *ptr);
 	DECLARE_VARIABLE_STANDARD;
+	unsigned short caller;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPv, deletep);
 
@@ -123,7 +126,15 @@ void operator delete(void *ptr) throw()
 
 	if(ptr != NULL && getTraceState() == 0)
 	{
-		del_memory_hash(ptr);
+		probeBlockStart();
+		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
+		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
+		{
+			setProbePoint(&probeInfo);
+			blockresult = 2;
+			gProbeDepth++;
+		}
+		probeBlockEnd();
 	}
 
 	deletep(ptr);
@@ -145,6 +156,7 @@ void operator delete[](void *ptr) throw()
 {
 	static void (*deletep)(void *ptr);
 	DECLARE_VARIABLE_STANDARD;
+	unsigned short caller;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPv, deletep);
 
@@ -153,7 +165,15 @@ void operator delete[](void *ptr) throw()
 
 	if(ptr != NULL && getTraceState() == 0)
 	{
-		del_memory_hash(ptr);
+		probeBlockStart();
+		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
+		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
+		{
+			setProbePoint(&probeInfo);
+			blockresult = 2;
+			gProbeDepth++;
+		}
+		probeBlockEnd();
 	}
 
 	deletep(ptr);
@@ -186,7 +206,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 
 	if(pret != NULL && getTraceState() == 0)
 	{
-		add_memory_hash(pret, size);
+		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
@@ -219,7 +239,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 
 	if(pret != NULL && getTraceState() == 0)
 	{
-		add_memory_hash(pret, size);
+		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
@@ -241,6 +261,7 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 {
 	static void (*deletep)(void *ptr, const std::nothrow_t& nothrow);
 	DECLARE_VARIABLE_STANDARD;
+	unsigned short caller;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPvRKSt9nothrow_t, deletep);
 
@@ -249,7 +270,15 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 
 	if(ptr != NULL && getTraceState() == 0)
 	{
-		del_memory_hash(ptr);
+		probeBlockStart();
+		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
+		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
+		{
+			setProbePoint(&probeInfo);
+			blockresult = 2;
+			gProbeDepth++;
+		}
+		probeBlockEnd();
 	}
 
 	deletep(ptr, nothrow);
@@ -271,6 +300,7 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 {
 	static void (*deletep)(void *ptr, const std::nothrow_t& nothrow);
 	DECLARE_VARIABLE_STANDARD;
+	unsigned short caller;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPvRKSt9nothrow_t, deletep);
 
@@ -279,7 +309,15 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 
 	if(ptr != NULL && getTraceState() == 0)
 	{
-		del_memory_hash(ptr);
+		probeBlockStart();
+		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
+		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
+		{
+			setProbePoint(&probeInfo);
+			blockresult = 2;
+			gProbeDepth++;
+		}
+		probeBlockEnd();
 	}
 
 	deletep(ptr, nothrow);

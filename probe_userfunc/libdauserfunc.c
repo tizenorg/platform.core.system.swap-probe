@@ -68,8 +68,6 @@
 
 void *custom_cb_addr = (void*)-1;
 
-extern __thread unsigned long gSTrace;
-
 int profil_option = 0;
 volatile int profil_turned_on = 0;
 volatile int profil_thread_on = 0;

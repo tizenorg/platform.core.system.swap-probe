@@ -306,6 +306,26 @@ result Frame::SetCurrentForm(const Form& form)
 	return ret;
 }
 
+result Frame::SetCurrentForm(Form* pForm)
+{
+	typedef result (Frame::*methodType)(Form* pForm);
+	static methodType frame_setcurrentformp;
+	result ret;
+
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls5Frame14SetCurrentFormEPNS1_4FormE,
+			LIBOSP_UIFW, frame_setcurrentformp);
+
+	ret = (this->*frame_setcurrentformp)(pForm);
+
+	probeBlockStart();
+	SCREENSHOT_SET();
+//	SCREENSHOT_DONE();
+	probeBlockEnd();
+
+	return ret;
+}
+
+
 }		// end of namespace Tizen::Ui::Controls
 
 namespace Animations {
@@ -328,6 +348,26 @@ result FrameAnimator::SetCurrentForm(const Tizen::Ui::Controls::Form& form)
 
 	return ret;
 }
+
+result FrameAnimator::SetCurrentForm(Tizen::Ui::Controls::Form* pForm)
+{
+	typedef result (FrameAnimator::*methodType)(Tizen::Ui::Controls::Form* pForm);
+	static methodType frameanimator_setcurrentformp;
+	result ret;
+
+	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations13FrameAnimator14SetCurrentFormEPNS0_8Controls4FormE,
+			LIBOSP_UIFW, frameanimator_setcurrentformp);
+
+	ret = (this->*frameanimator_setcurrentformp)(pForm);
+
+	probeBlockStart();
+	SCREENSHOT_SET();
+//	SCREENSHOT_DONE();
+	probeBlockEnd();
+
+	return ret;
+}
+
 
 }		// end of namespace Tizen::Ui::Animations
 

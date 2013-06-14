@@ -55,6 +55,25 @@ extern "C"{
 #define DETECTORHASH_LOCK	pthread_mutex_lock(&(_hashinfo.dttHashMutex))
 #define DETECTORHASH_UNLOCK	pthread_mutex_unlock(&(_hashinfo.dttHashMutex))
 
+#define MEMTYPE_ALLOC	0x01
+#define MEMTYPE_FREE	0x01
+#define MEMTYPE_NEW		0x03
+#define MEMTYPE_DELETE	0x03
+
+#define MEM_INTERNAL	0x01
+#define MEM_EXTERNAL	0x02
+
+#define MEMMASK_CALLER	0xFFFF000000000000L
+#define MEMMASK_TYPE	0x0000FFFF00000000L
+#define MEMMASK_SIZE	0x00000000FFFFFFFFL
+
+#define GET_MEMSIZE(_info)		((size_t)(_info & MEMMASK_SIZE))
+#define GET_MEMCALLER(_info)	((unsigned short)((_info & MEMMASK_CALLER) >> 48))
+#define GET_MEMTYPE(_info)		((unsigned short)((_info & MEMMASK_TYPE) >> 32))
+
+#define MAKE_MEMINFO(caller, type, size)	\
+	(((uint64_t)caller << 48) | ((uint64_t)type << 32) | ((uint64_t)size))
+
 typedef struct
 {
 	char* type;
@@ -64,7 +83,7 @@ typedef struct
 // khash table function definition
 KHASH_MAP_INIT_INT(symbol, char*)
 
-KHASH_MAP_INIT_INT(allocmap, size_t)
+KHASH_MAP_INIT_INT(allocmap, uint64_t)
 
 KHASH_MAP_INIT_INT(object, _objectinfo*)
 
@@ -96,8 +115,8 @@ int finalize_hash_table();
 
 int find_symbol_hash(void* ptr, char** psymbol);
 int add_symbol_hash(void* ptr, const char* str, int strlen);
-int add_memory_hash(void* ptr, size_t size);
-int del_memory_hash(void* ptr);
+int add_memory_hash(void* ptr, size_t size, unsigned short type, unsigned short caller);
+int del_memory_hash(void* ptr, unsigned short type, unsigned short* caller);
 
 int find_object_hash(void* ptr, char** type,  char** classname);
 int add_object_hash_class(void* ptr, const char* classname);

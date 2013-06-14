@@ -32,7 +32,7 @@
 
 #include <stdlib.h>		// for system
 #include <sys/types.h>	// for stat
-#include <sys/stat.h>	// fot stat
+#include <sys/stat.h>	// fot stat, chmod
 #include <unistd.h>		// fot stat
 #include <sys/shm.h>	// for shmget, shmat
 
@@ -46,6 +46,8 @@
 
 #include "daprobe.h"
 #include "dahelper.h"
+
+#include "binproto.h"
 
 #define SCREENSHOT_DIRECTORY	"/tmp/da"
 
@@ -343,7 +345,13 @@ int captureScreen()
 				//save file
 				if(evas_object_image_save(img, dstpath, NULL, "compress=5") != 0)
 				{
-					// nothing
+					chmod(dstpath, 0777);
+
+					PREPARE_LOCAL_BUF();
+					PACK_COMMON_BEGIN(MSG_PROBE_SCREENSHOT, API_ID_captureScreen, "", 0);
+					PACK_COMMON_END(0, 0, 0);
+					PACK_SCREENSHOT(dstpath, getOrientation());
+					FLUSH_LOCAL_BUF();
 				}
 				else
 				{
@@ -402,7 +410,7 @@ int finalize_screencapture()
 static Eina_Bool _captureTimer(void* data)
 {
 	probeBlockStart();
-	SCREENSHOT_DONE();
+	SCREENSHOT_TIMEOUT();
 	probeBlockEnd();
 
 	return ECORE_CALLBACK_CANCEL;

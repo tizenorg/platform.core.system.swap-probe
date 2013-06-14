@@ -240,10 +240,12 @@ int add_symbol_hash(void* ptr, const char* str, int strlen)
 // return 0 if succeed
 // return 1 if key is already exist in hash table
 // return negative value if other error occurred
-int add_memory_hash(void* ptr, size_t size)
+int add_memory_hash(void* ptr, size_t size, unsigned short type, unsigned short caller)
 {
 	khiter_t k;
 	int rethash, ret = 0;
+	size_t memsize;
+	uint64_t meminfo;
 
 	if(unlikely(MEMORYHASH == 0))
 		return ERR_NOTINITIALIZED;
@@ -256,12 +258,19 @@ int add_memory_hash(void* ptr, size_t size)
 	k = kh_put(allocmap, MEMORYHASH, (uint32_t)ptr, &rethash);
 	if(likely(rethash != 0))	// succeed to add in hash table
 	{
-		kh_value(MEMORYHASH, k) = size;
+		kh_value(MEMORYHASH, k) = MAKE_MEMINFO(caller, type, size);
 		update_heap_memory_size(true, size);
 	}
 	else
 	{
-		// TODO : key is already exist in hash
+		// key is already exist in hash
+		// update memory info
+		meminfo = kh_value(MEMORYHASH, k);
+		memsize = GET_MEMSIZE(meminfo);
+		if(memsize == size)
+		{
+			kh_value(MEMORYHASH, k) = MAKE_MEMINFO(caller, type, size);
+		}
 		ret = 1;
 	}
 	MEMORYHASH_UNLOCK;
@@ -272,11 +281,12 @@ int add_memory_hash(void* ptr, size_t size)
 // return 0 if succeed
 // return 1 if key is not in hash table
 // return negative if other error occurred
-int del_memory_hash(void* ptr)
+int del_memory_hash(void* ptr, unsigned short type, unsigned short* caller)
 {
 	khiter_t k;
 	int ret = 0;
 	uint32_t size;
+	uint64_t meminfo;
 
 	if(unlikely(MEMORYHASH == 0))
 		return ERR_NOTINITIALIZED;
@@ -289,9 +299,19 @@ int del_memory_hash(void* ptr)
 	k = kh_get(allocmap, MEMORYHASH, (uint32_t)ptr);
 	if(likely(k != kh_end(MEMORYHASH)))
 	{				// there is entry in hash table
-		size = kh_value(MEMORYHASH, k);
-		update_heap_memory_size(false, size);
-		kh_del(allocmap, MEMORYHASH, k);
+		meminfo = kh_value(MEMORYHASH, k);
+		if(unlikely(type != GET_MEMTYPE(meminfo)))
+		{
+			ret = -1;
+		}
+		else
+		{
+			size = GET_MEMSIZE(meminfo);
+			if(caller != NULL)
+				*caller = GET_MEMCALLER(meminfo);
+			update_heap_memory_size(false, size);
+			kh_del(allocmap, MEMORYHASH, k);
+		}
 	}
 	else
 	{

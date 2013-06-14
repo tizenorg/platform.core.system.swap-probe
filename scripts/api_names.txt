@@ -379,3 +379,7 @@ Thread* Thread::GetCurrentThread(void)
 
 tmpfile
 ftell
+
+captureScreen
+result Container::AddControl(Control* control)
+result Container::RemoveControl(Control* control)
