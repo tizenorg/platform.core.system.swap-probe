@@ -98,7 +98,7 @@ result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 					  "p", &frame);
 			// PACK_COMMON_END(ret, uiapp_addframep, 0);
 			// TODO: type cast for function pointer
-			PACK_COMMON_END(ret, 0, 0);
+			PACK_COMMON_END(ret, 0, 0, 0);
 			PACK_UICONTROL(parent);
 			PACK_UICONTROL(&frame);
 			FLUSH_LOCAL_BUF();

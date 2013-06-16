@@ -100,7 +100,7 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "p", mutex);
-	PACK_COMMON_END(ret, pthread_mutex_lockp, errno);
+	PACK_COMMON_END(ret, pthread_mutex_lockp, errno, blockresult);
 	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
 	FLUSH_LOCAL_BUF();
 

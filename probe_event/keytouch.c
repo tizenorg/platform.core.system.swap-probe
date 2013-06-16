@@ -174,7 +174,7 @@ Eina_Bool ecore_event_evas_mouse_move(void *data, int type, void *event)
 				PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT,
 						  LC_UIEVENT,
 						  "pdp", data, type, event);
-				PACK_COMMON_END(0, ecore_event_evas_mouse_movep, 0);
+				PACK_COMMON_END(0, ecore_event_evas_mouse_movep, 0, 0);
 				PACK_UIEVENT(_EVENT_TOUCH,
 					     _TOUCH_MOVED,
 					     pEv->root.x,

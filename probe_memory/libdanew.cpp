@@ -70,7 +70,7 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "d", size);
-	PACK_COMMON_END(pret, newp, newerrno);
+	PACK_COMMON_END(pret, newp, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 

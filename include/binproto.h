@@ -163,12 +163,12 @@ static  char *pack_args(char *to, const char *fmt, ...)
 		BUF_PTR = pack_args(BUF_PTR, fmt, __VA_ARGS__);	\
 	} while (0)
 
-#define PACK_COMMON_END(ret, pc, errn)				\
+#define PACK_COMMON_END(ret, pc, errn, intern_call)		\
 	do {							\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(ret));	\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(pc));	\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)errn);	\
-		BUF_PTR = pack_int32(BUF_PTR, 0);		\
+		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);	\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); \
 		BUF_PTR = pack_int32(BUF_PTR, 0);		\
 		BUF_PTR = pack_int32(BUF_PTR, 0);		\
