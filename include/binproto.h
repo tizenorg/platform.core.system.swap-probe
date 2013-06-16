@@ -103,13 +103,13 @@ static  char *pack_args(char *to, const char *fmt, ...)
 			to += sizeof(d);
 			break;
 		case 'x':
-			x = va_arg(args, uint64_t);
+			x = (uint64_t)va_arg(args, uint64_t);
 			*to++ = *t;
 			memcpy(to, &x, sizeof(x));
 			to += sizeof(x);
 			break;
 		case 'p':
-			p = va_arg(args, uint64_t);
+			p = (uintptr_t)va_arg(args, uint64_t);
 			*to++ = *t;
 			memcpy(to, &p, sizeof(p));
 			to += sizeof(p);
