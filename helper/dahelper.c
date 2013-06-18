@@ -69,9 +69,6 @@ __traceInfo gTraceInfo =
 	0								// unsigned long optionflag
 };
 
-__thread unsigned long	gSTrace = 0;
-
-
 void WcharToChar(char* pstrDest, const wchar_t* pwstrSrc)
 {
 	int nLen=(int)wcslen(pwstrSrc);
@@ -108,5 +105,4 @@ int remove_indir(const char *dirname)
 
 	return 0;
 }
-
 

@@ -43,8 +43,6 @@
 #include "da_memory.h"
 #include "binproto.h"
 
-extern __thread int gProbeDepth;
-
 static enum DaOptions _sopt = OPT_ALLOC;
 
 void *operator new(std::size_t size) throw (std::bad_alloc)
@@ -60,7 +58,7 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 
 	pret = newp(size);
 
-	if(pret != NULL && getTraceState() == 0)
+	if(pret != NULL && gProbeBlockCount == 0)
 	{
 		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
@@ -93,7 +91,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 
 	pret = newp(size);
 
-	if(pret != NULL && getTraceState() == 0)
+	if(pret != NULL && gProbeBlockCount == 0)
 	{
 		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
@@ -124,7 +122,7 @@ void operator delete(void *ptr) throw()
 	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
-	if(ptr != NULL && getTraceState() == 0)
+	if(ptr != NULL && gProbeBlockCount == 0)
 	{
 		probeBlockStart();
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
@@ -132,7 +130,7 @@ void operator delete(void *ptr) throw()
 		{
 			setProbePoint(&probeInfo);
 			blockresult = 2;
-			gProbeDepth++;
+			probingStart();
 		}
 		probeBlockEnd();
 	}
@@ -163,7 +161,7 @@ void operator delete[](void *ptr) throw()
 	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
-	if(ptr != NULL && getTraceState() == 0)
+	if(ptr != NULL && gProbeBlockCount == 0)
 	{
 		probeBlockStart();
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
@@ -171,7 +169,7 @@ void operator delete[](void *ptr) throw()
 		{
 			setProbePoint(&probeInfo);
 			blockresult = 2;
-			gProbeDepth++;
+			probingStart();
 		}
 		probeBlockEnd();
 	}
@@ -204,7 +202,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 
 	pret = newp(size, nothrow);
 
-	if(pret != NULL && getTraceState() == 0)
+	if(pret != NULL && gProbeBlockCount == 0)
 	{
 		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
@@ -237,7 +235,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 
 	pret = newp(size, nothrow);
 
-	if(pret != NULL && getTraceState() == 0)
+	if(pret != NULL && gProbeBlockCount == 0)
 	{
 		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
@@ -268,7 +266,7 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
-	if(ptr != NULL && getTraceState() == 0)
+	if(ptr != NULL && gProbeBlockCount == 0)
 	{
 		probeBlockStart();
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
@@ -276,7 +274,7 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 		{
 			setProbePoint(&probeInfo);
 			blockresult = 2;
-			gProbeDepth++;
+			probingStart();
 		}
 		probeBlockEnd();
 	}
@@ -307,7 +305,7 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
-	if(ptr != NULL && getTraceState() == 0)
+	if(ptr != NULL && gProbeBlockCount == 0)
 	{
 		probeBlockStart();
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
@@ -315,7 +313,7 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 		{
 			setProbePoint(&probeInfo);
 			blockresult = 2;
-			gProbeDepth++;
+			probingStart();
 		}
 		probeBlockEnd();
 	}

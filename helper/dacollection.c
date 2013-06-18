@@ -171,7 +171,7 @@ int find_symbol_hash(void* ptr, char** psymbol)
 	if(unlikely(psymbol == NULL))
 		return ERR_WRONGPARAMETER;
 
-	TRACE_STATE_SET(TS_HASHFUNC);
+	probeBlockStart();
 
 	SYMBOLHASH_LOCK;
 	k = kh_get(symbol, SYMBOLHASH, (uint32_t)ptr);
@@ -185,7 +185,7 @@ int find_symbol_hash(void* ptr, char** psymbol)
 		ret = 1;
 	}
 	SYMBOLHASH_UNLOCK;
-	TRACE_STATE_UNSET(TS_HASHFUNC);
+	probeBlockEnd();
 	return ret;
 }
 
@@ -206,7 +206,7 @@ int add_symbol_hash(void* ptr, const char* str, int strlen)
 	if(unlikely(str == NULL))
 		return ERR_WRONGPARAMETER;
 
-	TRACE_STATE_SET(TS_HASHFUNC);
+	probeBlockStart();
 
 	SYMBOLHASH_LOCK;
 	k = kh_put(symbol, SYMBOLHASH, (uint32_t)ptr, &rethash);
@@ -230,7 +230,7 @@ int add_symbol_hash(void* ptr, const char* str, int strlen)
 		ret = 1;
 	}
 	SYMBOLHASH_UNLOCK;
-	TRACE_STATE_UNSET(TS_HASHFUNC);
+	probeBlockEnd();
 	return ret;
 }
 
@@ -253,7 +253,7 @@ int add_memory_hash(void* ptr, size_t size, unsigned short type, unsigned short 
 	if(unlikely(ptr == NULL))
 		return ERR_WRONGPARAMETER;
 
-	TRACE_STATE_SET(TS_HASHFUNC);
+	probeBlockStart();
 	MEMORYHASH_LOCK;
 	k = kh_put(allocmap, MEMORYHASH, (uint32_t)ptr, &rethash);
 	if(likely(rethash != 0))	// succeed to add in hash table
@@ -274,7 +274,7 @@ int add_memory_hash(void* ptr, size_t size, unsigned short type, unsigned short 
 		ret = 1;
 	}
 	MEMORYHASH_UNLOCK;
-	TRACE_STATE_UNSET(TS_HASHFUNC);
+	probeBlockEnd();
 	return ret;
 }
 
@@ -294,7 +294,7 @@ int del_memory_hash(void* ptr, unsigned short type, unsigned short* caller)
 	if(unlikely(ptr == NULL))
 		return ERR_WRONGPARAMETER;
 
-	TRACE_STATE_SET(TS_HASHFUNC);
+	probeBlockStart();
 	MEMORYHASH_LOCK;
 	k = kh_get(allocmap, MEMORYHASH, (uint32_t)ptr);
 	if(likely(k != kh_end(MEMORYHASH)))
@@ -318,7 +318,7 @@ int del_memory_hash(void* ptr, unsigned short type, unsigned short* caller)
 		ret = 1;	// there is not entry in hash table
 	}
 	MEMORYHASH_UNLOCK;
-	TRACE_STATE_UNSET(TS_HASHFUNC);
+	probeBlockEnd();
 
 	return ret;
 }
@@ -346,7 +346,7 @@ int find_object_hash(void* ptr, char** type, char** classname)
 	if(unlikely(classname == NULL))
 		return ERR_WRONGPARAMETER;
 
-	TRACE_STATE_SET(TS_HASHFUNC);
+	probeBlockStart();
 
 	OBJECTHASH_LOCK;
 	k = kh_get(object, OBJECTHASH, (uint32_t)ptr);
@@ -361,7 +361,7 @@ int find_object_hash(void* ptr, char** type, char** classname)
 		ret = 1;
 	}
 	OBJECTHASH_UNLOCK;
-	TRACE_STATE_UNSET(TS_HASHFUNC);
+	probeBlockEnd();
 	return ret;
 }
 
@@ -383,7 +383,7 @@ int add_object_hash_class(void* ptr, const char* classname)
 	if(unlikely(classname == NULL))
 		return ERR_WRONGPARAMETER;
 
-	TRACE_STATE_SET(TS_HASHFUNC);
+	probeBlockStart();
 
 	str_len = strlen(classname) + 1;
 
@@ -417,7 +417,7 @@ int add_object_hash_class(void* ptr, const char* classname)
 		ret = 1;	// there is no entry
 
 	OBJECTHASH_UNLOCK;
-	TRACE_STATE_UNSET(TS_HASHFUNC);
+	probeBlockEnd();
 	return ret;
 }
 
@@ -439,7 +439,7 @@ int add_object_hash_type(void* ptr, const char* type)
 	if(unlikely(type == NULL))
 		return ERR_WRONGPARAMETER;
 
-	TRACE_STATE_SET(TS_HASHFUNC);
+	probeBlockStart();
 
 	str_len = strlen(type) + 1;
 
@@ -477,7 +477,7 @@ int add_object_hash_type(void* ptr, const char* type)
 		ret = 1;
 
 	OBJECTHASH_UNLOCK;
-	TRACE_STATE_UNSET(TS_HASHFUNC);
+	probeBlockEnd();
 	return ret;
 }
 
@@ -496,7 +496,7 @@ int del_object_hash(void* ptr)
 	if(unlikely(ptr == NULL))
 		return ERR_WRONGPARAMETER;
 
-	TRACE_STATE_SET(TS_HASHFUNC);
+	probeBlockStart();
 	OBJECTHASH_LOCK;
 	k = kh_get(object, OBJECTHASH, (uint32_t)ptr);
 	if(likely(k != kh_end(OBJECTHASH)))		// there is entry in hash table
@@ -512,7 +512,7 @@ int del_object_hash(void* ptr)
 		ret = 1;
 	}
 	OBJECTHASH_UNLOCK;
-	TRACE_STATE_UNSET(TS_HASHFUNC);
+	probeBlockEnd();
 
 	return ret;
 }
@@ -537,7 +537,7 @@ int add_detector_hash(void* ptr, void* listener)
 	if(unlikely(listener == NULL))
 		return ERR_WRONGPARAMETER;
 
-	TRACE_STATE_SET(TS_HASHFUNC);
+	probeBlockStart();
 
 	DETECTORHASH_LOCK;
 	k = kh_put(detector, DETECTORHASH, (uint32_t)ptr, &rethash);
@@ -551,7 +551,7 @@ int add_detector_hash(void* ptr, void* listener)
 		ret = 1;
 	}
 	DETECTORHASH_UNLOCK;
-	TRACE_STATE_UNSET(TS_HASHFUNC);
+	probeBlockEnd();
 	return ret;
 }
 
@@ -569,7 +569,7 @@ int del_detector_hash(void* ptr)
 	if(unlikely(ptr == NULL))
 		return ERR_WRONGPARAMETER;
 
-	TRACE_STATE_SET(TS_HASHFUNC);
+	probeBlockStart();
 	DETECTORHASH_LOCK;
 	k = kh_get(detector, DETECTORHASH, (uint32_t)ptr);
 	if(likely(k != kh_end(DETECTORHASH)))		// there is entry in hash table
@@ -581,7 +581,7 @@ int del_detector_hash(void* ptr)
 		ret = 1;
 	}
 	DETECTORHASH_UNLOCK;
-	TRACE_STATE_UNSET(TS_HASHFUNC);
+	probeBlockEnd();
 
 	return ret;
 }

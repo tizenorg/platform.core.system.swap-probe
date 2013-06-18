@@ -86,7 +86,7 @@ static void *malloc_hook(size_t size, const void* caller)
 
 	pret = malloc(size);
 
-	if(pret != NULL && getTraceState() == 0)
+	if(pret != NULL && gProbeBlockCount == 0)
 	{
 		add_memory_hash(pret, size, MEMTYPE_ALLOC, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
@@ -116,7 +116,7 @@ static void free_hook(void *ptr, const void *caller)
 
 	PRE_PROBEBLOCK();
 
-	if(ptr != NULL && getTraceState() == 0)
+	if(ptr != NULL && gProbeBlockCount == 0)
 	{
 		del_memory_hash(ptr, MEMTYPE_FREE, NULL);
 	}
@@ -147,14 +147,14 @@ static void* realloc_hook(void *memblock, size_t size, const void* caller)
 
 	PRE_PROBEBLOCK();
 
-	if(memblock != NULL && getTraceState() == 0)
+	if(memblock != NULL && gProbeBlockCount == 0)
 	{
 		del_memory_hash(memblock, MEMTYPE_FREE, NULL);
 	}
 
 	pret = realloc(memblock, size);
 
-	if(pret != NULL && getTraceState() == 0)
+	if(pret != NULL && gProbeBlockCount == 0)
 	{
 		add_memory_hash(pret, size, MEMTYPE_ALLOC, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
@@ -194,7 +194,7 @@ void *calloc(size_t nelem, size_t elsize)
 	if (pret) /* `memset' somewhy deadloops */
 		adhoc_bzero(pret, nelem * elsize);
 
-	if(pret != NULL && getTraceState() == 0)
+	if(pret != NULL && gProbeBlockCount == 0)
 	{
 		add_memory_hash(pret, nelem * elsize, MEMTYPE_ALLOC, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
     }

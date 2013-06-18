@@ -59,9 +59,9 @@
 #define UDS_NAME				"/tmp/da.socket"
 #define TIMERFD_INTERVAL		100000000		// 0.1 sec
 
-__thread int			gProbeDepth = 0;
-__thread unsigned int	gProbeBlockCount = 0;
-__thread pid_t			gTid = -1;
+__thread int		gProbeBlockCount = 0;
+__thread int		gProbeDepth = 0;
+__thread pid_t		gTid = -1;
 
 int			g_timerfd = 0;
 long		g_total_alloc_size = 0;
@@ -197,7 +197,7 @@ static void* recvThread(void* data)
 	if(gTraceInfo.socket.daemonSock == -1)
 		return NULL;
 
-	TRACE_STATE_SET(TS_RECV_THREAD);
+	probeBlockStart();
 
 	sigemptyset(&profsigmask);
 	sigaddset(&profsigmask, SIGPROF);
@@ -291,7 +291,7 @@ static void* recvThread(void* data)
 		}
 	}
 
-	TRACE_STATE_UNSET(TS_RECV_THREAD);
+	probeBlockEnd();
 	return NULL;
 }
 
@@ -304,7 +304,7 @@ void __attribute__((constructor)) _init_probe()
 	struct timeval ttime;
 	struct itimerspec ctime;
 
-	TRACE_STATE_SET(TS_INIT);
+	probeBlockStart();
 
 	initialize_hash_table();
 
@@ -356,13 +356,13 @@ void __attribute__((constructor)) _init_probe()
 	PRINTMSG("dynamic analyzer probe helper so loading...\n");
 
 	gTraceInfo.init_complete = 1;
-	TRACE_STATE_UNSET(TS_INIT);
+	probeBlockEnd();
 }
 
 void __attribute__((destructor)) _fini_probe()
 {
 	int i;
-	TRACE_STATE_SET(TS_FINIT);
+	probeBlockStart();
 
 	gTraceInfo.init_complete = -1;
 	PRINTMSG("dynamic analyzer probe helper so unloading...\n");
@@ -395,7 +395,7 @@ void __attribute__((destructor)) _fini_probe()
 		}
 	}
 
-	TRACE_STATE_UNSET(TS_FINIT);
+	probeBlockEnd();
 }
 
 
@@ -416,12 +416,12 @@ void __attribute__((destructor)) _fini_probe()
 	if(unlikely(log == NULL))
 		return false;
 
-	TRACE_STATE_SET(TS_PRINT_LOG);
+	probeBlockStart();
 	log->type = msgType;
 	pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
 	res = send(gTraceInfo.socket.daemonSock, log, sizeof(log->type) + sizeof(log->length) + log->length, 0);
 	pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
-	TRACE_STATE_UNSET(TS_PRINT_LOG);
+	probeBlockEnd();
 
 	return true;
 }*/
@@ -434,7 +434,7 @@ bool printLogStr(const char* str, int msgType)
 	if(unlikely(gTraceInfo.socket.daemonSock == -1))
 		return false;
 
-	TRACE_STATE_SET(TS_PRINT_LOG);
+	probeBlockStart();
 
 	log.type = msgType;
 	if(str)
@@ -451,7 +451,7 @@ bool printLogStr(const char* str, int msgType)
 	res = send(gTraceInfo.socket.daemonSock, &log, sizeof(log.type) + sizeof(log.length) + log.length, MSG_DONTWAIT);
 	pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 
-	TRACE_STATE_UNSET(TS_PRINT_LOG);
+	probeBlockEnd();
 
 	return true;
 }
@@ -470,7 +470,7 @@ int __appendTypeLog(log_t* log, int nInput, char* token, ...)
 	if(nInput <= 0 || log == NULL)
 		return -1;
 
-	TRACE_STATE_SET(TS_APPEND_TYPE_LOG);
+	probeBlockStart();
 
 	va_start(p_arg, token);
 
@@ -547,14 +547,14 @@ int __appendTypeLog(log_t* log, int nInput, char* token, ...)
 			break;*/
 		default:
 			va_end(p_arg);
-			TRACE_STATE_UNSET(TS_APPEND_TYPE_LOG);
+			probeBlockEnd();
 			return -1;
 		}
 	}
 
 	va_end(p_arg);
 
-	TRACE_STATE_UNSET(TS_APPEND_TYPE_LOG);
+	probeBlockEnd();
 	return 0;
 }
 
@@ -572,7 +572,7 @@ int getBacktraceString(log_t* log, int bufsize)
 	if(log == NULL)
 		return 0;
 
-	TRACE_STATE_SET(TS_BACKTRACE);
+	probeBlockStart();
 
 	initsize = log->length;
 	log->data[log->length] = '\0';	// is this necessary ?
@@ -610,12 +610,12 @@ int getBacktraceString(log_t* log, int bufsize)
 			log->length -= 2;
 		}
 
-		TRACE_STATE_UNSET(TS_BACKTRACE);
+		probeBlockEnd();
 		return (int)(size - TRIM_STACK_DEPTH);
 	}
 	else
 	{
-		TRACE_STATE_UNSET(TS_BACKTRACE);
+		probeBlockEnd();
 		return 0;
 	}
 }
@@ -629,7 +629,7 @@ int preBlockBegin(void* caller, bool bFiltering, enum DaOptions option)
 	void* tarray[1];
 	char** strings;
 
-	if(gSTrace != 0 || gProbeDepth != 0)
+	if(gProbeBlockCount != 0 || gProbeDepth != 0)
 		return 0;
 
 	if(gTraceInfo.init_complete <= 0)
@@ -638,7 +638,7 @@ int preBlockBegin(void* caller, bool bFiltering, enum DaOptions option)
 	if((gTraceInfo.optionflag & option) == 0)
 		return 0;
 
-	TRACE_STATE_SET(TS_ENTER_PROBE_BLOCK);
+	probeBlockStart();
 
 	if(gTraceInfo.exec_map.map_start != NULL)
 	{
@@ -672,19 +672,19 @@ int preBlockBegin(void* caller, bool bFiltering, enum DaOptions option)
 
 	if(user)
 	{
-		gProbeDepth++;
+		probingStart();
 		return 2;	// user call
 	}
 	else
 	{
 		if(bFiltering)
 		{
-			TRACE_STATE_UNSET(TS_ENTER_PROBE_BLOCK);
+			probeBlockEnd();
 			return 0;	// not probing
 		}
 		else
 		{
-			gProbeDepth++;
+			probingStart();
 			return 1;	// internal call
 		}
 	}
@@ -694,7 +694,7 @@ int postBlockBegin(int preresult)
 {
 	if(preresult)
 	{
-		TRACE_STATE_SET(TS_ENTER_PROBE_BLOCK);
+		probeBlockStart();
 	}
 
 	return preresult;
@@ -702,28 +702,13 @@ int postBlockBegin(int preresult)
 
 void preBlockEnd()
 {
-	TRACE_STATE_UNSET(TS_ENTER_PROBE_BLOCK);
+	probeBlockEnd();
 }
 
 void postBlockEnd()
 {
-	gProbeDepth--;
-	TRACE_STATE_UNSET(TS_ENTER_PROBE_BLOCK);
-}
-
-// for block that have to be run
-void probeBlockStart()
-{
-	gProbeBlockCount++;
-	if(gProbeBlockCount == 1)
-		TRACE_STATE_SET(TS_PROBE);
-}
-
-void probeBlockEnd()
-{
-	if(gProbeBlockCount == 1)
-		TRACE_STATE_UNSET(TS_PROBE);
-	gProbeBlockCount--;
+	probingEnd();
+	probeBlockEnd();
 }
 
 /*************************************************************************
@@ -744,16 +729,6 @@ unsigned int getCurrentEventIndex()
 	return gTraceInfo.index.eventIndex;
 }
 
-unsigned int getCallDepth()
-{
-	return gProbeDepth;
-}
-
-unsigned long getTraceState()
-{
-	return gSTrace;
-}
-
 /************************************************************************
  * probe functions
  ************************************************************************/
@@ -764,7 +739,7 @@ bool setProbePoint(probeInfo_t* iProbe)
 		return false;
 	}
 
-	TRACE_STATE_SET(TS_SET_PROBE_POINT);
+	probeBlockStart();
 
 	// atomic operaion(gcc builtin) is more expensive then pthread_mutex
 	pthread_mutex_lock(&(gTraceInfo.index.eventMutex));	
@@ -776,7 +751,7 @@ bool setProbePoint(probeInfo_t* iProbe)
 	iProbe->tID = _gettid();
 	iProbe->callDepth = gProbeDepth;
 
-	TRACE_STATE_UNSET(TS_SET_PROBE_POINT);
+	probeBlockEnd();
 	return true;
 }
 

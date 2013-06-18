@@ -88,6 +88,14 @@ typedef struct
 	unsigned int	callDepth;
 } probeInfo_t;
 
+extern __thread int	gProbeBlockCount;
+extern __thread int	gProbeDepth;
+
+#define probeBlockStart()	(gProbeBlockCount++)
+#define probeBlockEnd()		(gProbeBlockCount--)
+#define probingStart()		(gProbeDepth++)
+#define probingEnd()		(gProbeDepth--)
+
 /***************************************************************************
  * helper apis
  ***************************************************************************/
@@ -98,12 +106,7 @@ void preBlockEnd();
 int postBlockBegin(int preresult);
 void postBlockEnd();
 
-void probeBlockStart();
-void probeBlockEnd();
-
 unsigned int getCurrentEventIndex();
-unsigned int getCallDepth();
-unsigned long getTraceState();
 unsigned long getCurrentTime();
 bool setProbePoint(probeInfo_t * iProbe);
 int update_heap_memory_size(bool isAdd, size_t size);

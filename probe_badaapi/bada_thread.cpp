@@ -44,8 +44,6 @@
 
 static enum DaOptions _sopt = OPT_THREAD;
 
-extern	__thread int gProbeDepth;
-
 namespace Tizen {
 namespace Base {
 namespace Runtime {
@@ -266,11 +264,11 @@ _ThreadImpl::ThreadProc(void* params) {
 		preBlockEnd();
 	}
 	// all probe should be reachable inside thread start_routine (user implemented Thread::Run)
-	gProbeDepth--;
-	TRACE_STATE_UNSET(TS_ENTER_PROBE_BLOCK);
+	probingEnd();
+	probeBlockEnd();
 	(ThreadProcp)(params);
-	TRACE_STATE_SET(TS_ENTER_PROBE_BLOCK);
-	gProbeDepth++;
+	probeBlockStart();
+	probingStart();
 	//
 	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);

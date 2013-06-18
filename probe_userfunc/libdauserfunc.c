@@ -222,7 +222,7 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 
 void *profil_log_func(void *data)
 {
-	TRACE_STATE_SET(TS_PROFIL_THREAD);
+	probeBlockStart();
 	
 	sigset_t profsigmask;
 	sigemptyset(&profsigmask);
@@ -237,7 +237,7 @@ void *profil_log_func(void *data)
 		}
 		usleep(PROFIL_LOG_SENDING_INTERVAL_USEC);
 	}
-	TRACE_STATE_UNSET(TS_PROFIL_THREAD);
+	probeBlockEnd();
 
 	return NULL;
 }
@@ -378,10 +378,10 @@ static inline void profil_count(void *pc)
 	if((pc >= (void*)(&profil_count - 0x18)) && (pc <= (void*)(&profil_count)))
 		return;
 #endif
-	if(gSTrace != 0)
+	if(gProbeBlockCount != 0)
 		return;
 
-	TRACE_STATE_SET(TS_PROFIL_COUNT);
+	probeBlockStart();
 
 	real_pthread_mutex_lock(&profil_log_mutex);
 	do {
@@ -415,7 +415,7 @@ static inline void profil_count(void *pc)
 	} while(0);
 	real_pthread_mutex_unlock(&profil_log_mutex);
 
-	TRACE_STATE_UNSET(TS_PROFIL_COUNT);
+	probeBlockEnd();
 }
 
 #if defined(__i386__)

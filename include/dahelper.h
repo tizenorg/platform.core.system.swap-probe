@@ -56,27 +56,6 @@ extern "C"{
 #define SNAPSHOT_WAIT_TIME_MAX 10000
 */
 
-#define TS_NONE						0x00000000
-#define TS_PROBE					0x00000001
-#define TS_INIT						0x00000002
-#define TS_FINIT					0x00000004
-#define TS_ENTER_PROBE_BLOCK		0x00000008
-#define TS_SET_PROBE_POINT			0x00000010
-#define TS_PRINT_LOG				0x00000020
-#define TS_PRINT_SAMPLE_LOG			0x00000040
-#define TS_APPEND_TYPE_LOG			0x00000080
-#define TS_BACKTRACE				0x00000100
-#define TS_HASHFUNC					0x00000200
-#define TS_PROFIL_THREAD			0x00000400
-#define TS_PROFIL_COUNT				0x00000800
-#define TS_DETECT_TOUCH				0x00001000
-#define TS_REGIST_SCREEN_CHANGE		0x00002000
-#define TS_POSSIBLE_CAPTURE			0x00004000
-#define TS_RECV_THREAD				0x00008000
-#define TS_CUSTOM_CHART_THREAD		0x00010000
-#define TRACE_STATE_SET(value)		((gSTrace) |= (value))
-#define TRACE_STATE_UNSET(value)	((gSTrace) &= (~value))
-
 #define ENABLE_INTERNAL_MALLOC		0x0001
 #define ENABLE_SNAPSHOT				0x0002
 
@@ -224,7 +203,6 @@ typedef struct
 	unsigned long		optionflag;
 } __traceInfo;
 
-extern __thread unsigned long	gSTrace;
 extern __traceInfo gTraceInfo;
 
 int get_map_address(void* symbol, void** map_start, void** map_end);
