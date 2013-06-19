@@ -143,7 +143,7 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 			printLog(&log, MSG_LOG);
 	}
 	probeBlockEnd();
-
+	
 	return ret;
 }
 
@@ -189,6 +189,17 @@ void Control::SetName(const Tizen::Base::String &name)
 		APPEND_LOG_CONTROL_OSP(this);
 		APPEND_LOG_CONTROL_OSP(parent);
 		printLog(&log, MSG_LOG);
+		
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  LC_UICREATE,
+				  "p", this);
+		// PACK_COMMON_END(ret, uiapp_addframep, 0);
+		// TODO: type cast for function pointer
+		PACK_COMMON_END(0, 0, 0, 0);
+		PACK_UICONTROL(parent);
+		PACK_UICONTROL(this);
+		FLUSH_LOCAL_BUF();
 	}
 	probeBlockEnd();
 }
