@@ -96,9 +96,7 @@ result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 					  LC_UICREATE,
 					  "p", &frame);
-			// PACK_COMMON_END(ret, uiapp_addframep, 0);
-			// TODO: type cast for function pointer
-			PACK_COMMON_END(ret, 0, 0, 0);
+			PACK_COMMON_END(ret, 0, 0);
 			PACK_UICONTROL(parent);
 			PACK_UICONTROL(&frame);
 			FLUSH_LOCAL_BUF();
@@ -117,6 +115,8 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 	result ret;
 	bool bOption;
 
+	PREPARE_LOCAL_BUF();
+
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp11RemoveFrameERKNS_2Ui8Controls5FrameE, LIBOSP_UIFW, uiapp_removeframep);
 
 	probeBlockStart();
@@ -131,6 +131,13 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
 		APPEND_LOG_CONTROL_OSP(parent);
 		APPEND_LOG_CONTROL_OSP(&frame);
+		
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+			  LC_UICREATE,
+			  "p", &frame);
+		PACK_COMMON_END(0, 0, 0);
+		PACK_UICONTROL(parent);
+		PACK_UICONTROL(&frame);
 	}
 	probeBlockEnd();
 
@@ -143,6 +150,11 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 			printLog(&log, MSG_LOG);
 	}
 	probeBlockEnd();
+	
+	if(bOption)
+		PACK_RETURN_END(ret);
+		
+	FLUSH_LOCAL_BUF();
 	
 	return ret;
 }
@@ -194,11 +206,9 @@ void Control::SetName(const Tizen::Base::String &name)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  LC_UICREATE,
 				  "p", this);
-		// PACK_COMMON_END(ret, uiapp_addframep, 0);
-		// TODO: type cast for function pointer
-		PACK_COMMON_END(0, 0, 0, 0);
-		PACK_UICONTROL(parent);
+		PACK_COMMON_END(0, 0, 0);
 		PACK_UICONTROL(this);
+		PACK_UICONTROL(parent);
 		FLUSH_LOCAL_BUF();
 	}
 	probeBlockEnd();
@@ -252,6 +262,15 @@ result Container::AddControl(const Control &control)
 			APPEND_LOG_CONTROL_OSP(this);
 			APPEND_LOG_CONTROL_OSP(&control);
 			printLog(&log, MSG_LOG);
+			
+			PREPARE_LOCAL_BUF();
+			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+					  LC_UICREATE,
+					  "p", this);
+			PACK_COMMON_END(ret, 0, 0);
+			PACK_UICONTROL(this);
+			PACK_UICONTROL(&control);
+			FLUSH_LOCAL_BUF();
 		}
 	}
 	probeBlockEnd();
@@ -267,6 +286,8 @@ result Container::RemoveControl(const Control &control)
 	result ret;
 	bool bOption;
 
+	PREPARE_LOCAL_BUF();
+
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container13RemoveControlERKNS0_7ControlE, LIBOSP_UIFW, container_removecontrolp);
 
 	probeBlockStart();
@@ -280,6 +301,13 @@ result Container::RemoveControl(const Control &control)
 		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
 		APPEND_LOG_CONTROL_OSP(this);
 		APPEND_LOG_CONTROL_OSP(&control);
+		
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  LC_UICREATE,
+				  "p", this);
+		PACK_COMMON_END(0, 0, 0);
+		PACK_UICONTROL(this);
+		PACK_UICONTROL(&control);
 	}
 	probeBlockEnd();
 
@@ -293,6 +321,11 @@ result Container::RemoveControl(const Control &control)
 	}
 	probeBlockEnd();
 
+	if(bOption)
+		PACK_RETURN_END(ret);
+	
+	FLUSH_LOCAL_BUF();
+			
 	return ret;
 }
 
@@ -303,6 +336,8 @@ result Container::RemoveControl(int index)
 	DECLARE_COMMON_VARIABLE;
 	result ret;
 	bool bOption;
+
+	PREPARE_LOCAL_BUF();
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container13RemoveControlEi, LIBOSP_UIFW, container_removecontrolip);
 
@@ -318,6 +353,13 @@ result Container::RemoveControl(int index)
 		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
 		APPEND_LOG_CONTROL_OSP(this);
 		APPEND_LOG_CONTROL_OSP(pcontrol);
+		
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  LC_UICREATE,
+				  "p", this);
+		PACK_COMMON_END(0, 0, 0);
+		PACK_UICONTROL(this);
+		PACK_UICONTROL(pcontrol);
 	}
 	probeBlockEnd();
 
@@ -331,6 +373,11 @@ result Container::RemoveControl(int index)
 	}
 	probeBlockEnd();
 
+	if(bOption)
+		PACK_RETURN_END(ret);
+	
+	FLUSH_LOCAL_BUF();
+	
 	return ret;
 }
 
@@ -353,6 +400,15 @@ void Container::RemoveAllControls(void)
 		APPEND_LOG_CONTROL_OSP(this);
 		APPEND_LOG_CONTROL_OSP(pcontrol);
 		printLog(&log, MSG_LOG);
+		
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  LC_UICREATE,
+				  "p", this);
+		PACK_COMMON_END(0, 0, 0);
+		PACK_UICONTROL(this);
+		PACK_UICONTROL(pcontrol);
+		FLUSH_LOCAL_BUF();
 	}
 	probeBlockEnd();
 

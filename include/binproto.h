@@ -144,6 +144,7 @@ static  char *pack_args(char *to, const char *fmt, ...)
 }
 
 #define BUF_PTR p
+#define RET_PTR ret_p
 #define PACK_INT32(val)				\
 	BUF_PTR = pack_int32(BUF_PTR, val);
 #define PACK_INT64(val)				\
@@ -161,18 +162,21 @@ static  char *pack_args(char *to, const char *fmt, ...)
 		BUF_PTR = pack_int32(BUF_PTR, getpid());		\
 		BUF_PTR = pack_int32(BUF_PTR, syscall(__NR_gettid));	\
 		BUF_PTR = pack_args(BUF_PTR, fmt, __VA_ARGS__);	\
+		RET_PTR = BUF_PTR;		\
 	} while (0)
 
-#define PACK_COMMON_END(ret, pc, errn, intern_call)		\
+#define PACK_COMMON_END(ret, errn, intern_call)		\
 	do {							\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(ret));	\
-		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(pc));	\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)errn);	\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);	\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); \
 		BUF_PTR = pack_int32(BUF_PTR, 0);		\
 		BUF_PTR = pack_int32(BUF_PTR, 0);		\
 	} while (0)
+
+#define PACK_RETURN_END(ret)								\
+		RET_PTR = pack_int64(RET_PTR, (uintptr_t)(ret));
 
 #define PACK_MEMORY(size, memory_api_type, addr)		\
 	do {							\
@@ -281,7 +285,8 @@ static  char *pack_args(char *to, const char *fmt, ...)
 #define LOCAL_BUF_SIZE 1024
 #define PREPARE_LOCAL_BUF()			\
 		char buf[LOCAL_BUF_SIZE];	\
-		char *p = buf;
+		char *p = buf;				\
+		char *ret_p = NULL;
 
 #define MSG_LEN_OFFSET 16
 #define MSG_HDR_LEN 20

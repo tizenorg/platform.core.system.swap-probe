@@ -102,7 +102,7 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE,
 			  "pp", pUiAppFactory, pArguments);
-	PACK_COMMON_END(ret, uiapp_executep, 0, 0);
+	PACK_COMMON_END(ret, 0, 0);
 	FLUSH_LOCAL_BUF();
 
 	return ret;
