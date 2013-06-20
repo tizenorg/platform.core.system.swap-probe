@@ -84,7 +84,8 @@ extern "C"{
 	do {														\
 		LOG("screenshot_unlock : %d, %s\n", gTraceInfo.screenshot.state, __func__); \
 		pthread_mutex_lock(&(gTraceInfo.screenshot.ssMutex));	\
-		gTraceInfo.screenshot.state = 1;						\
+		if(gTraceInfo.screenshot.state < 0)						\
+			gTraceInfo.screenshot.state = 1;					\
 		pthread_mutex_unlock(&(gTraceInfo.screenshot.ssMutex));	\
 	} while(0)
 
@@ -226,7 +227,6 @@ void _cb_render_post(void* data, Evas* e, void* eventinfo);
 int initialize_event();
 int finalize_event();
 int getOrientation();
-void orientationEnabled();
 void on_orientation_changed(int angle, bool capi);
 
 int remove_indir(const char* dirname);

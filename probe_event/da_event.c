@@ -45,7 +45,6 @@
 
 static int external_angle = 0;
 static int internal_angle = 0;
-static bool orientation_enabled = false;
 
 // ===================================================================
 // orientation related functions
@@ -104,23 +103,15 @@ void on_orientation_changed(int angle, bool capi)
 			FLUSH_LOCAL_BUF();
 		}
 
-//		if(orientation_enabled)
+		SCREENSHOT_SET();
+//		if(!capi)
 //		{
-			SCREENSHOT_SET();
-//			if(!capi)
-//			{
-//				SCREENSHOT_DONE();
-//			}
+//			SCREENSHOT_DONE();
 //		}
 	}
 	else { }	// do nothing
 
 	probeBlockEnd();
-}
-
-void orientationEnabled()
-{
-	orientation_enabled = true;
 }
 
 int getOrientation()

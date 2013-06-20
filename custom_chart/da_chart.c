@@ -560,8 +560,10 @@ int da_set_callback(da_handle series_handle, da_user_data_2_chart_data callback,
 	// register new callback
 	if(callback != NULL)
 	{
+		int re;
 		add_to_callback_list(interval, cindex, series_handle, callback, data_addr);
-		start_callback_thread(interval);
+		re = start_callback_thread(interval);
+		LOG("start callback thread return %d\n", re);
 	}
 	probeBlockEnd();
 
