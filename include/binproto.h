@@ -38,26 +38,26 @@
 
 
 // COMMON
-static  char *pack_int32(char *to, uint32_t val)
+static inline char *pack_int32(char *to, uint32_t val)
 {
 	*(uint32_t *)to = val;
 	return to + sizeof(uint32_t);
 }
 
-static  char *pack_int64(char *to, uint64_t val)
+static inline char *pack_int64(char *to, uint64_t val)
 {
 	*(uint64_t *)to = val;
 	return to + sizeof(uint64_t);
 }
 
-static  char *pack_string(char *to, const char *str)
+static inline char *pack_string(char *to, const char *str)
 {
 	size_t len = strlen(str) + 1;
 	strncpy(to, str, len);
 	return to + len;
 }
 
-static  char *pack_timestamp(char *to)
+static inline char *pack_timestamp(char *to)
 {
 	struct timeval tv;
 
@@ -68,7 +68,7 @@ static  char *pack_timestamp(char *to)
 	return to;
 }
 
-static  char *pack_args(char *to, const char *fmt, ...)
+static inline char *pack_args(char *to, const char *fmt, ...)
 {
 	va_list args;
 	uint32_t num = strlen(fmt);
@@ -285,7 +285,7 @@ static  char *pack_args(char *to, const char *fmt, ...)
 #define LOCAL_BUF_SIZE 1024
 #define PREPARE_LOCAL_BUF()			\
 		char buf[LOCAL_BUF_SIZE];	\
-		char *p = buf;				\
+		char *p = buf;			\
 		char *ret_p = NULL;
 
 #define MSG_LEN_OFFSET 16
