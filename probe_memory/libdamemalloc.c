@@ -40,6 +40,7 @@
 #include "dacollection.h"
 #include "dautil.h"
 #include "da_memory.h"
+#include "binproto.h"
 
 #define EXTRA_MEM_SIZE		20
 //#define INTERNALFILTERING		(!isEnableInternalMalloc())
@@ -68,6 +69,13 @@ void *malloc(size_t size)
 	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_PTR, pret, "%u", size);
 	POST_PROBEBLOCK_MIDDLE_MEM(size, MEMORY_API_ALLOC, pret);
 	APPEND_LOG_CALLSTACK();
+	
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "d", size);
+	PACK_COMMON_END(pret, newerrno, blockresult);
+	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+	
 	POST_PROBEBLOCK_END();
 
 	return pret;
@@ -93,6 +101,13 @@ void free(void *ptr)
 	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_NULL, NULL, "%p", ptr);
 	POST_PROBEBLOCK_MIDDLE_MEM(0, MEMORY_API_FREE, ptr);
 	POST_PROBEBLOCK_CALLSTACK();
+	
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "p", ptr);
+	PACK_COMMON_END(0, newerrno, blockresult);
+	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
+	FLUSH_LOCAL_BUF();
+	
 	POST_PROBEBLOCK_END();
 }
 
@@ -147,6 +162,13 @@ void *calloc(size_t nelem, size_t elsize)
 	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_PTR, pret, "%u, %u", nelem, elsize);
 	POST_PROBEBLOCK_MIDDLE_MEM(nelem * elsize, MEMORY_API_ALLOC, pret);
 	APPEND_LOG_CALLSTACK();
+	
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "dd", nelem, elsize);
+	PACK_COMMON_END(pret, newerrno, blockresult);
+	PACK_MEMORY(elsize, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+	
 	POST_PROBEBLOCK_END();
 
 	return pret;
@@ -178,6 +200,13 @@ void *realloc(void *memblock, size_t size)
 	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_PTR, pret, "%p, %u", memblock, size);
 	POST_PROBEBLOCK_MIDDLE_MEM(size, MEMORY_API_ALLOC, pret);
 	APPEND_LOG_CALLSTACK();
+	
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pd", memblock, size);
+	PACK_COMMON_END(pret, newerrno, blockresult);
+	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+	
 	POST_PROBEBLOCK_END();
 
 	return pret;
