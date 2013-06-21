@@ -39,6 +39,8 @@
 #include "dahelper.h"
 #include "da_event.h"
 
+#include "binproto.h"
+
 static int external_angle = 0;
 static int internal_angle = 0;
 static bool orientation_enabled = false;
@@ -96,6 +98,12 @@ void on_orientation_changed(int angle, bool capi)
 			log.length += sprintf(log.data + log.length, "`,%d`,`,`,`,%d`,",
 					_EVENT_ORIENTATION, convert_angle(external_angle));
 			printLog(&log, MSG_LOG);
+			
+			PREPARE_LOCAL_BUF();
+			PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, LC_UIEVENT, "dd", angle, (uint32_t)capi);
+			PACK_COMMON_END(0, 0, 0);
+			PACK_UIEVENT(_EVENT_ORIENTATION, 0, 0, 0, 0, convert_angle(external_angle));
+			FLUSH_LOCAL_BUF();
 		}
 
 //		if(orientation_enabled)
