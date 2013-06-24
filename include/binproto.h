@@ -259,8 +259,8 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 /* 	BUF_PTR = pack_int32(BUF_PTR, value); */
 
 #define PACK_SYNC(sync_val, sync_type, api_type)		     \
-	do {						     \
-		BUF_PTR = pack_int32(BUF_PTR, sync_val);	     \
+	do {						     	     \
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)sync_val);  \
 		BUF_PTR = pack_int32(BUF_PTR, sync_type);	     \
 		BUF_PTR = pack_int32(BUF_PTR, api_type);	     \
 	} while (0)
