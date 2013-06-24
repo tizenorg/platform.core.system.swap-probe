@@ -39,6 +39,7 @@
 #include "probeinfo.h"
 #include "dautil.h"
 #include "da_memory.h"
+#include "binproto.h"
 
 static enum DaOptions _sopt = OPT_ALLOC;
 
@@ -57,6 +58,13 @@ void *memset(void *memblock, int c, size_t n)
 	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_PTR, pret, "%p, %d, %u", memblock, c, n);
 	POST_PROBEBLOCK_MIDDLE_MEM(n, MEMORY_API_MANAGE, memblock);
 	POST_PROBEBLOCK_CALLSTACK();
+		
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pdd", memblock, c, n);
+	PACK_COMMON_END(pret, newerrno, blockresult);
+	PACK_MEMORY(n, MEMORY_API_MANAGE, pret);
+	FLUSH_LOCAL_BUF();
+	
 	POST_PROBEBLOCK_END();
 
 	return pret;
@@ -76,6 +84,13 @@ int memcmp(const void * ptr1, const void * ptr2, size_t num)
 	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_INT, ret, "%p, %p, %u", ptr1, ptr2, num);
 	POST_PROBEBLOCK_MIDDLE_MEM(num, MEMORY_API_MANAGE, ptr1);
 	POST_PROBEBLOCK_CALLSTACK();
+			
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "ppd", ptr1, ptr2, num);
+	PACK_COMMON_END(ret, newerrno, blockresult);
+	PACK_MEMORY(num, MEMORY_API_MANAGE, ret);
+	FLUSH_LOCAL_BUF();
+	
 	POST_PROBEBLOCK_END();
 
 	return ret;
@@ -96,6 +111,13 @@ void *memcpy(void * destination, const void * source, size_t num )
 	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_PTR, pret, "%p, %p, %u", destination, source, num);
 	POST_PROBEBLOCK_MIDDLE_MEM(num, MEMORY_API_MANAGE, destination);
 	POST_PROBEBLOCK_CALLSTACK();
+	
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "ppd", destination, source, num);
+	PACK_COMMON_END(pret, newerrno, blockresult);
+	PACK_MEMORY(num, MEMORY_API_MANAGE, pret);
+	FLUSH_LOCAL_BUF();
+	
 	POST_PROBEBLOCK_END();
 
 	return pret;
