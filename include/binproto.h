@@ -294,6 +294,16 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 		*(uint32_t *)(buf + MSG_LEN_OFFSET) = (p - buf) - MSG_HDR_LEN; \
 		write(log_fd, buf, p - buf);
 
+// =========================== post block macro ===========================
+
+#define POST_PACK_PROBEBLOCK_BEGIN(LCTYPE, RETVALUE, INPUTFORMAT, ...)	\
+	newerrno = errno;						\
+	if(postBlockBegin(blockresult)) {
+
+#define POST_PACK_PROBEBLOCK_END() 					\
+		postBlockEnd();						\
+	}								\
+	errno = (newerrno != 0) ? newerrno : olderrno
 
 /* data */
 extern int log_fd;
