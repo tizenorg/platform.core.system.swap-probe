@@ -180,9 +180,9 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 
 #define PACK_MEMORY(size, memory_api_type, addr)		\
 	do {							\
-		BUF_PTR = pack_int32(p, size);			\
-		BUF_PTR = pack_int32(p, memory_api_type);	\
-		BUF_PTR = pack_int64(p, (uintptr_t)addr);	\
+		BUF_PTR = pack_int32(BUF_PTR, size);			\
+		BUF_PTR = pack_int32(BUF_PTR, memory_api_type);	\
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)addr);	\
 	} while (0)
 
 #define PACK_UICONTROL(control)						\
