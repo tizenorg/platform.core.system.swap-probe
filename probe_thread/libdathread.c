@@ -35,6 +35,8 @@
 #include "dahelper.h"
 #include "da_thread.h"
 
+#include "binproto.h"
+
 typedef struct thread_routine_call_t {
 	void *(*thread_routine)(void *);
 	void *argument;
@@ -59,6 +61,13 @@ void _da_cleanup_handler(void *data)
 			pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP);
 	APPEND_LOG_NULL_CALLSTACK();
 	printLog(&log, MSG_LOG);
+	
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "p", data);
+	PACK_COMMON_END(0, 0, 1);
+	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP);
+	FLUSH_LOCAL_BUF();
+	
 	PRE_UNCONDITIONAL_BLOCK_END();
 
 	return;
@@ -85,6 +94,13 @@ void *_da_ThreadProc(void *params)
 			pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_START);
 	APPEND_LOG_NULL_CALLSTACK();
 	printLog(&log, MSG_LOG);
+	
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "p", params);
+	PACK_COMMON_END(0, 0, 1);
+	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_START);
+	FLUSH_LOCAL_BUF();
+	
 	PRE_UNCONDITIONAL_BLOCK_END();
 
 	pthread_cleanup_push(_da_cleanup_handler, NULL);
@@ -104,6 +120,13 @@ void *_da_ThreadProc(void *params)
 			pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP);
 	APPEND_LOG_NULL_CALLSTACK();
 	printLog(&log, MSG_LOG);
+	
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "p", params);
+	PACK_COMMON_END(ret, 0, 1);
+	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP);
+	FLUSH_LOCAL_BUF();
+	
 	PRE_UNCONDITIONAL_BLOCK_END();
 	
 	free(ptrc);
@@ -117,6 +140,8 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 			const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg);
 
 	BEFORE_ORIGINAL_THREAD(pthread_create, LIBPTHREAD);
+
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_create, LIBPTHREAD);
 
 	if(blockresult)
 	{
@@ -136,6 +161,9 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, *thread, THREAD_API_START, 
 			"%p,%p,%p,%p", thread, attr, start_routine, arg);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, *thread, THREAD_API_START, 
+			"pppp", thread, attr, start_routine, arg);
 
 	return ret;
 }
@@ -159,6 +187,13 @@ int pthread_join(pthread_t thread, void **retval)
 			THREAD_PTHREAD, THREAD_API_WAIT_START);
 	APPEND_LOG_NULL_CALLSTACK();
 	printLog(&log, MSG_LOG);
+	
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "xp", thread, retval);
+	PACK_COMMON_END(0, 0, blockresult);
+	PACK_THREAD(thread, THREAD_PTHREAD, THREAD_API_WAIT_START);
+	FLUSH_LOCAL_BUF();
+	
 	PRE_PROBEBLOCK_END();
 
 	ret = pthread_joinp(thread, retval);
@@ -176,6 +211,13 @@ int pthread_join(pthread_t thread, void **retval)
 		POST_PROBEBLOCK_MIDDLE_THREAD(thread, THREAD_API_WAIT_END);
 		POST_PROBEBLOCK_CALLSTACK();
 		printLog(&log, MSG_LOG);
+		
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "xp", thread, retval);
+		PACK_COMMON_END(ret, errno, blockresult);
+		PACK_THREAD(thread, THREAD_PTHREAD, THREAD_API_WAIT_END);
+		FLUSH_LOCAL_BUF();
+	
 		postBlockEnd();
 	}
 	
@@ -203,6 +245,13 @@ void pthread_exit(void *retval)
 			pSelf, THREAD_PTHREAD, THREAD_API_EXIT);
 	APPEND_LOG_NULL_CALLSTACK();
 	printLog(&log, MSG_LOG);
+	
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "p", retval);
+	PACK_COMMON_END(0, 0, blockresult);
+	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_EXIT);
+	FLUSH_LOCAL_BUF();
+	
 	PRE_PROBEBLOCK_END();
 
 	pthread_exitp(retval);
@@ -214,9 +263,13 @@ int pthread_cancel(pthread_t thread)
 
 	BEFORE_ORIGINAL_THREAD(pthread_cancel, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_cancel, LIBPTHREAD);
+
 	ret = pthread_cancelp(thread);
 	
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_STOP, "%lu", thread);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_STOP, "x", thread);
 
 	return ret;
 }
@@ -227,9 +280,13 @@ int pthread_detach(pthread_t thread)
 
 	BEFORE_ORIGINAL_THREAD(pthread_detach, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_detach, LIBPTHREAD);
+
 	ret = pthread_detachp(thread);
 	
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, "%lu", thread);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, "x", thread);
 
 	return ret;
 }
@@ -240,6 +297,8 @@ pthread_t pthread_self(void)
 	static pthread_t (*pthread_selfp)(void);
 
 	BEFORE_ORIGINAL_THREAD(pthread_self, LIBPTHREAD);
+
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_self, LIBPTHREAD);
 
 	ret_pthr = pthread_selfp();
 	
@@ -254,7 +313,12 @@ pthread_t pthread_self(void)
 		POST_PROBEBLOCK_MIDDLE_THREAD(ret_pthr, THREAD_API_OTHER);
 		POST_PROBEBLOCK_CALLSTACK();
 		printLog(&log, MSG_LOG);
+
+		AFTER_PACK_ORIGINAL_THREAD(ret_pthr, ret_pthr, THREAD_API_OTHER, "", 0);
+
 		postBlockEnd();
+	} else {
+		FLUSH_LOCAL_BUF();
 	}
 
 	return ret_pthr;
@@ -266,9 +330,13 @@ int pthread_equal(pthread_t t1, pthread_t t2)
 
 	BEFORE_ORIGINAL_THREAD(pthread_equal, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_equal, LIBPTHREAD);
+
 	ret = pthread_equalp(t1, t2);
 	
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, t1, THREAD_API_OTHER, "%lu,%lu", t1, t2);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, t1, THREAD_API_OTHER, "xx", t1, t2);
 
 	return ret;
 }
@@ -280,11 +348,16 @@ int pthread_setcancelstate(int state, int *oldstate)
 
 	BEFORE_ORIGINAL_THREAD(pthread_setcancelstate, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_setcancelstate, LIBPTHREAD);
+
 	pSelf = pthread_self();
 	ret = pthread_setcancelstatep(state, oldstate);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, pSelf, THREAD_API_OTHER, 
-			"%d,%p", state, oldstate); 
+			"%d,%p", state, oldstate);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, pSelf, THREAD_API_OTHER, 
+			"dp", state, oldstate);
 
 	return ret;
 }
@@ -296,11 +369,16 @@ int pthread_setcanceltype(int type, int *oldtype)
 
 	BEFORE_ORIGINAL_THREAD(pthread_setcanceltype, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_setcanceltype, LIBPTHREAD);
+
 	pSelf = pthread_self();
 	ret = pthread_setcanceltypep(type, oldtype);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, pSelf, THREAD_API_OTHER, 
-			"%d,%p", type, oldtype); 
+			"%d,%p", type, oldtype);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, pSelf, THREAD_API_OTHER, 
+			"dp", type, oldtype);
 
 	return ret;
 }
@@ -312,9 +390,13 @@ int pthread_attr_init(pthread_attr_t *attr)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_init, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_init, LIBPTHREAD);
+
 	ret = pthread_attr_initp(attr);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, "%p", attr);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, "p", attr);
 
 	return ret;
 }
@@ -326,9 +408,13 @@ int pthread_attr_destroy(pthread_attr_t *attr)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_destroy, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_destroy, LIBPTHREAD);
+
 	ret = pthread_attr_destroyp(attr);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, "%p", attr);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, "p", attr);
 
 	return ret;
 }
@@ -341,10 +427,15 @@ int pthread_attr_getdetachstate(const pthread_attr_t *attr, int *detachstate)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getdetachstate, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getdetachstate, LIBPTHREAD);
+
 	ret = pthread_attr_getdetachstatep(attr, detachstate);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p", attr, detachstate);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pp", attr, detachstate);
 
 	return ret;
 }
@@ -357,10 +448,15 @@ int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setdetachstate, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setdetachstate, LIBPTHREAD);
+
 	ret = pthread_attr_setdetachstatep(attr, detachstate);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%d", attr, detachstate);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pd", attr, detachstate);
 
 	return ret;
 }
@@ -373,10 +469,15 @@ int pthread_attr_getstacksize(const pthread_attr_t *attr, size_t *stacksize)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getstacksize, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getstacksize, LIBPTHREAD);
+
 	ret = pthread_attr_getstacksizep(attr, stacksize);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p", attr, stacksize);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pp", attr, stacksize);
 
 	return ret;
 }
@@ -389,10 +490,15 @@ int pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setstacksize, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setstacksize, LIBPTHREAD);
+
 	ret = pthread_attr_setstacksizep(attr, stacksize);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%u", attr, stacksize);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pd", attr, stacksize);
 
 	return ret;
 }
@@ -405,10 +511,15 @@ int pthread_attr_getstackaddr(const pthread_attr_t *attr, void **stackaddr)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getstackaddr, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getstackaddr, LIBPTHREAD);
+
 	ret = pthread_attr_getstackaddrp(attr, stackaddr);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p", attr, stackaddr);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pp", attr, stackaddr);
 
 	return ret;
 }
@@ -421,10 +532,15 @@ int pthread_attr_setstackaddr(pthread_attr_t *attr, void *stackaddr)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setstackaddr, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setstackaddr, LIBPTHREAD);
+
 	ret = pthread_attr_setstackaddrp(attr, stackaddr);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p", attr, stackaddr);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pp", attr, stackaddr);
 
 	return ret;
 }
@@ -437,10 +553,15 @@ int pthread_attr_getinheritsched(const pthread_attr_t *attr, int *inheritsched)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getinheritsched, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getinheritsched, LIBPTHREAD);
+
 	ret = pthread_attr_getinheritschedp(attr, inheritsched);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p", attr, inheritsched);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pp", attr, inheritsched);
 
 	return ret;
 }
@@ -453,10 +574,15 @@ int pthread_attr_setinheritsched(pthread_attr_t *attr, int inheritsched)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setinheritsched, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setinheritsched, LIBPTHREAD);
+
 	ret = pthread_attr_setinheritschedp(attr, inheritsched);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%d", attr, inheritsched);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pd", attr, inheritsched);
 
 	return ret;
 }
@@ -470,10 +596,15 @@ int pthread_attr_getschedparam(const pthread_attr_t *attr,
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getschedparam, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getschedparam, LIBPTHREAD);
+
 	ret = pthread_attr_getschedparamp(attr, param);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p", attr, param);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pp", attr, param);
 
 	return ret;
 }
@@ -487,10 +618,15 @@ int pthread_attr_setschedparam(pthread_attr_t *attr,
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setschedparam, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setschedparam, LIBPTHREAD);
+
 	ret = pthread_attr_setschedparamp(attr, param);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p", attr, param);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pp", attr, param);
 
 	return ret;
 }
@@ -503,10 +639,15 @@ int pthread_attr_getschedpolicy(const pthread_attr_t *attr, int *policy)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getschedpolicy, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getschedpolicy, LIBPTHREAD);
+
 	ret = pthread_attr_getschedpolicyp(attr, policy);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p", attr, policy);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pp", attr, policy);
 
 	return ret;
 }
@@ -519,10 +660,15 @@ int pthread_attr_setschedpolicy(pthread_attr_t *attr, int policy)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setschedpolicy, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setschedpolicy, LIBPTHREAD);
+
 	ret = pthread_attr_setschedpolicyp(attr, policy);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%d", attr, policy);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pd", attr, policy);
 
 	return ret;
 }
@@ -535,10 +681,15 @@ int pthread_attr_getguardsize(const pthread_attr_t *attr, size_t *guardsize)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getguardsize, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getguardsize, LIBPTHREAD);
+
 	ret = pthread_attr_getguardsizep(attr, guardsize);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p", attr, guardsize);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pp", attr, guardsize);
 
 	return ret;
 }
@@ -551,10 +702,15 @@ int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setguardsize, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setguardsize, LIBPTHREAD);
+
 	ret = pthread_attr_setguardsizep(attr, guardsize);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%u", attr, guardsize);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pd", attr, guardsize);
 
 	return ret;
 }
@@ -567,10 +723,15 @@ int pthread_attr_getscope(const pthread_attr_t *attr, int *contentionscope)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getscope, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getscope, LIBPTHREAD);
+
 	ret = pthread_attr_getscopep(attr, contentionscope);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p", attr, contentionscope);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pp", attr, contentionscope);
 
 	return ret;
 }
@@ -583,10 +744,15 @@ int pthread_attr_setscope(pthread_attr_t *attr, int contentionscope)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setscope, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setscope, LIBPTHREAD);
+
 	ret = pthread_attr_setscopep(attr, contentionscope);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%d", attr, contentionscope);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"pd", attr, contentionscope);
 
 	return ret;
 }
@@ -600,10 +766,15 @@ int pthread_attr_getstack(const pthread_attr_t *attr,
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getstack, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getstack, LIBPTHREAD);
+
 	ret = pthread_attr_getstackp(attr, stackaddr, stacksize);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p,%p", attr, stackaddr, stacksize);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"ppp", attr, stackaddr, stacksize);
 
 	return ret;
 }
@@ -617,10 +788,15 @@ int pthread_attr_setstack(pthread_attr_t *attr,
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setstack, LIBPTHREAD);
 
+	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setstack, LIBPTHREAD);
+
 	ret = pthread_attr_setstackp(attr, stackaddr, stacksize);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
 			"%p,%p,%u", attr, stackaddr, stacksize);
+
+	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
+			"ppd", attr, stackaddr, stacksize);
 
 	return ret;
 }

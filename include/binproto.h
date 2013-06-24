@@ -245,11 +245,12 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 /* 	BUF_PTR = pack_int32(BUF_PTR, user_transition_time);		\ */
 /* 		} while (0) */
 
-/* #define PACK_THREAD(BUF_PTRthread_id, osp_thread_id, thread_type, api_type)	\ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, pthread_id);					\ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, osp_thread_id);				\ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, thread_type);					\ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, api_type); */
+ #define PACK_THREAD(thread_id, thread_type, api_type)	\
+	 do {								\
+		BUF_PTR = pack_int64(BUF_PTR, thread_id);		\
+		BUF_PTR = pack_int32(BUF_PTR, thread_type);		\
+		BUF_PTR = pack_int32(BUF_PTR, api_type);		\
+	} while (0)
 
 /* #define PACK_CUSTOM(handle, type, name, color, value)	\ */
 /* 	BUF_PTR = pack_int32(BUF_PTR, handle);			\ */
