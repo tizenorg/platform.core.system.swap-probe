@@ -104,15 +104,16 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 			SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
 	APPEND_LOG_NULL_CALLSTACK();
 	printLog(&log, MSG_LOG);
-	PRE_PROBEBLOCK_END();
-
-	ret = pthread_mutex_lockp(mutex);
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "p", mutex);
-	PACK_COMMON_END(ret, errno, blockresult);
-	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
+	PACK_COMMON_END(0, 0, blockresult);
+	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
 	FLUSH_LOCAL_BUF();
+
+	PRE_PROBEBLOCK_END();
+
+	ret = pthread_mutex_lockp(mutex);
 
 	// send WAIT_END log
 	newerrno = errno;
@@ -128,6 +129,13 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 				SYNC_API_ACQUIRE_WAIT_END);
 		POST_PROBEBLOCK_CALLSTACK();
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "p", mutex);
+		PACK_COMMON_END(ret, errno, blockresult);
+		PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 
@@ -154,6 +162,13 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 			SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
 	APPEND_LOG_NULL_CALLSTACK();
 	printLog(&log, MSG_LOG);
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", mutex, abs_timeout);
+	PACK_COMMON_END(0, 0, blockresult);
+	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
+	FLUSH_LOCAL_BUF();
+
 	PRE_PROBEBLOCK_END();
 
 	ret = pthread_mutex_timedlockp(mutex, abs_timeout);
@@ -172,6 +187,13 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 				SYNC_API_ACQUIRE_WAIT_END);
 		POST_PROBEBLOCK_CALLSTACK();
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", mutex, abs_timeout);
+		PACK_COMMON_END(ret, errno, blockresult);
+		PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	
@@ -479,6 +501,13 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 			SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_START);
 	APPEND_LOG_NULL_CALLSTACK();
 	printLog(&log, MSG_LOG);
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", cond, mutex);
+	PACK_COMMON_END(0, 0, blockresult);
+	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_START);
+	FLUSH_LOCAL_BUF();
+
 	PRE_PROBEBLOCK_END();
 
 	ret = pthread_cond_waitp(cond, mutex);
@@ -497,6 +526,13 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 				SYNC_API_COND_WAIT_END);
 		POST_PROBEBLOCK_CALLSTACK();
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", cond, mutex);
+		PACK_COMMON_END(ret, errno, blockresult);
+		PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 
@@ -523,6 +559,13 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 			SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_START);
 	APPEND_LOG_NULL_CALLSTACK();
 	printLog(&log, MSG_LOG);
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "ppp", cond, mutex, abstime);
+	PACK_COMMON_END(0, 0, blockresult);
+	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_START);
+	FLUSH_LOCAL_BUF();
+
 	PRE_PROBEBLOCK_END();
 
 	ret = pthread_cond_timedwaitp(cond, mutex, abstime);
@@ -541,6 +584,13 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 				SYNC_API_COND_WAIT_END);
 		POST_PROBEBLOCK_CALLSTACK();
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "ppp", cond, mutex, abstime);
+		PACK_COMMON_END(ret, errno, blockresult);
+		PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 
