@@ -74,6 +74,10 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 	uint32_t num = strlen(fmt);
 	const char *t = fmt;
 
+	if(*t == '\0') {
+		num = 0;
+	}
+
 	memcpy(to, &num, sizeof(num));
 	to += sizeof(num);
 
