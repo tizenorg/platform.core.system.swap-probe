@@ -118,6 +118,12 @@ void _AppImpl::OnTerminate(void* user_data)
 
 	probeBlockStart();
 	LIFECYCLE_PROBE_BLOCK("TERMINATING");
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "p", user_data);
+	PACK_COMMON_END(0, 0, 0);
+	FLUSH_LOCAL_BUF();
+
 	probeBlockEnd();
 
 	appimpl_onterminatep(user_data);
@@ -150,6 +156,11 @@ void _AppInfo::SetAppState(AppState appState)
 	if(appState == RUNNING)
 	{
 		LIFECYCLE_PROBE_BLOCK("RUNNING");
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "p", appState);
+		PACK_COMMON_END(0, 0, 0);
+		FLUSH_LOCAL_BUF();
 	}
 	probeBlockEnd();
 
@@ -167,6 +178,12 @@ void _UiAppImpl::OnBackground(void)
 	probeBlockStart();
 	SCREENSHOT_LOCK();
 	LIFECYCLE_PROBE_BLOCK("PAUSING");
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "", 0);
+	PACK_COMMON_END(0, 0, 0);
+	FLUSH_LOCAL_BUF();
+
 	probeBlockEnd();
 
 	(this->*uiappimpl_onbackgroundp)();
@@ -182,6 +199,12 @@ void _UiAppImpl::OnForeground(void)
 
 	probeBlockStart();
 	LIFECYCLE_PROBE_BLOCK("RUNNING");
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "", 0);
+	PACK_COMMON_END(0, 0, 0);
+	FLUSH_LOCAL_BUF();
+
 	SCREENSHOT_UNLOCK();
 //	SCREENSHOT_DONE();
 	probeBlockEnd();
