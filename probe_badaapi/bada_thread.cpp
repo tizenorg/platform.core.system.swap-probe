@@ -38,6 +38,8 @@
 #include "probeinfo.h"
 #include "dahelper.h"
 
+#include "binproto.h"
+
 static enum DaOptions _sopt = OPT_THREAD;
 
 extern	__thread unsigned int gProbeDepth;
@@ -268,6 +270,13 @@ _ThreadImpl::ThreadProc(void* params) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "p", params);
+		PACK_COMMON_END((unsigned int)pSelf, 0, blockresult);
+		PACK_THREAD((unsigned int)pThread, THREAD_OSPTHREAD_WORKER, THREAD_API_INTERNAL_START);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 	// all probe should be reachable inside thread start_routine (user implemented Thread::Run)
@@ -302,6 +311,13 @@ _ThreadImpl::ThreadProc(void* params) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "p", params);
+		PACK_COMMON_END((unsigned int)pSelf, 0, blockresult);
+		PACK_THREAD((unsigned int)pThread, THREAD_OSPTHREAD_WORKER, THREAD_API_INTERNAL_STOP);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return null;
@@ -595,6 +611,13 @@ result Thread::Sleep(long milliSeconds) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "x", milliSeconds);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_THREAD((unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_START);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 	//
@@ -624,6 +647,13 @@ result Thread::Sleep(long milliSeconds) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "x", milliSeconds);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_END);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -688,6 +718,13 @@ Thread* Thread::GetCurrentThread(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
+		PACK_COMMON_END((unsigned int)currentThread, res, blockresult);
+		PACK_THREAD((unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return currentThread;
@@ -754,6 +791,13 @@ result Thread::Yield(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -814,6 +858,13 @@ result Thread::Exit(int exitCode) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "d", exitCode);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_THREAD((unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_EXIT);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 	//
@@ -885,6 +936,13 @@ result Thread::Construct(ThreadType threadType, long stackSize,
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "dxd", threadType, stackSize, priority);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -947,6 +1005,13 @@ result Thread::Construct(long stackSize, ThreadPriority priority) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "xd", stackSize, priority);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1016,6 +1081,13 @@ result Thread::Construct(const Tizen::Base::String &name, long stackSize,
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "sxd", temp, stackSize, priority);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1085,6 +1157,13 @@ result Thread::Construct(const Tizen::Base::String &name, ThreadType threadType,
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "sdxd", temp, threadType, stackSize, priority);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1152,6 +1231,13 @@ result Thread::Construct(IRunnable &target, long stackSize,
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "xxd", (unsigned int) &target, stackSize, priority);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1221,6 +1307,13 @@ result Thread::Construct(const Tizen::Base::String &name, IRunnable &target,
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "sxxd", temp, (unsigned int) &target, stackSize, priority);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1287,6 +1380,13 @@ result Thread::GetExitCode(int &exitCode) const {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "d", exitCode);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1351,6 +1451,13 @@ const Tizen::Base::String & Thread::GetName(void) const {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "s", temp);
+		PACK_COMMON_END(0, res, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1406,6 +1513,13 @@ result Thread::Join(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_START);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 	//
@@ -1431,6 +1545,13 @@ result Thread::Join(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_END);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1570,6 +1691,13 @@ result Thread::Start(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_START);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1630,6 +1758,13 @@ result Thread::Stop(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_STOP);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1693,6 +1828,13 @@ result EventDrivenThread::Construct(long stackSize, ThreadPriority priority) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "xd", stackSize, priority);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_EVENTDRIVEN, THREAD_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1763,6 +1905,13 @@ result EventDrivenThread::Construct(const Tizen::Base::String &name, long stackS
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "sx", temp, stackSize);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_EVENTDRIVEN, THREAD_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1825,6 +1974,13 @@ result EventDrivenThread::Quit() {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_EVENTDRIVEN, THREAD_API_STOP);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
