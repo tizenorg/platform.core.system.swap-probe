@@ -990,8 +990,8 @@ result Monitor::Enter(void) {
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_NEW);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_ACQUIRE_WAIT_START);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
