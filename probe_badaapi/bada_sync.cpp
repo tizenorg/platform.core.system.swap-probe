@@ -37,6 +37,8 @@
 #include "probeinfo.h"
 #include "dahelper.h"
 
+#include "binproto.h"
+
 static enum DaOptions _sopt = OPT_THREAD;
 
 namespace Tizen {
@@ -163,6 +165,13 @@ result Mutex::Create(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -228,6 +237,13 @@ result Mutex::Create(const Tizen::Base::String& name) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "s", temp);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -291,6 +307,13 @@ result Mutex::Release(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_RELEASE);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -348,6 +371,13 @@ result Mutex::Acquire(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 	//
@@ -373,6 +403,13 @@ result Mutex::Acquire(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -436,6 +473,13 @@ result Mutex::TryToAcquire(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_TRY_ACQUIRE);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -500,6 +544,13 @@ result Semaphore::Create(int count) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "d", count);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -565,6 +616,13 @@ result Semaphore::Create(const Tizen::Base::String& name, int count) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "sd", temp, count);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -623,6 +681,13 @@ result Semaphore::Acquire(long timeout) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "x", timeout);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_START);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 	//
@@ -648,6 +713,13 @@ result Semaphore::Acquire(long timeout) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "x", timeout);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_END);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -711,6 +783,13 @@ result Semaphore::TryToAcquire(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_TRY_ACQUIRE);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -774,6 +853,13 @@ result Semaphore::Release(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_RELEASE);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -837,6 +923,13 @@ result Monitor::Construct(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -894,6 +987,13 @@ result Monitor::Enter(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_NEW);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 	//
@@ -919,6 +1019,13 @@ result Monitor::Enter(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_ACQUIRE_WAIT_END);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -982,6 +1089,13 @@ result Monitor::Exit(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_RELEASE);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1039,6 +1153,13 @@ result Monitor::Wait(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_COND_WAIT_START);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 	//
@@ -1064,6 +1185,13 @@ result Monitor::Wait(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_COND_WAIT_END);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1127,6 +1255,13 @@ result Monitor::Notify(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NOTIFY);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
@@ -1190,6 +1325,13 @@ result Monitor::NotifyAll(void) {
 		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NOTIFY_ALL);
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 	return ret;
