@@ -57,6 +57,12 @@ static inline char *pack_string(char *to, const char *str)
 	return to + len;
 }
 
+static inline char *pack_double(char *to, double val)
+{
+	*(double *)to = val;
+	return to + sizeof(double);
+}
+
 static inline char *pack_timestamp(char *to)
 {
 	struct timeval tv;
@@ -184,7 +190,7 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 
 #define PACK_MEMORY(size, memory_api_type, addr)		\
 	do {							\
-		BUF_PTR = pack_int32(BUF_PTR, size);			\
+		BUF_PTR = pack_int64(BUF_PTR, size);			\
 		BUF_PTR = pack_int32(BUF_PTR, memory_api_type);	\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)addr);	\
 	} while (0)
@@ -219,16 +225,16 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 		BUF_PTR = pack_int32(BUF_PTR, info2);			\
 	} while (0)
 
-/* #define PACK_RESOURCE(size, fd_value, fd_type, fd_api_type, file_size,	\ */
-/* 		      file_path)					\ */
-/* 	do {								\ */
-/* 		BUF_PTR = pack_int32(BUF_PTR, size);			\ */
-/* 		BUF_PTR = pack_int32(BUF_PTR, fd_value);		\ */
-/* 		BUF_PTR = pack_int32(BUF_PTR, fd_type);			\ */
-/* 		BUF_PTR = pack_int32(BUF_PTR, fd_api_type);		\ */
-/* 		BUF_PTR = pack_int32(BUF_PTR, file_size);		\ */
-/* 		BUF_PTR = pack_string(BUF_PTR, file_path);		\ */
-/* 	} while (0) */
+#define PACK_RESOURCE(size, fd_value, fd_type, fd_api_type, file_size,	\
+		      file_path)					\
+	do {								\
+		BUF_PTR = pack_int64(BUF_PTR, size);			\
+		BUF_PTR = pack_int32(BUF_PTR, fd_value);		\
+		BUF_PTR = pack_int32(BUF_PTR, fd_type);			\
+		BUF_PTR = pack_int32(BUF_PTR, fd_api_type);		\
+		BUF_PTR = pack_int64(BUF_PTR, file_size);		\
+		BUF_PTR = pack_string(BUF_PTR, file_path);		\
+	} while (0)
 
 /* #define PACK_SCREENSHOT(image_file_path, orienation)			\ */
 /* 		do {							\ */
@@ -256,12 +262,14 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 		BUF_PTR = pack_int32(BUF_PTR, api_type);		\
 	} while (0)
 
-/* #define PACK_CUSTOM(handle, type, name, color, value)	\ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, handle);			\ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, type);			\ */
-/* 	BUF_PTR = pack_string(BUF_PTR, name);			\ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, color);			\ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, value); */
+#define PACK_CUSTOM(handle, type, name, color, value)		\
+	do {						    	\
+		BUF_PTR = pack_int32(BUF_PTR, handle);		\
+		BUF_PTR = pack_int32(BUF_PTR, type);		\
+		BUF_PTR = pack_string(BUF_PTR, name);		\
+		BUF_PTR = pack_int32(BUF_PTR, color);		\
+		BUF_PTR = pack_double(BUF_PTR, value);		\
+	} while (0)
 
 #define PACK_SYNC(sync_val, sync_type, api_type)		     \
 	do {						     	     \

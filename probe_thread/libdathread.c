@@ -498,7 +498,7 @@ int pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize)
 			"%p,%u", attr, stacksize);
 
 	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
-			"pd", attr, stacksize);
+			"px", attr, stacksize);
 
 	return ret;
 }
@@ -710,7 +710,7 @@ int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize)
 			"%p,%u", attr, guardsize);
 
 	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
-			"pd", attr, guardsize);
+			"px", attr, guardsize);
 
 	return ret;
 }
@@ -796,7 +796,7 @@ int pthread_attr_setstack(pthread_attr_t *attr,
 			"%p,%p,%u", attr, stackaddr, stacksize);
 
 	AFTER_PACK_ORIGINAL_THREAD(ret, thread, THREAD_API_OTHER, 
-			"ppd", attr, stackaddr, stacksize);
+			"ppx", attr, stackaddr, stacksize);
 
 	return ret;
 }

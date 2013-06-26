@@ -60,7 +60,7 @@ void *memset(void *memblock, int c, size_t n)
 	POST_PROBEBLOCK_CALLSTACK();
 		
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pdd", memblock, c, n);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pdx", memblock, c, n);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(n, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();
@@ -86,7 +86,7 @@ int memcmp(const void * ptr1, const void * ptr2, size_t num)
 	POST_PROBEBLOCK_CALLSTACK();
 			
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "ppd", ptr1, ptr2, num);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "ppx", ptr1, ptr2, num);
 	PACK_COMMON_END(ret, newerrno, blockresult);
 	PACK_MEMORY(num, MEMORY_API_MANAGE, ret);
 	FLUSH_LOCAL_BUF();
@@ -113,7 +113,7 @@ void *memcpy(void * destination, const void * source, size_t num )
 	POST_PROBEBLOCK_CALLSTACK();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "ppd", destination, source, num);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "ppx", destination, source, num);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(num, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();

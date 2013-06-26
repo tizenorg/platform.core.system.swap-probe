@@ -71,7 +71,7 @@ void *malloc(size_t size)
 	APPEND_LOG_CALLSTACK();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "d", size);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "x", size);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
@@ -164,7 +164,7 @@ void *calloc(size_t nelem, size_t elsize)
 	APPEND_LOG_CALLSTACK();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "dd", nelem, elsize);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "xx", nelem, elsize);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(elsize, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
@@ -202,7 +202,7 @@ void *realloc(void *memblock, size_t size)
 	APPEND_LOG_CALLSTACK();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pd", memblock, size);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "px", memblock, size);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
