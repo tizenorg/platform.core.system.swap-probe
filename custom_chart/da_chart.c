@@ -43,6 +43,8 @@
 #define _USE_DA_
 #include "da_chart.h"
 
+#include "binproto.h"
+
 #define ERR_THREAD_CREATE_FAIL	-2001	// thread creation fail
 
 #define MAX_TITLE_LENGTH		16
@@ -142,6 +144,12 @@ void* _chart_timerThread(void* data)
 					LC_CUSTOM, probeInfo.eventIndex, __func__, probeInfo.currentTime, probeInfo.pID,
 					probeInfo.tID, CALLER_ADDRESS, cur->series_handle, value);
 			printLog(&log, MSG_LOG);
+
+			PREPARE_LOCAL_BUF();
+			PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM, LC_CUSTOM, "", 0);
+			PACK_COMMON_END(0, 0, 2);
+			PACK_CUSTOM(cur->series_handle, 0, "", 0, value);
+			FLUSH_LOCAL_BUF();
 
 			cur = cur->next;
 		}
@@ -455,7 +463,13 @@ void da_mark(chart_color color, char* mark_text)
 	APPEND_LOG_CHART_RESULT(0);
 	APPEND_LOG_CHART(0, 0, mark_text, color, 0.0f);
 	printLog(&log, MSG_LOG);
-	
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM, LC_CUSTOM, "dp", color, mark_text);
+	PACK_COMMON_END(0, 0, 2);
+	PACK_CUSTOM(0, 0, mark_text, color, 0.0f);
+	FLUSH_LOCAL_BUF();
+
 	probeBlockEnd();
 }
 
@@ -481,6 +495,12 @@ da_handle da_create_chart(char* chart_name)
 	APPEND_LOG_CHART_RESULT(ret);
 	APPEND_LOG_CHART(0, 0, chart_name, 0, 0.0f);
 	printLog(&log, MSG_LOG);
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM, LC_CUSTOM, "p", chart_name);
+	PACK_COMMON_END(ret, 0, 2);
+	PACK_CUSTOM(0, 0, chart_name, 0, 0.0f);
+	FLUSH_LOCAL_BUF();
 	
 	probeBlockEnd();
 	
@@ -515,6 +535,12 @@ da_handle da_create_series(da_handle charthandle, char* seriesname,
 	APPEND_LOG_CHART_RESULT(ret);
 	APPEND_LOG_CHART(charthandle, type, seriesname, color, 0.0f);
 	printLog(&log, MSG_LOG);
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM, LC_CUSTOM, "dpdd",  charthandle, seriesname, type, color);
+	PACK_COMMON_END(ret, 0, 2);
+	PACK_CUSTOM(charthandle, type, seriesname, color, 0.0f);
+	FLUSH_LOCAL_BUF();
 
 	probeBlockEnd();
 	
@@ -585,6 +611,12 @@ void da_log(da_handle series_handle, float uservalue)
 	APPEND_LOG_CHART_RESULT(0);
 	APPEND_LOG_CHART(series_handle, 0, "", 0, uservalue);
 	printLog(&log, MSG_LOG);
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM, LC_CUSTOM, "dw", series_handle, uservalue);
+	PACK_COMMON_END(0, 0, 2);
+	PACK_CUSTOM(series_handle, 0, "", 0, uservalue);
+	FLUSH_LOCAL_BUF();
 	
 	probeBlockEnd();
 }
