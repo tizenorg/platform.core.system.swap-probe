@@ -33,6 +33,8 @@
 #include "dahelper.h"
 #include "probeinfo.h"
 
+#include "binproto.h"
+
 app_event_callback_s gAppCallback;
 
 #define AFTER_ORIGINAL_APPFWCYCLE(RTYPE, RVAL, FUNCNAME, INPUTFORMAT, ...)	\
@@ -50,6 +52,19 @@ app_event_callback_s gAppCallback;
 	} while(0);																\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
+#define PACK_ORIGINAL_APPFWCYCLE(RVAL, INPUTFORMAT, ...)									\
+	newerrno = errno;																		\
+	do {																					\
+		if(postBlockBegin(blockresult)) {													\
+			PREPARE_LOCAL_BUF();															\
+			PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, INPUTFORMAT, __VA_ARGS__);	\
+			PACK_COMMON_END(RVAL, newerrno, blockresult);									\
+			FLUSH_LOCAL_BUF();																\
+			postBlockEnd();																	\
+		}																					\
+	} while(0);																				\
+	errno = (newerrno != 0) ? newerrno : olderrno
+
 static enum DaOptions _sopt = OPT_ALWAYSON;
 
 static bool _dalc_app_create(void* user_data)
@@ -65,6 +80,8 @@ static bool _dalc_app_create(void* user_data)
 	AFTER_ORIGINAL_APPFWCYCLE(VT_INT, bret, usercallback_app_create,
 			"%p", user_data);
 
+	PACK_ORIGINAL_APPFWCYCLE(bret, "p", user_data);
+
 	return bret;
 }
 
@@ -79,6 +96,8 @@ static void _dalc_app_terminate(void* user_data)
 
 	AFTER_ORIGINAL_APPFWCYCLE(VT_NULL, NULL, usercallback_app_terminate,
 			"%p", user_data);
+
+	PACK_ORIGINAL_APPFWCYCLE(0, "p", user_data);
 }
 
 static void _dalc_app_pause(void* user_data)
@@ -92,6 +111,8 @@ static void _dalc_app_pause(void* user_data)
 
 	AFTER_ORIGINAL_APPFWCYCLE(VT_NULL, NULL, usercallback_app_pause,
 			"%p", user_data);
+
+	PACK_ORIGINAL_APPFWCYCLE(0, "p", user_data);
 }
 
 static void _dalc_app_resume(void* user_data)
@@ -105,6 +126,8 @@ static void _dalc_app_resume(void* user_data)
 
 	AFTER_ORIGINAL_APPFWCYCLE(VT_NULL, NULL, usercallback_app_resume,
 			"%p", user_data);
+
+	PACK_ORIGINAL_APPFWCYCLE(0, "p", user_data);
 }
 
 static void _dalc_app_service(service_h service, void* user_data)
@@ -118,6 +141,8 @@ static void _dalc_app_service(service_h service, void* user_data)
 
 	AFTER_ORIGINAL_APPFWCYCLE(VT_NULL, NULL, usercallback_app_service,
 			"%u, %p", (unsigned int)service, user_data);
+
+	PACK_ORIGINAL_APPFWCYCLE(0, "dp", (unsigned int)service, user_data);
 }
 
 static void _dalc_app_deviceorientationchanged(app_device_orientation_e orientation, void* user_data)
