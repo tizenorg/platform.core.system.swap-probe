@@ -1453,8 +1453,8 @@ const Tizen::Base::String & Thread::GetName(void) const {
 		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "s", temp);
-		PACK_COMMON_END(0, res, blockresult);
+		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
+		PACK_COMMON_END(ret.GetPointer(), res, blockresult);
 		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
 		FLUSH_LOCAL_BUF();
 
