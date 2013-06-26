@@ -34,6 +34,8 @@
 #include "probeinfo.h"
 #include "dahelper.h"
 
+#include "binproto.h"
+
 using namespace Tizen::Base;
 
 enum FileSeekPosition {
@@ -151,7 +153,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp_path[50];
+	char temp_mode[50];
 	//FileAttributes attr;
 
 	if (!Constructp) {
@@ -183,16 +186,16 @@ result File::Construct(const Tizen::Base::String& filePath,
 		 LC_RESOURCE, probeInfo.eventIndex, "File::Construct",
 		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
 		 //Input,ret
-		 WcharToChar(temp,filePath.GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,%s",temp);
-		 WcharToChar(temp,openMode.GetPointer());
-		 log.length += sprintf(log.data + log.length,", %s",temp);
+		 WcharToChar(temp_path,filePath.GetPointer());
+		 log.length += sprintf(log.data + log.length,"`,%s",temp_path);
+		 WcharToChar(temp_mode,openMode.GetPointer());
+		 log.length += sprintf(log.data + log.length,", %s",temp_mode);
 		 log.length += sprintf(log.data + log.length,", %s`,%ld",(createParentDirectories == 0 ? "false" : "true"),ret);
 		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
 		 //File::GetAttributes(this->GetName(),attr);
-		 WcharToChar(temp,filePath.GetPointer());
+//		 WcharToChar(temp,filePath.GetPointer());
 //		 WcharToChar(temp,this->GetName().GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OPEN,temp);
+		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OPEN,temp_path);
 		 //callstack
 
 //		 if(E_SUCCESS != ret || blockresult == 2) {
@@ -205,7 +208,15 @@ result File::Construct(const Tizen::Base::String& filePath,
 			 log.length += sprintf(log.data + log.length, "`,callstack_end");
 //		 }
 
-		 printLog(&log, MSG_LOG);
+		 printLog(&log, MSG_LOG);	 
+		 
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE,
+				  "ssd", temp_path, temp_mode, createParentDirectories);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(0, (unsigned int)this, FD_FILE, FD_API_OPEN, 0, temp_path);
+		FLUSH_LOCAL_BUF();
+		 
 		 postBlockEnd();
 	}
 
@@ -371,7 +382,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp_path[50];
+	char temp_mode[50];
 	//FileAttributes attr;
 
 	if(!Constructp) {
@@ -403,15 +415,15 @@ result File::Construct(const Tizen::Base::String& filePath,
 		 LC_RESOURCE, probeInfo.eventIndex, "File::Construct",
 		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
 		 //Input,ret
-		 WcharToChar(temp,filePath.GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,%s",temp);
-		 WcharToChar(temp,openMode.GetPointer());
-		 log.length += sprintf(log.data + log.length,", %s`,%ld",temp,ret);
+		 WcharToChar(temp_path,filePath.GetPointer());
+		 log.length += sprintf(log.data + log.length,"`,%s",temp_path);
+		 WcharToChar(temp_mode,openMode.GetPointer());
+		 log.length += sprintf(log.data + log.length,", %s`,%ld",temp_mode,ret);
 		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
 		 //File::GetAttributes(this->GetName(),attr);
-		 WcharToChar(temp,filePath.GetPointer());
+//		 WcharToChar(temp,filePath.GetPointer());
 //		 WcharToChar(temp,this->GetName().GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OPEN,temp);
+		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OPEN,temp_path);
 		 //callstack
 
 //		 if(E_SUCCESS != ret || blockresult == 2) {
@@ -425,6 +437,13 @@ result File::Construct(const Tizen::Base::String& filePath,
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "ss", temp_path, temp_mode);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(0, (unsigned int)this, FD_FILE, FD_API_OPEN, 0, temp_path);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 
@@ -568,6 +587,13 @@ result File::Construct(const Tizen::Base::String& filePath,
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "sp", temp, pOpenMode);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(0, (unsigned int)this, FD_FILE, FD_API_OPEN, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 
@@ -640,6 +666,13 @@ result File::Construct(const Tizen::Base::String& filePath,
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "sp", temp, pOpenMode);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(0, (unsigned int)this, FD_FILE, FD_API_OPEN, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 	
@@ -704,6 +737,13 @@ result File::Flush(void) {
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(0, (unsigned int)this, FD_FILE, FD_API_OTHER, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 
@@ -769,6 +809,13 @@ Tizen::Base::String File::GetName(void) const{
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "", 0);
+		PACK_COMMON_END(ret.GetPointer(), res, blockresult);
+		PACK_RESOURCE(0, (unsigned int)this, FD_FILE, FD_API_OTHER, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 
@@ -836,6 +883,13 @@ result File::Read(Tizen::Base::String& buffer) {
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "x", (unsigned int)&buffer);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(nRead, (unsigned int)this, FD_FILE, FD_API_READ, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 
@@ -906,6 +960,13 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 		 postBlockEnd();
 	}
 
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "x", (unsigned int)&buffer);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(nRead, (unsigned int)this, FD_FILE, FD_API_READ, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 	return ret;
 }
 
@@ -971,6 +1032,13 @@ int File::Read(void *buffer, int length) {
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "xd", (unsigned int)buffer, length);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(nRead, (unsigned int)this, FD_FILE, FD_API_READ, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 
@@ -986,6 +1054,7 @@ result File::Seek(FileSeekPosition position, long offset) {
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
+	char temp_pos[50];
 	//FileAttributes attr;
 
 	if (!Seekp) {
@@ -1019,14 +1088,19 @@ result File::Seek(FileSeekPosition position, long offset) {
 		 LC_RESOURCE, probeInfo.eventIndex, "File::Seek",
 		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
 		 //Input,ret
-		 if(FILESEEKPOSITION_BEGIN == position)
+		 if(FILESEEKPOSITION_BEGIN == position) {
+			 strcpy(temp_pos, "FILESEEKPOSITION_BEGIN");
 			 log.length += sprintf(log.data + log.length,"`,FILESEEKPOSITION_BEGIN");
-		 else if(FILESEEKPOSITION_CURRENT == position)
+		 } else if(FILESEEKPOSITION_CURRENT == position) {
+			 strcpy(temp_pos, "FILESEEKPOSITION_CURRENT");
 			 log.length += sprintf(log.data + log.length,"`,FILESEEKPOSITION_CURRENT");
-		 else if(FILESEEKPOSITION_END == position)
+		 } else if(FILESEEKPOSITION_END == position) {
+			 strcpy(temp_pos, "FILESEEKPOSITION_END");
 			 log.length += sprintf(log.data + log.length,"`,FILESEEKPOSITION_END");
-		 else
+		 } else {
+			 sprintf(temp_pos, "%d", position);
 			 log.length += sprintf(log.data + log.length,"`,%d",position);
+		 }
 		 log.length += sprintf(log.data + log.length,", %ld`,%ld",offset,ret);
 		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
 		 //File::GetAttributes(this->GetName(),attr);
@@ -1045,6 +1119,13 @@ result File::Seek(FileSeekPosition position, long offset) {
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "sx", temp_pos, offset);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(0, (unsigned int)this, FD_FILE, FD_API_OTHER, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 
@@ -1111,6 +1192,13 @@ int File::Tell(void) const {
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "", 0);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(0, (unsigned int)this, FD_FILE, FD_API_OTHER, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 
@@ -1175,6 +1263,13 @@ result File::Truncate(int length) {
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "d", length);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(0, (unsigned int)this, FD_FILE, FD_API_OTHER, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 
@@ -1242,6 +1337,13 @@ result File::Write(const void *buffer, int length) {
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "xd", (unsigned int)buffer, length);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(nWritten, (unsigned int)this, FD_FILE, FD_API_WRITE, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 
@@ -1309,6 +1411,13 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "x", (unsigned int)&buffer);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(nWritten, (unsigned int)this, FD_FILE, FD_API_WRITE, 0, temp);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 
@@ -1323,7 +1432,8 @@ result File::Write(const Tizen::Base::String& buffer) {
 	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp_buf[50];
+	char temp_path[50];
 	int nWritten = 0;
 	//FileAttributes attr;
 
@@ -1357,13 +1467,13 @@ result File::Write(const Tizen::Base::String& buffer) {
 		 LC_RESOURCE, probeInfo.eventIndex, "File::Write",
 		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
 		 //Input,ret
-		 WcharToChar(temp,buffer.GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,%s`,%ld",temp,ret);
+		 WcharToChar(temp_buf,buffer.GetPointer());
+		 log.length += sprintf(log.data + log.length,"`,%s`,%ld",temp_buf,ret);
 		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
 		 //File::GetAttributes(this->GetName(),attr);
-		 WcharToChar(temp,this->GetName().GetPointer());
+		 WcharToChar(temp_path,this->GetName().GetPointer());
 		 nWritten = Tell() - nWritten;
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,%d`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,nWritten,(unsigned int)this,FD_FILE,FD_API_WRITE,temp);
+		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,%d`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,nWritten,(unsigned int)this,FD_FILE,FD_API_WRITE,temp_path);
 		 //callstack
 
 		 //		 if(E_SUCCESS != ret || blockresult == 2) {
@@ -1377,6 +1487,13 @@ result File::Write(const Tizen::Base::String& buffer) {
 //		 }
 
 		 printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "s", temp_buf);
+		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_RESOURCE(nWritten, (unsigned int)this, FD_FILE, FD_API_WRITE, 0, temp_path);
+		FLUSH_LOCAL_BUF();
+
 		 postBlockEnd();
 	}
 	return ret;
@@ -1438,6 +1555,13 @@ File::~File(void) {
 //		}
 
 		printLog(&log, MSG_LOG);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "", 0);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_RESOURCE(0, (unsigned int)this, FD_FILE, FD_API_CLOSE, 0, "");
+		FLUSH_LOCAL_BUF();
+
 		postBlockEnd();
 	}
 }
