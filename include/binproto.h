@@ -236,24 +236,23 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 		BUF_PTR = pack_string(BUF_PTR, file_path);		\
 	} while (0)
 
-/* #define PACK_SCREENSHOT(image_file_path, orienation)			\ */
-/* 		do {							\ */
-/* 			  BUF_PTR = pack_string(BUF_PTR, image_file_path); \ */
-/* 			  BUF_PTR = pack_int32(BUF_PTR, orienation);	\ */
-/* 		  } while (0) */
+#define PACK_SCREENSHOT(image_file_path, orienation)				\
+		do {								\
+			  BUF_PTR = pack_string(BUF_PTR, image_file_path); 	\
+			  BUF_PTR = pack_int32(BUF_PTR, orienation);		\
+		} while (0)
 
-/* #define PACK_SCENE(scene_name, form_name, form_pointer,		\ */
-/* 		   panel_name, panel_pointer, transition_time,	\ */
-/* 		   user_transition_time)			\ */
-/* 		do {							\ */
-/* 	BUF_PTR = pack_string(BUF_PTR, scene_name);				\ */
-/* 	BUF_PTR = pack_string(BUF_PTR, form_name);				\ */
-/* 	BUF_PTR = pack_int64(BUF_PTR, form_pointer);			\ */
-/* 	BUF_PTR = pack_string(BUF_PTR, panel_name);				\ */
-/* 	BUF_PTR = pack_int64(BUF_PTR, panel_pointer);			\ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, transition_time);			\ */
-/* 	BUF_PTR = pack_int32(BUF_PTR, user_transition_time);		\ */
-/* 		} while (0) */
+#define PACK_SCENE(scene_name, form_name, form_pointer, panel_name, panel_pointer,	\
+			transition_time, user_transition_time)				\
+		do {									\
+			BUF_PTR = pack_string(BUF_PTR, scene_name);			\
+			BUF_PTR = pack_string(BUF_PTR, form_name);			\
+			BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)form_pointer);		\
+			BUF_PTR = pack_string(BUF_PTR, panel_name);			\
+			BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)panel_pointer);	\
+			BUF_PTR = pack_int64(BUF_PTR, transition_time);			\
+			BUF_PTR = pack_int64(BUF_PTR, user_transition_time);		\
+		} while (0)
 
  #define PACK_THREAD(thread_id, thread_type, api_type)	\
 	 do {								\
