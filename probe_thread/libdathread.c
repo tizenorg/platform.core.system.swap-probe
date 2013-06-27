@@ -141,8 +141,6 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 
 	BEFORE_ORIGINAL_THREAD(pthread_create, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_create, LIBPTHREAD);
-
 	if(blockresult)
 	{
 		probeBlockStart();	
@@ -263,8 +261,6 @@ int pthread_cancel(pthread_t thread)
 
 	BEFORE_ORIGINAL_THREAD(pthread_cancel, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_cancel, LIBPTHREAD);
-
 	ret = pthread_cancelp(thread);
 	
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_STOP, "%lu", thread);
@@ -279,8 +275,6 @@ int pthread_detach(pthread_t thread)
 	static int (*pthread_detachp)(pthread_t thread);
 
 	BEFORE_ORIGINAL_THREAD(pthread_detach, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_detach, LIBPTHREAD);
 
 	ret = pthread_detachp(thread);
 	
@@ -297,8 +291,6 @@ pthread_t pthread_self(void)
 	static pthread_t (*pthread_selfp)(void);
 
 	BEFORE_ORIGINAL_THREAD(pthread_self, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_self, LIBPTHREAD);
 
 	ret_pthr = pthread_selfp();
 	
@@ -317,8 +309,6 @@ pthread_t pthread_self(void)
 		AFTER_PACK_ORIGINAL_THREAD(ret_pthr, ret_pthr, THREAD_API_OTHER, "", 0);
 
 		postBlockEnd();
-	} else {
-		FLUSH_LOCAL_BUF();
 	}
 
 	return ret_pthr;
@@ -329,8 +319,6 @@ int pthread_equal(pthread_t t1, pthread_t t2)
 	static int (*pthread_equalp)(pthread_t t1, pthread_t t2);
 
 	BEFORE_ORIGINAL_THREAD(pthread_equal, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_equal, LIBPTHREAD);
 
 	ret = pthread_equalp(t1, t2);
 	
@@ -347,8 +335,6 @@ int pthread_setcancelstate(int state, int *oldstate)
 	static int (*pthread_setcancelstatep)(int state, int *oldstate);
 
 	BEFORE_ORIGINAL_THREAD(pthread_setcancelstate, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_setcancelstate, LIBPTHREAD);
 
 	pSelf = pthread_self();
 	ret = pthread_setcancelstatep(state, oldstate);
@@ -369,8 +355,6 @@ int pthread_setcanceltype(int type, int *oldtype)
 
 	BEFORE_ORIGINAL_THREAD(pthread_setcanceltype, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_setcanceltype, LIBPTHREAD);
-
 	pSelf = pthread_self();
 	ret = pthread_setcanceltypep(type, oldtype);
 
@@ -390,8 +374,6 @@ int pthread_attr_init(pthread_attr_t *attr)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_init, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_init, LIBPTHREAD);
-
 	ret = pthread_attr_initp(attr);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, "%p", attr);
@@ -407,8 +389,6 @@ int pthread_attr_destroy(pthread_attr_t *attr)
 	static int (*pthread_attr_destroyp)(pthread_attr_t *attr);
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_destroy, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_destroy, LIBPTHREAD);
 
 	ret = pthread_attr_destroyp(attr);
 
@@ -426,8 +406,6 @@ int pthread_attr_getdetachstate(const pthread_attr_t *attr, int *detachstate)
 			int *detachstate);
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getdetachstate, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getdetachstate, LIBPTHREAD);
 
 	ret = pthread_attr_getdetachstatep(attr, detachstate);
 
@@ -448,8 +426,6 @@ int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setdetachstate, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setdetachstate, LIBPTHREAD);
-
 	ret = pthread_attr_setdetachstatep(attr, detachstate);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
@@ -468,8 +444,6 @@ int pthread_attr_getstacksize(const pthread_attr_t *attr, size_t *stacksize)
 			size_t *stacksize);
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getstacksize, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getstacksize, LIBPTHREAD);
 
 	ret = pthread_attr_getstacksizep(attr, stacksize);
 
@@ -490,8 +464,6 @@ int pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setstacksize, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setstacksize, LIBPTHREAD);
-
 	ret = pthread_attr_setstacksizep(attr, stacksize);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
@@ -510,8 +482,6 @@ int pthread_attr_getstackaddr(const pthread_attr_t *attr, void **stackaddr)
 			void **stackaddr);
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getstackaddr, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getstackaddr, LIBPTHREAD);
 
 	ret = pthread_attr_getstackaddrp(attr, stackaddr);
 
@@ -532,8 +502,6 @@ int pthread_attr_setstackaddr(pthread_attr_t *attr, void *stackaddr)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setstackaddr, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setstackaddr, LIBPTHREAD);
-
 	ret = pthread_attr_setstackaddrp(attr, stackaddr);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
@@ -553,8 +521,6 @@ int pthread_attr_getinheritsched(const pthread_attr_t *attr, int *inheritsched)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getinheritsched, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getinheritsched, LIBPTHREAD);
-
 	ret = pthread_attr_getinheritschedp(attr, inheritsched);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
@@ -573,8 +539,6 @@ int pthread_attr_setinheritsched(pthread_attr_t *attr, int inheritsched)
 			int inheritsched);
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setinheritsched, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setinheritsched, LIBPTHREAD);
 
 	ret = pthread_attr_setinheritschedp(attr, inheritsched);
 
@@ -596,8 +560,6 @@ int pthread_attr_getschedparam(const pthread_attr_t *attr,
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getschedparam, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getschedparam, LIBPTHREAD);
-
 	ret = pthread_attr_getschedparamp(attr, param);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
@@ -618,8 +580,6 @@ int pthread_attr_setschedparam(pthread_attr_t *attr,
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setschedparam, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setschedparam, LIBPTHREAD);
-
 	ret = pthread_attr_setschedparamp(attr, param);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
@@ -638,8 +598,6 @@ int pthread_attr_getschedpolicy(const pthread_attr_t *attr, int *policy)
 			int *policy);
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getschedpolicy, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getschedpolicy, LIBPTHREAD);
 
 	ret = pthread_attr_getschedpolicyp(attr, policy);
 
@@ -660,8 +618,6 @@ int pthread_attr_setschedpolicy(pthread_attr_t *attr, int policy)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setschedpolicy, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setschedpolicy, LIBPTHREAD);
-
 	ret = pthread_attr_setschedpolicyp(attr, policy);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
@@ -680,8 +636,6 @@ int pthread_attr_getguardsize(const pthread_attr_t *attr, size_t *guardsize)
 			size_t *guardsize);
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getguardsize, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getguardsize, LIBPTHREAD);
 
 	ret = pthread_attr_getguardsizep(attr, guardsize);
 
@@ -702,8 +656,6 @@ int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setguardsize, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setguardsize, LIBPTHREAD);
-
 	ret = pthread_attr_setguardsizep(attr, guardsize);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
@@ -723,8 +675,6 @@ int pthread_attr_getscope(const pthread_attr_t *attr, int *contentionscope)
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getscope, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getscope, LIBPTHREAD);
-
 	ret = pthread_attr_getscopep(attr, contentionscope);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
@@ -743,8 +693,6 @@ int pthread_attr_setscope(pthread_attr_t *attr, int contentionscope)
 			int contentionscope);
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setscope, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setscope, LIBPTHREAD);
 
 	ret = pthread_attr_setscopep(attr, contentionscope);
 
@@ -766,8 +714,6 @@ int pthread_attr_getstack(const pthread_attr_t *attr,
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_getstack, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_getstack, LIBPTHREAD);
-
 	ret = pthread_attr_getstackp(attr, stackaddr, stacksize);
 
 	AFTER_ORIGINAL_THREAD_RET(VT_INT, ret, thread, THREAD_API_OTHER, 
@@ -787,8 +733,6 @@ int pthread_attr_setstack(pthread_attr_t *attr,
 			void *stackaddr, size_t stacksize);
 
 	BEFORE_ORIGINAL_THREAD(pthread_attr_setstack, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_THREAD(pthread_attr_setstack, LIBPTHREAD);
 
 	ret = pthread_attr_setstackp(attr, stackaddr, stacksize);
 

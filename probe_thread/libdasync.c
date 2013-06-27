@@ -47,8 +47,6 @@ int pthread_mutex_init(pthread_mutex_t *mutex,
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_init, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutex_init, LIBPTHREAD);
-
 	ret = pthread_mutex_initp(mutex, attr);
 
 	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, mutex, SYNC_PTHREAD_MUTEX, 
@@ -64,8 +62,6 @@ int pthread_mutex_destroy(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_destroyp)(pthread_mutex_t *mutex);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_destroy, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutex_destroy, LIBPTHREAD);
 
 	ret = pthread_mutex_destroyp(mutex);
 
@@ -205,8 +201,6 @@ int pthread_mutex_trylock(pthread_mutex_t *mutex) {
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_trylock, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutex_trylock, LIBPTHREAD);
-
 	ret = pthread_mutex_trylockp(mutex);
 
 	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, mutex, SYNC_PTHREAD_MUTEX, 
@@ -231,8 +225,6 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex) {
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_unlock, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutex_unlock, LIBPTHREAD);
-
 	ret = pthread_mutex_unlockp(mutex);
 
 	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, mutex, SYNC_PTHREAD_MUTEX, 
@@ -249,8 +241,6 @@ int pthread_mutexattr_init(pthread_mutexattr_t *attr) {
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_init, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutexattr_init, LIBPTHREAD);
-
 	ret = pthread_mutexattr_initp(attr);
 
 	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
@@ -266,8 +256,6 @@ int pthread_mutexattr_destroy(pthread_mutexattr_t *attr) {
 	static int (*pthread_mutexattr_destroyp)(pthread_mutexattr_t *attr);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_destroy, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutexattr_destroy, LIBPTHREAD);
 
 	ret = pthread_mutexattr_destroyp(attr);
 
@@ -287,8 +275,6 @@ int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *attr,
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_getprioceiling, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutexattr_getprioceiling, LIBPTHREAD);
-
 	ret = pthread_mutexattr_getprioceilingp(attr, prioceiling);
 
 	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
@@ -306,8 +292,6 @@ int pthread_mutexattr_setprioceiling(pthread_mutexattr_t *attr,
 			pthread_mutexattr_t *attr, int prioceiling);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_setprioceiling, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutexattr_setprioceiling, LIBPTHREAD);
 
 	ret = pthread_mutexattr_setprioceilingp(attr, prioceiling);
 
@@ -327,8 +311,6 @@ int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *attr,
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_getprotocol, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutexattr_getprotocol, LIBPTHREAD);
-
 	ret = pthread_mutexattr_getprotocolp(attr, protocol);
 
 	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
@@ -346,8 +328,6 @@ int pthread_mutexattr_setprotocol(pthread_mutexattr_t *attr,
 			pthread_mutexattr_t *attr, int protocol);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_setprotocol, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutexattr_setprotocol, LIBPTHREAD);
 
 	ret = pthread_mutexattr_setprotocolp(attr, protocol);
 
@@ -367,8 +347,6 @@ int pthread_mutexattr_getpshared(const pthread_mutexattr_t *attr,
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_getpshared, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutexattr_getpshared, LIBPTHREAD);
-
 	ret = pthread_mutexattr_getpsharedp(attr, pshared);
 
 	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
@@ -387,8 +365,6 @@ int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr,
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_setpshared, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutexattr_setpshared, LIBPTHREAD);
-
 	ret = pthread_mutexattr_setpsharedp(attr, pshared);
 
 	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
@@ -406,8 +382,6 @@ int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int *type) {
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_gettype, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutexattr_gettype, LIBPTHREAD);
-
 	ret = pthread_mutexattr_gettypep(attr, type);
 
 	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
@@ -424,8 +398,6 @@ int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type) {
 			pthread_mutexattr_t *attr, int type);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_settype, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_mutexattr_settype, LIBPTHREAD);
 
 	ret = pthread_mutexattr_settypep(attr, type);
 
@@ -451,8 +423,6 @@ int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr) {
 
 	BEFORE_ORIGINAL_SYNC(pthread_cond_init, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_cond_init, LIBPTHREAD);
-
 	ret = pthread_cond_initp(cond, attr);
 
 	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
@@ -468,8 +438,6 @@ int pthread_cond_destroy(pthread_cond_t *cond) {
 	static int (*pthread_cond_destroyp)(pthread_cond_t *cond);
 
 	BEFORE_ORIGINAL_SYNC(pthread_cond_destroy, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_cond_destroy, LIBPTHREAD);
 
 	ret = pthread_cond_destroyp(cond);
 
@@ -602,8 +570,6 @@ int pthread_cond_signal(pthread_cond_t *cond) {
 
 	BEFORE_ORIGINAL_SYNC(pthread_cond_signal, LIBPTHREAD);
 
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_cond_signal, LIBPTHREAD);
-
 	ret = pthread_cond_signalp(cond);
 
 	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
@@ -619,8 +585,6 @@ int pthread_cond_broadcast(pthread_cond_t *cond) {
 	static int (*pthread_cond_broadcastp)(pthread_cond_t *cond);
 
 	BEFORE_ORIGINAL_SYNC(pthread_cond_broadcast, LIBPTHREAD);
-
-	BEFORE_PACK_ORIGINAL_SYNC(pthread_cond_broadcast, LIBPTHREAD);
 
 	ret = pthread_cond_broadcastp(cond);
 
