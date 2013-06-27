@@ -236,10 +236,10 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 		BUF_PTR = pack_string(BUF_PTR, file_path);		\
 	} while (0)
 
-#define PACK_SCREENSHOT(image_file_path, orienation)				\
+#define PACK_SCREENSHOT(image_file_path, orientation)				\
 		do {								\
 			  BUF_PTR = pack_string(BUF_PTR, image_file_path); 	\
-			  BUF_PTR = pack_int32(BUF_PTR, orienation);		\
+			  BUF_PTR = pack_int32(BUF_PTR, orientation);		\
 		} while (0)
 
 #define PACK_SCENE(scene_name, form_name, form_pointer, panel_name, panel_pointer,	\
