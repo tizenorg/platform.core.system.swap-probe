@@ -242,17 +242,36 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 			  BUF_PTR = pack_int32(BUF_PTR, orientation);		\
 		} while (0)
 
-#define PACK_SCENE(scene_name, form_name, form_pointer, panel_name, panel_pointer,	\
-			transition_time, user_transition_time)				\
-		do {									\
-			BUF_PTR = pack_string(BUF_PTR, scene_name);			\
-			BUF_PTR = pack_string(BUF_PTR, form_name);			\
-			BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)form_pointer);		\
-			BUF_PTR = pack_string(BUF_PTR, panel_name);			\
-			BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)panel_pointer);	\
-			BUF_PTR = pack_int64(BUF_PTR, transition_time);			\
-			BUF_PTR = pack_int64(BUF_PTR, user_transition_time);		\
-		} while (0)
+#define PACK_SCENE(scene_name, formid, pform, panelid, ppanel, transition, user)	\
+	do {										\
+		BUF_PTR = pack_string(BUF_PTR,  scene_name);				\
+		if (unlikely(pform == NULL)) {						\
+			BUF_PTR = pack_string(BUF_PTR, "");				\
+			BUF_PTR = pack_int64(BUF_PTR, 0);				\
+		} else {								\
+			char *type = NULL, *name = NULL;				\
+			if (find_object_hash((void*)(pform), &type, &name) == 1) {	\
+				BUF_PTR = pack_string(BUF_PTR, name);			\
+			} else {							\
+				BUF_PTR = pack_string(BUF_PTR, "");			\
+			}								\
+			BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)pform); 		\
+		}									\
+		if (unlikely(ppanel == NULL)) {						\
+			BUF_PTR = pack_string(BUF_PTR, "");				\
+			BUF_PTR = pack_int64(BUF_PTR, 0);				\
+		} else {								\
+			char *type = NULL, *name = NULL;				\
+			if (find_object_hash((void*)(ppanel), &type, &name) == 1) {	\
+				BUF_PTR = pack_string(BUF_PTR, name);			\
+			} else {							\
+				BUF_PTR = pack_string(BUF_PTR, "");			\
+			}								\
+			BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(ppanel)); 		\
+		}									\
+		BUF_PTR = pack_int64(BUF_PTR, transition);				\
+		BUF_PTR = pack_int64(BUF_PTR, user);					\
+	} while(0)
 
  #define PACK_THREAD(thread_id, thread_type, api_type)	\
 	 do {								\

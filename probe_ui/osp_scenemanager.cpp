@@ -37,6 +37,8 @@
 #include "dahelper.h"		// for captureScreen
 #include "osp_probe.h"
 
+#include "binproto.h"
+
 using namespace Tizen::Base;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
@@ -110,6 +112,15 @@ void SceneManagerEventListener::OnSceneTransitionCompleted(const SceneId &previo
 				log.length += sprintf(log.data + log.length, "`,%lu`,%lu`,", transition, user);
 
 				printLog(&log, MSG_LOG);
+
+				char scene_name[50];
+				WcharToChar(scene_name, sceneid.GetPointer());
+				
+				PREPARE_LOCAL_BUF();
+				PACK_COMMON_BEGIN(MSG_PROBE_SCENE, LC_SCENE, "pp", &previousSceneId, &currentSceneId);
+				PACK_COMMON_END(0, 0, 0);
+				PACK_SCENE(scene_name, formid, pform, panelid, ppanel, transition, user);
+				FLUSH_LOCAL_BUF();
 			}
 		}
 		else
