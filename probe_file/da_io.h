@@ -78,9 +78,18 @@
 	log.length += sprintf(log.data + log.length, "`,%u`,%d`,%d`,%d`,%ld`,%s",	\
 			SIZE, FD, FD_FILE, APITYPE, (_fstatret == 0 ? _statbuf.st_size : 0), _filepath)
 
+#define POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE)			\
+	PACK_RESOURCE(SIZE, FD, FD_FILE, APITYPE,						\
+		      (_fstatret == 0 ? _statbuf.st_size : 0), _filepath);	\
+	FLUSH_LOCAL_BUF()
+
 #define POST_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE)							\
 	log.length += sprintf(log.data + log.length, "`,%u`,`,%d`,%d`,0`,%s",	\
 			SIZE, FD_FILE, APITYPE, _filepath)
+
+#define POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE)			\
+	PACK_RESOURCE(SIZE, 0, FD_FILE, APITYPE, 0, _filepath);		\
+	FLUSH_LOCAL_BUF()
 
 #define POST_PROBEBLOCK_CALLSTACK_RESOURCE(APITYPE)					\
 	do {															\
@@ -119,11 +128,28 @@
 	POST_PROBEBLOCK_CALLSTACK_RESOURCE(APITYPE);								\
 	POST_PROBEBLOCK_END()
 
+#define AFTER_PACK_ORIGINAL_FD(RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)			\
+	POST_PACK_PROBEBLOCK_BEGIN();													\
+	PREPARE_LOCAL_BUF();															\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, INPUTFORMAT, __VA_ARGS__);	\
+	PACK_COMMON_END(RVAL, newerrno, blockresult);									\
+	_fstatret = fstat(FD, &_statbuf);												\
+	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE);								\
+	POST_PACK_PROBEBLOCK_END()
+
 #define AFTER_ORIGINAL_NOFD_RET(RTYPE, RVAL, SIZE, APITYPE, INPUTFORMAT, ...)	\
 	POST_PROBEBLOCK_BEGIN(LC_RESOURCE, RTYPE, RVAL,	INPUTFORMAT, __VA_ARGS__);	\
 	POST_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE);									\
 	POST_PROBEBLOCK_CALLSTACK_RESOURCE(APITYPE);								\
 	POST_PROBEBLOCK_END()
+
+#define AFTER_PACK_ORIGINAL_NOFD(RVAL, SIZE, APITYPE, INPUTFORMAT, ...)					\
+	POST_PACK_PROBEBLOCK_BEGIN();														\
+	PREPARE_LOCAL_BUF();																\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, INPUTFORMAT, __VA_ARGS__);		\
+	PACK_COMMON_END(RVAL, newerrno, blockresult);										\
+	POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE);									\
+	POST_PACK_PROBEBLOCK_END()
 
 #define AFTER_ORIGINAL_FILEP_RET(RTYPE, RVAL, SIZE, FILEP, APITYPE, INPUTFORMAT, ...)	\
 	POST_PROBEBLOCK_BEGIN(LC_RESOURCE, RTYPE, RVAL,	INPUTFORMAT, __VA_ARGS__);			\
@@ -136,6 +162,17 @@
 	POST_PROBEBLOCK_CALLSTACK_RESOURCE(APITYPE);										\
 	POST_PROBEBLOCK_END()
 
+#define AFTER_PACK_ORIGINAL_FILEP(RVAL, SIZE, FILEP, APITYPE, INPUTFORMAT, ...)			\
+	POST_PACK_PROBEBLOCK_BEGIN();														\
+	GET_FD_FROM_FILEP(FILEP);															\
+	if(_fd != -1) { 																	\
+		_fstatret = fstat(_fd, &_statbuf);												\
+	}																					\
+	PREPARE_LOCAL_BUF();																\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, INPUTFORMAT, __VA_ARGS__);		\
+	PACK_COMMON_END(RVAL, newerrno, blockresult);										\
+	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, _fd, APITYPE);									\
+	POST_PACK_PROBEBLOCK_END()
 
 #define AFTER_ORIGINAL_FD(SIZE, FD, APITYPE, INPUTFORMAT, ...)			\
 	AFTER_ORIGINAL_FD_RET(VT_INT, ret, SIZE, FD, APITYPE, INPUTFORMAT, __VA_ARGS__)
