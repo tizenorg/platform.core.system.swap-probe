@@ -66,7 +66,7 @@ int real_pthread_mutex_unlock(pthread_mutex_t *mutex);
 	POST_PROBEBLOCK_END()
 
 #define AFTER_PACK_ORIGINAL_SYNC(RVAL, SYNCVAL, SYNCTYPE, APITYPE, INPUTFORMAT, ...)			\
-	POST_PACK_PROBEBLOCK_BEGIN(LC_SYNC, RVAL, INPUTFORMAT, __VA_ARGS__);						\
+	POST_PACK_PROBEBLOCK_BEGIN();						\
 	PREPARE_LOCAL_BUF();																		\
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, INPUTFORMAT, __VA_ARGS__);						\
 	PACK_COMMON_END(RVAL, errno, blockresult);													\

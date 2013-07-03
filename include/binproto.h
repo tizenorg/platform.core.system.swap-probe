@@ -327,7 +327,7 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 
 // =========================== post block macro ===========================
 
-#define POST_PACK_PROBEBLOCK_BEGIN(LCTYPE, RETVALUE, INPUTFORMAT, ...)	\
+#define POST_PACK_PROBEBLOCK_BEGIN()					\
 	newerrno = errno;						\
 	if(postBlockBegin(blockresult)) {
 
