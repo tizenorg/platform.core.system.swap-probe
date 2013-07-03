@@ -76,7 +76,7 @@ static int convert_angle(int angle)
 
 void on_orientation_changed(int angle, bool capi)
 {
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	bool autoRotation = true;
 
 	probeBlockStart();
@@ -92,12 +92,6 @@ void on_orientation_changed(int angle, bool capi)
 		if(isOptionEnabled(OPT_EVENT))
 		{
 			setProbePoint(&probeInfo);
-			INIT_LOG;
-			APPEND_LOG_BASIC_NAME(LC_UIEVENT, "OrientationChanged");
-			APPEND_LOG_COMMON_NONE(0);
-			log.length += sprintf(log.data + log.length, "`,%d`,`,`,`,%d`,",
-					_EVENT_ORIENTATION, convert_angle(external_angle));
-			printLog(&log, MSG_LOG);
 			
 			PREPARE_LOCAL_BUF();
 			PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, LC_UIEVENT, "dd", angle, (uint32_t)capi);
