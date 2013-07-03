@@ -31,9 +31,9 @@
  */
 
 #include <stdlib.h>		// for system
-#include <sys/types.h>	// for stat
+#include <sys/types.h>	// for stat, getpid
 #include <sys/stat.h>	// fot stat, chmod
-#include <unistd.h>		// fot stat
+#include <unistd.h>		// fot stat, getpid
 #include <sys/shm.h>	// for shmget, shmat
 
 #include <X11/Xlib.h>
@@ -322,7 +322,7 @@ int captureScreen()
 		ev = create_canvas(width, height);
 		if(likely(ev != NULL))
 		{
-			sprintf(dstpath, SCREENSHOT_DIRECTORY "/%d.png", probeInfo.eventIndex);
+			sprintf(dstpath, SCREENSHOT_DIRECTORY "/%d_%d.png", getpid(), probeInfo.eventIndex);
 
 			// make image buffer
 			if((img = evas_object_image_add(ev)) != NULL)
