@@ -34,7 +34,7 @@
 #include "daprobe.h"
 
 #define DECLARE_VARIABLE_THREAD						\
-	DECLARE_VARIABLE_STANDARD						
+	DECLARE_VARIABLE_STANDARD; log_t log						
 //	pthread_t pSelf
 
 #define BEFORE_ORIGINAL_THREAD(FUNCNAME, LIBNAME) 	\

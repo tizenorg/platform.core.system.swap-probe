@@ -95,7 +95,7 @@ enum _orientation_status
  *******************************************************************/
 
 #define DECLARE_VARIABLE_EVENT			\
-	DECLARE_COMMON_VARIABLE;			\
+	probeInfo_t	probeInfo; log_t log;	\
 	static unsigned int oldtime = 0;	\
 	int blockresult = 0
 

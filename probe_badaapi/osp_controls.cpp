@@ -69,7 +69,7 @@ result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 {
 	typedef result (UiApp::*methodType)(const Tizen::Ui::Controls::Frame& frame);
 	static methodType uiapp_addframep;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	result ret;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp8AddFrameERKNS_2Ui8Controls5FrameE, LIBOSP_UIFW, uiapp_addframep);
@@ -111,7 +111,7 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 {
 	typedef result (UiApp::*methodType)(const Tizen::Ui::Controls::Frame& frame);
 	static methodType uiapp_removeframep;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	result ret;
 	bool bOption;
 
@@ -182,7 +182,7 @@ void Control::SetName(const Tizen::Base::String &name)
 {
 	typedef void (Control::*methodType)(const Tizen::Base::String &name);
 	static methodType control_setnamep;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui7Control7SetNameERKNS_4Base6StringE, LIBOSP_UIFW, control_setnamep);
 
@@ -218,7 +218,7 @@ result Container::AddControl(const Control &control)
 {
 	typedef result (Container::*methodType)(const Control &control);
 	static methodType container_addcontrolp;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	result ret;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container10AddControlERKNS0_7ControlE, LIBOSP_UIFW, container_addcontrolp);
@@ -282,7 +282,7 @@ result Container::RemoveControl(const Control &control)
 {
 	typedef result (Container::*methodType)(const Control &control);
 	static methodType container_removecontrolp;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	result ret;
 	bool bOption;
 
@@ -333,7 +333,7 @@ result Container::RemoveControl(int index)
 {
 	typedef result (Container::*methodType)(int index);
 	static methodType container_removecontrolip;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	result ret;
 	bool bOption;
 
@@ -385,7 +385,7 @@ void Container::RemoveAllControls(void)
 {
 	typedef void (Container::*methodType)(void);
 	static methodType container_removeallcontrolp;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container17RemoveAllControlsEv, LIBOSP_UIFW, container_removeallcontrolp);
 

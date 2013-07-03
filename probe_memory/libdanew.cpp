@@ -49,7 +49,7 @@ static enum DaOptions _sopt = OPT_ALLOC;
 void *operator new(std::size_t size) throw (std::bad_alloc)
 {
 	static void*(*newp)(std::size_t size);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	void *pret;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_Znwj,newp);
@@ -82,7 +82,7 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 void *operator new[](std::size_t size) throw (std::bad_alloc)
 {
 	static void*(*newp)(std::size_t size);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	void *pret;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_Znaj, newp);
@@ -115,7 +115,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 void operator delete(void *ptr) throw()
 {
 	static void (*deletep)(void *ptr);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPv, deletep);
 
@@ -145,7 +145,7 @@ void operator delete(void *ptr) throw()
 void operator delete[](void *ptr) throw()
 {
 	static void (*deletep)(void *ptr);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPv, deletep);
 
@@ -175,7 +175,7 @@ void operator delete[](void *ptr) throw()
 void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 {
 	static void*(*newp)(std::size_t size, const std::nothrow_t& nothrow);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	void *pret;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZnwjRKSt9nothrow_t, newp);
@@ -208,7 +208,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 {
 	static void*(*newp)(std::size_t size, const std::nothrow_t& nothrow);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	void *pret;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZnajRKSt9nothrow_t, newp);
@@ -241,7 +241,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 {
 	static void (*deletep)(void *ptr, const std::nothrow_t& nothrow);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPvRKSt9nothrow_t, deletep);
 
@@ -271,7 +271,7 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 {
 	static void (*deletep)(void *ptr, const std::nothrow_t& nothrow);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPvRKSt9nothrow_t, deletep);
 

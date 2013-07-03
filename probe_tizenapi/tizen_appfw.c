@@ -70,7 +70,7 @@ static enum DaOptions _sopt = OPT_ALWAYSON;
 static bool _dalc_app_create(void* user_data)
 {
 	bool bret;
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();
@@ -87,7 +87,7 @@ static bool _dalc_app_create(void* user_data)
 
 static void _dalc_app_terminate(void* user_data)
 {
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();
@@ -102,7 +102,7 @@ static void _dalc_app_terminate(void* user_data)
 
 static void _dalc_app_pause(void* user_data)
 {
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();
@@ -117,7 +117,7 @@ static void _dalc_app_pause(void* user_data)
 
 static void _dalc_app_resume(void* user_data)
 {
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();
@@ -132,7 +132,7 @@ static void _dalc_app_resume(void* user_data)
 
 static void _dalc_app_service(service_h service, void* user_data)
 {
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();

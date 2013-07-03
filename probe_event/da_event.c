@@ -76,7 +76,7 @@ static int convert_angle(int angle)
 
 void on_orientation_changed(int angle, bool capi)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	bool autoRotation = true;
 
 	probeBlockStart();

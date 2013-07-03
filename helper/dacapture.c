@@ -305,7 +305,7 @@ int captureScreen()
 	Evas* ev = NULL;
 	Evas_Object* img;
 	screenshot_data sdata;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	int ret = 0;
 
 	probeBlockStart();

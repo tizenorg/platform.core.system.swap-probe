@@ -134,13 +134,10 @@ int getBacktraceString(log_t* log, int bufsize);
 // =========================== declare variables ===========================
 // local variable is faster than heap allocated variable
 // array variable initialization with declare is expensive than memset
-#define DECLARE_COMMON_VARIABLE			\
-		probeInfo_t	probeInfo;			\
-		log_t		log
 
 // declare variable for standard api (not tizen related api)
 #define DECLARE_VARIABLE_STANDARD		\
-		DECLARE_COMMON_VARIABLE;		\
+		probeInfo_t	probeInfo; 			\
 		int blockresult;				\
 		bool bfiltering = true;			\
 		int olderrno, newerrno;			\
@@ -323,12 +320,12 @@ int getBacktraceString(log_t* log, int bufsize);
 // ========================= simplify macro ================================
 
 #define BEFORE_ORIGINAL(FUNCNAME, LIBNAME)	\
-	DECLARE_VARIABLE_STANDARD;				\
+	DECLARE_VARIABLE_STANDARD; log_t log;	\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);		\
 	PRE_PROBEBLOCK()
 
 #define BEFORE_ORIGINAL_NOFILTER(FUNCNAME, LIBNAME)	\
-	DECLARE_VARIABLE_STANDARD;						\
+	DECLARE_VARIABLE_STANDARD; log_t log;			\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);				\
 	bfiltering = false;								\
 	PRE_PROBEBLOCK()

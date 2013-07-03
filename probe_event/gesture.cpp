@@ -71,7 +71,7 @@ GestureEventListener::~GestureEventListener()
 
 void GestureEventListener::OnCustomGestureCanceled (TouchGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -84,7 +84,7 @@ void GestureEventListener::OnCustomGestureCanceled (TouchGestureDetector &gestur
 
 void GestureEventListener::OnCustomGestureChanged (TouchGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -97,7 +97,7 @@ void GestureEventListener::OnCustomGestureChanged (TouchGestureDetector &gesture
 
 void GestureEventListener::OnCustomGestureFinished (TouchGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -110,7 +110,7 @@ void GestureEventListener::OnCustomGestureFinished (TouchGestureDetector &gestur
 
 void GestureEventListener::OnCustomGestureStarted (TouchGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -123,7 +123,7 @@ void GestureEventListener::OnCustomGestureStarted (TouchGestureDetector &gesture
 
 void GestureEventListener::OnFlickGestureCanceled (TouchFlickGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -144,7 +144,7 @@ void GestureEventListener::OnFlickGestureCanceled (TouchFlickGestureDetector &ge
 
 void GestureEventListener::OnFlickGestureDetected (TouchFlickGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -165,7 +165,7 @@ void GestureEventListener::OnFlickGestureDetected (TouchFlickGestureDetector &ge
 
 void GestureEventListener::OnLongPressGestureCanceled (TouchLongPressGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -185,7 +185,7 @@ void GestureEventListener::OnLongPressGestureCanceled (TouchLongPressGestureDete
 
 void GestureEventListener::OnLongPressGestureDetected (TouchLongPressGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -205,7 +205,7 @@ void GestureEventListener::OnLongPressGestureDetected (TouchLongPressGestureDete
 
 void GestureEventListener::OnPanningGestureCanceled (TouchPanningGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -223,7 +223,7 @@ void GestureEventListener::OnPanningGestureCanceled (TouchPanningGestureDetector
 
 void GestureEventListener::OnPanningGestureChanged (TouchPanningGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -241,7 +241,7 @@ void GestureEventListener::OnPanningGestureChanged (TouchPanningGestureDetector 
 
 void GestureEventListener::OnPanningGestureFinished (TouchPanningGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -259,7 +259,7 @@ void GestureEventListener::OnPanningGestureFinished (TouchPanningGestureDetector
 
 void GestureEventListener::OnPanningGestureStarted (TouchPanningGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -277,7 +277,7 @@ void GestureEventListener::OnPanningGestureStarted (TouchPanningGestureDetector 
 
 void GestureEventListener::OnPinchGestureCanceled (TouchPinchGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -297,7 +297,7 @@ void GestureEventListener::OnPinchGestureCanceled (TouchPinchGestureDetector &ge
 
 void GestureEventListener::OnPinchGestureChanged (TouchPinchGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -317,7 +317,7 @@ void GestureEventListener::OnPinchGestureChanged (TouchPinchGestureDetector &ges
 
 void GestureEventListener::OnPinchGestureFinished (TouchPinchGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -337,7 +337,7 @@ void GestureEventListener::OnPinchGestureFinished (TouchPinchGestureDetector &ge
 
 void GestureEventListener::OnPinchGestureStarted (TouchPinchGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -357,7 +357,7 @@ void GestureEventListener::OnPinchGestureStarted (TouchPinchGestureDetector &ges
 
 void GestureEventListener::OnRotationGestureCanceled (TouchRotationGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -377,7 +377,7 @@ void GestureEventListener::OnRotationGestureCanceled (TouchRotationGestureDetect
 
 void GestureEventListener::OnRotationGestureChanged (TouchRotationGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -397,7 +397,7 @@ void GestureEventListener::OnRotationGestureChanged (TouchRotationGestureDetecto
 
 void GestureEventListener::OnRotationGestureFinished (TouchRotationGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -417,7 +417,7 @@ void GestureEventListener::OnRotationGestureFinished (TouchRotationGestureDetect
 
 void GestureEventListener::OnRotationGestureStarted (TouchRotationGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -437,7 +437,7 @@ void GestureEventListener::OnRotationGestureStarted (TouchRotationGestureDetecto
 
 void GestureEventListener::OnTapGestureCanceled (TouchTapGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -458,7 +458,7 @@ void GestureEventListener::OnTapGestureCanceled (TouchTapGestureDetector &gestur
 
 void GestureEventListener::OnTapGestureDetected (TouchTapGestureDetector &gestureDetector)
 {
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	if(isOptionEnabled(OPT_EVENT))
 	{

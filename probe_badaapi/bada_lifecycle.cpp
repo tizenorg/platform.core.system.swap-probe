@@ -82,7 +82,7 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 {
 	typedef result (*methodType)(UiAppInstanceFactory pFactory, const IList* pArgs);
 	static methodType uiapp_executep;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	result ret;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp7ExecuteEPFPS1_vEPKNS_4Base10Collection5IListE,
@@ -112,7 +112,7 @@ void _AppImpl::OnTerminate(void* user_data)
 {
 	typedef void (*methodType)(void*);
 	static methodType appimpl_onterminatep;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppImpl11OnTerminateEPv, LIBOSP_APPFW, appimpl_onterminatep);
 
@@ -148,7 +148,7 @@ void _AppInfo::SetAppState(AppState appState)
 {
 	typedef void (*methodType)(AppState appstate);
 	static methodType appinfo_setappstatep;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppInfo11SetAppStateENS0_8AppStateE, LIBOSP_APPFW, appinfo_setappstatep);
 
@@ -171,7 +171,7 @@ void _UiAppImpl::OnBackground(void)
 {
 	typedef void (_UiAppImpl::*methodType)(void);
 	static methodType uiappimpl_onbackgroundp;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnBackgroundEv, LIBOSP_UIFW, uiappimpl_onbackgroundp);
 
@@ -193,7 +193,7 @@ void _UiAppImpl::OnForeground(void)
 {
 	typedef void (_UiAppImpl::*methodType)(void);
 	static methodType uiappimpl_onforegroundp;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnForegroundEv, LIBOSP_UIFW, uiappimpl_onforegroundp);
 

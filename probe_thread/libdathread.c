@@ -49,7 +49,7 @@ void _da_cleanup_handler(void *data)
 {
 	pthread_t pSelf;
 
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	INIT_LOG;
 	
 	PRE_UNCONDITIONAL_BLOCK_BEGIN();
@@ -80,7 +80,7 @@ void *_da_ThreadProc(void *params)
 	ptrc = (thread_routine_call *) params;
 	pthread_t pSelf;
 
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 
 	// send INTERNAL_START log
 	INIT_LOG;
@@ -170,7 +170,7 @@ int pthread_join(pthread_t thread, void **retval)
 {
 	static int (*pthread_joinp)(pthread_t thread, void **retval);
 
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	GET_REAL_FUNC(pthread_join, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
@@ -227,7 +227,7 @@ void pthread_exit(void *retval)
 	pthread_t pSelf;
 	static void (*pthread_exitp)(void *retval) __attribute__((noreturn));
 
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	GET_REAL_FUNC(pthread_exit, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();

@@ -46,7 +46,7 @@ static enum DaOptions _sopt = OPT_ALLOC;
 void *memset(void *memblock, int c, size_t n)
 {
 	static void *(*memsetp)(void *,int,size_t);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	void *pret;
 
 	GET_REAL_FUNC_RTLD_NEXT(memset);
@@ -73,7 +73,7 @@ void *memset(void *memblock, int c, size_t n)
 int memcmp(const void * ptr1, const void * ptr2, size_t num)
 {
 	static int(*memcmpp)(const void *,const void *,size_t);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 
 	GET_REAL_FUNC_RTLD_NEXT(memcmp);
 
@@ -99,7 +99,7 @@ int memcmp(const void * ptr1, const void * ptr2, size_t num)
 void *memcpy(void * destination, const void * source, size_t num )
 {
 	static void *(*memcpyp)(void *,const void *,size_t);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	void *pret;
 
 	GET_REAL_FUNC_RTLD_NEXT(memcpy);

@@ -64,7 +64,7 @@
 	_fd = (FILEP != NULL) ? fileno(FILEP) : -1
 
 #define DECLARE_VARIABLE_FD							\
-		DECLARE_VARIABLE_STANDARD;					\
+		DECLARE_VARIABLE_STANDARD; log_t log;		\
 		char* _filepath = "";						\
 		int __attribute((unused)) _fd;				\
 		int __attribute((unused)) _fstatret = -1;	\

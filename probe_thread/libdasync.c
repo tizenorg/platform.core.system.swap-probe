@@ -85,7 +85,7 @@ int real_pthread_mutex_lock(pthread_mutex_t *mutex) {
 int pthread_mutex_lock(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_lockp)(pthread_mutex_t *mutex);
 	
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	GET_REAL_FUNC(pthread_mutex_lock, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
@@ -143,7 +143,7 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 	static int (*pthread_mutex_timedlockp)(pthread_mutex_t *mutex,
 			const struct timespec *abs_timeout);
 
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	GET_REAL_FUNC(pthread_mutex_timedlock, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
@@ -454,7 +454,7 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 	static int (*pthread_cond_waitp)(pthread_cond_t *cond,
 			pthread_mutex_t *mutex);
 
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	GET_REAL_FUNC(pthread_cond_wait, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
@@ -512,7 +512,7 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 	static int (*pthread_cond_timedwaitp)(pthread_cond_t *cond,
 				pthread_mutex_t *mutex, const struct timespec *abstime);
 
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	GET_REAL_FUNC(pthread_cond_timedwait, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();

@@ -51,7 +51,7 @@ static enum DaOptions _sopt = OPT_ALLOC;
 void *malloc(size_t size)
 {
 	static void*(*mallocp)(size_t size);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	void *pret;
 
 	GET_REAL_FUNC_RTLD_NEXT(malloc);
@@ -84,7 +84,7 @@ void *malloc(size_t size)
 void free(void *ptr)
 {
 	static void (*freep)(void *);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 
 	GET_REAL_FUNC_RTLD_NEXT(free);
 
@@ -134,7 +134,7 @@ void *temp_calloc(size_t nelem, size_t elsize)
 void *calloc(size_t nelem, size_t elsize)
 {
 	static void *(*callocp)(size_t,size_t);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	void *pret;
 
 	if(!callocp) {
@@ -177,7 +177,7 @@ void *calloc(size_t nelem, size_t elsize)
 void *realloc(void *memblock, size_t size)
 {
 	static void *(*reallocp)(void *,size_t);
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_VARIABLE_STANDARD; log_t log;
 	void *pret;
 
 	GET_REAL_FUNC_RTLD_NEXT(realloc);

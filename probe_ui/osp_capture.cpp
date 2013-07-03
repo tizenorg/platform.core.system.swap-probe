@@ -162,7 +162,7 @@ int captureScreen()
 {
 	Image img;
 	Bitmap* bitmap;
-	DECLARE_COMMON_VARIABLE;
+	probeInfo_t	probeInfo; log_t log;
 	result r;
 	int ret = 0, width, height;
 	char* capbuf;

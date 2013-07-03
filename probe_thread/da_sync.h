@@ -41,7 +41,7 @@ int real_pthread_mutex_lock(pthread_mutex_t *mutex);
 int real_pthread_mutex_unlock(pthread_mutex_t *mutex);
 
 #define BEFORE_ORIGINAL_SYNC(FUNCNAME, LIBNAME) 	\
-	DECLARE_VARIABLE_STANDARD;						\
+	DECLARE_VARIABLE_STANDARD; log_t log;			\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);				\
 	PRE_PROBEBLOCK()
 

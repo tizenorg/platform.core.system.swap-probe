@@ -84,7 +84,7 @@ void SceneManagerEventListener::OnSceneTransitionCompleted(const SceneId &previo
 		{
 			if(isOptionEnabled(OPT_UI))
 			{
-				DECLARE_COMMON_VARIABLE;
+				probeInfo_t	probeInfo; log_t log;
 				Scene* scene;
 				String sceneid, formid, panelid;
 				Form* pform;
