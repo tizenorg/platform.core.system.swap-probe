@@ -957,15 +957,15 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 //		 }
 
 		 printLog(&log, MSG_LOG);
-		 postBlockEnd();
-	}
-
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "x", (unsigned int)&buffer);
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(nRead, (unsigned int)this, FD_FILE, FD_API_READ, 0, temp);
 		FLUSH_LOCAL_BUF();
+		
+		 postBlockEnd();
+	}
 
 	return ret;
 }
