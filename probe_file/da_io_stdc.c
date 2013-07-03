@@ -53,8 +53,6 @@ FILE* fopen(const char* filename, const char* mode)
 	_filepath = (char*)filename;
 	
 	fret = fopenp(filename, mode);
-	
-	//AFTER_ORIGINAL_FILEP_RET(VT_PTR, fret, 0, fret, FD_API_OPEN, "%s, %s", filename, mode);
 
 	AFTER_PACK_ORIGINAL_FILEP(fret, 0, fret, FD_API_OPEN, "ss", filename, mode);
 
@@ -71,9 +69,6 @@ FILE* freopen(const char * filename, const char * mode, FILE * stream)
 
 	fret = freopenp(filename, mode, stream);
 
-	// AFTER_ORIGINAL_FILEP_RET(VT_PTR, fret, 0, fret, FD_API_OPEN,
-	//		"%s, %s, %p", filename, mode, stream);
-
 	AFTER_PACK_ORIGINAL_FILEP(fret, 0, fret, FD_API_OPEN, "ssp", filename, mode, stream);
 
 	return fret;
@@ -88,8 +83,6 @@ FILE* fdopen(int fildes, const char *mode)
 
 	fret = fdopenp(fildes, mode);
 
-	// AFTER_ORIGINAL_FILEP_RET(VT_PTR, fret, 0, fret, FD_API_OPEN, "%d, %s", fildes, mode);
-
 	AFTER_PACK_ORIGINAL_FILEP(fret, 0, fret, FD_API_OPEN, "ds", fildes, mode);
 
 	return fret;
@@ -101,7 +94,6 @@ int fflush(FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(fflush, LIBC);
 	ret = fflushp(stream);
-	// AFTER_ORIGINAL_FILEP(0, stream, FD_API_OTHER, "%p", stream);
 	AFTER_PACK_ORIGINAL_FILEP(ret, 0, stream, FD_API_OTHER, "p", stream);
 	return ret;
 }
@@ -122,12 +114,7 @@ int fclose(FILE* stream)
 	PRE_PROBEBLOCK_END();
 
 	ret = fclosep(stream);
-/*
-	POST_PROBEBLOCK_BEGIN(LC_RESOURCE, VT_INT, ret,	"%p", stream);
-	POST_PROBEBLOCK_MIDDLE_FD(0, _fd, FD_API_CLOSE);
-	POST_PROBEBLOCK_CALLSTACK_RESOURCE(FD_API_CLOSE);
-	POST_PROBEBLOCK_END();
-*/
+
 	POST_PACK_PROBEBLOCK_BEGIN();
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "p", stream);
@@ -145,7 +132,6 @@ int remove(const char* filename)
 	BEFORE_ORIGINAL_FILE(remove, LIBC);
 	_filepath = (char*)filename;
 	ret = removep(filename);
-	// AFTER_ORIGINAL_NOFD(0, FD_API_DIRECTORY, "%s", filename);
 	AFTER_PACK_ORIGINAL_NOFD(ret, 0, FD_API_DIRECTORY, "s", filename);
 	return ret;
 }
@@ -157,7 +143,6 @@ int rename(const char* oldname, const char* newname)
 	BEFORE_ORIGINAL_FILE(rename, LIBC);
 	_filepath = (char*)newname;
 	ret = renamep(oldname, newname);
-	// AFTER_ORIGINAL_NOFD(0, FD_API_DIRECTORY, "%s, %s", oldname, newname);
 	AFTER_PACK_ORIGINAL_NOFD(ret, 0, FD_API_DIRECTORY, "ss", oldname, newname);
 	return ret;
 }
@@ -170,7 +155,6 @@ FILE * tmpfile ( void )
 	BEFORE_ORIGINAL_FILE_NOFILTER(tmpfile, LIBC);
 	_filepath = "<temp file>";
 	fret = tmpfilep();
-	// AFTER_ORIGINAL_FILEP_RET(VT_PTR, fret, 0, fret, FD_API_OPEN, "%s", "");
 	AFTER_PACK_ORIGINAL_FILEP(fret, 0, fret, FD_API_OPEN, "s", "");
 	return fret;
 }
@@ -181,7 +165,6 @@ int fgetpos(FILE* stream, fpos_t* position)
 
 	BEFORE_ORIGINAL_FILE(fgetpos, LIBC);
 	ret = fgetposp(stream, position);
-	// AFTER_ORIGINAL_FILEP(0, stream, FD_API_OTHER, "%p, %p", stream, position);
 	AFTER_PACK_ORIGINAL_FILEP(ret, 0, stream, FD_API_OTHER, "pp", stream, position);
 	return ret;
 }
@@ -192,8 +175,6 @@ int fseek(FILE* stream, long int offset, int origin)
 
 	BEFORE_ORIGINAL_FILE(fseek, LIBC);
 	ret = fseekp(stream, offset, origin);
-	// AFTER_ORIGINAL_FILEP((unsigned int)offset, stream, FD_API_OTHER,
-	//		"%p, %ld, %d", stream, offset, origin);
 	AFTER_PACK_ORIGINAL_FILEP(ret, (unsigned int)offset, stream, FD_API_OTHER,
 			"pxd", stream, offset, origin);
 	return ret;
@@ -205,7 +186,6 @@ int fsetpos(FILE* stream, const fpos_t* pos)
 
 	BEFORE_ORIGINAL_FILE(fsetpos, LIBC);
 	ret = fsetposp(stream, pos);
-	// AFTER_ORIGINAL_FILEP(0, stream, FD_API_OTHER, "%p, %p", stream, pos);
 	AFTER_PACK_ORIGINAL_FILEP(ret, 0, stream, FD_API_OTHER, "pp", stream, pos);
 	return ret;
 }
@@ -219,8 +199,6 @@ long int ftell(FILE* stream)
 	
 	lret = ftellp(stream);
 
-	// AFTER_ORIGINAL_FILEP_RET(VT_LONG, lret, 0, stream, FD_API_OTHER, "%p", stream);
-
 	AFTER_PACK_ORIGINAL_FILEP(lret, 0, stream, FD_API_OTHER, "p", stream);
 
 	return lret;
@@ -233,8 +211,6 @@ void rewind(FILE* stream)
 	BEFORE_ORIGINAL_FILE(rewind, LIBC);
 
 	rewindp(stream);
-	
-	// AFTER_ORIGINAL_FILEP_RET(VT_NULL, NULL, 0, stream, FD_API_OTHER, "%p", stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(0, 0, stream, FD_API_OTHER, "p", stream);
 }
@@ -246,8 +222,6 @@ void clearerr(FILE* stream)
 	BEFORE_ORIGINAL_FILE(clearerr, LIBC);
 
 	clearerrp(stream);
-	
-	// AFTER_ORIGINAL_FILEP_RET(VT_NULL, NULL, 0, stream, FD_API_OTHER, "%p", stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(0, 0, stream, FD_API_OTHER, "p", stream);
 }
@@ -258,7 +232,6 @@ int feof(FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(feof, LIBC);
 	ret = feofp(stream);
-	// AFTER_ORIGINAL_FILEP(0, stream, FD_API_OTHER, "%p", stream);
 	AFTER_PACK_ORIGINAL_FILEP(ret, 0, stream, FD_API_OTHER, "p", stream);
 	return ret;
 }
@@ -269,7 +242,6 @@ int ferror(FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(ferror, LIBC);
 	ret = ferrorp(stream);
-	// AFTER_ORIGINAL_FILEP(0, stream, FD_API_OTHER, "%p", stream);
 	AFTER_PACK_ORIGINAL_FILEP(ret, 0, stream, FD_API_OTHER, "p", stream);
 	return ret;
 }
@@ -280,7 +252,6 @@ int fileno(FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(fileno, LIBC);
 	ret = filenop(stream);
-	// AFTER_ORIGINAL_FILEP(0, stream, FD_API_OTHER, "%p", stream);
 	AFTER_PACK_ORIGINAL_FILEP(ret, 0, stream, FD_API_OTHER, "p", stream);
 	return ret;
 }
@@ -292,8 +263,6 @@ void perror(const char* string)
 	BEFORE_ORIGINAL_FILE(perror, LIBC);
 
 	perrorp(string);
-
-	// AFTER_ORIGINAL_NOFD_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%s", string);
 
 	AFTER_PACK_ORIGINAL_NOFD(0, 0, FD_API_OTHER, "s", string);
 }
@@ -308,7 +277,6 @@ int vfprintf(FILE* stream, const char* format, va_list arg)
 
 	BEFORE_ORIGINAL_FILE(vfprintf, LIBC);
 	ret = vfprintfp(stream, format, arg);
-	// AFTER_ORIGINAL_FILEP(ret, stream, FD_API_WRITE, "%p, %s", stream, format);
 	AFTER_PACK_ORIGINAL_FILEP(ret, ret, stream, FD_API_WRITE, "ps", stream, format);
 	return ret;
 }
@@ -319,7 +287,6 @@ int vfscanf(FILE* stream, const char* format, va_list arg)
 
 	BEFORE_ORIGINAL_FILE(vfscanf, LIBC);
 	ret = vfscanfp(stream, format, arg);
-	// AFTER_ORIGINAL_FILEP(ret, stream, FD_API_READ, "%p, %s", stream, format);
 	AFTER_PACK_ORIGINAL_FILEP(ret, ret, stream, FD_API_READ, "ps", stream, format);
 	return ret;
 }
@@ -330,7 +297,6 @@ int fgetc(FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(fgetc, LIBC);
 	ret = fgetcp(stream);
-	// AFTER_ORIGINAL_FILEP((ret == EOF ? 0 : 1), stream, FD_API_READ, "%p", stream);
 	AFTER_PACK_ORIGINAL_FILEP(ret, (ret == EOF ? 0 : 1), stream, FD_API_READ, "p", stream);
 	return ret;
 }
@@ -345,9 +311,6 @@ char* fgets(char* str, int size, FILE* stream)
 	
 	cret = fgetsp(str, size, stream);
 
-	// AFTER_ORIGINAL_FILEP_RET(VT_STR, cret, (ret == NULL ? 0 : strlen(cret)),
-	//		stream, FD_API_READ, "%s, %d, %p", str, size, stream);
-
 	AFTER_PACK_ORIGINAL_FILEP(cret, (ret == NULL ? 0 : strlen(cret)),
 			stream, FD_API_READ, "sdp", str, size, stream);
 
@@ -361,8 +324,6 @@ int fputc(int character, FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(fputc, LIBC);
 	ret = fputcp(character, stream);
-	// AFTER_ORIGINAL_FILEP((ret == EOF ? 0 : 1), stream, FD_API_WRITE,
-	//		"%d, %p", character, stream);
 	AFTER_PACK_ORIGINAL_FILEP(ret, (ret == EOF ? 0 : 1), stream, FD_API_WRITE,
 			"dp", character, stream);
 	return ret;
@@ -374,7 +335,6 @@ int fputs(const char* str, FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(fputs, LIBC);
 	ret = fputsp(str, stream);
-	// AFTER_ORIGINAL_FILEP(ret, stream, FD_API_WRITE, "%s, %p", str, stream);
 	AFTER_PACK_ORIGINAL_FILEP(ret, ret, stream, FD_API_WRITE, "sp", str, stream);
 	return ret;
 }
@@ -385,7 +345,6 @@ int getc(FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(getc, LIBC);
 	ret = getcp(stream);
-	// AFTER_ORIGINAL_FILEP((ret == EOF ? 0 : 1), stream, FD_API_READ, "%p", stream);
 	AFTER_PACK_ORIGINAL_FILEP(ret, (ret == EOF ? 0 : 1), stream, FD_API_READ, "p", stream);
 	return ret;
 }
@@ -396,8 +355,6 @@ int putc(int character, FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(putc, LIBC);
 	ret = putcp(character, stream);
-	// AFTER_ORIGINAL_FILEP((ret == EOF ? 0 : 1), stream, FD_API_WRITE,
-	//		"%d, %p", character, stream);
 	AFTER_PACK_ORIGINAL_FILEP(ret, (ret == EOF ? 0 : 1), stream, FD_API_WRITE,
 			"dp", character, stream);
 	return ret;
@@ -409,7 +366,6 @@ int ungetc(int character, FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(ungetc, LIBC);
 	ret = ungetcp(character, stream);
-	// AFTER_ORIGINAL_FILEP(0, stream, FD_API_OTHER, "%d, %p", character, stream);
 	AFTER_PACK_ORIGINAL_FILEP(ret, 0, stream, FD_API_OTHER, "dp", character, stream);
 	return ret;
 }
@@ -422,9 +378,6 @@ size_t fread(void* ptr, size_t size, size_t count, FILE* stream)
 	BEFORE_ORIGINAL_FILE(fread, LIBC);
 
 	tret = freadp(ptr, size, count, stream);
-	
-	// AFTER_ORIGINAL_FILEP_RET(VT_SIZE_T, tret, 0, stream, FD_API_READ,
-	//		"%p, %u, %u, %p", ptr, size, count, stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(tret, 0, stream, FD_API_READ,
 			"pxxp", ptr, size, count, stream);	
@@ -440,9 +393,6 @@ size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream)
 	BEFORE_ORIGINAL_FILE(fwrite, LIBC);
 
 	tret = fwritep(ptr, size, count, stream);
-
-	// AFTER_ORIGINAL_FILEP_RET(VT_SIZE_T, tret, 0, stream, FD_API_WRITE,
-	//		"%p, %u, %u, %p", ptr, size, count, stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(tret, 0, stream, FD_API_WRITE,
 			"pxxp", ptr, size, count, stream);
@@ -463,7 +413,6 @@ int fprintf(FILE* stream, const char* format, ...)
 	va_start(arg, format);
 	ret = vfprintfp(stream, format, arg);
 
-	// AFTER_ORIGINAL_FILEP(ret, stream, FD_API_WRITE, "%p, %s, ...", stream, format);
 	AFTER_PACK_ORIGINAL_FILEP(ret, ret, stream, FD_API_WRITE, "ps", stream, format);
 	va_end(arg);
 
@@ -480,7 +429,6 @@ int fscanf(FILE* stream, const char* format, ...)
 	va_start(arg, format);
 	ret = vfscanfp(stream, format, arg);
 
-	// AFTER_ORIGINAL_FILEP(ret, stream, FD_API_READ, "%p, %s, ...", stream, format);
 	AFTER_PACK_ORIGINAL_FILEP(ret, ret, stream, FD_API_READ, "ps", stream, format);
 	va_end(arg);
 
@@ -498,7 +446,6 @@ int printf(const char* format, ...)
 	va_start(arg, format);
 	ret = vprintfp(format, arg);
 
-	// AFTER_ORIGINAL_NOFD(ret, FD_API_WRITE, "%s,...", format);
 	AFTER_PACK_ORIGINAL_NOFD(ret, ret, FD_API_WRITE, "s", format);
 	va_end(arg);
 
@@ -516,7 +463,6 @@ int scanf(const char* format, ...)
 	va_start(arg, format);
 	ret = vscanfp(format, arg);
 
-	// AFTER_ORIGINAL_NOFD(ret, FD_API_READ, "%s,...", format);
 	AFTER_PACK_ORIGINAL_NOFD(ret, ret, FD_API_READ, "s", format);
 	va_end(arg);
 
@@ -529,7 +475,6 @@ int getchar()
 
 	BEFORE_ORIGINAL_FILE(getchar, LIBC);
 	ret = getcharp();
-	// AFTER_ORIGINAL_NOFD((ret == EOF ? 0 : 1), FD_API_READ, "%s", "");
 	AFTER_PACK_ORIGINAL_NOFD(ret, (ret == EOF ? 0 : 1), FD_API_READ, "s", "");
 	return ret;
 }
@@ -540,7 +485,6 @@ int putchar(int c)
 
 	BEFORE_ORIGINAL_FILE(putchar, LIBC);
 	ret = putcharp(c);
-	// AFTER_ORIGINAL_NOFD((ret == EOF ? 0 : 1), FD_API_WRITE, "%d", c);
 	AFTER_PACK_ORIGINAL_NOFD(ret, (ret == EOF ? 0 : 1), FD_API_WRITE, "d", c);
 	return ret;
 }
@@ -553,8 +497,6 @@ char* gets(char* str)
 	BEFORE_ORIGINAL_FILE(gets, LIBC);
 
 	cret = getsp(str);
-	
-	// AFTER_ORIGINAL_NOFD_RET(VT_STR, cret, strlen(cret), FD_API_READ, "%s", str);
 
 	AFTER_PACK_ORIGINAL_NOFD(cret, strlen(cret), FD_API_READ, "s", str);
 
@@ -568,7 +510,6 @@ int puts(const char* str)
 
 	BEFORE_ORIGINAL_FILE(puts, LIBC);
 	ret = putsp(str);
-	// AFTER_ORIGINAL_NOFD(ret, FD_API_WRITE, "%s", str);
 	AFTER_PACK_ORIGINAL_NOFD(ret, ret, FD_API_WRITE, "s", str);
 	return ret;
 }
@@ -583,8 +524,6 @@ char* tmpnam(char* str)
 
 	cret = tmpnamp(str);
 
-	// AFTER_ORIGINAL_NOFD_RET(VT_STR, cret, 0, FD_API_OTHER, "%s", str);
-
 	AFTER_PACK_ORIGINAL_NOFD(cret, 0, FD_API_OTHER, "s", str);
 
 	return cret;
@@ -598,9 +537,6 @@ void setbuf(FILE* stream, char* buf)
 
 	setbufp(stream, buf);
 
-	// AFTER_ORIGINAL_FILEP_RET(VT_NULL, NULL, 0, stream, FD_API_OTHER,
-	//		"%p, %p", stream, buf);
-
 	AFTER_PACK_ORIGINAL_FILEP(0, 0, stream, FD_API_OTHER, "pp", stream, buf);
 }
 
@@ -611,9 +547,6 @@ void setbuffer(FILE* stream, char* buf, size_t size)
 	BEFORE_ORIGINAL_FILE(setbuffer, LIBC);
 
 	setbufferp(stream, buf, size);
-
-	// AFTER_ORIGINAL_FILEP_RET(VT_NULL, NULL, size, stream, FD_API_OTHER,
-	//		"%p, %p, %u", stream, buf, size);
 
 	AFTER_PACK_ORIGINAL_FILEP(0, size, stream, FD_API_OTHER,
 			"ppx", stream, buf, size);
@@ -627,8 +560,6 @@ void setlinebuf(FILE* stream)
 
 	setlinebufp(stream);
 
-	// AFTER_ORIGINAL_FILEP_RET(VT_NULL, NULL, 0, stream, FD_API_OTHER, "%p", stream);
-
 	AFTER_PACK_ORIGINAL_FILEP(0, 0, stream, FD_API_OTHER, "p", stream);
 }
 
@@ -638,8 +569,6 @@ int setvbuf(FILE* stream, char* buf, int mode, size_t size)
 
 	BEFORE_ORIGINAL_FILE(setvbuf, LIBC);
 	ret = setvbufp(stream,buf,mode,size);
-	// AFTER_ORIGINAL_FILEP(size, stream, FD_API_OTHER,
-	//		"%p, %p, %d, %u", stream, buf, mode, size);
 	AFTER_PACK_ORIGINAL_FILEP(ret, size, stream, FD_API_OTHER,
 			"ppdx", stream, buf, mode, size);
 	return ret;
