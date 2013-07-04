@@ -398,7 +398,7 @@ ssize_t pread(int fd, void *buf, size_t nbyte, off_t offset)
 	sret = preadp(fd, buf, nbyte, offset);
 
 	AFTER_PACK_ORIGINAL_FD(sret, (unsigned int)sret, fd, FD_API_READ,
-			"dpdx", fd, buf, nbyte, offset);
+			"dpxx", fd, buf, nbyte, offset);
 
 	return sret;
 }
@@ -412,7 +412,7 @@ ssize_t read(int fd, void *buf, size_t nbyte)
 	sret = readp(fd, buf, nbyte);
 
 	AFTER_PACK_ORIGINAL_FD(sret, (unsigned int)sret, fd, FD_API_READ,
-			"dpd", fd, buf, nbyte);
+			"dpx", fd, buf, nbyte);
 
 	return sret;
 }
@@ -427,7 +427,7 @@ ssize_t pwrite(int fd, const void *buf, size_t nbyte, off_t offset)
 	sret = pwritep(fd, buf, nbyte, offset);
 
 	AFTER_PACK_ORIGINAL_FD(sret, (unsigned int)sret, fd, FD_API_WRITE,
-			"dpdx", fd, buf, nbyte, offset);
+			"dpxx", fd, buf, nbyte, offset);
 
 	return sret;
 }
@@ -442,7 +442,7 @@ ssize_t write(int fd, const void *buf, size_t nbyte)
 	sret = writep(fd, buf, nbyte);
 
 	AFTER_PACK_ORIGINAL_FD(sret, (unsigned int)sret, fd, FD_API_WRITE,
-			"dpd", fd, buf, nbyte);
+			"dpx", fd, buf, nbyte);
 
 	return sret;
 }
@@ -590,7 +590,7 @@ ssize_t readlink(const char* path, char* buf, size_t bufsize)
 	sret = readlinkp(path, buf, bufsize);
 
 	AFTER_PACK_ORIGINAL_NOFD(sret, bufsize, FD_API_DIRECTORY,
-			"ssd", path, buf, bufsize);
+			"ssx", path, buf, bufsize);
 
 	return sret;
 }
@@ -606,7 +606,7 @@ ssize_t readlinkat(int fd, const char * path, char * buf, size_t bufsize)
 	sret = readlinkatp(fd, path, buf, bufsize);
 
 	AFTER_PACK_ORIGINAL_FD(sret, bufsize, fd, FD_API_DIRECTORY,
-			"dssd", fd, path, buf, bufsize);
+			"dssx", fd, path, buf, bufsize);
 
 	return sret;
 }
