@@ -320,12 +320,12 @@ int getBacktraceString(log_t* log, int bufsize);
 // ========================= simplify macro ================================
 
 #define BEFORE_ORIGINAL(FUNCNAME, LIBNAME)	\
-	DECLARE_VARIABLE_STANDARD; log_t log;	\
+	DECLARE_VARIABLE_STANDARD;				\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);		\
 	PRE_PROBEBLOCK()
 
 #define BEFORE_ORIGINAL_NOFILTER(FUNCNAME, LIBNAME)	\
-	DECLARE_VARIABLE_STANDARD; log_t log;			\
+	DECLARE_VARIABLE_STANDARD;						\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);				\
 	bfiltering = false;								\
 	PRE_PROBEBLOCK()

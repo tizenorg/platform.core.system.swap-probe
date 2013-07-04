@@ -47,6 +47,8 @@
 #include "dahelper.h"
 #include "da_socket.h"
 
+#include "binproto.h"
+
 static enum DaOptions _sopt = OPT_FILE;
 
 int socket(int domain, int type, int protocol)
@@ -56,11 +58,8 @@ int socket(int domain, int type, int protocol)
 	BEFORE_ORIGINAL_NOFILTER(socket, LIBC);
 
 	ret = socketp(domain, type, protocol);
-	
-	POST_PROBEBLOCK_BEGIN(LC_RESOURCE, VT_INT, ret,	"%d, %d, %d", domain, type, protocol);
-	POST_PROBEBLOCK_MIDDLE_SOCK(0, ret, FD_API_OPEN, "");
-	APPEND_LOG_CALLSTACK();
-	POST_PROBEBLOCK_END();
+
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, ret, FD_API_OPEN, "ddd", domain, type, protocol);
 
 	return ret;
 }
@@ -72,13 +71,10 @@ int socketpair(int domain, int type, int protocol,int socket_vector[2])
 	BEFORE_ORIGINAL_NOFILTER(socketpair, LIBC);
 	
 	ret = socketpairp(domain, type, protocol, socket_vector);
-	
-	POST_PROBEBLOCK_BEGIN(LC_RESOURCE, VT_INT, ret,
-			"%d, %d, %d, %p", domain, type, protocol, socket_vector);
-	log.length += sprintf(log.data + log.length, "`,%u`,%d/%d`,%d`,%d`,0`,%s",
-			0, socket_vector[0], socket_vector[1], FD_SOCKET, FD_API_OPEN, "");
-	APPEND_LOG_CALLSTACK();
-	POST_PROBEBLOCK_END();
+
+	//TODO: socket pair: socket_vector[0]/socket_vector[1], FD - ?
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket_vector[0], FD_API_OPEN, 
+			"dddp", domain, type, protocol, socket_vector);
 	
 	return ret;
 }
@@ -90,8 +86,8 @@ int shutdown(int socket, int how)
 	BEFORE_ORIGINAL_NOFILTER(shutdown, LIBC);
 	
 	ret = shutdownp(socket, how);
-	
-	AFTER_ORIGINAL_SOCK(0, socket, FD_API_OTHER, "%d, %d", socket, how);
+
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket, FD_API_OTHER, "dd", socket, how);
 
 	return ret;
 }
@@ -104,8 +100,8 @@ int bind(int socket, const struct sockaddr *address, socklen_t address_len)
 	
 	ret = bindp(socket, address, address_len);
 
-	AFTER_ORIGINAL_SOCK(0, socket, FD_API_MANAGE,
-			"%d, %p, %d", socket, address, address_len);
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket, FD_API_MANAGE,
+			"dpd", socket, address, address_len);
 	
 	return ret;
 }
@@ -117,8 +113,8 @@ int listen(int socket, int backlog)
 	BEFORE_ORIGINAL(listen, LIBC);
 	
 	ret = listenp(socket, backlog);
-	
-	AFTER_ORIGINAL_SOCK(0, socket, FD_API_MANAGE, "%d, %d", socket, backlog);
+
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket, FD_API_MANAGE, "dd", socket, backlog);
 
 	return ret;
 }
@@ -130,9 +126,9 @@ int accept(int socket, struct sockaddr *address, socklen_t *address_len)
 	BEFORE_ORIGINAL_NOFILTER(accept, LIBC);
 	
 	ret = acceptp(socket, address, address_len);
-	
-	AFTER_ORIGINAL_SOCK(0, socket, FD_API_MANAGE,
-			"%d, %p, %p", socket, address, address_len);
+
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket, FD_API_MANAGE,
+			"dpp", socket, address, address_len);
 	
 	return ret;
 }
@@ -144,9 +140,9 @@ int accept4(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags)
 	BEFORE_ORIGINAL_NOFILTER(accept4, LIBC);
 	
 	ret = accept4p(sockfd, addr, addrlen, flags);
-	
-	AFTER_ORIGINAL_SOCK(0, sockfd, FD_API_MANAGE,
-			"%d, %p, %p, %d", sockfd, addr, addrlen, flags);
+
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, sockfd, FD_API_MANAGE,
+			"dppd", sockfd, addr, addrlen, flags);
 
 	return ret;
 }
@@ -158,9 +154,9 @@ int connect(int socket, const struct sockaddr *address, socklen_t address_len)
 	BEFORE_ORIGINAL(connect, LIBC);
 	
 	ret = connectp(socket, address, address_len);
-	
-	AFTER_ORIGINAL_SOCK(address_len, socket, FD_API_MANAGE,
-			"%d, %p, %d", socket, address, address_len);
+
+	AFTER_PACK_ORIGINAL_SOCK(ret, address_len, socket, FD_API_MANAGE,
+			"dpd", socket, address, address_len);
 	
 	return ret;
 }
@@ -172,9 +168,9 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 	BEFORE_ORIGINAL(select, LIBC);
 	
 	ret = selectp(nfds, readfds, writefds,exceptfds, timeout);
-	
-	AFTER_ORIGINAL_SOCK(0, nfds, FD_API_MANAGE,
-			"%d, %p, %p, %p, %p", nfds, readfds, writefds, exceptfds, timeout);
+
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, nfds, FD_API_MANAGE,
+			"dpppp", nfds, readfds, writefds, exceptfds, timeout);
 			
 	return ret;
 }
@@ -186,8 +182,8 @@ int pselect(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, const
 	BEFORE_ORIGINAL(pselect, LIBC);
 	
 	ret = pselectp(nfds, readfds, writefds,exceptfds, ntimeout, sigmask);
-	
-	AFTER_ORIGINAL_SOCK(0, nfds, FD_API_MANAGE,	"%d, %p, %p, %p, %p, %p",
+
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, nfds, FD_API_MANAGE,	"dppppp",
 			nfds, readfds, writefds, exceptfds, ntimeout, sigmask);
  
 	return ret;
@@ -201,9 +197,9 @@ ssize_t send(int socket, const void *message, size_t length, int flags)
 	BEFORE_ORIGINAL(send, LIBC);
 	
 	sret = sendp(socket, message, length, flags);
-	
-	AFTER_ORIGINAL_SOCK_RET(VT_SSIZE_T, sret, sret, socket, FD_API_SEND,
-			"%d, %p, %u, %d", socket, message, length, flags);
+
+	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_SEND,
+			"dpxd", socket, message, length, flags);
 	
 	return sret;
 }
@@ -216,9 +212,9 @@ ssize_t sendmsg(int socket, const struct msghdr *message, int flags)
 	BEFORE_ORIGINAL(sendmsg, LIBC);
 	
 	sret = sendmsgp(socket, message, flags);
-	
-	AFTER_ORIGINAL_SOCK_RET(VT_SSIZE_T, sret, sret, socket, FD_API_SEND,
-			"%d, %p, %d", socket, message, flags);
+
+ 	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_SEND,
+			"dpd", socket, message, flags);
  
 	return sret;
 }
@@ -231,9 +227,9 @@ ssize_t sendto(int socket, const void *message, size_t length, int flags,const s
 	BEFORE_ORIGINAL(sendto, LIBC);
 	
 	sret = sendtop(socket, message, length, flags, dest_addr, dest_len);
-	
-	AFTER_ORIGINAL_SOCK_RET(VT_SSIZE_T, sret, sret, socket, FD_API_SEND,
-			"%d, %p, %u, %d, %p, %d", socket, message, length, flags, dest_addr, dest_len);
+
+	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_SEND,
+			"dpxdpd", socket, message, length, flags, dest_addr, dest_len);
  
 	return sret;
 }
@@ -246,9 +242,9 @@ ssize_t recv(int socket, void *buffer, size_t length, int flags)
 	BEFORE_ORIGINAL(recv, LIBC);
 
 	sret = recvp(socket, buffer, length, flags);
-	
-	AFTER_ORIGINAL_SOCK_RET(VT_SSIZE_T, sret, sret, socket, FD_API_RECEIVE,
-			"%d, %p, %u, %d", socket, buffer, length, flags);
+
+	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_RECEIVE,
+			"dpxd", socket, buffer, length, flags);
 	
 	return sret;
 }
@@ -261,9 +257,9 @@ ssize_t recvfrom(int socket, void *buffer, size_t length, int flags, struct sock
 	BEFORE_ORIGINAL(recvfrom, LIBC);
 	
 	sret = recvfromp(socket, buffer, length, flags, address, address_len);
-	
-	AFTER_ORIGINAL_SOCK_RET(VT_SSIZE_T, sret, sret, socket, FD_API_RECEIVE,
-			"%d, %p, %u, %d, %p, %p", socket, buffer, length, flags, address, address_len);
+
+	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_RECEIVE,
+			"dpxdpp", socket, buffer, length, flags, address, address_len);
 
 	return sret;
 }
@@ -276,9 +272,9 @@ ssize_t recvmsg(int socket, struct msghdr *message, int flags)
 	BEFORE_ORIGINAL(recvmsg, LIBC);
 	
 	sret = recvmsgp(socket, message, flags);
-		
-	AFTER_ORIGINAL_SOCK_RET(VT_SSIZE_T, sret, sret, socket, FD_API_RECEIVE,
-			"%d, %p, %d", socket, message, flags);
+
+	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_RECEIVE,
+			"dpd", socket, message, flags);
 
 	return sret;
 }
@@ -291,8 +287,8 @@ uint32_t htonl(uint32_t hostlong)
 	BEFORE_ORIGINAL(htonl, LIBC);
 	
 	uret = htonlp(hostlong);
-			
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, uret, 0, FD_API_OTHER, "%u", hostlong); 
+
+ 	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", hostlong); 
  
 	return uret;
 }
@@ -305,8 +301,8 @@ uint16_t htons(uint16_t hostshort)
 	BEFORE_ORIGINAL(htons, LIBC);
 	
 	uret = htonsp(hostshort);
-				
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT16_T, uret, 0, FD_API_OTHER, "%u", hostshort); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", hostshort); 
  
 	return uret;
 }
@@ -319,8 +315,8 @@ uint32_t ntohl(uint32_t netlong)
 	BEFORE_ORIGINAL(ntohl, LIBC);
 	
 	uret = ntohlp(netlong);
-				
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, uret, 0, FD_API_OTHER, "%u", netlong); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", netlong); 
 
 	return uret;
 }
@@ -333,8 +329,8 @@ uint16_t ntohs(uint16_t netshort)
 	BEFORE_ORIGINAL(ntohs, LIBC);
 	
 	uret = ntohsp(netshort);
-				
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT16_T, uret, 0, FD_API_OTHER, "%u", netshort); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", netshort); 
 
 	return uret;
 }
@@ -348,8 +344,8 @@ uint16_t htobe16(uint16_t host_16bits)
 	BEFORE_ORIGINAL(htobe16, LIBC);
 	
 	uret = htobe16p(host_16bits);
-				
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT16_T, uret, 0, FD_API_OTHER, "%u", host_16bits); 
+ 
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", host_16bits); 
 
 	return uret;
 }
@@ -362,8 +358,8 @@ uint16_t htole16(uint16_t host_16bits)
 	BEFORE_ORIGINAL(htole16, LIBC);
 	
 	uret = htole16p(host_16bits);
-				
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT16_T, uret, 0, FD_API_OTHER, "%u", host_16bits); 
+ 
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", host_16bits);
 
 	return uret;
 }
@@ -376,9 +372,8 @@ uint16_t be16toh(uint16_t big_endian_16bits)
 	BEFORE_ORIGINAL(be16toh, LIBC);
 	
 	uret = be16tohp(big_endian_16bits);
-				
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT16_T, uret, 0, FD_API_OTHER,
-			"%u", big_endian_16bits); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", big_endian_16bits); 
  
 	return uret;
 }
@@ -391,9 +386,8 @@ uint16_t le16toh(uint16_t little_endian_16bits)
 	BEFORE_ORIGINAL(le16toh, LIBC);
 	
 	uret = le16tohp(little_endian_16bits);
-				
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT16_T, uret, 0, FD_API_OTHER,
-			"%u", little_endian_16bits); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", little_endian_16bits); 
  
 	return uret;
 }
@@ -406,9 +400,8 @@ uint32_t htobe32(uint32_t host_32bits)
 	BEFORE_ORIGINAL(htobe32, LIBC);
 
 	uret = htobe32p(host_32bits);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, uret, 0, FD_API_OTHER,
-			"%u", host_32bits); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", host_32bits); 
 
 	return uret;
 }
@@ -421,9 +414,8 @@ uint32_t htole32(uint32_t host_32bits)
 	BEFORE_ORIGINAL(htole32, LIBC);
 
 	uret = htole32p(host_32bits);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, uret, 0, FD_API_OTHER,
-			"%u", host_32bits); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", host_32bits); 
 
 	return uret;
 }
@@ -436,9 +428,8 @@ uint32_t be32toh(uint32_t big_endian_32bits)
 	BEFORE_ORIGINAL(be32toh, LIBC);
 
 	uret = be32tohp(big_endian_32bits);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, uret, 0, FD_API_OTHER,
-			"%u", big_endian_32bits); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", big_endian_32bits); 
 
 	return uret;
 }
@@ -451,9 +442,8 @@ uint32_t le32toh(uint32_t little_endian_32bits)
 	BEFORE_ORIGINAL(le32toh, LIBC);
 
 	uret = le32tohp(little_endian_32bits);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, uret, 0, FD_API_OTHER,
-			"%u", little_endian_32bits); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", little_endian_32bits); 
 
 	return uret;
 }
@@ -467,8 +457,7 @@ uint64_t htobe64(uint64_t host_64bits)
 
 	uret = htobe64p(host_64bits);
  
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT64_T, uret, 0, FD_API_OTHER,
-			"%u", host_64bits); 
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "x", host_64bits); 
 
 	return uret;
 }
@@ -481,9 +470,8 @@ uint64_t htole64(uint64_t host_64bits)
 	BEFORE_ORIGINAL(htole64, LIBC);
 
 	uret = htole64p(host_64bits);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT64_T, uret, 0, FD_API_OTHER,
-			"%u", host_64bits); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "x", host_64bits); 
 
 	return uret;
 }
@@ -496,9 +484,8 @@ uint64_t be64toh(uint64_t big_endian_64bits)
 	BEFORE_ORIGINAL(be64toh, LIBC);
 
 	uret = be64tohp(big_endian_64bits);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT64_T, uret, 0, FD_API_OTHER,
-			"%u", big_endian_64bits); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "x", big_endian_64bits); 
 
 	return uret;
 }
@@ -511,9 +498,8 @@ uint64_t le64toh(uint64_t little_endian_64bits)
 	BEFORE_ORIGINAL(le64toh, LIBC);
 
 	uret = le64tohp(little_endian_64bits);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT64_T, uret, 0, FD_API_OTHER,
-			"%u", little_endian_64bits); 
+
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "x", little_endian_64bits); 
 
 	return uret;
 }
@@ -528,7 +514,7 @@ int inet_aton(const char *cp, struct in_addr *inp)
 	
 	ret = inet_atonp(cp,inp);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %p", cp, inp);
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pp", cp, inp);
  
 	return ret;
 }
@@ -541,8 +527,8 @@ in_addr_t inet_addr(const char *cp)
 	BEFORE_ORIGINAL(inet_addr, LIBC);
  
 	iret = inet_addrp(cp);
-	
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, iret, 0, FD_API_OTHER, "%p", cp);
+
+	AFTER_PACK_ORIGINAL_SOCK(iret, 0, 0, FD_API_OTHER, "p", cp);
 	
 	return iret;
 }
@@ -555,8 +541,8 @@ in_addr_t inet_network(const char *cp)
 	BEFORE_ORIGINAL(inet_network, LIBC);
  
 	iret = inet_networkp(cp);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, iret, 0, FD_API_OTHER, "%p", cp);
+
+	AFTER_PACK_ORIGINAL_SOCK(iret, 0, 0, FD_API_OTHER, "p", cp);
 
 	return iret;
 }
@@ -570,7 +556,7 @@ char *inet_ntoa(struct in_addr in)
  
 	sret = inet_ntoap(in);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, sret, 0, FD_API_OTHER, "%u", in.s_addr);
+ 	AFTER_PACK_ORIGINAL_SOCK(sret, 0, 0, FD_API_OTHER, "d", in.s_addr);
  
 	return sret;
 }
@@ -584,9 +570,9 @@ struct in_addr inet_makeaddr(int net, int host)
 	BEFORE_ORIGINAL(inet_makeaddr, LIBC);
  
 	iret = inet_makeaddrp(net,host);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, iret.s_addr, 0, FD_API_OTHER,
-			"%d, %d", net, host);
+
+	AFTER_PACK_ORIGINAL_SOCK(iret.s_addr, 0, 0, FD_API_OTHER,
+			"dd", net, host);
 
 	return iret;
 }
@@ -601,7 +587,7 @@ in_addr_t inet_lnaof(struct in_addr in)
  
 	iret = inet_lnaofp(in);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, iret, 0, FD_API_OTHER, "%u", in.s_addr);
+	AFTER_PACK_ORIGINAL_SOCK(iret, 0, 0, FD_API_OTHER, "d", in.s_addr);
  
 	return iret;
 }
@@ -615,7 +601,7 @@ in_addr_t inet_netof(struct in_addr in)
  
 	iret = inet_netofp(in);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, iret, 0, FD_API_OTHER, "%u", in.s_addr);
+	AFTER_PACK_ORIGINAL_SOCK(iret, 0, 0, FD_API_OTHER, "d", in.s_addr);
  
 	return iret;
 }
@@ -629,8 +615,8 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size)
  
 	cret = inet_ntopp(af, src, dst, size);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, cret, size, FD_API_OTHER,
-			"%d, %p, %p, %d", af, src, dst, size);
+	AFTER_PACK_ORIGINAL_SOCK(cret, size, 0, FD_API_OTHER,
+			"dppd", af, src, dst, size);
  
 	return cret;
 }
@@ -643,7 +629,7 @@ int inet_pton(int af, const char *src, void *dst)
  
 	ret = inet_ptonp(af, src, dst);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%d, %p, %p", af, src, dst);
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "%dpp", af, src, dst);
  
 	return ret;
 }
@@ -656,7 +642,7 @@ int getaddrinfo(const char *node, const char *service, const struct addrinfo *hi
  
 	ret = getaddrinfop(node, service, hints, res);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %p, %p, %p", node, service, hints, res);
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pppp", node, service, hints, res);
 
 	return ret;
 }
@@ -669,7 +655,7 @@ void freeaddrinfo(struct addrinfo *res)
  
  	freeaddrinfop(res);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%p", res);
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "p", res);
 }
 
 const char *gai_strerror(int errcode)
@@ -681,7 +667,7 @@ const char *gai_strerror(int errcode)
  
 	cret = gai_strerrorp(errcode);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, cret, 0, FD_API_OTHER, "%d", errcode);
+	AFTER_PACK_ORIGINAL_SOCK(cret, 0, 0, FD_API_OTHER, "d", errcode);
 
 	return cret;
 }
@@ -694,7 +680,7 @@ int gai_suspend(const struct gaicb* const list[], int nitems, const struct times
  
 	ret = gai_suspendp(list,nitems,timeout);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %d, %p", list, nitems, timeout);
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pdp", list, nitems, timeout);
 
 	return ret;
 }
@@ -707,7 +693,7 @@ int gai_error(struct gaicb *req)
  
 	ret = gai_errorp(req);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p", req);
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "p", req);
  
 	return ret;
 }
@@ -720,7 +706,7 @@ int gai_cancel(struct gaicb *req)
  
 	ret = gai_cancelp(req);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p", req);
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "p", req);
  
 	return ret;
 }
@@ -733,7 +719,7 @@ int getaddrinfo_a(int mode, struct gaicb *list[], int nitems, struct sigevent *s
  
 	ret = getaddrinfo_ap(mode, list,nitems, sevp);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%d, %p, %d, %p", mode, list, nitems, sevp);
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "dpdp", mode, list, nitems, sevp);
  
 	return ret;
 }
@@ -747,7 +733,7 @@ int getsockopt(int socket, int level, int option_name, void *option_value, sockl
  
 	ret = getsockoptp(socket, level, option_name, option_value, option_len);
 
-	AFTER_ORIGINAL_SOCK(0, socket, FD_API_OPTION, "%d, %d, %d, %p, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket, FD_API_OPTION, "dddpp",
 			socket, level, option_name, option_value, option_len);
  
 	return ret;
@@ -761,7 +747,7 @@ int setsockopt(int socket, int level, int option_name, const void *option_value,
 
 	ret = setsockoptp(socket, level, option_name, option_value, option_len);
 
-	AFTER_ORIGINAL_SOCK(option_len, socket, FD_API_OPTION, "%d, %d, %d, %p, %d",
+	AFTER_PACK_ORIGINAL_SOCK(ret, option_len, socket, FD_API_OPTION, "dddpd",
 			socket, level, option_name, option_value, option_len);
 
 	return ret;
@@ -776,7 +762,7 @@ int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen )
  
 	ret = getsocknamep(sockfd, addr, addrlen);
 
-	AFTER_ORIGINAL_SOCK(0, sockfd, FD_API_OTHER, "%d, %p, %p", sockfd, addr, addrlen);
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, sockfd, FD_API_OTHER, "dpp", sockfd, addr, addrlen);
 
 	return ret;
 }
@@ -789,7 +775,7 @@ int getdomainname(char *name, size_t len)
  
 	ret = getdomainnamep(name, len);
 
-	AFTER_ORIGINAL_NOSOCK(len, FD_API_OTHER, "%p, %u", name, len);
+	AFTER_PACK_ORIGINAL_SOCK(ret, len, 0, FD_API_OTHER, "px", name, len);
 
 	return ret;
 }
@@ -802,7 +788,7 @@ int setdomainname(const char *name, size_t len)
  
 	ret = setdomainnamep(name, len);
 
-	AFTER_ORIGINAL_NOSOCK(len, FD_API_OTHER, "%p, %u", name, len);
+	AFTER_PACK_ORIGINAL_SOCK(ret, len, 0, FD_API_OTHER, "px", name, len);
  
 	return ret;
 }
@@ -815,7 +801,7 @@ int gethostname(char *name, size_t len)
  
 	ret = gethostnamep(name, len);
 
-	AFTER_ORIGINAL_NOSOCK(len, FD_API_OTHER, "%p, %u", name, len);
+	AFTER_PACK_ORIGINAL_SOCK(ret, len, 0, FD_API_OTHER, "px", name, len);
  
 	return ret;
 }
@@ -828,7 +814,7 @@ int sethostname(const char *name, size_t len)
  
 	ret = sethostnamep(name, len);
 
-	AFTER_ORIGINAL_NOSOCK(len, FD_API_OTHER, "%p, %u", name, len);
+	AFTER_PACK_ORIGINAL_SOCK(ret, len, 0, FD_API_OTHER, "px", name, len);
  
 	return ret;
 }
@@ -841,7 +827,7 @@ int getpeername(int s, struct sockaddr *addr, socklen_t *len)
  
 	ret = getpeernamep(s, addr, len);
 
-	AFTER_ORIGINAL_SOCK(0, s, FD_API_OTHER, "%d, %p, %p", s, addr, len);
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, s, FD_API_OTHER, "dpp", s, addr, len);
  
 	return ret;
 }
@@ -854,7 +840,7 @@ int getnameinfo(const struct sockaddr *sa, socklen_t salen, char *host, socklen_
  
 	ret = getnameinfop(sa, salen,host, hostlen, serv, servlen, flags);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %d, %p, %u, %p, %u, %d",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pdpdpdd",
 			sa, salen, host, hostlen, serv, servlen, flags);
  
 	return ret;
@@ -869,7 +855,7 @@ struct hostent *gethostbyname(const char *name)
 
 	pret = gethostbynamep(name);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%p", name);
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "p", name);
 
 	return pret;
 }
@@ -883,8 +869,7 @@ struct hostent *gethostbyaddr(const void *addr, socklen_t len, int type)
  
 	pret = gethostbyaddrp(addr, len, type);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER,
-			"%p, %d, %d", addr, len, type);
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "pdd", addr, len, type);
 
 	return pret;
 }
@@ -896,8 +881,8 @@ void sethostent(int stayopen)
 	BEFORE_ORIGINAL(sethostent, LIBC);
  
 	sethostentp(stayopen);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%d", stayopen);
+
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "d", stayopen);
 }
 
 void endhostent(void)
@@ -907,8 +892,8 @@ void endhostent(void)
 	BEFORE_ORIGINAL(endhostent, LIBC);
 
 	endhostentp();
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%s", "");
+
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "", 0);
 }
 
 void herror(const char *s)
@@ -918,8 +903,8 @@ void herror(const char *s)
 	BEFORE_ORIGINAL(herror, LIBC);
  
 	herrorp(s);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%p", s);
+
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "p", s);
 }
 
 const char *hstrerror(int err)
@@ -931,7 +916,7 @@ const char *hstrerror(int err)
  
 	cret = hstrerrorp(err);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, cret, 0, FD_API_OTHER, "%d", err);
+	AFTER_PACK_ORIGINAL_SOCK(cret, 0, 0, FD_API_OTHER, "d", err);
 
 	return cret;
 }
@@ -945,7 +930,7 @@ struct hostent *gethostent(void)
  
 	pret = gethostentp();
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%s", "");
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "", 0);
 
 	return pret;
 }
@@ -959,7 +944,7 @@ struct hostent *gethostbyname2(const char *name, int af)
  
 	pret = gethostbyname2p(name, af);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%p, %d", name, af);
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "pd", name, af);
 
 	return pret;
 }
@@ -971,8 +956,8 @@ int gethostent_r(struct hostent *rret, char *buf, size_t buflen, struct hostent 
 	BEFORE_ORIGINAL(gethostent_r, LIBC);
 	
 	ret = gethostent_rp(rret, buf, buflen, result, h_errnop);
- 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %p, %u, %p, %p",
+
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ppxpp",
 			rret, buf, buflen, result, h_errnop);
 
 	return ret;
@@ -985,8 +970,8 @@ int gethostbyaddr_r(const void *addr, socklen_t len, int type, struct hostent *r
 	BEFORE_ORIGINAL(gethostbyaddr_r, LIBC);
 
 	ret = gethostbyaddr_rp(addr, len, type, rret, buf, buflen, result, h_errnop);
- 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %d, %d, %p, %p, %u, %p, %p",
+
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pddppxpp",
 			addr, len, type, rret, buf, buflen, result, h_errnop);
 
 	return ret;
@@ -1000,7 +985,7 @@ int gethostbyname_r(const char *name, struct hostent *rret, char *buf, size_t bu
 
 	ret = gethostbyname_rp(name, rret, buf, buflen, result, h_errnop);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %p, %p, %u, %p, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pppxpp",
 			name, rret, buf, buflen, result, h_errnop);
 
 	return ret;
@@ -1014,7 +999,7 @@ int gethostbyname2_r(const char *name, int af, struct hostent *rret, char *buf, 
  
 	ret = gethostbyname2_rp(name, af, rret, buf, buflen, result, h_errnop);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %d, %p, %p, %u, %p, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pdppxpp",
 			name, af, rret, buf, buflen, result, h_errnop);
  
 	return ret;
@@ -1029,7 +1014,7 @@ struct servent *getservbyname(const char *name, const char *proto)
  
 	pret = getservbynamep(name, proto);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%p, %p", name, proto);
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "pp", name, proto);
 
 	return pret;
 }
@@ -1041,8 +1026,8 @@ void setservent(int stayopen)
 	BEFORE_ORIGINAL(setservent, LIBC);
  
 	setserventp(stayopen);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%d", stayopen);
+
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "d", stayopen);
 }
 
 void endservent(void)
@@ -1052,8 +1037,8 @@ void endservent(void)
 	BEFORE_ORIGINAL(endservent, LIBC);
  
 	endserventp();
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%s", "");
+
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "", 0);
 }
 
 struct servent *getservent(void)
@@ -1064,8 +1049,8 @@ struct servent *getservent(void)
 	BEFORE_ORIGINAL(getservent, LIBC);
  
 	pret = getserventp();
-	
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%s", "");
+
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "", 0);
 
 	return pret;
 }
@@ -1079,7 +1064,7 @@ struct servent *getservbyport(int port, const char *proto)
  
 	pret = getservbyportp(port, proto);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%d, %p", port, proto);
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "dp", port, proto);
 
 	return pret;
 }
@@ -1092,7 +1077,7 @@ int getservent_r(struct servent *result_buf, char *buf, size_t buflen, struct se
  
 	ret = getservent_rp(result_buf, buf, buflen, result);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %p, %u, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ppxp",
 			result_buf, buf, buflen, result);
 
 	return ret;
@@ -1106,7 +1091,7 @@ int getservbyname_r(const char *name, const char *proto, struct servent *result_
  
 	ret = getservbyname_rp(name, proto, result_buf, buf, buflen, result);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %p, %p, %p, %u, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ppppxp",
 			name, proto, result_buf, buf, buflen, result);
 
 	return ret;
@@ -1119,8 +1104,8 @@ int getservbyport_r(int port, const char *proto, struct servent *result_buf, cha
 	BEFORE_ORIGINAL(getservbyport_r, LIBC);
  
 	ret = getservbyport_rp(port, proto, result_buf, buf, buflen, result);
-	
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%d, %p, %p, %p, %u, %p",
+
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "dpppxp",
 			port, proto, result_buf, buf, buflen, result);
 
 	return ret;
@@ -1135,7 +1120,7 @@ struct netent* getnetent(void)
  
 	pret = getnetentp();
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%s", "");
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "", 0);
 
 	return pret;
 }
@@ -1149,7 +1134,7 @@ struct netent *getnetbyname(const char *name)
  
 	pret = getnetbynamep(name);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%p", name);
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "p", name);
  
 	return pret;
 }
@@ -1163,7 +1148,7 @@ struct netent *getnetbyaddr(uint32_t net, int type)
 
 	pret = getnetbyaddrp(net, type);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%u, %d", net, type);
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "dd", net, type);
 
 	return pret;
 }
@@ -1175,8 +1160,8 @@ void setnetent(int stayopen)
 	BEFORE_ORIGINAL(setnetent, LIBC);
  
 	setnetentp(stayopen);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%d", stayopen);
+
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "d", stayopen);
 }
 
 void endnetent(void)
@@ -1186,8 +1171,8 @@ void endnetent(void)
 	BEFORE_ORIGINAL(endnetent, LIBC);
  
 	endnetentp();
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%s", "");
+
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "", 0);
 }
 
 int getnetent_r(struct netent *result_buf, char *buf, size_t buflen, struct netent **result, int *h_errnop)
@@ -1198,7 +1183,7 @@ int getnetent_r(struct netent *result_buf, char *buf, size_t buflen, struct nete
  
 	ret = getnetent_rp(result_buf, buf, buflen, result, h_errnop);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %p, %u, %p, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ppxpp",
 			result_buf, buf, buflen, result, h_errnop);
 
 	return ret;
@@ -1212,7 +1197,7 @@ int getnetbyname_r(const char *name, struct netent *result_buf, char *buf, size_
  
 	ret = getnetbyname_rp(name,result_buf, buf, buflen, result, h_errnop);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %p, %p, %u, %p, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pppxpp",
 			name, result_buf, buf, buflen, result, h_errnop);
 
 	return ret;
@@ -1226,7 +1211,7 @@ int getnetbyaddr_r(uint32_t net, int type, struct netent *result_buf, char *buf,
  
 	ret = getnetbyaddr_rp(net, type, result_buf, buf, buflen, result, h_errnop);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%u, %d, %p, %p, %u, %p, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ddppxpp",
 			net, type, result_buf, buf, buflen, result, h_errnop);
 
 	return ret;
@@ -1241,7 +1226,7 @@ struct protoent *getprotoent(void)
  
 	pret = getprotoentp();
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%s", "");
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "", 0);
  
 	return pret;
 }
@@ -1255,7 +1240,7 @@ struct protoent *getprotobyname(const char *name)
  
 	pret = getprotobynamep(name);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%p", name);
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "p", name);
 
 	return pret;
 }
@@ -1269,7 +1254,7 @@ struct protoent *getprotobynumber(int proto)
  
 	pret = getprotobynumberp(proto);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%d", proto);
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "d", proto);
 
 	return pret;
 }
@@ -1281,8 +1266,8 @@ void setprotoent(int stayopen)
 	BEFORE_ORIGINAL(setprotoent, LIBC);
  
 	setprotoentp(stayopen);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%d", stayopen);
+
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "d", stayopen);
 }
 
 void endprotoent(void)
@@ -1293,7 +1278,7 @@ void endprotoent(void)
  
 	endprotoentp();
  
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%s", "");
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "", 0);
 }
 
 int getprotoent_r(struct protoent *result_buf, char *buf, size_t buflen, struct protoent **result)
@@ -1304,7 +1289,7 @@ int getprotoent_r(struct protoent *result_buf, char *buf, size_t buflen, struct 
  
 	ret = getprotoent_rp(result_buf, buf, buflen, result);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %p, %u, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ppxp",
 			result_buf, buf, buflen, result);
 
 	return ret;
@@ -1318,7 +1303,7 @@ int getprotobyname_r(const char *name, struct protoent *result_buf, char *buf, s
  
 	ret = getprotobyname_rp(name, result_buf, buf, buflen, result);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %p, %p, %u, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pppxp",
 			name, result_buf, buf, buflen, result);
 
 	return ret;
@@ -1332,7 +1317,7 @@ int getprotobynumber_r(int proto, struct protoent *result_buf, char *buf, size_t
  
 	ret = getprotobynumber_rp(proto, result_buf, buf, buflen, result);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%d, %p, %p, %u, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "dppxp",
 			proto, result_buf, buf, buflen, result);
 
 	return ret;
@@ -1347,7 +1332,7 @@ unsigned int if_nametoindex (__const char *__ifname)
  
 	uret = if_nametoindexp(__ifname);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT, uret, 0, FD_API_OTHER, "%p", __ifname);
+	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "p", __ifname);
  
 	return uret;
 }
@@ -1360,9 +1345,9 @@ char *if_indextoname (unsigned int __ifindex, char *__ifname)
 	BEFORE_ORIGINAL(if_indextoname, LIBC);
  
 	cret = if_indextonamep(__ifindex, __ifname);
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, cret, 0, FD_API_OTHER,
-			"%u, %p", __ifindex, __ifname);
+
+	AFTER_PACK_ORIGINAL_SOCK(cret, 0, 0, FD_API_OTHER,
+			"dp", __ifindex, __ifname);
 
 	return cret;
 }
@@ -1375,8 +1360,8 @@ struct if_nameindex *if_nameindex (void)
 	BEFORE_ORIGINAL_NOFILTER(if_nameindex, LIBC);
 	
 	pret = if_nameindexp();
- 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_PTR, pret, 0, FD_API_OTHER, "%s", "");
+
+	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "", 0);
 
 	return pret;
 }
@@ -1389,7 +1374,7 @@ void if_freenameindex (struct if_nameindex *__ptr)
  
 	if_freenameindexp(__ptr);
  
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%p", __ptr);
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "p", __ptr);
 }
 
 int getifaddrs(struct ifaddrs **ifap)
@@ -1400,7 +1385,7 @@ int getifaddrs(struct ifaddrs **ifap)
  
 	ret = getifaddrsp(ifap);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p", ifap);
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "p", ifap);
  
 	return ret;
 }
@@ -1413,7 +1398,7 @@ void freeifaddrs(struct ifaddrs *ifa)
  
 	freeifaddrsp(ifa);
  
-	AFTER_ORIGINAL_NOSOCK_RET(VT_NULL, NULL, 0, FD_API_OTHER, "%p", ifa);
+	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "p", ifa);
 }
 
 #if 0
@@ -1425,7 +1410,7 @@ int poll(struct pollfd *ufds, unsigned int nfds, int timeout)
  
 	ret = pollp(ufds, nfds, timeout);
 
-	AFTER_ORIGINAL_NOSOCK(timeout, FD_API_OTHER, "%p, %u, %d", ufds, nfds, timeout);
+	AFTER_PACK_ORIGINAL_SOCK(ret, timeout, 0, FD_API_OTHER, "pdd", ufds, nfds, timeout);
 
 	return ret;
 }
@@ -1438,7 +1423,7 @@ int ppoll(struct pollfd *fds, nfds_t nfds, const struct timespec *timeout_ts, co
  
 	ret = ppollp(fds, nfds, timeout_ts, sigmask);
 
-	AFTER_ORIGINAL_NOSOCK(0, FD_API_OTHER, "%p, %lu, %p, %p",
+	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pxpp",
 			fds, nfds, timeout_ts, sigmask);
 
 	return ret;
