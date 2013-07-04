@@ -43,22 +43,6 @@ using namespace Tizen::Base;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
 
-#define APPEND_SCENE_ELEM(_ID, _CONTROL)									\
-	do {																	\
-		if(_CONTROL != NULL) {												\
-			char *name = NULL, *type = NULL;								\
-			if(find_object_hash((void*)(_CONTROL), &type, &name) == 1) {	\
-				log.length += sprintf(log.data + log.length, "`,%S`,%s",	\
-						const_cast<wchar_t*>((_ID).GetPointer()), name);	\
-			} else {														\
-				log.length += sprintf(log.data + log.length, "`,%S`,",		\
-						const_cast<wchar_t*>((_ID).GetPointer()));			\
-			}																\
-		} else {															\
-			log.length += sprintf(log.data + log.length, "`,`,");			\
-		}																	\
-	} while(0)
-
 int SceneManagerUsed = 0;
 
 class SceneManagerEventListener : public ISceneManagerEventListener
@@ -84,7 +68,7 @@ void SceneManagerEventListener::OnSceneTransitionCompleted(const SceneId &previo
 		{
 			if(isOptionEnabled(OPT_UI))
 			{
-				probeInfo_t	probeInfo; log_t log;
+				probeInfo_t	probeInfo;
 				Scene* scene;
 				String sceneid, formid, panelid;
 				Form* pform;
@@ -92,7 +76,6 @@ void SceneManagerEventListener::OnSceneTransitionCompleted(const SceneId &previo
 				unsigned long transition, user = 0;
 
 				setProbePoint(&probeInfo);
-				INIT_LOG;
 
 				scene = scenemanager->GetCurrentScene();
 				sceneid = scene->GetSceneId();
@@ -102,16 +85,6 @@ void SceneManagerEventListener::OnSceneTransitionCompleted(const SceneId &previo
 				ppanel = scene->GetPanel();
 
 				transition = (probeInfo.currentTime - startTime);
-
-				APPEND_LOG_BASIC_NAME(LC_SCENE, "OnSceneTransitionCompleted");
-				APPEND_LOG_COMMON_NONE(0);
-				log.length += sprintf(log.data + log.length, "`,%S",
-						const_cast<wchar_t*>(sceneid.GetPointer()));
-				APPEND_SCENE_ELEM(formid, pform);
-				APPEND_SCENE_ELEM(panelid, ppanel);
-				log.length += sprintf(log.data + log.length, "`,%lu`,%lu`,", transition, user);
-
-				printLog(&log, MSG_LOG);
 
 				char scene_name[50];
 				WcharToChar(scene_name, sceneid.GetPointer());
