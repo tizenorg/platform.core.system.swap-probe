@@ -37,21 +37,6 @@
 
 app_event_callback_s gAppCallback;
 
-#define AFTER_ORIGINAL_APPFWCYCLE(RTYPE, RVAL, FUNCNAME, INPUTFORMAT, ...)	\
-	newerrno = errno;														\
-	do {																	\
-		if(postBlockBegin(blockresult)) {									\
-			INIT_LOG;														\
-			APPEND_LOG_BASIC_NAME(LC_LIFECYCLE, #FUNCNAME);					\
-			APPEND_LOG_INPUT(INPUTFORMAT, __VA_ARGS__);						\
-			APPEND_LOG_RESULT(RTYPE, RVAL);									\
-			__appendTypeLog(&log, 1, NULL, VT_INT, 0);						\
-			printLog(&log, MSG_LOG);										\
-			postBlockEnd();													\
-		}																	\
-	} while(0);																\
-	errno = (newerrno != 0) ? newerrno : olderrno
-
 #define PACK_ORIGINAL_APPFWCYCLE(RVAL, INPUTFORMAT, ...)									\
 	newerrno = errno;																		\
 	do {																					\
@@ -70,15 +55,12 @@ static enum DaOptions _sopt = OPT_ALWAYSON;
 static bool _dalc_app_create(void* user_data)
 {
 	bool bret;
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();
 
 	bret = gAppCallback.create(user_data);
-
-	AFTER_ORIGINAL_APPFWCYCLE(VT_INT, bret, usercallback_app_create,
-			"%p", user_data);
 
 	PACK_ORIGINAL_APPFWCYCLE(bret, "p", user_data);
 
@@ -87,60 +69,48 @@ static bool _dalc_app_create(void* user_data)
 
 static void _dalc_app_terminate(void* user_data)
 {
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();
 
 	gAppCallback.terminate(user_data);
 
-	AFTER_ORIGINAL_APPFWCYCLE(VT_NULL, NULL, usercallback_app_terminate,
-			"%p", user_data);
-
 	PACK_ORIGINAL_APPFWCYCLE(0, "p", user_data);
 }
 
 static void _dalc_app_pause(void* user_data)
 {
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();
 
 	gAppCallback.pause(user_data);
 
-	AFTER_ORIGINAL_APPFWCYCLE(VT_NULL, NULL, usercallback_app_pause,
-			"%p", user_data);
-
 	PACK_ORIGINAL_APPFWCYCLE(0, "p", user_data);
 }
 
 static void _dalc_app_resume(void* user_data)
 {
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();
 
 	gAppCallback.resume(user_data);
 
-	AFTER_ORIGINAL_APPFWCYCLE(VT_NULL, NULL, usercallback_app_resume,
-			"%p", user_data);
-
 	PACK_ORIGINAL_APPFWCYCLE(0, "p", user_data);
 }
 
 static void _dalc_app_service(service_h service, void* user_data)
 {
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();
 
 	gAppCallback.service(service, user_data);
-
-	AFTER_ORIGINAL_APPFWCYCLE(VT_NULL, NULL, usercallback_app_service,
-			"%u, %p", (unsigned int)service, user_data);
 
 	PACK_ORIGINAL_APPFWCYCLE(0, "dp", (unsigned int)service, user_data);
 }
