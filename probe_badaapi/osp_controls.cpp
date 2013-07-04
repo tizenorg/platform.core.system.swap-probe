@@ -43,22 +43,6 @@ using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Animations;
 
-#define APPEND_LOG_CONTROL_OSP(CONTROL)														\
-	do {																					\
-		if(unlikely(CONTROL == NULL)) {														\
-			log.length += sprintf(log.data + log.length, "`,`,`,");							\
-		} else {																			\
-			char *type = NULL, *name = NULL;												\
-			if(find_object_hash((void*)(CONTROL), &type, &name) == 1) {						\
-				log.length += sprintf(log.data + log.length, "`,%s`,%s", type, name);		\
-			} else {																		\
-				log.length += sprintf(log.data + log.length, "`,`,");						\
-			}																				\
-			log.length += sprintf(log.data + log.length, "`,%p",							\
-					(void*)(CONTROL));														\
-		}																					\
-	} while(0)
-
 extern IFrameAnimatorEventListener& GetFrameAnimatorEventListener();
 
 bool IsRegisteredFrameAnimatorEventListener = false;
@@ -69,7 +53,7 @@ result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 {
 	typedef result (UiApp::*methodType)(const Tizen::Ui::Controls::Frame& frame);
 	static methodType uiapp_addframep;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	result ret;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp8AddFrameERKNS_2Ui8Controls5FrameE, LIBOSP_UIFW, uiapp_addframep);
@@ -85,17 +69,9 @@ result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 		{
 			Control* parent = NULL;
 			setProbePoint(&probeInfo);
-			INIT_LOG;
-			APPEND_LOG_BASIC_NAME(LC_UICREATE, "AddFrame");
-			APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-			APPEND_LOG_CONTROL_OSP(parent);
-			APPEND_LOG_CONTROL_OSP(&frame);
-			printLog(&log, MSG_LOG);
 
 			PREPARE_LOCAL_BUF();
-			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-					  LC_UICREATE,
-					  "p", &frame);
+			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", &frame);
 			PACK_COMMON_END(ret, 0, 0);
 			PACK_UICONTROL(parent);
 			PACK_UICONTROL(&frame);
@@ -111,7 +87,7 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 {
 	typedef result (UiApp::*methodType)(const Tizen::Ui::Controls::Frame& frame);
 	static methodType uiapp_removeframep;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	result ret;
 	bool bOption;
 
@@ -126,15 +102,8 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 	{
 		Control* parent = NULL;
 		setProbePoint(&probeInfo);
-		INIT_LOG;
-		APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveFrame");
-		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-		APPEND_LOG_CONTROL_OSP(parent);
-		APPEND_LOG_CONTROL_OSP(&frame);
 		
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-			  LC_UICREATE,
-			  "p", &frame);
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", &frame);
 		PACK_COMMON_END(0, 0, 0);
 		PACK_UICONTROL(parent);
 		PACK_UICONTROL(&frame);
@@ -144,17 +113,14 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 	ret = (this->*uiapp_removeframep)(frame);
 
 	probeBlockStart();
-	if(ret == E_SUCCESS)
-	{
-		if(bOption)
-			printLog(&log, MSG_LOG);
-	}
-	probeBlockEnd();
 	
 	if(bOption)
+	{
 		PACK_RETURN_END(ret);
+		FLUSH_LOCAL_BUF();
+	}
 		
-	FLUSH_LOCAL_BUF();
+	probeBlockEnd();
 	
 	return ret;
 }
@@ -182,7 +148,7 @@ void Control::SetName(const Tizen::Base::String &name)
 {
 	typedef void (Control::*methodType)(const Tizen::Base::String &name);
 	static methodType control_setnamep;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui7Control7SetNameERKNS_4Base6StringE, LIBOSP_UIFW, control_setnamep);
 
@@ -195,17 +161,9 @@ void Control::SetName(const Tizen::Base::String &name)
 	{
 		Control* parent = NULL;
 		setProbePoint(&probeInfo);
-		INIT_LOG;
-		APPEND_LOG_BASIC_NAME(LC_UICREATE, "SetName");
-		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-		APPEND_LOG_CONTROL_OSP(this);
-		APPEND_LOG_CONTROL_OSP(parent);
-		printLog(&log, MSG_LOG);
 		
 		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-				  LC_UICREATE,
-				  "p", this);
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", this);
 		PACK_COMMON_END(0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(parent);
@@ -218,7 +176,7 @@ result Container::AddControl(const Control &control)
 {
 	typedef result (Container::*methodType)(const Control &control);
 	static methodType container_addcontrolp;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	result ret;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container10AddControlERKNS0_7ControlE, LIBOSP_UIFW, container_addcontrolp);
@@ -256,17 +214,9 @@ result Container::AddControl(const Control &control)
 		if(isOptionEnabled(OPT_UI))
 		{
 			setProbePoint(&probeInfo);
-			INIT_LOG;
-			APPEND_LOG_BASIC_NAME(LC_UICREATE, "AddControl");
-			APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-			APPEND_LOG_CONTROL_OSP(this);
-			APPEND_LOG_CONTROL_OSP(&control);
-			printLog(&log, MSG_LOG);
 			
 			PREPARE_LOCAL_BUF();
-			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-					  LC_UICREATE,
-					  "p", this);
+			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", this);
 			PACK_COMMON_END(ret, 0, 0);
 			PACK_UICONTROL(this);
 			PACK_UICONTROL(&control);
@@ -282,7 +232,7 @@ result Container::RemoveControl(const Control &control)
 {
 	typedef result (Container::*methodType)(const Control &control);
 	static methodType container_removecontrolp;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	result ret;
 	bool bOption;
 
@@ -296,15 +246,8 @@ result Container::RemoveControl(const Control &control)
 	if((bOption = isOptionEnabled(OPT_UI)))
 	{
 		setProbePoint(&probeInfo);
-		INIT_LOG;
-		APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveControl");
-		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-		APPEND_LOG_CONTROL_OSP(this);
-		APPEND_LOG_CONTROL_OSP(&control);
 		
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-				  LC_UICREATE,
-				  "p", this);
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", this);
 		PACK_COMMON_END(0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(&control);
@@ -314,17 +257,12 @@ result Container::RemoveControl(const Control &control)
 	ret = (this->*container_removecontrolp)(control);
 
 	probeBlockStart();
-	if(ret == E_SUCCESS)
+	if(bOption)
 	{
-		if(bOption)
-			printLog(&log, MSG_LOG);
+		PACK_RETURN_END(ret);
+		FLUSH_LOCAL_BUF();
 	}
 	probeBlockEnd();
-
-	if(bOption)
-		PACK_RETURN_END(ret);
-	
-	FLUSH_LOCAL_BUF();
 			
 	return ret;
 }
@@ -333,7 +271,7 @@ result Container::RemoveControl(int index)
 {
 	typedef result (Container::*methodType)(int index);
 	static methodType container_removecontrolip;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	result ret;
 	bool bOption;
 
@@ -348,15 +286,8 @@ result Container::RemoveControl(int index)
 	if((bOption = isOptionEnabled(OPT_UI)))
 	{
 		setProbePoint(&probeInfo);
-		INIT_LOG;
-		APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveControl");
-		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-		APPEND_LOG_CONTROL_OSP(this);
-		APPEND_LOG_CONTROL_OSP(pcontrol);
 		
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-				  LC_UICREATE,
-				  "p", this);
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", this);
 		PACK_COMMON_END(0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(pcontrol);
@@ -366,17 +297,12 @@ result Container::RemoveControl(int index)
 	ret = (this->*container_removecontrolip)(index);
 
 	probeBlockStart();
-	if(ret == E_SUCCESS)
+	if(bOption)
 	{
-		if(bOption)
-			printLog(&log, MSG_LOG);
+		PACK_RETURN_END(ret);
+		FLUSH_LOCAL_BUF();
 	}
 	probeBlockEnd();
-
-	if(bOption)
-		PACK_RETURN_END(ret);
-	
-	FLUSH_LOCAL_BUF();
 	
 	return ret;
 }
@@ -385,7 +311,7 @@ void Container::RemoveAllControls(void)
 {
 	typedef void (Container::*methodType)(void);
 	static methodType container_removeallcontrolp;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container17RemoveAllControlsEv, LIBOSP_UIFW, container_removeallcontrolp);
 
@@ -394,17 +320,9 @@ void Container::RemoveAllControls(void)
 	{
 		Control* pcontrol = NULL;
 		setProbePoint(&probeInfo);
-		INIT_LOG;
-		APPEND_LOG_BASIC_NAME(LC_UICREATE, "RemoveAllControl");
-		APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);
-		APPEND_LOG_CONTROL_OSP(this);
-		APPEND_LOG_CONTROL_OSP(pcontrol);
-		printLog(&log, MSG_LOG);
 		
 		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-				  LC_UICREATE,
-				  "p", this);
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", this);
 		PACK_COMMON_END(0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(pcontrol);
