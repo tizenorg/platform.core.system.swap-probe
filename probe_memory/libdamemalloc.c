@@ -51,7 +51,7 @@ static enum DaOptions _sopt = OPT_ALLOC;
 void *malloc(size_t size)
 {
 	static void*(*mallocp)(size_t size);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
 	GET_REAL_FUNC_RTLD_NEXT(malloc);
@@ -66,9 +66,7 @@ void *malloc(size_t size)
 		add_memory_hash(pret, size);
 	}
 
-	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_PTR, pret, "%u", size);
-	POST_PROBEBLOCK_MIDDLE_MEM(size, MEMORY_API_ALLOC, pret);
-	APPEND_LOG_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "x", size);
@@ -76,7 +74,7 @@ void *malloc(size_t size)
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
 }
@@ -84,7 +82,7 @@ void *malloc(size_t size)
 void free(void *ptr)
 {
 	static void (*freep)(void *);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 
 	GET_REAL_FUNC_RTLD_NEXT(free);
 
@@ -98,9 +96,7 @@ void free(void *ptr)
 
 	freep(ptr);
 
-	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_NULL, NULL, "%p", ptr);
-	POST_PROBEBLOCK_MIDDLE_MEM(0, MEMORY_API_FREE, ptr);
-	POST_PROBEBLOCK_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "p", ptr);
@@ -108,7 +104,7 @@ void free(void *ptr)
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 }
 
 /*	calloc's helper fucntion
@@ -134,7 +130,7 @@ void *temp_calloc(size_t nelem, size_t elsize)
 void *calloc(size_t nelem, size_t elsize)
 {
 	static void *(*callocp)(size_t,size_t);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
 	if(!callocp) {
@@ -159,9 +155,7 @@ void *calloc(size_t nelem, size_t elsize)
 		add_memory_hash(pret, nelem * elsize);
 	}
 
-	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_PTR, pret, "%u, %u", nelem, elsize);
-	POST_PROBEBLOCK_MIDDLE_MEM(nelem * elsize, MEMORY_API_ALLOC, pret);
-	APPEND_LOG_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "xx", nelem, elsize);
@@ -169,7 +163,7 @@ void *calloc(size_t nelem, size_t elsize)
 	PACK_MEMORY(elsize, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
 }
@@ -177,7 +171,7 @@ void *calloc(size_t nelem, size_t elsize)
 void *realloc(void *memblock, size_t size)
 {
 	static void *(*reallocp)(void *,size_t);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
 	GET_REAL_FUNC_RTLD_NEXT(realloc);
@@ -197,9 +191,7 @@ void *realloc(void *memblock, size_t size)
 		add_memory_hash(pret, size);
 	}
 
-	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_PTR, pret, "%p, %u", memblock, size);
-	POST_PROBEBLOCK_MIDDLE_MEM(size, MEMORY_API_ALLOC, pret);
-	APPEND_LOG_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "px", memblock, size);
@@ -207,7 +199,7 @@ void *realloc(void *memblock, size_t size)
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
 }

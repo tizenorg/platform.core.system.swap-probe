@@ -43,17 +43,4 @@
  * 
  ********************************************************************/
 
-#define POST_PROBEBLOCK_MIDDLE_MEM(SIZE, APITYPE, ADDR)	\
-	log.length += sprintf(log.data + log.length,		\
-			"`,%u`,%d`,%p",	SIZE, APITYPE, ADDR)
-
-#define POST_PROBEBLOCK_BEGIN_MEM(LCTYPE, APINAME, RETTYPE, RETVALUE, INPUTFORMAT, ...)	\
-	newerrno = errno;																	\
-	if(postBlockBegin(blockresult)) {													\
-		INIT_LOG;																		\
-		APPEND_LOG_BASIC_NAME(LCTYPE, APINAME);											\
-		APPEND_LOG_INPUT(INPUTFORMAT, __VA_ARGS__);										\
-		APPEND_LOG_RESULT(RETTYPE, RETVALUE);											\
-		APPEND_LOG_CALLER()
-
 #endif // __DA_MEMORY_H__

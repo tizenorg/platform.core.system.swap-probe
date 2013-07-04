@@ -46,7 +46,7 @@ static enum DaOptions _sopt = OPT_ALLOC;
 void *memset(void *memblock, int c, size_t n)
 {
 	static void *(*memsetp)(void *,int,size_t);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
 	GET_REAL_FUNC_RTLD_NEXT(memset);
@@ -55,9 +55,7 @@ void *memset(void *memblock, int c, size_t n)
 
 	pret = memsetp(memblock, c, n);
 
-	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_PTR, pret, "%p, %d, %u", memblock, c, n);
-	POST_PROBEBLOCK_MIDDLE_MEM(n, MEMORY_API_MANAGE, memblock);
-	POST_PROBEBLOCK_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 		
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pdx", memblock, c, n);
@@ -65,7 +63,7 @@ void *memset(void *memblock, int c, size_t n)
 	PACK_MEMORY(n, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
 }
@@ -73,7 +71,7 @@ void *memset(void *memblock, int c, size_t n)
 int memcmp(const void * ptr1, const void * ptr2, size_t num)
 {
 	static int(*memcmpp)(const void *,const void *,size_t);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 
 	GET_REAL_FUNC_RTLD_NEXT(memcmp);
 
@@ -81,9 +79,7 @@ int memcmp(const void * ptr1, const void * ptr2, size_t num)
 
 	ret = memcmpp(ptr1, ptr2, num);
 
-	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_INT, ret, "%p, %p, %u", ptr1, ptr2, num);
-	POST_PROBEBLOCK_MIDDLE_MEM(num, MEMORY_API_MANAGE, ptr1);
-	POST_PROBEBLOCK_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 			
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "ppx", ptr1, ptr2, num);
@@ -91,7 +87,7 @@ int memcmp(const void * ptr1, const void * ptr2, size_t num)
 	PACK_MEMORY(num, MEMORY_API_MANAGE, ret);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 
 	return ret;
 }
@@ -99,7 +95,7 @@ int memcmp(const void * ptr1, const void * ptr2, size_t num)
 void *memcpy(void * destination, const void * source, size_t num )
 {
 	static void *(*memcpyp)(void *,const void *,size_t);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
 	GET_REAL_FUNC_RTLD_NEXT(memcpy);
@@ -108,9 +104,7 @@ void *memcpy(void * destination, const void * source, size_t num )
 
 	pret = memcpyp(destination, source, num);
 
-	POST_PROBEBLOCK_BEGIN(LC_MEMORY, VT_PTR, pret, "%p, %p, %u", destination, source, num);
-	POST_PROBEBLOCK_MIDDLE_MEM(num, MEMORY_API_MANAGE, destination);
-	POST_PROBEBLOCK_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "ppx", destination, source, num);
@@ -118,7 +112,7 @@ void *memcpy(void * destination, const void * source, size_t num )
 	PACK_MEMORY(num, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
 }

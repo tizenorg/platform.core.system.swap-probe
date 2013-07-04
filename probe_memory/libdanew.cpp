@@ -49,7 +49,7 @@ static enum DaOptions _sopt = OPT_ALLOC;
 void *operator new(std::size_t size) throw (std::bad_alloc)
 {
 	static void*(*newp)(std::size_t size);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_Znwj,newp);
@@ -64,9 +64,7 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 		add_memory_hash(pret, size);
 	}
 
-	POST_PROBEBLOCK_BEGIN_MEM(LC_MEMORY, "new", VT_PTR, pret, "%u", size);
-	POST_PROBEBLOCK_MIDDLE_MEM(size, MEMORY_API_ALLOC, pret);
-	APPEND_LOG_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "x", size);
@@ -74,7 +72,7 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
 }
@@ -82,7 +80,7 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 void *operator new[](std::size_t size) throw (std::bad_alloc)
 {
 	static void*(*newp)(std::size_t size);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_Znaj, newp);
@@ -97,9 +95,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 		add_memory_hash(pret, size);
 	}
 
-	POST_PROBEBLOCK_BEGIN_MEM(LC_MEMORY, "new", VT_PTR, pret, "%u", size);
-	POST_PROBEBLOCK_MIDDLE_MEM(size, MEMORY_API_ALLOC, pret);
-	APPEND_LOG_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "x", size);
@@ -107,7 +103,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
 }
@@ -115,7 +111,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 void operator delete(void *ptr) throw()
 {
 	static void (*deletep)(void *ptr);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPv, deletep);
 
@@ -129,9 +125,7 @@ void operator delete(void *ptr) throw()
 
 	deletep(ptr);
 
-	POST_PROBEBLOCK_BEGIN_MEM(LC_MEMORY, "delete", VT_NULL, NULL, "%p", ptr);
-	POST_PROBEBLOCK_MIDDLE_MEM(0, MEMORY_API_FREE, ptr);
-	POST_PROBEBLOCK_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "p", ptr);
@@ -139,13 +133,13 @@ void operator delete(void *ptr) throw()
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 }
 
 void operator delete[](void *ptr) throw()
 {
 	static void (*deletep)(void *ptr);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPv, deletep);
 
@@ -159,9 +153,7 @@ void operator delete[](void *ptr) throw()
 
 	deletep(ptr);
 
-	POST_PROBEBLOCK_BEGIN_MEM(LC_MEMORY, "delete", VT_NULL, NULL, "%p", ptr);
-	POST_PROBEBLOCK_MIDDLE_MEM(0, MEMORY_API_FREE, ptr);
-	POST_PROBEBLOCK_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "p", ptr);
@@ -169,13 +161,13 @@ void operator delete[](void *ptr) throw()
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 }
 
 void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 {
 	static void*(*newp)(std::size_t size, const std::nothrow_t& nothrow);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZnwjRKSt9nothrow_t, newp);
@@ -190,9 +182,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 		add_memory_hash(pret, size);
 	}
 
-	POST_PROBEBLOCK_BEGIN_MEM(LC_MEMORY, "new", VT_PTR, pret, "%u", size);
-	POST_PROBEBLOCK_MIDDLE_MEM(size, MEMORY_API_ALLOC, pret);
-	APPEND_LOG_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "xp", size, &nothrow);
@@ -200,7 +190,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
 }
@@ -208,7 +198,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 {
 	static void*(*newp)(std::size_t size, const std::nothrow_t& nothrow);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZnajRKSt9nothrow_t, newp);
@@ -223,9 +213,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 		add_memory_hash(pret, size);
 	}
 
-	POST_PROBEBLOCK_BEGIN_MEM(LC_MEMORY, "new", VT_PTR, pret, "%u", size);
-	POST_PROBEBLOCK_MIDDLE_MEM(size, MEMORY_API_ALLOC, pret);
-	APPEND_LOG_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "xp", size, &nothrow);
@@ -233,7 +221,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
 }
@@ -241,7 +229,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 {
 	static void (*deletep)(void *ptr, const std::nothrow_t& nothrow);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPvRKSt9nothrow_t, deletep);
 
@@ -255,9 +243,7 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 
 	deletep(ptr, nothrow);
 
-	POST_PROBEBLOCK_BEGIN_MEM(LC_MEMORY, "delete", VT_NULL, NULL, "%p", ptr);
-	POST_PROBEBLOCK_MIDDLE_MEM(0, MEMORY_API_FREE, ptr);
-	POST_PROBEBLOCK_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pp", ptr, &nothrow);
@@ -265,13 +251,13 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 }
 
 void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 {
 	static void (*deletep)(void *ptr, const std::nothrow_t& nothrow);
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPvRKSt9nothrow_t, deletep);
 
@@ -285,9 +271,7 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 
 	deletep(ptr, nothrow);
 
-	POST_PROBEBLOCK_BEGIN_MEM(LC_MEMORY, "delete", VT_NULL, NULL, "%p", ptr);
-	POST_PROBEBLOCK_MIDDLE_MEM(0, MEMORY_API_FREE, ptr);
-	POST_PROBEBLOCK_CALLSTACK();
+	POST_PACK_PROBEBLOCK_BEGIN();
 		
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pp", ptr, &nothrow);
@@ -295,6 +279,6 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
 	
-	POST_PROBEBLOCK_END();
+	POST_PACK_PROBEBLOCK_END();
 }
 
