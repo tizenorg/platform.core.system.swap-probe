@@ -49,9 +49,6 @@ int pthread_mutex_init(pthread_mutex_t *mutex,
 
 	ret = pthread_mutex_initp(mutex, attr);
 
-	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, mutex, SYNC_PTHREAD_MUTEX, 
-			SYNC_API_OTHER, "%p,%p", mutex, attr);
-
 	AFTER_PACK_ORIGINAL_SYNC(ret, mutex, SYNC_PTHREAD_MUTEX, 
 			SYNC_API_OTHER, "pp", mutex, attr);
 
@@ -64,9 +61,6 @@ int pthread_mutex_destroy(pthread_mutex_t *mutex) {
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_destroy, LIBPTHREAD);
 
 	ret = pthread_mutex_destroyp(mutex);
-
-	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, mutex, SYNC_PTHREAD_MUTEX, 
-			SYNC_API_OTHER, "%p", mutex);
 
 	AFTER_PACK_ORIGINAL_SYNC(ret, mutex, SYNC_PTHREAD_MUTEX, 
 			SYNC_API_OTHER, "p", mutex);
@@ -85,21 +79,10 @@ int real_pthread_mutex_lock(pthread_mutex_t *mutex) {
 int pthread_mutex_lock(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_lockp)(pthread_mutex_t *mutex);
 	
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	GET_REAL_FUNC(pthread_mutex_lock, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
-	// send WAIT_START log
-	INIT_LOG;
-	APPEND_LOG_BASIC(LC_SYNC);
-	APPEND_LOG_INPUT("%p", mutex);
-	//ret,PCAddr,errno,InternalCall
-	log.length += sprintf(log.data + log.length, "`,`,0`,0`,%d", blockresult);
-	APPEND_LOG_CALLER();
-	log.length += sprintf(log.data + log.length, "`,%p`,%d`,%d", mutex,
-			SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
-	APPEND_LOG_NULL_CALLSTACK();
-	printLog(&log, MSG_LOG);
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "p", mutex);
@@ -115,16 +98,6 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 	newerrno = errno;
 	if(postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		INIT_LOG;
-		APPEND_LOG_BASIC(LC_SYNC);
-		APPEND_LOG_INPUT("%p", mutex);
-		APPEND_LOG_RESULT(VT_INT, ret);
-		APPEND_LOG_CALLER();
-
-		POST_PROBEBLOCK_MIDDLE_SYNCVAL(mutex, SYNC_PTHREAD_MUTEX, 
-				SYNC_API_ACQUIRE_WAIT_END);
-		POST_PROBEBLOCK_CALLSTACK();
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "p", mutex);
@@ -143,21 +116,10 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 	static int (*pthread_mutex_timedlockp)(pthread_mutex_t *mutex,
 			const struct timespec *abs_timeout);
 
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	GET_REAL_FUNC(pthread_mutex_timedlock, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
-	// send WAIT_START log
-	INIT_LOG;
-	APPEND_LOG_BASIC(LC_SYNC);
-	APPEND_LOG_INPUT("%p,%p", mutex, abs_timeout);
-	//ret,PCAddr,errno,InternalCall
-	log.length += sprintf(log.data + log.length, "`,`,0`,0`,%d", blockresult);
-	APPEND_LOG_CALLER();
-	log.length += sprintf(log.data + log.length, "`,%p`,%d`,%d", mutex,
-			SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
-	APPEND_LOG_NULL_CALLSTACK();
-	printLog(&log, MSG_LOG);
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", mutex, abs_timeout);
@@ -173,16 +135,6 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 	newerrno = errno;
 	if(postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		INIT_LOG;
-		APPEND_LOG_BASIC(LC_SYNC);
-		APPEND_LOG_INPUT("%p,%p", mutex, abs_timeout);
-		APPEND_LOG_RESULT(VT_INT, ret);
-		APPEND_LOG_CALLER();
-
-		POST_PROBEBLOCK_MIDDLE_SYNCVAL(mutex, SYNC_PTHREAD_MUTEX, 
-				SYNC_API_ACQUIRE_WAIT_END);
-		POST_PROBEBLOCK_CALLSTACK();
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", mutex, abs_timeout);
@@ -202,9 +154,6 @@ int pthread_mutex_trylock(pthread_mutex_t *mutex) {
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_trylock, LIBPTHREAD);
 
 	ret = pthread_mutex_trylockp(mutex);
-
-	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, mutex, SYNC_PTHREAD_MUTEX, 
-			SYNC_API_TRY_ACQUIRE, "%p", mutex);
 
 	AFTER_PACK_ORIGINAL_SYNC(ret, mutex, SYNC_PTHREAD_MUTEX, 
 			SYNC_API_TRY_ACQUIRE, "p", mutex);
@@ -227,9 +176,6 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex) {
 
 	ret = pthread_mutex_unlockp(mutex);
 
-	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, mutex, SYNC_PTHREAD_MUTEX, 
-			SYNC_API_RELEASE, "%p", mutex);
-
 	AFTER_PACK_ORIGINAL_SYNC(ret, mutex, SYNC_PTHREAD_MUTEX, 
 			SYNC_API_RELEASE, "p", mutex);
 	
@@ -243,9 +189,6 @@ int pthread_mutexattr_init(pthread_mutexattr_t *attr) {
 
 	ret = pthread_mutexattr_initp(attr);
 
-	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "%p", attr);
-
 	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
 			SYNC_API_OTHER, "p", attr);
 
@@ -258,9 +201,6 @@ int pthread_mutexattr_destroy(pthread_mutexattr_t *attr) {
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_destroy, LIBPTHREAD);
 
 	ret = pthread_mutexattr_destroyp(attr);
-
-	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "%p", attr);
 
 	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
 			SYNC_API_OTHER, "p", attr);
@@ -277,9 +217,6 @@ int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *attr,
 
 	ret = pthread_mutexattr_getprioceilingp(attr, prioceiling);
 
-	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "%p,%p", attr, prioceiling);
-
 	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
 			SYNC_API_OTHER, "pp", attr, prioceiling);
 
@@ -294,9 +231,6 @@ int pthread_mutexattr_setprioceiling(pthread_mutexattr_t *attr,
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_setprioceiling, LIBPTHREAD);
 
 	ret = pthread_mutexattr_setprioceilingp(attr, prioceiling);
-
-	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "%p,%d", attr, prioceiling);
 
 	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
 			SYNC_API_OTHER, "pd", attr, prioceiling);
@@ -313,9 +247,6 @@ int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *attr,
 
 	ret = pthread_mutexattr_getprotocolp(attr, protocol);
 
-	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "%p,%p", attr, protocol);
-
 	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
 			SYNC_API_OTHER, "pp", attr, protocol);
 
@@ -330,9 +261,6 @@ int pthread_mutexattr_setprotocol(pthread_mutexattr_t *attr,
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_setprotocol, LIBPTHREAD);
 
 	ret = pthread_mutexattr_setprotocolp(attr, protocol);
-
-	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "%p,%d", attr, protocol);
 
 	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
 			SYNC_API_OTHER, "pd", attr, protocol);
@@ -349,9 +277,6 @@ int pthread_mutexattr_getpshared(const pthread_mutexattr_t *attr,
 
 	ret = pthread_mutexattr_getpsharedp(attr, pshared);
 
-	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "%p,%p", attr, pshared);
-
 	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
 			SYNC_API_OTHER, "pp", attr, pshared);
 
@@ -367,9 +292,6 @@ int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr,
 
 	ret = pthread_mutexattr_setpsharedp(attr, pshared);
 
-	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "%p,%d", attr, pshared);
-
 	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
 			SYNC_API_OTHER, "pd", attr, pshared);
 
@@ -384,9 +306,6 @@ int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int *type) {
 
 	ret = pthread_mutexattr_gettypep(attr, type);
 
-	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "%p,%p", attr, type);
-
 	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
 			SYNC_API_OTHER, "pp", attr, type);
 
@@ -400,9 +319,6 @@ int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type) {
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_settype, LIBPTHREAD);
 
 	ret = pthread_mutexattr_settypep(attr, type);
-
-	AFTER_ORIGINAL_NOSYNCVAL_RET(VT_INT, ret, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "%p,%d", attr, type);
 
 	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
 			SYNC_API_OTHER, "pd", attr, type);
@@ -425,9 +341,6 @@ int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr) {
 
 	ret = pthread_cond_initp(cond, attr);
 
-	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
-			SYNC_API_OTHER, "%p,%p", cond, attr);
-
 	AFTER_PACK_ORIGINAL_SYNC(ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
 			SYNC_API_OTHER, "pp", cond, attr);
 
@@ -441,9 +354,6 @@ int pthread_cond_destroy(pthread_cond_t *cond) {
 
 	ret = pthread_cond_destroyp(cond);
 
-	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
-			SYNC_API_OTHER, "%p", cond);
-
 	AFTER_PACK_ORIGINAL_SYNC(ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
 			SYNC_API_OTHER, "p", cond);
 
@@ -454,22 +364,12 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 	static int (*pthread_cond_waitp)(pthread_cond_t *cond,
 			pthread_mutex_t *mutex);
 
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	GET_REAL_FUNC(pthread_cond_wait, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
 	// send WAIT_START log
-	INIT_LOG;
-	APPEND_LOG_BASIC(LC_SYNC);
-	APPEND_LOG_INPUT("%p,%p", cond, mutex);
-	//ret,PCAddr,errno,InternalCall
-	log.length += sprintf(log.data + log.length, "`,`,0`,0`,%d", blockresult);
-	APPEND_LOG_CALLER();
-	log.length += sprintf(log.data + log.length, "`,%p`,%d`,%d", cond,
-			SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_START);
-	APPEND_LOG_NULL_CALLSTACK();
-	printLog(&log, MSG_LOG);
-
+	
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", cond, mutex);
 	PACK_COMMON_END(0, 0, blockresult);
@@ -484,16 +384,6 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 	newerrno = errno;
 	if(postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		INIT_LOG;
-		APPEND_LOG_BASIC(LC_SYNC);
-		APPEND_LOG_INPUT("%p,%p", cond, mutex);
-		APPEND_LOG_RESULT(VT_INT, ret);
-		APPEND_LOG_CALLER();
-
-		POST_PROBEBLOCK_MIDDLE_SYNCVAL(cond, SYNC_PTHREAD_COND_VARIABLE, 
-				SYNC_API_COND_WAIT_END);
-		POST_PROBEBLOCK_CALLSTACK();
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", cond, mutex);
@@ -512,21 +402,11 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 	static int (*pthread_cond_timedwaitp)(pthread_cond_t *cond,
 				pthread_mutex_t *mutex, const struct timespec *abstime);
 
-	DECLARE_VARIABLE_STANDARD; log_t log;
+	DECLARE_VARIABLE_STANDARD;
 	GET_REAL_FUNC(pthread_cond_timedwait, LIBPTHREAD);
 
 	PRE_PROBEBLOCK_BEGIN();
 	// send WAIT_START log
-	INIT_LOG;
-	APPEND_LOG_BASIC(LC_SYNC);
-	APPEND_LOG_INPUT("%p,%p,%p", cond, mutex, abstime);
-	//ret,PCAddr,errno,InternalCall
-	log.length += sprintf(log.data + log.length, "`,`,0`,0`,%d", blockresult);
-	APPEND_LOG_CALLER();
-	log.length += sprintf(log.data + log.length, "`,%p`,%d`,%d", cond,
-			SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_START);
-	APPEND_LOG_NULL_CALLSTACK();
-	printLog(&log, MSG_LOG);
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "ppp", cond, mutex, abstime);
@@ -542,16 +422,6 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 	newerrno = errno;
 	if(postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		INIT_LOG;
-		APPEND_LOG_BASIC(LC_SYNC);
-		APPEND_LOG_INPUT("%p,%p,%p", cond, mutex, abstime);
-		APPEND_LOG_RESULT(VT_INT, ret);
-		APPEND_LOG_CALLER();
-
-		POST_PROBEBLOCK_MIDDLE_SYNCVAL(cond, SYNC_PTHREAD_COND_VARIABLE, 
-				SYNC_API_COND_WAIT_END);
-		POST_PROBEBLOCK_CALLSTACK();
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "ppp", cond, mutex, abstime);
@@ -572,9 +442,6 @@ int pthread_cond_signal(pthread_cond_t *cond) {
 
 	ret = pthread_cond_signalp(cond);
 
-	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
-			SYNC_API_NOTIFY, "%p", cond);
-
 	AFTER_PACK_ORIGINAL_SYNC(ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
 			SYNC_API_NOTIFY, "p", cond);
 	
@@ -587,9 +454,6 @@ int pthread_cond_broadcast(pthread_cond_t *cond) {
 	BEFORE_ORIGINAL_SYNC(pthread_cond_broadcast, LIBPTHREAD);
 
 	ret = pthread_cond_broadcastp(cond);
-
-	AFTER_ORIGINAL_SYNCVAL_RET(VT_INT, ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
-			SYNC_API_NOTIFY_ALL, "%p", cond);
 
 	AFTER_PACK_ORIGINAL_SYNC(ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
 			SYNC_API_NOTIFY_ALL, "p", cond);
