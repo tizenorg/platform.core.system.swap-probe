@@ -219,7 +219,6 @@ _ThreadImpl::ThreadProc(void* params) {
 	(*methodType)(void*);
 	static methodType ThreadProcp = 0;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = false;
 	void *tmpPtr;
@@ -247,29 +246,12 @@ _ThreadImpl::ThreadProc(void* params) {
 
 	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "_ThreadImpl::ThreadProc", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
 
 		_ThreadImpl* pSelf =(_ThreadImpl*)params;
 		const Thread* pThread = NULL;
 		if(pSelf != null){
 			pThread = pSelf->GetThread();
 		}
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,0x%x`,",(unsigned int)pSelf);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,0`,%d`,%u`,`,0x%x`,%d`,%d", blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int)pThread, THREAD_OSPTHREAD_WORKER, THREAD_API_INTERNAL_START);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "p", params);
@@ -288,29 +270,12 @@ _ThreadImpl::ThreadProc(void* params) {
 	//
 	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "_ThreadImpl::ThreadProc", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
 
 		_ThreadImpl* pSelf =(_ThreadImpl*)params;
 		const Thread* pThread = NULL;
 		if(pSelf != null){
 			pThread = pSelf->GetThread();
 		}
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,0x%x`,",(unsigned int)pSelf);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,0`,%d`,%u`,`,0x%x`,%d`,%d", blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int)pThread, THREAD_OSPTHREAD_WORKER, THREAD_API_INTERNAL_STOP);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "p", params);
@@ -562,7 +527,6 @@ result Thread::Sleep(long milliSeconds) {
 	(*methodType)(long);
 	static methodType Sleepp = 0;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -590,27 +554,9 @@ result Thread::Sleep(long milliSeconds) {
 
 	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Sleep", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
 
 		Thread *currentThread;
 		currentThread = GetCurrentThread();
-
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,%ld`,",milliSeconds);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-						"`,0`,0`,%d`,%u`,`,0x%x`,%d`,%d",blockresult,
-						(unsigned int)CALLER_ADDRESS, (unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_START);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "x", milliSeconds);
@@ -625,28 +571,9 @@ result Thread::Sleep(long milliSeconds) {
 	//
 	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Sleep", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
 
 		Thread *currentThread;
 		currentThread = GetCurrentThread();
-
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,%ld`,%ld",milliSeconds,ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret,blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_END);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "x", milliSeconds);
@@ -664,7 +591,6 @@ Thread* Thread::GetCurrentThread(void) {
 		(*methodType)(void);
 	static methodType GetCurrentThreadp = 0;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -699,25 +625,6 @@ Thread* Thread::GetCurrentThread(void) {
 	result res = GetLastResult();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::GetCurrentThread", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
-
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,0x%x",(unsigned int)currentThread);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", res,blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
@@ -735,7 +642,6 @@ result Thread::Yield(void) {
 		(*methodType)(void);
 	static methodType Yieldp = 0;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -769,28 +675,8 @@ result Thread::Yield(void) {
 	result ret = (Yieldp)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Yield", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
-
 		Thread *currentThread;
 		currentThread = GetCurrentThread();
-		
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld",ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret,blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
@@ -808,7 +694,6 @@ result Thread::Exit(int exitCode) {
 		(*methodType)(int exitCode);
 	static methodType Exitp = 0;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -836,28 +721,9 @@ result Thread::Exit(int exitCode) {
 
 	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Exit", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
 
 		Thread *currentThread;
 		currentThread = GetCurrentThread();
-		
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,%d`,",exitCode);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,0`,%d`,%u`,`,0x%x`,%d`,%d",blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_EXIT);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "d", exitCode);
@@ -881,7 +747,6 @@ result Thread::Construct(ThreadType threadType, long stackSize,
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -917,25 +782,6 @@ result Thread::Construct(ThreadType threadType, long stackSize,
 	ret = (this->*Constructp)(threadType, stackSize, priority);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Construct",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,%d, %ld, %d`,%ld",
-				threadType, stackSize, priority, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "dxd", threadType, stackSize, priority);
@@ -953,7 +799,6 @@ result Thread::Construct(long stackSize, ThreadPriority priority) {
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -986,25 +831,6 @@ result Thread::Construct(long stackSize, ThreadPriority priority) {
 	ret = (this->*Constructp)(stackSize, priority);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Construct",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,%ld, %d`,%ld",
-				stackSize, priority, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "xd", stackSize, priority);
@@ -1024,7 +850,6 @@ result Thread::Construct(const Tizen::Base::String &name, long stackSize,
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1061,26 +886,6 @@ result Thread::Construct(const Tizen::Base::String &name, long stackSize,
 	ret = (this->*Constructp)(name, stackSize, priority);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Construct",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		WcharToChar(temp, name.GetPointer());
-		log.length += sprintf(log.data + log.length, "`,%s, %ld, %d`,%ld", temp,
-				stackSize, priority, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "sxd", temp, stackSize, priority);
@@ -1100,7 +905,6 @@ result Thread::Construct(const Tizen::Base::String &name, ThreadType threadType,
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1137,26 +941,8 @@ result Thread::Construct(const Tizen::Base::String &name, ThreadType threadType,
 	ret = (this->*Constructp)(name, threadType, stackSize, priority);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Construct",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		WcharToChar(temp, name.GetPointer());
-		log.length += sprintf(log.data + log.length, "`,%s, %d, %ld, %d`,%ld",
-				temp, threadType, stackSize, priority, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
-		printLog(&log, MSG_LOG);
+		WcharToChar(temp, name.GetPointer());
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "sdxd", temp, threadType, stackSize, priority);
@@ -1176,7 +962,6 @@ result Thread::Construct(IRunnable &target, long stackSize,
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1212,25 +997,6 @@ result Thread::Construct(IRunnable &target, long stackSize,
 	ret = (this->*Constructp)(target, stackSize, priority);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Construct",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,0x%x, %ld, %d`,%ld",
-				(unsigned int) &target, stackSize, priority, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "xxd", (unsigned int) &target, stackSize, priority);
@@ -1250,7 +1016,6 @@ result Thread::Construct(const Tizen::Base::String &name, IRunnable &target,
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1287,26 +1052,8 @@ result Thread::Construct(const Tizen::Base::String &name, IRunnable &target,
 	ret = (this->*Constructp)(name, target, stackSize, priority);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Construct",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		WcharToChar(temp, name.GetPointer());
-		log.length += sprintf(log.data + log.length, "`,%s, 0x%x, %ld, %d`,%ld",
-				temp, (unsigned int) &target, stackSize, priority, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
-		printLog(&log, MSG_LOG);
+		WcharToChar(temp, name.GetPointer());
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "sxxd", temp, (unsigned int) &target, stackSize, priority);
@@ -1325,7 +1072,6 @@ result Thread::GetExitCode(int &exitCode) const {
 	static methodType GetExitCodep = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1360,26 +1106,6 @@ result Thread::GetExitCode(int &exitCode) const {
 	ret = (this->*GetExitCodep)(exitCode);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::GetExitCode",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-//		log.length += sprintf(log.data + log.length, "`,(%d->%d)`,%ld", exitOld,
-//				exitCode, ret);
-		log.length += sprintf(log.data + log.length, "`,%d`,%ld", exitCode, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "d", exitCode);
@@ -1397,7 +1123,6 @@ const Tizen::Base::String & Thread::GetName(void) const {
 	(Thread::*methodType)(void) const;
 	static methodType GetNamep = 0;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1432,25 +1157,8 @@ const Tizen::Base::String & Thread::GetName(void) const {
 	result res = GetLastResult();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::GetName", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		WcharToChar(temp, ret.GetPointer());
-		log.length += sprintf(log.data + log.length, "`,`,%s", temp);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", res, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
-		printLog(&log, MSG_LOG);
+		WcharToChar(temp, ret.GetPointer());
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
@@ -1469,7 +1177,6 @@ result Thread::Join(void) {
 	static methodType Joinp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1496,23 +1203,6 @@ result Thread::Join(void) {
 
 	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Join", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,");
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,0`,%d`,%u`,`,0x%x`,%d`,%d",blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_START);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
@@ -1527,24 +1217,6 @@ result Thread::Join(void) {
 	//
 	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Join", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret,blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_END);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
@@ -1640,7 +1312,6 @@ result Thread::Start(void) {
 	static methodType Startp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1673,24 +1344,6 @@ result Thread::Start(void) {
 	ret = (this->*Startp)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Start", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_START);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
@@ -1707,7 +1360,6 @@ result Thread::Stop(void) {
 	static methodType Stopp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1740,24 +1392,6 @@ result Thread::Stop(void) {
 	ret = (this->*Stopp)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "Thread::Stop", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_STOP);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
@@ -1776,7 +1410,6 @@ result EventDrivenThread::Construct(long stackSize, ThreadPriority priority) {
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1809,25 +1442,6 @@ result EventDrivenThread::Construct(long stackSize, ThreadPriority priority) {
 	ret = (this->*Constructp)(stackSize, priority);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "EventDrivenThread::Construct",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,%ld, %d`,%ld",
-				stackSize, priority, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_EVENTDRIVEN, THREAD_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "xd", stackSize, priority);
@@ -1848,7 +1462,6 @@ result EventDrivenThread::Construct(const Tizen::Base::String &name, long stackS
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1885,26 +1498,8 @@ result EventDrivenThread::Construct(const Tizen::Base::String &name, long stackS
 	ret = (this->*Constructp)(name, stackSize, priority);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "EventDrivenThread::Construct",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		WcharToChar(temp, name.GetPointer());
-		log.length += sprintf(log.data + log.length, "`,%s, %ld, %d`,%ld", temp,
-				stackSize, priority, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_EVENTDRIVEN, THREAD_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
-		printLog(&log, MSG_LOG);
+		WcharToChar(temp, name.GetPointer());
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "sx", temp, stackSize);
@@ -1923,7 +1518,6 @@ result EventDrivenThread::Quit() {
 	static methodType Quitp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1956,24 +1550,6 @@ result EventDrivenThread::Quit() {
 	ret = (this->*Quitp)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_THREAD,
-				probeInfo.eventIndex, "EventThread::Quit", probeInfo.currentTime,
-				probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,PThreadID,OspThreadID,ThreadType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_EVENTDRIVEN, THREAD_API_STOP);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD, LC_THREAD, "", 0);
