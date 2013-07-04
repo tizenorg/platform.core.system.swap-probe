@@ -150,7 +150,6 @@ result File::Construct(const Tizen::Base::String& filePath,
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp_path[50];
@@ -179,36 +178,9 @@ result File::Construct(const Tizen::Base::String& filePath,
 	ret = (this->*Constructp)(filePath, openMode, createParentDirectories);
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Construct",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
+
 		 WcharToChar(temp_path,filePath.GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,%s",temp_path);
-		 WcharToChar(temp_mode,openMode.GetPointer());
-		 log.length += sprintf(log.data + log.length,", %s",temp_mode);
-		 log.length += sprintf(log.data + log.length,", %s`,%ld",(createParentDirectories == 0 ? "false" : "true"),ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
-//		 WcharToChar(temp,filePath.GetPointer());
-//		 WcharToChar(temp,this->GetName().GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OPEN,temp_path);
-		 //callstack
-
-//		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);	 
+		 WcharToChar(temp_mode,openMode.GetPointer()); 
 		 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE,
@@ -379,7 +351,6 @@ result File::Construct(const Tizen::Base::String& filePath,
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp_path[50];
@@ -408,35 +379,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	ret = (this->*Constructp)(filePath, openMode);
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Construct",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
 		 WcharToChar(temp_path,filePath.GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,%s",temp_path);
 		 WcharToChar(temp_mode,openMode.GetPointer());
-		 log.length += sprintf(log.data + log.length,", %s`,%ld",temp_mode,ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
-//		 WcharToChar(temp,filePath.GetPointer());
-//		 WcharToChar(temp,this->GetName().GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OPEN,temp_path);
-		 //callstack
-
-//		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "ss", temp_path, temp_mode);
@@ -531,7 +475,6 @@ result File::Construct(const Tizen::Base::String& filePath,
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -559,34 +502,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	ret = (this->*Constructp)(filePath, pOpenMode);
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Construct",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
-		 WcharToChar(temp,filePath.GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,%s",temp);
-		 log.length += sprintf(log.data + log.length,", %s`,%ld",pOpenMode,ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
-		 WcharToChar(temp,filePath.GetPointer());
-//		 WcharToChar(temp,this->GetName().GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OPEN,temp);
-		 //callstack
 
-//		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
+		 WcharToChar(temp,filePath.GetPointer());
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "sp", temp, pOpenMode);
@@ -609,7 +526,6 @@ result File::Construct(const Tizen::Base::String& filePath,
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -638,34 +554,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 	ret = (this->*Constructp)(filePath, pOpenMode, secretKey);
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Construct",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
 		 WcharToChar(temp,filePath.GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,%s",temp);
-		 log.length += sprintf(log.data + log.length,", %s",pOpenMode);
-		 log.length += sprintf(log.data + log.length,", 0x%x`,%ld",(unsigned int)&secretKey,ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
-		 WcharToChar(temp,filePath.GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OPEN,temp);
-		 //callstack
-
-//		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "sp", temp, pOpenMode);
@@ -684,7 +573,6 @@ result File::Flush(void) {
 	static methodType Flushp = 0;
 	result ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -712,31 +600,7 @@ result File::Flush(void) {
 	ret = (this->*Flushp)();
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Flush",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
-		 log.length += sprintf(log.data + log.length,"`,`,%ld",ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
 		 WcharToChar(temp,this->GetName().GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OTHER,temp);
-		 //callstack
-
-		 //		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "", 0);
@@ -755,7 +619,6 @@ Tizen::Base::String File::GetName(void) const{
 	static methodType GetNamep = 0;
 	Tizen::Base::String ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -784,31 +647,7 @@ Tizen::Base::String File::GetName(void) const{
 	result res = GetLastResult();
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::GetName",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
 		 WcharToChar(temp,ret.GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,`,%s",temp);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",res,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OTHER,temp);
-		 //callstack
-
-//		 if(E_SUCCESS != res || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "", 0);
@@ -827,7 +666,6 @@ result File::Read(Tizen::Base::String& buffer) {
 	static methodType Readp = 0;
 	result ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -857,32 +695,8 @@ result File::Read(Tizen::Base::String& buffer) {
 	ret = (this->*Readp)(buffer);
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Read",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
-		 log.length += sprintf(log.data + log.length,"`,0x%x`,%ld",(unsigned int)&buffer,ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
 		 WcharToChar(temp,this->GetName().GetPointer());
 		 nRead = buffer.GetLength();
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,%d`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,nRead,(unsigned int)this,FD_FILE,FD_API_READ,temp);
-		 //callstack
-
-		 //		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "x", (unsigned int)&buffer);
@@ -901,7 +715,6 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 	static methodType Readp = 0;
 	result ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -931,32 +744,8 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 	ret = (this->*Readp)(buffer);
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Read",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
-		 log.length += sprintf(log.data + log.length,"`,0x%x`,%ld",(unsigned int)&buffer,ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
 		 WcharToChar(temp,this->GetName().GetPointer());
 		 buffer.GetInt(nRead);
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,%d`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,nRead,(unsigned int)this,FD_FILE,FD_API_READ,temp);
-		 //callstack
-
-		 //		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "x", (unsigned int)&buffer);
@@ -975,7 +764,6 @@ int File::Read(void *buffer, int length) {
 	static methodType Readp = 0;
 	int ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -1006,36 +794,12 @@ int File::Read(void *buffer, int length) {
 	result res = GetLastResult();
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Read",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
-		 log.length += sprintf(log.data + log.length,"`,0x%x, %d`,%d",(unsigned int)buffer,length,ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
 		 WcharToChar(temp,this->GetName().GetPointer());
 		 nRead = Tell() - nRead;
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,%d`,0x%x`,%d`,%d`,?`,%s",res,blockresult,(unsigned int)CALLER_ADDRESS,nRead,(unsigned int)this,FD_FILE,FD_API_READ,temp);
-		 //callstack
-
-		 //		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "xd", (unsigned int)buffer, length);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END(ret, res, blockresult);
 		PACK_RESOURCE(nRead, (unsigned int)this, FD_FILE, FD_API_READ, 0, temp);
 		FLUSH_LOCAL_BUF();
 
@@ -1050,7 +814,6 @@ result File::Seek(FileSeekPosition position, long offset) {
 	static methodType Seekp = 0;
 	result ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -1081,44 +844,17 @@ result File::Seek(FileSeekPosition position, long offset) {
 	ret = (this->*Seekp)(position, offset);
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Seek",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
-		 if(FILESEEKPOSITION_BEGIN == position) {
+
+		 if(FILESEEKPOSITION_BEGIN == position)
 			 strcpy(temp_pos, "FILESEEKPOSITION_BEGIN");
-			 log.length += sprintf(log.data + log.length,"`,FILESEEKPOSITION_BEGIN");
-		 } else if(FILESEEKPOSITION_CURRENT == position) {
+		 else if(FILESEEKPOSITION_CURRENT == position)
 			 strcpy(temp_pos, "FILESEEKPOSITION_CURRENT");
-			 log.length += sprintf(log.data + log.length,"`,FILESEEKPOSITION_CURRENT");
-		 } else if(FILESEEKPOSITION_END == position) {
+		 else if(FILESEEKPOSITION_END == position)
 			 strcpy(temp_pos, "FILESEEKPOSITION_END");
-			 log.length += sprintf(log.data + log.length,"`,FILESEEKPOSITION_END");
-		 } else {
+		 else
 			 sprintf(temp_pos, "%d", position);
-			 log.length += sprintf(log.data + log.length,"`,%d",position);
-		 }
-		 log.length += sprintf(log.data + log.length,", %ld`,%ld",offset,ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
+
 		 WcharToChar(temp,this->GetName().GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OTHER,temp);
-		 //callstack
-
-		 //		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "sx", temp_pos, offset);
@@ -1137,7 +873,6 @@ int File::Tell(void) const {
 	static methodType Tellp = 0;
 	int ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -1167,35 +902,11 @@ int File::Tell(void) const {
 	result res = GetLastResult();
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Tell",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
-		 log.length += sprintf(log.data + log.length,"`,`,%d",ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
 		 WcharToChar(temp,this->GetName().GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",res,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OTHER,temp);
-		 //callstack
-
-		 //		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END(ret, res, blockresult);
 		PACK_RESOURCE(0, (unsigned int)this, FD_FILE, FD_API_OTHER, 0, temp);
 		FLUSH_LOCAL_BUF();
 
@@ -1210,7 +921,6 @@ result File::Truncate(int length) {
 	static methodType Truncatep = 0;
 	result ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -1238,31 +948,7 @@ result File::Truncate(int length) {
 	ret = (this->*Truncatep)(length);
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Truncate",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
-		 log.length += sprintf(log.data + log.length,"`,%d`,%ld",length,ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
 		 WcharToChar(temp,this->GetName().GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_OTHER,temp);
-		 //callstack
-
-		 //		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "d", length);
@@ -1281,7 +967,6 @@ result File::Write(const void *buffer, int length) {
 	static methodType Writep = 0;
 	result ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -1311,32 +996,8 @@ result File::Write(const void *buffer, int length) {
 	ret = (this->*Writep)(buffer, length);
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Write",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
-		 log.length += sprintf(log.data + log.length,"`,0x%x, %d`,%ld",(unsigned int)buffer,length,ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
 		 WcharToChar(temp,this->GetName().GetPointer());
 		 nWritten = Tell() - nWritten;
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,%d`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,nWritten,(unsigned int)this,FD_FILE,FD_API_WRITE,temp);
-		 //callstack
-
-		 //		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "xd", (unsigned int)buffer, length);
@@ -1355,7 +1016,6 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 	static methodType Writep = 0;
 	result ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
@@ -1385,32 +1045,8 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 	ret = (this->*Writep)(buffer);
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Write",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
-		 log.length += sprintf(log.data + log.length,"`,0x%x`,%ld",(unsigned int)&buffer,ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
 		 WcharToChar(temp,this->GetName().GetPointer());
 		 nWritten = Tell() - nWritten;
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,%d`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,nWritten,(unsigned int)this,FD_FILE,FD_API_WRITE,temp);
-		 //callstack
-
-		 //		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "x", (unsigned int)&buffer);
@@ -1429,7 +1065,6 @@ result File::Write(const Tizen::Base::String& buffer) {
 	static methodType Writep = 0;
 	result ret;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	char temp_buf[50];
@@ -1460,33 +1095,9 @@ result File::Write(const Tizen::Base::String& buffer) {
 	ret = (this->*Writep)(buffer);
 
 	if(postBlockBegin(blockresult)) {
-		 log.type = 0;
-		 log.length = 0;
-		 log.data[0] = '\0';
-		 log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-		 LC_RESOURCE, probeInfo.eventIndex, "File::Write",
-		 probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		 //Input,ret
 		 WcharToChar(temp_buf,buffer.GetPointer());
-		 log.length += sprintf(log.data + log.length,"`,%s`,%ld",temp_buf,ret);
-		 //PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		 //File::GetAttributes(this->GetName(),attr);
 		 WcharToChar(temp_path,this->GetName().GetPointer());
 		 nWritten = Tell() - nWritten;
-		 log.length += sprintf(log.data + log.length,"`,0`,%lu`,%d`,%u`,%d`,0x%x`,%d`,%d`,?`,%s",ret,blockresult,(unsigned int)CALLER_ADDRESS,nWritten,(unsigned int)this,FD_FILE,FD_API_WRITE,temp_path);
-		 //callstack
-
-		 //		 if(E_SUCCESS != ret || blockresult == 2) {
-//			 log.length += sprintf(log.data + log.length,
-//					 "`,\ncallstack_start`,`,callstack_end");
-//		 } else{
-			 log.length += sprintf(log.data + log.length,
-					 "`,\ncallstack_start`,");
-			 getBacktraceString(&log, 4096 - log.length - 17);
-			 log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		 }
-
-		 printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "s", temp_buf);
@@ -1503,7 +1114,6 @@ File::~File(void) {
 	typedef void (File::*methodType)();
 	static methodType FileDp = 0;
 	probeInfo_t	probeInfo;
-	log_t	log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1530,31 +1140,6 @@ File::~File(void) {
 	(this->*FileDp)();
 //
 	if(postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",
-				LC_RESOURCE, probeInfo.eventIndex, "File::~File",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length,"`,`,");
-		//PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
-		//File::GetAttributes(this->GetName(),attr);
-
-		log.length += sprintf(log.data + log.length,"`,0`,0`,%d`,%u`,0`,0x%x`,%d`,%d`,?`,",blockresult,(unsigned int)CALLER_ADDRESS,(unsigned int)this,FD_FILE,FD_API_CLOSE);
-		//callstack
-
-//		if(E_SUCCESS != ret || blockresult == 2) {
-//			log.length += sprintf(log.data + log.length,
-//					"`,\ncallstack_start`,`,callstack_end");
-//		} else{
-			log.length += sprintf(log.data + log.length,
-					"`,\ncallstack_start`,");
-			getBacktraceString(&log, 4096 - log.length - 17);
-			log.length += sprintf(log.data + log.length, "`,callstack_end");
-//		}
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, LC_RESOURCE, "", 0);
