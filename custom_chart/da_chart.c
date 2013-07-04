@@ -97,16 +97,7 @@ __thread pid_t cur_thread = -1;
 
 #define DECLARE_CHART_VARIABLE					\
 	da_handle __attribute__((unused)) ret = 0;	\
-	probeInfo_t probeInfo;						\
-	log_t log
-
-#define APPEND_LOG_CHART_RESULT(RESULT)									\
-	log.length += sprintf(log.data + log.length, "`,%d`,0x%p`,0`,2",	\
-			RESULT, CALLER_ADDRESS)
-
-#define APPEND_LOG_CHART(HANDLE, TYPE, TEXT, COLOR, VALUE)					\
-	log.length += sprintf(log.data + log.length, "`,`,%d`,%d`,%s`,%d`,%.3f",	\
-			HANDLE, TYPE, TEXT, COLOR, VALUE)
+	probeInfo_t probeInfo;
 
 // =====================================================================
 // timer thread routine for callback
@@ -138,12 +129,7 @@ void* _chart_timerThread(void* data)
 		{
 			value = cur->callback(cur->user_data);
 
-			INIT_LOG;
 			setProbePoint(&probeInfo);
-			log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d`,`,`,0x%p`,0`,2`,`,%d`,0`,`,0`,%.3f",
-					LC_CUSTOM, probeInfo.eventIndex, __func__, probeInfo.currentTime, probeInfo.pID,
-					probeInfo.tID, CALLER_ADDRESS, cur->series_handle, value);
-			printLog(&log, MSG_LOG);
 
 			PREPARE_LOCAL_BUF();
 			PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM, LC_CUSTOM, "", 0);
@@ -456,13 +442,7 @@ void da_mark(chart_color color, char* mark_text)
 	
 	probeBlockStart();
 	
-	INIT_LOG;
 	setProbePoint(&probeInfo);
-	APPEND_LOG_BASIC(LC_CUSTOM);
-	APPEND_LOG_INPUT("%s", "");
-	APPEND_LOG_CHART_RESULT(0);
-	APPEND_LOG_CHART(0, 0, mark_text, color, 0.0f);
-	printLog(&log, MSG_LOG);
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM, LC_CUSTOM, "dp", color, mark_text);
@@ -488,13 +468,7 @@ da_handle da_create_chart(char* chart_name)
 	probeBlockStart();
 	ret = ++(chm.chart_handle_index);
 
-	INIT_LOG;
 	setProbePoint(&probeInfo);
-	APPEND_LOG_BASIC(LC_CUSTOM);
-	APPEND_LOG_INPUT("%s", "");
-	APPEND_LOG_CHART_RESULT(ret);
-	APPEND_LOG_CHART(0, 0, chart_name, 0, 0.0f);
-	printLog(&log, MSG_LOG);
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM, LC_CUSTOM, "p", chart_name);
@@ -528,13 +502,7 @@ da_handle da_create_series(da_handle charthandle, char* seriesname,
 	ret = ++(chm.series_handle_index[charthandle]);
 	ret += (10 * charthandle);
 	
-	INIT_LOG;
 	setProbePoint(&probeInfo);
-	APPEND_LOG_BASIC(LC_CUSTOM);
-	APPEND_LOG_INPUT("%s", "");
-	APPEND_LOG_CHART_RESULT(ret);
-	APPEND_LOG_CHART(charthandle, type, seriesname, color, 0.0f);
-	printLog(&log, MSG_LOG);
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM, LC_CUSTOM, "dpdd",  charthandle, seriesname, type, color);
@@ -604,13 +572,7 @@ void da_log(da_handle series_handle, float uservalue)
 	
 	probeBlockStart();
 	
-	INIT_LOG;
 	setProbePoint(&probeInfo);
-	APPEND_LOG_BASIC(LC_CUSTOM);
-	APPEND_LOG_INPUT("%s", "");
-	APPEND_LOG_CHART_RESULT(0);
-	APPEND_LOG_CHART(series_handle, 0, "", 0, uservalue);
-	printLog(&log, MSG_LOG);
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM, LC_CUSTOM, "dw", series_handle, uservalue);
