@@ -42,13 +42,6 @@
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
 
-#define LIFECYCLE_PROBE_BLOCK(FUNCNAME)					\
-	setProbePoint(&probeInfo);							\
-	INIT_LOG;											\
-	APPEND_LOG_BASIC_NAME(LC_LIFECYCLE, FUNCNAME);		\
-	APPEND_LOG_COMMON_NONE(CALLER_ADDRESS);				\
-	printLog(&log, MSG_LOG)
-
 namespace Tizen { namespace App
 {
 
@@ -82,7 +75,7 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 {
 	typedef result (*methodType)(UiAppInstanceFactory pFactory, const IList* pArgs);
 	static methodType uiapp_executep;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	result ret;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp7ExecuteEPFPS1_vEPKNS_4Base10Collection5IListE,
@@ -94,16 +87,20 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 		get_map_address(CALLER_ADDRESS, &(gTraceInfo.exec_map.map_start),
 						&(gTraceInfo.exec_map.map_end));
 	}
-	LIFECYCLE_PROBE_BLOCK("INITIALIZING");
+	setProbePoint(&probeInfo);
 	probeBlockEnd();
 
 	ret = uiapp_executep(pUiAppFactory, pArguments);
+
+	probeBlockStart();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE,
 			  "pp", pUiAppFactory, pArguments);
 	PACK_COMMON_END(ret, 0, 0);
 	FLUSH_LOCAL_BUF();
+
+	probeBlockEnd();
 
 	return ret;
 }
@@ -112,12 +109,12 @@ void _AppImpl::OnTerminate(void* user_data)
 {
 	typedef void (*methodType)(void*);
 	static methodType appimpl_onterminatep;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppImpl11OnTerminateEPv, LIBOSP_APPFW, appimpl_onterminatep);
 
 	probeBlockStart();
-	LIFECYCLE_PROBE_BLOCK("TERMINATING");
+	setProbePoint(&probeInfo);
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "p", user_data);
@@ -148,14 +145,14 @@ void _AppInfo::SetAppState(AppState appState)
 {
 	typedef void (*methodType)(AppState appstate);
 	static methodType appinfo_setappstatep;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppInfo11SetAppStateENS0_8AppStateE, LIBOSP_APPFW, appinfo_setappstatep);
 
 	probeBlockStart();
 	if(appState == RUNNING)
 	{
-		LIFECYCLE_PROBE_BLOCK("RUNNING");
+		setProbePoint(&probeInfo);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "p", appState);
@@ -171,13 +168,13 @@ void _UiAppImpl::OnBackground(void)
 {
 	typedef void (_UiAppImpl::*methodType)(void);
 	static methodType uiappimpl_onbackgroundp;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnBackgroundEv, LIBOSP_UIFW, uiappimpl_onbackgroundp);
 
 	probeBlockStart();
 	SCREENSHOT_LOCK();
-	LIFECYCLE_PROBE_BLOCK("PAUSING");
+	setProbePoint(&probeInfo);
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "", 0);
@@ -193,12 +190,12 @@ void _UiAppImpl::OnForeground(void)
 {
 	typedef void (_UiAppImpl::*methodType)(void);
 	static methodType uiappimpl_onforegroundp;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnForegroundEv, LIBOSP_UIFW, uiappimpl_onforegroundp);
 
 	probeBlockStart();
-	LIFECYCLE_PROBE_BLOCK("RUNNING");
+	setProbePoint(&probeInfo);
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "", 0);
