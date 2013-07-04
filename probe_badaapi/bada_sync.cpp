@@ -113,7 +113,6 @@ result Mutex::Create(void) {
 	static methodType Createp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -147,24 +146,6 @@ result Mutex::Create(void) {
 	ret = (this->*Createp)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Mutex::Create",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -183,7 +164,6 @@ result Mutex::Create(const Tizen::Base::String& name) {
 	static methodType Createp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -218,25 +198,8 @@ result Mutex::Create(const Tizen::Base::String& name) {
 	ret = (this->*Createp)(name);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Mutex::Create",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		WcharToChar(temp, name.GetPointer());
-		log.length += sprintf(log.data + log.length, "`,%s`,%ld", temp, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
-		printLog(&log, MSG_LOG);
+		WcharToChar(temp, name.GetPointer());
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "s", temp);
@@ -255,7 +218,6 @@ result Mutex::Release(void) {
 	static methodType Releasep = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -289,24 +251,6 @@ result Mutex::Release(void) {
 	ret = (this->*Releasep)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Mutex::Release",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_RELEASE);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -325,7 +269,6 @@ result Mutex::Acquire(void) {
 	static methodType Acquirep = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -353,24 +296,6 @@ result Mutex::Acquire(void) {
 
 	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Mutex::Acquire",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,");
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,0`,%d`,%u`,0x%x`,%d`,%d",blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -385,24 +310,6 @@ result Mutex::Acquire(void) {
 	//
 	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Mutex::Acquire",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -421,7 +328,6 @@ result Mutex::TryToAcquire(void) {
 	static methodType TryToAcquirep = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -455,24 +361,6 @@ result Mutex::TryToAcquire(void) {
 	ret = (this->*TryToAcquirep)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Mutex::TryToAcquire",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_TRY_ACQUIRE);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -492,7 +380,6 @@ result Semaphore::Create(int count) {
 	static methodType Createp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -526,24 +413,6 @@ result Semaphore::Create(int count) {
 	ret = (this->*Createp)(count);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Semaphore::Create",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,%d`,%ld", count, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "d", count);
@@ -562,7 +431,6 @@ result Semaphore::Create(const Tizen::Base::String& name, int count) {
 	static methodType Createp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -597,25 +465,8 @@ result Semaphore::Create(const Tizen::Base::String& name, int count) {
 	ret = (this->*Createp)(name, count);
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Semaphore::Create",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		WcharToChar(temp, name.GetPointer());
-		log.length += sprintf(log.data + log.length, "`,%s,%d`,%ld", temp, count, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
 
-		printLog(&log, MSG_LOG);
+		WcharToChar(temp, name.GetPointer());
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "sd", temp, count);
@@ -635,7 +486,6 @@ result Semaphore::Acquire(long timeout) {
 	static methodType Acquirep = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -663,24 +513,6 @@ result Semaphore::Acquire(long timeout) {
 
 	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Semaphore::Acquire",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,%ld`,", timeout);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,0`,%d`,%u`,0x%x`,%d`,%d",blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_START);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "x", timeout);
@@ -695,24 +527,6 @@ result Semaphore::Acquire(long timeout) {
 	//
 	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Semaphore::Acquire",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,%ld`,%ld", timeout, ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_END);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "x", timeout);
@@ -731,7 +545,6 @@ result Semaphore::TryToAcquire(void) {
 	static methodType TryToAcquirep = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -765,24 +578,6 @@ result Semaphore::TryToAcquire(void) {
 	ret = (this->*TryToAcquirep)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Semaphore::TryToAcquire",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_TRY_ACQUIRE);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -801,7 +596,6 @@ result Semaphore::Release(void) {
 	static methodType Releasep = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -835,24 +629,6 @@ result Semaphore::Release(void) {
 	ret = (this->*Releasep)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Semaphore::Release",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_RELEASE);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -872,7 +648,6 @@ result Monitor::Construct(void) {
 	static methodType Constructp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -905,24 +680,6 @@ result Monitor::Construct(void) {
 	ret = (this->*Constructp)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Monitor::Construct",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NEW);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -941,7 +698,6 @@ result Monitor::Enter(void) {
 	static methodType Enterp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -969,24 +725,6 @@ result Monitor::Enter(void) {
 
 	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Monitor::Enter",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,");
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,0`,%d`,%u`,0x%x`,%d`,%d",blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_ACQUIRE_WAIT_START);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -1001,24 +739,6 @@ result Monitor::Enter(void) {
 	//
 	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Monitor::Enter",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_ACQUIRE_WAIT_END);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -1037,7 +757,6 @@ result Monitor::Exit(void) {
 	static methodType Exitp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1071,24 +790,6 @@ result Monitor::Exit(void) {
 	ret = (this->*Exitp)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Monitor::Exit",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_RELEASE);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -1107,7 +808,6 @@ result Monitor::Wait(void) {
 	static methodType Waitp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1135,24 +835,6 @@ result Monitor::Wait(void) {
 
 	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Monitor::Wait",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,");
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,0`,%d`,%u`,0x%x`,%d`,%d",blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_COND_WAIT_START);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -1167,24 +849,6 @@ result Monitor::Wait(void) {
 	//
 	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Monitor::Wait",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_COND_WAIT_END);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -1203,7 +867,6 @@ result Monitor::Notify(void) {
 	static methodType Notifyp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1237,24 +900,6 @@ result Monitor::Notify(void) {
 	ret = (this->*Notifyp)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Monitor::Notify",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NOTIFY);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
@@ -1273,7 +918,6 @@ result Monitor::NotifyAll(void) {
 	static methodType NotifyAllp = 0;
 	result ret;
 	probeInfo_t probeInfo;
-	log_t log;
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
@@ -1307,24 +951,6 @@ result Monitor::NotifyAll(void) {
 	ret = (this->*NotifyAllp)();
 	//
 	if (postBlockBegin(blockresult)) {
-		log.type = 0;
-		log.length = 0;
-		log.data[0] = '\0';
-		log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d", LC_SYNC,
-				probeInfo.eventIndex, "Monitor::NotifyAll",
-				probeInfo.currentTime, probeInfo.pID, probeInfo.tID);
-		//Input,ret
-		log.length += sprintf(log.data + log.length, "`,`,%ld", ret);
-		//PCAddr,errno,InternalCall,CallerPCAddr,SyncVal,SyncType,ApiType
-		log.length += sprintf(log.data + log.length,
-				"`,0`,%lu`,%d`,%u`,0x%x`,%d`,%d", ret, blockresult,
-				(unsigned int)CALLER_ADDRESS, (unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NOTIFY_ALL);
-		//callstack
-		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
-		getBacktraceString(&log, 4096 - log.length - 17);
-		log.length += sprintf(log.data + log.length, "`,callstack_end");
-
-		printLog(&log, MSG_LOG);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "", 0);
