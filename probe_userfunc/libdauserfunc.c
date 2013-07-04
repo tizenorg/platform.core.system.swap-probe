@@ -100,10 +100,12 @@ sample_info sample_info_array[SAMPLE_MAX_IN_INTERVAL];
 
 int __profile_frequency();
 
+/*
 static unsigned long long getElapsedTime(struct timeval eTime)
 {
 	return ((unsigned long long) eTime.tv_sec) * 1000000 + eTime.tv_usec;
 }
+*/
 
 static unsigned long getTime()
 {
@@ -220,8 +222,6 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 
 void *profil_log_func(void *data)
 {
-	log_t log;
-	
 	TRACE_STATE_SET(TS_PROFIL_THREAD);
 	
 	sigset_t profsigmask;
@@ -229,18 +229,10 @@ void *profil_log_func(void *data)
 	sigaddset(&profsigmask, SIGPROF);
 	pthread_sigmask(SIG_BLOCK, &profsigmask, NULL);
 
-	INIT_LOG;
-
 	while(profil_thread_on)
 	{
 		while(!IS_EMPTY_SAMPLE_ARRAY)
 		{
-			log.length = sprintf(log.data, "%d`,%d`,%lu`,%u`,\ncallstackstart`,", 
-					LC_SAMPLE, sample_seq++, sample_info_array[sample_read_index].time,
-					(unsigned int)sample_info_array[sample_read_index].pc);
-			profil_backtrace_symbols(&log, DA_LOG_MAX - log.length - 17, sample_read_index);				
-			log.length += sprintf(log.data + log.length, "`,callstack_end");	
-			printLog(&log, MSG_LOG);
 			sample_read_index = (sample_read_index + 1) % SAMPLE_MAX_IN_INTERVAL;
 		}
 		usleep(PROFIL_LOG_SENDING_INTERVAL_USEC);
@@ -253,7 +245,6 @@ void *profil_log_func(void *data)
 void __cyg_profile_func_enter(void *this, void *callsite)
 {
 	probeInfo_t probeInfo;
-	log_t		log;
 
 	sigset_t profsigmask, oldsigmask;
 	sigemptyset(&profsigmask);
@@ -287,12 +278,6 @@ void __cyg_profile_func_enter(void *this, void *callsite)
 		}
 
 		setProbePoint(&probeInfo);
-		INIT_LOG;
-		log.length = sprintf(log.data, "%d`,%d`,`,%lu`,%d`,%d`,`,`,%u`,`,0`,%u`,%lu`,%lu`,%d`,0",
-				LC_USERFUNC, probeInfo.eventIndex, probeInfo.currentTime, probeInfo.pID, probeInfo.tID, 
-				(unsigned int) this, (unsigned int) callsite, low_pc, high_pc, USERFUNC_ENTER);
-		APPEND_LOG_CALLSTACK();
-		printLog(&log, MSG_LOG);
 
 		gettimeofday(&(elapsed_time_array[elapsed_time_index].startTime), NULL);
 		elapsed_time_array[elapsed_time_index].self = this;
@@ -308,7 +293,6 @@ void __cyg_profile_func_enter(void *this, void *callsite)
 void __cyg_profile_func_exit(void *this, void *callsite)
 {
 	probeInfo_t probeInfo;
-	log_t log;
 
 	sigset_t profsigmask, oldsigmask;
 	sigemptyset(&profsigmask);
@@ -354,13 +338,6 @@ void __cyg_profile_func_exit(void *this, void *callsite)
 				&(elapsed_time_array[elapsed_time_index].resultTime));
 
 		setProbePoint(&probeInfo);
-		INIT_LOG;
-		log.length = sprintf(log.data, "%d`,%d`,`,%lu`,%d`,%d`,`,`,%u`,`,0`,%u`,%lu`,%lu`,%d`,%llu",
-				LC_USERFUNC, probeInfo.eventIndex, probeInfo.currentTime, probeInfo.pID, probeInfo.tID, 
-				(unsigned int) this, (unsigned int) callsite, low_pc, high_pc, USERFUNC_EXIT,
-				getElapsedTime(elapsed_time_array[elapsed_time_index].resultTime));
-		APPEND_LOG_CALLSTACK();
-		printLog(&log, MSG_LOG);
 	} while(0);
 	probeBlockEnd();
 
