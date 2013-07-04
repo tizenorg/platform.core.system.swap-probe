@@ -143,13 +143,6 @@ int getBacktraceString(log_t* log, int bufsize);
 		int olderrno, newerrno;			\
 		int __attribute__((unused)) ret
 
-// ========================== initialize variable ==========================
-
-#define INIT_LOG			\
-		log.type = 0;		\
-		log.length = 0;		\
-		log.data[0] = '\0'
-
 // ========================== get function pointer =========================
 
 #define GET_REAL_FUNCP(FUNCNAME, SONAME, FUNCTIONPOINTER)			\
@@ -225,75 +218,6 @@ int getBacktraceString(log_t* log, int bufsize);
 #define PRE_PROBEBLOCK() \
 		PRE_PROBEBLOCK_BEGIN(); \
 		PRE_PROBEBLOCK_END()
-
-// ========================== make log macro ================================
-#define APPEND_LOG_BASIC(LCTYPE)								\
-	log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",	\
-			LCTYPE, probeInfo.eventIndex, __func__,				\
-			probeInfo.currentTime, probeInfo.pID, probeInfo.tID)
-
-#define APPEND_LOG_BASIC_NAME(LCTYPE, APINAME)					\
-	log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",	\
-		LCTYPE, probeInfo.eventIndex, APINAME,					\
-		probeInfo.currentTime, probeInfo.pID, probeInfo.tID)
-
-#define APPEND_LOG_COMMON_NONE(CALLER)								\
-	log.length += sprintf(log.data + log.length, "`,`,`,`,`,`,%u",	\
-		(unsigned int)CALLER)
-
-#define APPEND_LOG_INPUT(INPUTFORMAT, ...)								\
-	log.length += sprintf(log.data + log.length,						\
-			DEFAULT_TOKEN INPUTFORMAT, __VA_ARGS__)
-
-#define APPEND_LOG_RESULT(RETTYPE, RETVALUE)							\
-	__appendTypeLog(&log, 4, NULL, RETTYPE, RETVALUE, VT_INT, 0,		\
-			VT_INT, newerrno, VT_INT, blockresult)
-
-#define APPEND_LOG_CALLER()												\
-	log.length += sprintf(log.data + log.length,						\
-			"`,%u",(unsigned int) CALLER_ADDRESS)
-
-#if defined(USING_BACKTRACE) || defined(PRINT_BACKTRACE_CALLSTACK)
-#define APPEND_LOG_CALLSTACK()											\
-	log.length += sprintf(log.data + log.length,						\
-			"`,\ncallstack_start`,");									\
-	getBacktraceString(&log, DA_LOG_MAX - log.length - 17);				\
-	log.length += sprintf(log.data + log.length, "`,callstack_end")
-#else
-#define APPEND_LOG_CALLSTACK()	APPEND_LOG_NULL_CALLSTACK()
-#endif
-
-#define APPEND_LOG_NULL_CALLSTACK()										\
-	log.length += sprintf(log.data + log.length,						\
-			"`,\ncallstack_start`,`,callstack_end")
-
-
-// =========================== post block macro ===========================
-
-#define POST_PROBEBLOCK_BEGIN(LCTYPE, RETTYPE, RETVALUE, INPUTFORMAT, ...)	\
-	newerrno = errno;														\
-	if(postBlockBegin(blockresult)) {										\
-		INIT_LOG;															\
-		APPEND_LOG_BASIC(LCTYPE);											\
-		APPEND_LOG_INPUT(INPUTFORMAT, __VA_ARGS__);							\
-		APPEND_LOG_RESULT(RETTYPE, RETVALUE);								\
-		APPEND_LOG_CALLER()
-
-#define POST_PROBEBLOCK_CALLSTACK()			\
-	do {									\
-		if(newerrno != 0) {					\
-			APPEND_LOG_CALLSTACK();			\
-		} else {							\
-			APPEND_LOG_NULL_CALLSTACK();	\
-		}									\
-	} while(0)
-
-
-#define POST_PROBEBLOCK_END() 						\
-		printLog(&log, MSG_LOG);					\
-		postBlockEnd();								\
-	}												\
-	errno = (newerrno != 0) ? newerrno : olderrno
 
 // ===================== unconditional probe block ========================
 
