@@ -91,11 +91,12 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 	result ret;
 	bool bOption;
 
-	PREPARE_LOCAL_BUF();
-
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp11RemoveFrameERKNS_2Ui8Controls5FrameE, LIBOSP_UIFW, uiapp_removeframep);
 
 	probeBlockStart();
+	
+	PREPARE_LOCAL_BUF();
+	
 	frame.IsInTouchMode();
 
 	if((bOption = isOptionEnabled(OPT_UI)))
@@ -117,8 +118,9 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 	if(bOption)
 	{
 		PACK_RETURN_END(ret);
-		FLUSH_LOCAL_BUF();
 	}
+	
+	FLUSH_LOCAL_BUF();
 		
 	probeBlockEnd();
 	
@@ -236,11 +238,12 @@ result Container::RemoveControl(const Control &control)
 	result ret;
 	bool bOption;
 
-	PREPARE_LOCAL_BUF();
-
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container13RemoveControlERKNS0_7ControlE, LIBOSP_UIFW, container_removecontrolp);
 
 	probeBlockStart();
+
+	PREPARE_LOCAL_BUF();
+
 	control.IsInTouchMode();
 
 	if((bOption = isOptionEnabled(OPT_UI)))
@@ -257,11 +260,14 @@ result Container::RemoveControl(const Control &control)
 	ret = (this->*container_removecontrolp)(control);
 
 	probeBlockStart();
+
 	if(bOption)
 	{
 		PACK_RETURN_END(ret);
-		FLUSH_LOCAL_BUF();
 	}
+	
+	FLUSH_LOCAL_BUF();	
+
 	probeBlockEnd();
 			
 	return ret;
@@ -275,11 +281,12 @@ result Container::RemoveControl(int index)
 	result ret;
 	bool bOption;
 
-	PREPARE_LOCAL_BUF();
-
 	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9Container13RemoveControlEi, LIBOSP_UIFW, container_removecontrolip);
 
 	probeBlockStart();
+
+	PREPARE_LOCAL_BUF();
+
 	Control* pcontrol = GetControl(index);
 	pcontrol->IsInTouchMode();
 
@@ -297,11 +304,14 @@ result Container::RemoveControl(int index)
 	ret = (this->*container_removecontrolip)(index);
 
 	probeBlockStart();
+
 	if(bOption)
 	{
 		PACK_RETURN_END(ret);
-		FLUSH_LOCAL_BUF();
 	}
+
+	FLUSH_LOCAL_BUF();
+
 	probeBlockEnd();
 	
 	return ret;
