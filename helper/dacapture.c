@@ -305,7 +305,7 @@ int captureScreen()
 	Evas* ev = NULL;
 	Evas_Object* img;
 	screenshot_data sdata;
-	probeInfo_t	probeInfo; log_t log;
+	probeInfo_t	probeInfo;
 	int ret = 0;
 
 	probeBlockStart();
@@ -341,11 +341,7 @@ int captureScreen()
 				//save file
 				if(evas_object_image_save(img, dstpath, NULL, "compress=5") != 0)
 				{
-					INIT_LOG;
-					APPEND_LOG_BASIC_NAME(LC_SNAPSHOT, "captureScreen");
-					APPEND_LOG_COMMON_NONE(0);
-					log.length += sprintf(log.data + log.length, "`,%s`,%d", dstpath, getOrientation());
-					printLog(&log, MSG_LOG);
+					// nothing
 				}
 				else
 				{

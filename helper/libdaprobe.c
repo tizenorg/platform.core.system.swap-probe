@@ -235,7 +235,7 @@ static void* recvThread(void* data)
 			if(recvlen > 0)
 			{
 				log.length = sprintf(log.data, "%ld", g_total_alloc_size);
-				printLog(&log, MSG_ALLOC);
+				// printLog(&log, MSG_ALLOC);
 			}
 			else
 			{
