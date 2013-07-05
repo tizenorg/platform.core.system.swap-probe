@@ -160,7 +160,7 @@ static char* captureScreenShotX(int* pwidth, int* pheight, screenshot_data* sdat
 	sdata->dpy = XOpenDisplay(NULL);
 	if(unlikely(sdata->dpy == NULL))
 	{
-		PRINTMSG("XOpenDisplay failed!\n");
+		// XOpenDisplay failed!
 		return NULL;
 	}
 
@@ -187,14 +187,14 @@ static char* captureScreenShotX(int* pwidth, int* pheight, screenshot_data* sdat
 			}
 			else
 			{
-				PRINTMSG("XShmGetImage failed !\n");
+				; // XShmGetImage failed !
 			}
 
 			XShmDetach (sdata->dpy, &sdata->x_shm_info);
 		}
 		else
 		{
-			PRINTMSG("XShmAttach failed !\n");
+			; // XShmAttach failed !
 		}
 
 		shmdt (sdata->x_shm_info.shmaddr);
@@ -204,7 +204,7 @@ static char* captureScreenShotX(int* pwidth, int* pheight, screenshot_data* sdat
 	}
 	else
 	{
-		PRINTMSG("XShmCreateImage failed!\n");
+		; // XShmCreateImage failed!
 	}
 
 	return NULL;
@@ -237,14 +237,14 @@ static Evas* create_canvas(int width, int height)
 	method = evas_render_method_lookup("buffer");
 	if(unlikely(method <= 0))
 	{
-		PRINTMSG("ERROR: evas was not compiled with 'buffer' engine!\n");
+		// ERROR: evas was not compiled with 'buffer' engine!
 		return NULL;
 	}
 
 	canvas = evas_new();
 	if(unlikely(canvas == NULL))
 	{
-		PRINTMSG("ERROR: could not instantiate new evas canvas.\n");
+		// ERROR: could not instantiate new evas canvas.
 		return NULL;
 	}
 
@@ -255,7 +255,7 @@ static Evas* create_canvas(int width, int height)
 	einfo = (Evas_Engine_Info_Buffer*)evas_engine_info_get(canvas);
 	if(unlikely(einfo == NULL))
 	{
-		PRINTMSG("ERROR: could not get evas engine info!\n");
+		// ERROR: could not get evas engine info!
 		evas_free(canvas);
 		return NULL;
 	}
@@ -264,7 +264,7 @@ static Evas* create_canvas(int width, int height)
 	pixels = malloc(width * height * sizeof(int));
 	if(unlikely(pixels == NULL))
 	{
-		PRINTMSG("ERROR: could not allocate canvas pixels!\n");
+		// ERROR: could not allocate canvas pixels!
 		evas_free(canvas);
 		return NULL;
 	}
@@ -288,7 +288,7 @@ static void destroy_canvas(Evas* canvas)
 	einfo = (Evas_Engine_Info_Buffer*)evas_engine_info_get(canvas);
 	if(unlikely(einfo == NULL))
 	{
-		PRINTMSG("ERROR: could not get evas engine info!\n");
+		; // ERROR: could not get evas engine info!
 	}
 	else
 	{
@@ -345,25 +345,25 @@ int captureScreen()
 				}
 				else
 				{
-					PRINTMSG("captureScreen : evas_object_image_save failed\n");
+					// captureScreen : evas_object_image_save failed
 					ret = -1;
 				}
 			}
 			else
 			{
-				PRINTMSG("captureScreen : evas_object_image_add failed\n");
+				// captureScreen : evas_object_image_add failed
 				ret = -1;
 			}
 		}
 		else
 		{
-			PRINTMSG("captureScreen : create canvas failed\n");
+			// captureScreen : create canvas failed
 			ret = -1;
 		}
 	}
 	else
 	{
-		PRINTMSG("captureScreen : captureScreenShotX failed\n");
+		// captureScreen : captureScreenShotX failed
 		ret = -1;
 	}
 

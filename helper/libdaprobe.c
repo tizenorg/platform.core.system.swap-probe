@@ -143,7 +143,6 @@ static int createSocket(void)
 			{
 				char buf[64];
 				sprintf(buf, "recv failed in socket creation with error(%d)\n", recvlen);
-				PRINTMSG(buf);
 			}
 			else	// closed by other peer
 			{
@@ -276,7 +275,6 @@ static void* recvThread(void* data)
 				{
 					char buf[64];
 					sprintf(buf, "recv unknown message(%d)\n", log.type);
-					PRINTMSG(buf);
 					continue;
 				}
 			}
@@ -290,13 +288,11 @@ static void* recvThread(void* data)
 			{
 				char buf[64];
 				sprintf(buf, "recv failed in recv thread with error(%d)\n", recvlen);
-				PRINTMSG(buf);
 				continue;
 			}
 		}
 		else	// unknown case
 		{
-			PRINTMSG("unknown fd in recvThread\n");
 			continue;
 		}
 	}
@@ -422,7 +418,7 @@ void __attribute__((destructor)) _fini_probe()
  * manipulate and print log functions
  ************************************************************************/
 
-bool printLog(log_t* log, int msgType)
+/*bool printLog(log_t* log, int msgType)
 {
 	int res;
 	if(unlikely(gTraceInfo.socket.daemonSock == -1))
@@ -439,7 +435,7 @@ bool printLog(log_t* log, int msgType)
 	TRACE_STATE_UNSET(TS_PRINT_LOG);
 
 	return true;
-}
+}*/
 
 bool printLogStr(const char* str, int msgType)
 {

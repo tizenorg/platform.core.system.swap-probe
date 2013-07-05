@@ -107,7 +107,7 @@ bool setProbePoint(probeInfo_t * iProbe);
 int update_heap_memory_size(bool isAdd, size_t size);
 
 bool printLogStr(const char* str, int msgType);
-bool printLog(log_t* log, int msgType);
+//bool printLog(log_t* log, int msgType);
 int __appendTypeLog(log_t* log, int nInput, char* token, ...);
 int getBacktraceString(log_t* log, int bufsize);
 

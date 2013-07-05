@@ -329,7 +329,7 @@ void __cyg_profile_func_exit(void *this, void *callsite)
 
 		if(this != elapsed_time_array[elapsed_time_index].self)
 		{ // this should never happen
-			PRINTMSG("function exit: enter/exit function matching failed!!\n");
+			;// function exit: enter/exit function matching failed!!
 		}
 
 		gettimeofday(&(elapsed_time_array[elapsed_time_index].endTime), NULL);
@@ -387,7 +387,7 @@ static inline void profil_count(void *pc)
 	do {
 		if(IS_FULL_SAMPLE_ARRAY)
 		{	// when this happens, array size should be increased
-			PRINTMSG("profil log: sample info array is full\n");
+			// profil log: sample info array is full
 			break;
 		}
 		sample_info_array[sample_write_index].time = getTime();

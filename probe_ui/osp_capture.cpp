@@ -201,7 +201,6 @@ int captureScreen()
 			char buf[128];
 			r = GetLastResult();
 			sprintf(buf, "bitmap is null (%p, %d, %s)\n", capbuf, (int)r, GetErrorMessage(r));
-			PRINTMSG(buf);
 			ret = -1;
 		}
 	}

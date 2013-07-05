@@ -48,7 +48,7 @@ int getExecutableMappingAddress()
 	}
 	else
 	{
-		PRINTMSG("failed to get address of OspMain\n");
+		// failed to get address of OspMain
 		ret = 0;
 	}
 	probeBlockEnd();

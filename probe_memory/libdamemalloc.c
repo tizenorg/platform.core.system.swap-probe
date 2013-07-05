@@ -116,7 +116,7 @@ void *temp_calloc(size_t nelem, size_t elsize)
 	int i;
 	if(nelem * elsize > EXTRA_MEM_SIZE)
 	{
-		PRINTMSG("temp_calloc size error\n");
+		// temp_calloc size error
 		abort();
 	}
 	for(i = 0; i < elsize * nelem; i++)
