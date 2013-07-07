@@ -20,6 +20,9 @@
 
 #include <sys/time.h>
 
+#include <sys/socket.h>
+#include "dahelper.h"
+
 #define MSG_PROBE_MEMORY 0x3001
 #define MSG_PROBE_UICONTROL 0x3002
 #define MSG_PROBE_UIEVENT 0x3003
@@ -296,23 +299,6 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 		BUF_PTR = pack_int32(BUF_PTR, api_type);	     \
 	} while (0)
 
-#define LOG_PATH "/tmp/trace.bin"
-#define OPEN_LOG()					\
-		do {					\
-			log_fd = creat(LOG_PATH, 0644);	\
-			if (log_fd == -1) {		\
-				exit(1);		\
-			}				\
-		} while (0)
-#define CLOSE_LOG()				\
-		do {				\
-			if (log_fd > 0) {	\
-				close(log_fd);	\
-			}			\
-		} while (0)
-
-
-
 #define LOCAL_BUF_SIZE 1024
 #define PREPARE_LOCAL_BUF()			\
 		char buf[LOCAL_BUF_SIZE];	\
@@ -323,7 +309,7 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 #define MSG_HDR_LEN 20
 #define FLUSH_LOCAL_BUF()						\
 		*(uint32_t *)(buf + MSG_LEN_OFFSET) = (p - buf) - MSG_HDR_LEN; \
-		write(log_fd, buf, p - buf);
+		send(gTraceInfo.socket.daemonSock, buf, (p - buf), 0);
 
 // =========================== post block macro ===========================
 
@@ -335,9 +321,6 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 		postBlockEnd();						\
 	}								\
 	errno = (newerrno != 0) ? newerrno : olderrno
-
-/* data */
-extern int log_fd;
 
 /* int main(int argc, char **argv) */
 /* { */

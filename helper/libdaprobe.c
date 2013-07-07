@@ -81,15 +81,6 @@ static void _configure(char* configstr)
 
 	sprintf(buf, "configure in probe : %s, %lx\n", configstr, gTraceInfo.optionflag);
 	PRINTMSG(buf);
-
-	if(isOptionEnabled(OPT_FUNC))
-	{
-		__profil(1);
-	}
-	else
-	{
-		__profil(0);
-	}
 }
 
 // create socket to daemon and connect
@@ -367,15 +358,10 @@ void __attribute__((constructor)) _init_probe()
 
 	gTraceInfo.init_complete = 1;
 	TRACE_STATE_UNSET(TS_INIT);
-
-	OPEN_LOG();
 }
 
 void __attribute__((destructor)) _fini_probe()
 {
-	if (log_fd > 0) {
-		close(log_fd);
-	}
 	int i;
 	TRACE_STATE_SET(TS_FINIT);
 
