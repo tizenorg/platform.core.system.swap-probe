@@ -35,6 +35,7 @@
 #include <stdbool.h>
 #include <memory.h>
 #include <errno.h>
+#include <malloc.h>
 #include "daprobe.h"
 #include "probeinfo.h"
 #include "dacollection.h"
@@ -42,24 +43,48 @@
 #include "da_memory.h"
 #include "binproto.h"
 
-#define EXTRA_MEM_SIZE		20
 //#define INTERNALFILTERING		(!isEnableInternalMalloc())
 #define INTERNALFILTERING		true
-static char extra_mem[EXTRA_MEM_SIZE];
 static enum DaOptions _sopt = OPT_ALLOC;
 
-void *malloc(size_t size)
+static void* (*saved_malloc_hook)(size_t, const void*);
+static void* malloc_hook(size_t, const void*);
+static void* (*saved_realloc_hook)(void*, size_t, const void*);
+static void* realloc_hook(void*, size_t, const void*);
+static void (*saved_free_hook)(void*, const void*);
+static void free_hook(void*, const void*);
+
+static void install_memory_hooks()
 {
-	static void*(*mallocp)(size_t size);
+  __malloc_hook = malloc_hook;
+  __realloc_hook = realloc_hook;
+  __free_hook = free_hook;
+}
+static void teardown_memory_hooks()
+{
+  __malloc_hook = saved_malloc_hook;
+  __realloc_hook = saved_realloc_hook;
+  __free_hook = saved_free_hook;
+}
+
+void memory_initialize_hook(void)
+{
+  saved_malloc_hook = __malloc_hook;
+  saved_realloc_hook = __realloc_hook;
+  saved_free_hook = __free_hook;
+  install_memory_hooks();
+}
+
+static void *malloc_hook(size_t size, const void* caller)
+{
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	GET_REAL_FUNC_RTLD_NEXT(malloc);
-
+	teardown_memory_hooks();
 	bfiltering = INTERNALFILTERING;
 	PRE_PROBEBLOCK();
 
-	pret = mallocp(size);
+	pret = malloc(size);
 
 	if(pret != NULL && getTraceState() == 0)
 	{
@@ -76,15 +101,16 @@ void *malloc(size_t size)
 	
 	POST_PACK_PROBEBLOCK_END();
 
+	install_memory_hooks();
+
 	return pret;
 }
 
-void free(void *ptr)
+static void free_hook(void *ptr, const void *caller)
 {
-	static void (*freep)(void *);
 	DECLARE_VARIABLE_STANDARD;
 
-	GET_REAL_FUNC_RTLD_NEXT(free);
+	teardown_memory_hooks();
 
 	bfiltering = INTERNALFILTERING;
 	PRE_PROBEBLOCK();
@@ -94,7 +120,7 @@ void free(void *ptr)
 		del_memory_hash(ptr);
 	}
 
-	freep(ptr);
+	free(ptr);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
@@ -105,76 +131,16 @@ void free(void *ptr)
 	FLUSH_LOCAL_BUF();
 	
 	POST_PACK_PROBEBLOCK_END();
+
+	install_memory_hooks();
 }
 
-/*	calloc's helper fucntion
- * 	- dlsym calls calloc - recursion occurs
- * 	- first dlsym calls temp_calloc
- *  */
-void *temp_calloc(size_t nelem, size_t elsize)
+static void* realloc_hook(void *memblock, size_t size, const void* caller)
 {
-	int i;
-	if(nelem * elsize > EXTRA_MEM_SIZE)
-	{
-		// temp_calloc size error
-		abort();
-	}
-	for(i = 0; i < elsize * nelem; i++)
-	{
-		extra_mem[i] = 0;
-	}
-	//memset(extra_mem,0,elsize*nelem);
-	return extra_mem;
-}
-
-void *calloc(size_t nelem, size_t elsize)
-{
-	static void *(*callocp)(size_t,size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	if(!callocp) {
-		probeBlockStart();
-		callocp = temp_calloc;	// make callocp is not null for dlsym
-		// dlsym use calloc function
-		callocp = dlsym(RTLD_NEXT, "calloc");
-		if(callocp == NULL || dlerror() != NULL) {
-			perror("calloc dlsym failed");
-			exit(0);
-		}
-		probeBlockEnd();
-	}
-
-	bfiltering = INTERNALFILTERING;
-	PRE_PROBEBLOCK();
-
-	pret = callocp(nelem, elsize);
-
-	if(pret != NULL && getTraceState() == 0)
-	{
-		add_memory_hash(pret, nelem * elsize);
-	}
-
-	POST_PACK_PROBEBLOCK_BEGIN();
-	
-	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "xx", nelem, elsize);
-	PACK_COMMON_END(pret, newerrno, blockresult);
-	PACK_MEMORY(elsize, MEMORY_API_ALLOC, pret);
-	FLUSH_LOCAL_BUF();
-	
-	POST_PACK_PROBEBLOCK_END();
-
-	return pret;
-}
-
-void *realloc(void *memblock, size_t size)
-{
-	static void *(*reallocp)(void *,size_t);
-	DECLARE_VARIABLE_STANDARD;
-	void *pret;
-
-	GET_REAL_FUNC_RTLD_NEXT(realloc);
+	teardown_memory_hooks();
 
 	bfiltering = INTERNALFILTERING;
 	PRE_PROBEBLOCK();
@@ -184,7 +150,7 @@ void *realloc(void *memblock, size_t size)
 		del_memory_hash(memblock);
 	}
 
-	pret = reallocp(memblock, size);
+	pret = realloc(memblock, size);
 
 	if(pret != NULL && getTraceState() == 0)
 	{
@@ -200,6 +166,46 @@ void *realloc(void *memblock, size_t size)
 	FLUSH_LOCAL_BUF();
 	
 	POST_PACK_PROBEBLOCK_END();
+
+	install_memory_hooks();
+
+	return pret;
+}
+
+static inline void adhoc_bzero(char *p, size_t size)
+{
+	int index;
+	for (index = 0; index != size; index++)
+		p[index] = '\0';
+}
+
+void *calloc(size_t nelem, size_t elsize)
+{
+	DECLARE_VARIABLE_STANDARD;
+	void *pret;
+	size_t size = nelem * elsize;
+	bfiltering = INTERNALFILTERING;
+	PRE_PROBEBLOCK();
+
+	pret = (size < elsize) ? NULL : malloc(size);
+	if (pret)
+			adhoc_bzero(pret, nelem * elsize);
+
+	if(pret != NULL && getTraceState() == 0)
+	{
+		add_memory_hash(pret, nelem * elsize);
+	}
+
+	POST_PACK_PROBEBLOCK_BEGIN();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "xx", nelem, elsize);
+	PACK_COMMON_END(pret, newerrno, blockresult);
+	PACK_MEMORY(nelem * elsize, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+
+	POST_PACK_PROBEBLOCK_END();
+
 
 	return pret;
 }
