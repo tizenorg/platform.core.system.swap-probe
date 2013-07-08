@@ -49,7 +49,13 @@
 #include "dahelper.h"
 #include "da_socket.h"
 
+
 #include "binproto.h"
+
+#define GCC_VERSION (__GNUC__ * 10000 \
+		+ __GNUC__MINOR__ * 100 \
+		+ __GNUC_PATCHLEVEL__ )
+
 
 static enum DaOptions _sopt = OPT_FILE;
 
@@ -879,10 +885,15 @@ int getpeername(int s, struct sockaddr *addr, socklen_t *len)
 	return ret;
 }
 
+#if GCC_VERSION < 40800
 int getnameinfo(const struct sockaddr *sa, socklen_t salen, char *host, socklen_t hostlen, char *serv, socklen_t servlen, unsigned int flags)
 {
 	static int (*getnameinfop)(const struct sockaddr *sa, socklen_t salen, char *host, socklen_t hostlen, char *serv, socklen_t servlen, unsigned int flags);
- 
+#else 
+int getnameinfo(const struct sockaddr *sa, socklen_t salen, char *host, size_t hostlen, char *serv, size_t servlen, int flags)
+{
+	static int (*getnameinfop)(const struct sockaddr *sa, socklen_t salen, char *host, size_t hostlen, char *serv, size_t servlen, int flags);
+#endif 
 	BEFORE_ORIGINAL(getnameinfo, LIBC);
  
 	ret = getnameinfop(sa, salen,host, hostlen, serv, servlen, flags);
