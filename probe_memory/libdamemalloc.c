@@ -94,7 +94,7 @@ static void *malloc_hook(size_t size, const void* caller)
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "x", size);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "xp", size, caller);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
@@ -125,7 +125,7 @@ static void free_hook(void *ptr, const void *caller)
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "p", ptr);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pp", ptr, caller);
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
@@ -160,7 +160,7 @@ static void* realloc_hook(void *memblock, size_t size, const void* caller)
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "px", memblock, size);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pxp", memblock, size, caller);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
