@@ -1,7 +1,7 @@
 /*
  *  DA probe
  *
- * Copyright (Thread::*c) 2000 - 2011 Samsung Electronics Co., Ltd. All rights reserved.
+ * Copyright (Thread::*c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
  * Contact:
  *
