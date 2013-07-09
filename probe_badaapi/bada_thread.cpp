@@ -9,6 +9,7 @@
  * Yeongtaik Byeon <yeongtaik.byeon@samsung.com>
  * Jaewon Lim <jaewon81.lim@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
+ * Anastasia Lyupa <a.lyupa@samsung.com>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
@@ -26,6 +27,7 @@
  *
  * Contributors:
  * - S-Core Co., Ltd
+ * - Samsung RnD Institute Russia
  *
  */
 
