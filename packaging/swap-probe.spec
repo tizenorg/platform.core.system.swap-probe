@@ -1,6 +1,6 @@
-Name:       dynamic-analysis-probe
-Summary:    dynamic analyzer probe library
-Version:    2.1.1
+Name:       swap-probe
+Summary:    SWAP probe library
+Version:    3.0
 Release:    1
 Group:      System/Libraries
 License:	GNU Lesser General Public License, Version 2.1
@@ -17,7 +17,7 @@ BuildRequires:  libXext-devel
 
 
 %description
-Dynamic analysis probe is for dynamic analyzer.
+SWAP probe is a part of data collection back-end for DA.
 This library will be installed in target.
 
 %prep
@@ -31,7 +31,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %make_install
 
 %files
-%manifest dynamic-analysis-probe.manifest
+%manifest swap-probe.manifest
 %defattr(-,root,root,-)
 %{_prefix}/lib/da_probe_osp.so
 %{_prefix}/lib/libdaprobe.so
