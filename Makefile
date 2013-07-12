@@ -67,7 +67,9 @@ TIZEN_TARGET = da_probe_tizen.so
 OSP_TARGET = da_probe_osp.so
 DUMMY_TARGET = libdaprobe.so
 
-FLAGS = -D_GNU_SOURCE -fPIC -shared -Wall -funwind-tables -fomit-frame-pointer -Xlinker --no-undefined
+COMMON_FLAGS = -D_GNU_SOURCE -fPIC -shared -Wall -funwind-tables -fomit-frame-pointer -Xlinker --no-undefined
+TIZEN_FLAGS = $(COMMON_FLAGS)
+OSP_FLAGS = $(COMMON_FLAGS) -DOSPAPP
 
 LIBDIR_COMMON = 
 LIBDIR_TIZEN = $(LIBDIR_COMMON) 
@@ -84,13 +86,13 @@ osp:	$(OSP_TARGET)
 dummy:	$(DUMMY_TARGET)
 
 $(TIZEN_TARGET): $(TIZEN_SRCS)
-	$(CC) $(INC_TIZEN) $(FLAGS) $(LIBDIR_TIZEN) -o $@ $(TIZEN_SRCS) $(TIZEN_LDFLAGS)
+	$(CC) $(INC_TIZEN) $(TIZEN_FLAGS) $(LIBDIR_TIZEN) -o $@ $(TIZEN_SRCS) $(TIZEN_LDFLAGS)
 
 $(OSP_TARGET): $(OSP_SRCS)
-	$(CC) $(INC_OSP) $(FLAGS) $(LIBDIR_OSP) -o $@ $(OSP_SRCS) $(OSP_LDFLAGS)
+	$(CC) $(INC_OSP) $(OSP_FLAGS) $(LIBDIR_OSP) -o $@ $(OSP_SRCS) $(OSP_LDFLAGS)
 
 $(DUMMY_TARGET): $(DUMMY_SRCS)
-	$(CC) $(INC_OSP) $(FLAGS) -o $@ $(DUMMY_SRCS) $(DUMMY_LDFLAGS)
+	$(CC) $(INC_OSP) $(COMMON_FLAGS) -o $@ $(DUMMY_SRCS) $(DUMMY_LDFLAGS)
 
 
 install:

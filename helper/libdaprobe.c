@@ -56,6 +56,7 @@
 #include "binproto.h"
 
 #define APP_INSTALL_PATH		"/opt/apps"
+#define OSP_APP_POSTFIX			".exe"
 #define UDS_NAME				"/tmp/da.socket"
 #define TIMERFD_INTERVAL		100000000		// 0.1 sec
 
@@ -172,9 +173,18 @@ static int determineCaller(char* tracestring)
 	substr = strstr(tracestring, APP_INSTALL_PATH);
 
 	if(substr == NULL)	// not user binary
+	{
 		return 1;
+	}
 	else				// user binary
+	{
+#ifdef OSPAPP
+		substr = strstr(tracestring, OSP_APP_POSTFIX);
+		if(substr == NULL)
+			return 1;
+#endif
 		return 0;
+	}
 }
 
 // return current thread id

@@ -30,10 +30,7 @@
  *
  */
 
-#include <FBaseResult.h>
-#include <FBaseString.h>
-#include <FBaseRtTypes.h>
-
+#include <FBase.h>
 #include <string.h>
 #include "daprobe.h"
 #include "probeinfo.h"
@@ -46,68 +43,6 @@ static enum DaOptions _sopt = OPT_THREAD;
 namespace Tizen {
 namespace Base {
 namespace Runtime {
-
-class Mutex {
-public:
-	result Create(void);
-	result Create(const Tizen::Base::String& name);
-	result Release(void);
-	result Acquire(void);
-	result TryToAcquire(void);
-
-//	Mutex(void);
-//	virtual ~Mutex(void);
-
-//private:
-//	Mutex(const Mutex& value);
-//	Mutex& opereator =(const Mutex& value);
-
-//private:
-//	friend class _MutexImpl;
-//	class _MutexImpl * __pMutexImpl;
-};
-
-class Semaphore {
-public:
-	result Create(int count = 1);
-	result Create(const Tizen::Base::String& name, int count = 1);
-	result Acquire(long timeout = INFINITE);
-	result TryToAcquire(void);
-	result Release(void);
-
-//	Semaphore(void);
-//	virtual ~Semaphore(void);
-
-//private:
-//	Semaphore(const Semaphore& rhs);
-//	Semaphore& operator =(const Semaphore& rhs);
-
-//private:
-//	friend class _SemaphoreImpl;
-//	class _SemaphoreImpl * __pSemaphoreImpl;
-};
-
-class Monitor {
-public:
-	result Construct(void);
-	result Enter(void);
-	result Exit(void);
-	result Wait(void);
-	result Notify(void);
-	result NotifyAll(void);
-
-//	Monitor(void);
-//	virtual ~Monitor(void);
-
-//private:
-//	Monitor(const Monitor& rhs);
-//	Monitor& operator =(const Monitor& rhs);
-
-//private:
-//	friend class _MonitorImpl;
-//	class _MonitorImpl * __pMonitorImpl;
-};
-
 
 result Mutex::Create(void) {
 	typedef result

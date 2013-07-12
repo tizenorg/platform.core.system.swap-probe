@@ -31,11 +31,7 @@
  *
  */
 
-//#include <FBase.h>
-#include <FBaseDataType.h>
-#include <FBaseRtIRunnable.h>
-#include <FBaseCol.h>
-//#include <FIo.h>
+#include <FBase.h>
 #include "daprobe.h"
 #include "probeinfo.h"
 #include "dahelper.h"
@@ -47,68 +43,6 @@ static enum DaOptions _sopt = OPT_THREAD;
 namespace Tizen {
 namespace Base {
 namespace Runtime {
-enum ThreadType {
-	THREAD_TYPE_WORKER = 0, /**< The worker thread mode */
-	THREAD_TYPE_EVENT_DRIVEN, /**< The event-driven thread mode */
-	THREAD_TYPE_MAIN
-// This enum value is for internal use only. Using this enum value can cause behavioral,
-// security-related, and consistency-related issues in the application.
-// The main thread mode
-};
-
-enum ThreadPriority {
-	THREAD_PRIORITY_HIGH, /**< The high priority*/
-	THREAD_PRIORITY_MID, /**< The mid priority*/
-	THREAD_PRIORITY_LOW,
-/**< The low priority*/
-};
-
-class Thread {
-public:
-	const static unsigned long DEFAULT_STACK_SIZE = 64 * 1024;
-
-	static result Sleep(long milliSeconds);
-	static Thread* GetCurrentThread(void);
-	static result Yield(void);
-	static result Exit(int exitCode=0x00);
-
-	result Construct(ThreadType threadType, long stackSize, // deprecated
-			ThreadPriority priority = THREAD_PRIORITY_MID);
-	result Construct(long stackSize = DEFAULT_STACK_SIZE,
-			ThreadPriority priority = THREAD_PRIORITY_MID);
-	result Construct(const Tizen::Base::String &name, long stackSize =
-			DEFAULT_STACK_SIZE, ThreadPriority priority = THREAD_PRIORITY_MID);
-	result Construct(const Tizen::Base::String &name, ThreadType threadType, // deprecated
-			long stackSize = DEFAULT_STACK_SIZE, ThreadPriority priority =
-					THREAD_PRIORITY_MID);
-	result Construct(IRunnable &target, long stackSize = DEFAULT_STACK_SIZE,
-			ThreadPriority priority = THREAD_PRIORITY_MID);
-	result Construct(const Tizen::Base::String &name, IRunnable &target,
-			long stackSize = DEFAULT_STACK_SIZE, ThreadPriority priority =
-					THREAD_PRIORITY_MID);
-	result GetExitCode(int &exitCode) const;
-	const Tizen::Base::String & GetName(void) const;
-	result Join(void);
-//	virtual bool OnStart(void); // deprecated
-//	virtual void OnStop(void); // deprecated
-//	virtual void OnUserEventReceivedN(RequestId requestId, // deprecated
-//			Tizen::Base::Collection::IList *pArgs);
-//	virtual Tizen::Base::Object * Run(void);
-//	virtual result SendUserEvent(RequestId requestId, // deprecated
-//			const Tizen::Base::Collection::IList *pArgs);
-	result Start(void);
-	result Stop(void); // deprecated
-
-//	Thread(void);
-//	virtual ~Thread(void);
-
-//private:
-//	Thread(const Thread& rhs);
-//	Thread& operator =(const Thread& rhs);
-//private:
-//	friend class _ThreadImpl;
-//	class _ThreadImpl* __pThreadImpl;
-};
 
 class _ThreadImpl {
 //public:
@@ -185,34 +119,6 @@ private:
 //	return ret;
 //}
 
-class EventDrivenThread : public Thread {
-public:
-	result Construct(long stackSize = DEFAULT_STACK_SIZE,
-			ThreadPriority priority = THREAD_PRIORITY_MID);
-	result Construct(const Tizen::Base::String &name, long stackSize =
-			DEFAULT_STACK_SIZE, ThreadPriority priority = THREAD_PRIORITY_MID);
-
-	virtual result Quit();
-//	virtual bool OnStart(void);
-//	virtual void OnStop(void);
-//	virtual void OnUserEventReceivedN(RequestId requestId,
-//			Tizen::Base::Collection::IList *pArgs);
-//	virtual Tizen::Base::Object * Run(void);
-//	virtual result SendUserEvent(RequestId requestId,
-//			const Tizen::Base::Collection::IList *pArgs);
-
-//	EventDrivenThread(void);
-//	virtual ~EventDrivenThread(void);
-
-//private:
-//	EventDrivenThread(const EventDrivenThread& rhs);
-//	EventDrivenThread& operator = (const EventDrivenThread& rhs);
-//private:
-//	class _EventDrivenThreadImpl* __pEventDrivenThreadImpl;
-//	friend class _EventDrivenThreadImpl;
-};
-
-
 void*
 _ThreadImpl::ThreadProc(void* params) {
 	typedef void*
@@ -265,9 +171,7 @@ _ThreadImpl::ThreadProc(void* params) {
 	}
 	// all probe should be reachable inside thread start_routine (user implemented Thread::Run)
 	probingEnd();
-	probeBlockEnd();
 	(ThreadProcp)(params);
-	probeBlockStart();
 	probingStart();
 	//
 	if (postBlockBegin(blockresult)) {

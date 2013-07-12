@@ -378,11 +378,6 @@ class MessageBox
 	MessageBox(void);
 };
 
-class NotificationFrame
-{
-	NotificationFrame(void);
-};
-
 class OptionMenu
 {
 	OptionMenu(void);
@@ -1096,20 +1091,6 @@ MessageBox::MessageBox(void)
 	probeBlockEnd();
 
 	(this->*messagebox_messageboxp)();
-}
-
-NotificationFrame::NotificationFrame(void)
-{
-	typedef void (NotificationFrame::*methodType)(void);
-	static methodType notificationframe_notificationframep;
-
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls17NotificationFrameC2Ev, LIBOSP_UIFW, notificationframe_notificationframep);
-
-	probeBlockStart();
-	add_object_hash_type((void*)this, "NotificationFrame");
-	probeBlockEnd();
-
-	(this->*notificationframe_notificationframep)();
 }
 
 OptionMenu::OptionMenu(void)

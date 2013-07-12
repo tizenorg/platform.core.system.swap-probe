@@ -30,120 +30,17 @@
  * 
  */
 
-#include <FBase.h>
-//#include <FIo.h>
+#include <FIo.h>
 #include "daprobe.h"
 #include "probeinfo.h"
 #include "dahelper.h"
 
 #include "binproto.h"
 
-using namespace Tizen::Base;
-
-enum FileSeekPosition {
-	FILESEEKPOSITION_BEGIN, /**<The beginning of the file */
-	FILESEEKPOSITION_CURRENT, /**<The current position of the file */
-	FILESEEKPOSITION_END
-/**<The end of the file */
-};
-
 static enum DaOptions _sopt = OPT_FILE;
 
 namespace Tizen {
 namespace Io {
-
-class FileAttributes {
-public:
-	virtual bool Equals(const Object& object) const;
-	FileAttributes(const FileAttributes &fileAttributes);
-	FileAttributes(void);
-	DateTime GetDateTime(void) const;
-	long long GetFileSize(void) const;
-	virtual int GetHashCode(void) const;
-	DateTime GetLastModifiedTime(void) const;
-	bool IsDirectory(void) const;
-	bool IsHidden(void) const;
-	bool IsReadOnly(void) const;
-	FileAttributes & operator=(const FileAttributes &fileAttributes);
-	virtual ~FileAttributes(void);
-};
-
-class File {
-public:
-
-/* deprecated apis
- *   
-	result Construct(const Tizen::Base::String& filePath,
-			const Tizen::Base::String& openMode, bool secureMode,
-			bool createParentDirectories);
-	result Construct(const Tizen::Base::String& filePath,
-			const Tizen::Base::String& openMode, bool secureMode,
-			const Tizen::Base::ByteBuffer& key, bool createParentDirectories);
-	
-	result Construct(const Tizen::Base::String& filePath,
-			const Tizen::Base::String& openMode,
-			const Tizen::Base::ByteBuffer& secretKey);
-*/	
-	result Construct(const Tizen::Base::String& filePath,
-			const Tizen::Base::String& openMode, bool createParentDirectories);
-	result Construct(const Tizen::Base::String& filePath,
-			const Tizen::Base::String& openMode);
-	
-	result Construct(const Tizen::Base::String& filePath,
-			const char *pOpenMode);
-	result Construct(const Tizen::Base::String& filePath,
-			const char *pOpenMode, const Tizen::Base::ByteBuffer &seretKey);
-
-	
-	/*
-	 File(void);
-	 */
-	result Flush(void);
-
-	Tizen::Base::String GetName(void) const;
-	result Read(Tizen::Base::String& buffer);
-	result Read(Tizen::Base::ByteBuffer& buffer);
-	int Read(void *buffer, int length);
-	result Seek(FileSeekPosition position, long offset);
-
-	int Tell(void) const;
-
-	result Truncate(int length);
-
-	result Write(const void *buffer, int length);
-
-	result Write(const Tizen::Base::ByteBuffer& buffer);
-	result Write(const Tizen::Base::String& buffer);
-	virtual ~File(void);
-	/*
-	 // static methods
-	 static result ConvertToSecureFile(const Tizen::Base::String &plainFilePath,
-	 const Tizen::Base::String &secureFilePath);
-	 static result ConvertToSecureFile(const Tizen::Base::String &plainFilePath,
-	 const Tizen::Base::String &secureFilePath,
-	 const Tizen::Base::ByteBuffer& key);
-	 static result Copy(const Tizen::Base::String& srcFilePath,
-	 const Tizen::Base::String& destFilePath, bool failIfExist);
-	 static result GetAttributes(const Tizen::Base::String& filePath,
-	 FileAttributes& attribute);
-	 static const Tizen::Base::String GetFileExtension(
-	 const Tizen::Base::String& filePath);
-
-	 static const Tizen::Base::String GetFileName(const Tizen::Base::String& filePath);
-
-	 const Tizen::Base::String& filePath);
-	 static bool IsEncrypted(const Tizen::Base::String &filePath);
-	 static bool IsFileExist(const Tizen::Base::String& filePath);
-	 static result Move(const Tizen::Base::String& oldFilePath,
-	 const Tizen::Base::String& newFilePath);
-	 static result Remove(const Tizen::Base::String& filePath);
-	 //	static Tizen::Base::Collection::IList *GetPathsToAppsN(void);
-	 */
-};
-
-//File::File(void) {
-//static (File::*Filep)();
-//}
 
 result File::Construct(const Tizen::Base::String& filePath,
 		const Tizen::Base::String& openMode, bool createParentDirectories) {
@@ -156,7 +53,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	bool bfiltering = true;
 	char temp_path[50];
 	char temp_mode[50];
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!Constructp) {
 		probeBlockStart();
@@ -180,15 +78,16 @@ result File::Construct(const Tizen::Base::String& filePath,
 	ret = (this->*Constructp)(filePath, openMode, createParentDirectories);
 
 	if(postBlockBegin(blockresult)) {
-
-		 WcharToChar(temp_path,filePath.GetPointer());
-		 WcharToChar(temp_mode,openMode.GetPointer()); 
+		File::GetAttributes(this->GetName(),attr);
+		size = attr.GetFileSize();
+		WcharToChar(temp_path,filePath.GetPointer());
+		WcharToChar(temp_mode,openMode.GetPointer()); 
 		 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_Tizen__Base__String__openMode__bool_createParentDirectories_,
 				  "ssd", temp_path, temp_mode, createParentDirectories);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OPEN, 0, temp_path);
+		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OPEN, size, temp_path);
 		FLUSH_LOCAL_BUF();
 		 
 		 postBlockEnd();
@@ -357,7 +256,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	bool bfiltering = true;
 	char temp_path[50];
 	char temp_mode[50];
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if(!Constructp) {
 		probeBlockStart();
@@ -381,15 +281,17 @@ result File::Construct(const Tizen::Base::String& filePath,
 	ret = (this->*Constructp)(filePath, openMode);
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp_path,filePath.GetPointer());
-		 WcharToChar(temp_mode,openMode.GetPointer());
+		WcharToChar(temp_path,filePath.GetPointer());
+		WcharToChar(temp_mode,openMode.GetPointer());
+		File::GetAttributes(this->GetName(),attr);
+		size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_Tizen__Base__String__openMode_,
 				  "ss", temp_path, temp_mode);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OPEN, 0, temp_path);
+		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OPEN, size, temp_path);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -482,7 +384,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if(!Constructp) {
 		probeBlockStart();
@@ -507,14 +410,16 @@ result File::Construct(const Tizen::Base::String& filePath,
 
 	if(postBlockBegin(blockresult)) {
 
-		 WcharToChar(temp,filePath.GetPointer());
+		WcharToChar(temp,filePath.GetPointer());
+		File::GetAttributes(this->GetName(),attr);
+		size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_char__pOpenMode_,
 				  "sp", temp, pOpenMode);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OPEN, 0, temp);
+		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OPEN, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -535,7 +440,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if(!Constructp) {
 		probeBlockStart();
@@ -560,14 +466,16 @@ result File::Construct(const Tizen::Base::String& filePath,
 	ret = (this->*Constructp)(filePath, pOpenMode, secretKey);
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp,filePath.GetPointer());
+		WcharToChar(temp,filePath.GetPointer());
+		File::GetAttributes(this->GetName(),attr);
+		size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_char__pOpenMode__const_Tizen__Base__ByteBuffer__secretKey_,
 				  "sp", temp, pOpenMode);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OPEN, 0, temp);
+		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OPEN, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -584,7 +492,8 @@ result File::Flush(void) {
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!Flushp) {
 		probeBlockStart();
@@ -608,14 +517,16 @@ result File::Flush(void) {
 	ret = (this->*Flushp)();
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp,this->GetName().GetPointer());
+		WcharToChar(temp,this->GetName().GetPointer());
+		File::GetAttributes(this->GetName(),attr);
+		size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Flush_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OTHER, 0, temp);
+		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OTHER, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -632,7 +543,8 @@ Tizen::Base::String File::GetName(void) const{
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!GetNamep) {
 		probeBlockStart();
@@ -657,14 +569,16 @@ Tizen::Base::String File::GetName(void) const{
 	result res = GetLastResult();
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp,ret.GetPointer());
+		WcharToChar(temp,ret.GetPointer());
+		File::GetAttributes(this->GetName(),attr);
+		size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_Tizen__Base__String_File__GetName_void__const,
 				  "", 0);
 		PACK_COMMON_END(ret.GetPointer(), res, blockresult);
-		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OTHER, 0, temp);
+		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OTHER, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -682,7 +596,8 @@ result File::Read(Tizen::Base::String& buffer) {
 	bool bfiltering = true;
 	char temp[50];
 	int nRead = 0;
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!Readp) {
 		probeBlockStart();
@@ -707,15 +622,17 @@ result File::Read(Tizen::Base::String& buffer) {
 	ret = (this->*Readp)(buffer);
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp,this->GetName().GetPointer());
-		 nRead = buffer.GetLength();
+		File::GetAttributes(this->GetName(),attr);
+		WcharToChar(temp,this->GetName().GetPointer());
+		size = attr.GetFileSize();
+		nRead = buffer.GetLength();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Read_Tizen__Base__String__buffer_,
 				  "x", (unsigned long)&buffer);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ, 0, temp);
+		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -733,7 +650,8 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 	bool bfiltering = true;
 	char temp[50];
 	int nRead = 0;
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!Readp) {
 		probeBlockStart();
@@ -758,15 +676,17 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 	ret = (this->*Readp)(buffer);
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp,this->GetName().GetPointer());
-		 buffer.GetInt(nRead);
+		File::GetAttributes(this->GetName(),attr);
+		WcharToChar(temp,this->GetName().GetPointer());
+		size = attr.GetFileSize();
+		buffer.GetInt(nRead);
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Read_Tizen__Base__ByteBuffer__buffer_,
 				  "x", (unsigned long)&buffer);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ, 0, temp);
+		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ, size, temp);
 		FLUSH_LOCAL_BUF();
 		
 		 postBlockEnd();
@@ -784,7 +704,8 @@ int File::Read(void *buffer, int length) {
 	bool bfiltering = true;
 	char temp[50];
 	int nRead = 0;
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!Readp) {
 		probeBlockStart();
@@ -810,15 +731,17 @@ int File::Read(void *buffer, int length) {
 	result res = GetLastResult();
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp,this->GetName().GetPointer());
-		 nRead = Tell() - nRead;
+		File::GetAttributes(this->GetName(),attr);
+		WcharToChar(temp,this->GetName().GetPointer());
+		size = attr.GetFileSize();
+		nRead = Tell() - nRead;
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_int_File__Read_void__buffer__int_length_,
 				  "xd", (unsigned long)buffer, length);
 		PACK_COMMON_END(ret, res, blockresult);
-		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ, 0, temp);
+		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -836,13 +759,14 @@ result File::Seek(FileSeekPosition position, long offset) {
 	bool bfiltering = true;
 	char temp[50];
 	char temp_pos[50];
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!Seekp) {
 		probeBlockStart();
 
 		void *tmpPtr = dlsym(RTLD_NEXT,
-				"_ZN5Tizen2Io4File4SeekE16FileSeekPositionl");
+				"_ZN5Tizen2Io4File4SeekENS0_16FileSeekPositionEl");
 
 		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Io::File::Seek");
@@ -870,16 +794,19 @@ result File::Seek(FileSeekPosition position, long offset) {
 		 else if(FILESEEKPOSITION_END == position)
 			 strcpy(temp_pos, "FILESEEKPOSITION_END");
 		 else
-			 sprintf(temp_pos, "%d", position);
 
-		 WcharToChar(temp,this->GetName().GetPointer());
+		sprintf(temp_pos, "%d", position);
+
+		WcharToChar(temp,this->GetName().GetPointer());
+		File::GetAttributes(this->GetName(),attr);
+		size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Seek_FileSeekPosition_position__long_offset_,
 				  "sx", temp_pos, offset);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OTHER, 0, temp);
+		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OTHER, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -896,7 +823,8 @@ int File::Tell(void) const {
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!Tellp) {
 		probeBlockStart();
@@ -922,14 +850,16 @@ int File::Tell(void) const {
 	result res = GetLastResult();
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp,this->GetName().GetPointer());
+		WcharToChar(temp,this->GetName().GetPointer());
+		File::GetAttributes(this->GetName(),attr);
+		size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_int_File__Tell_void__const,
 				  "", 0);
 		PACK_COMMON_END(ret, res, blockresult);
-		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OTHER, 0, temp);
+		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OTHER, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -946,7 +876,8 @@ result File::Truncate(int length) {
 	int blockresult;
 	bool bfiltering = true;
 	char temp[50];
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!Truncatep) {
 		probeBlockStart();
@@ -970,14 +901,16 @@ result File::Truncate(int length) {
 	ret = (this->*Truncatep)(length);
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp,this->GetName().GetPointer());
+		WcharToChar(temp,this->GetName().GetPointer());
+		File::GetAttributes(this->GetName(),attr);
+		size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Truncate_int_length_,
 				  "d", length);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OTHER, 0, temp);
+		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_OTHER, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -995,7 +928,8 @@ result File::Write(const void *buffer, int length) {
 	bool bfiltering = true;
 	char temp[50];
 	int nWritten = 0;
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!Writep) {
 		probeBlockStart();
@@ -1020,15 +954,17 @@ result File::Write(const void *buffer, int length) {
 	ret = (this->*Writep)(buffer, length);
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp,this->GetName().GetPointer());
-		 nWritten = Tell() - nWritten;
+		File::GetAttributes(this->GetName(),attr);
+		WcharToChar(temp,this->GetName().GetPointer());
+		size = attr.GetFileSize();
+		nWritten = Tell() - nWritten;
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Write_const_void__buffer__int_length_,
 				  "xd", (unsigned long)buffer, length);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE, 0, temp);
+		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -1046,7 +982,8 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 	bool bfiltering = true;
 	char temp[50];
 	int nWritten = 0;
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!Writep) {
 		probeBlockStart();
@@ -1071,15 +1008,17 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 	ret = (this->*Writep)(buffer);
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp,this->GetName().GetPointer());
-		 nWritten = Tell() - nWritten;
+		File::GetAttributes(this->GetName(),attr);
+		WcharToChar(temp,this->GetName().GetPointer());
+		size = attr.GetFileSize();
+		nWritten = Tell() - nWritten;
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Write_const_Tizen__Base__ByteBuffer__buffer_,
 				  "x", (unsigned long)&buffer);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE, 0, temp);
+		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -1098,7 +1037,8 @@ result File::Write(const Tizen::Base::String& buffer) {
 	char temp_buf[50];
 	char temp_path[50];
 	int nWritten = 0;
-	//FileAttributes attr;
+	FileAttributes attr;
+	long long size;
 
 	if (!Writep) {
 		probeBlockStart();
@@ -1123,16 +1063,19 @@ result File::Write(const Tizen::Base::String& buffer) {
 	ret = (this->*Writep)(buffer);
 
 	if(postBlockBegin(blockresult)) {
-		 WcharToChar(temp_buf,buffer.GetPointer());
-		 WcharToChar(temp_path,this->GetName().GetPointer());
-		 nWritten = Tell() - nWritten;
+		WcharToChar(temp_buf,buffer.GetPointer());
+		WcharToChar(temp_path,this->GetName().GetPointer());
+		nWritten = Tell() - nWritten;
+		File::GetAttributes(this->GetName(),attr);
+		size = attr.GetFileSize();
+		nWritten = Tell() - nWritten;
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Write_const_Tizen__Base__String__buffer_,
 				  "s", temp_buf);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE, 0, temp_path);
+		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE, size, temp_path);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -1147,6 +1090,8 @@ File::~File(void) {
 	int blockresult;
 	bool bfiltering = true;
 	void *tmpPtr;
+	FileAttributes attr;
+	long long size;
 
 	if (!FileDp) {
 		probeBlockStart();
@@ -1164,6 +1109,8 @@ File::~File(void) {
 
 	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
+		File::GetAttributes(this->GetName(),attr);
+		size = attr.GetFileSize();
 		preBlockEnd();
 	}
 //
