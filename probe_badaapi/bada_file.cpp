@@ -1123,7 +1123,7 @@ File::~File(void) {
 				  API_ID_File___File_void_,
 				  "", 0);
 		PACK_COMMON_END(0, 0, blockresult);
-		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_CLOSE, 0, "");
+		PACK_RESOURCE(0, (unsigned long)this, FD_FILE, FD_API_CLOSE, size, "");
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
