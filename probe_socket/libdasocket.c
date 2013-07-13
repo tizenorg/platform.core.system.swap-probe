@@ -61,7 +61,8 @@ int socket(int domain, int type, int protocol)
 
 	ret = socketp(domain, type, protocol);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, ret, FD_API_OPEN, "ddd", domain, type, protocol);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_socket,
+				 ret, 0, ret, FD_API_OPEN, "ddd", domain, type, protocol);
 
 	return ret;
 }
@@ -75,8 +76,9 @@ int socketpair(int domain, int type, int protocol,int socket_vector[2])
 	ret = socketpairp(domain, type, protocol, socket_vector);
 
 	//TODO: socket pair: socket_vector[0]/socket_vector[1], FD - ?
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket_vector[0], FD_API_OPEN, 
-			"dddp", domain, type, protocol, socket_vector);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_socketpair,
+				 ret, 0, socket_vector[0], FD_API_OPEN, 
+				 "dddp", domain, type, protocol, socket_vector);
 	
 	return ret;
 }
@@ -89,7 +91,8 @@ int shutdown(int socket, int how)
 	
 	ret = shutdownp(socket, how);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket, FD_API_OTHER, "dd", socket, how);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_shutdown,
+				 ret, 0, socket, FD_API_OTHER, "dd", socket, how);
 
 	return ret;
 }
@@ -102,8 +105,9 @@ int bind(int socket, const struct sockaddr *address, socklen_t address_len)
 	
 	ret = bindp(socket, address, address_len);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket, FD_API_MANAGE,
-			"dpd", socket, address, address_len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_bind,
+				 ret, 0, socket, FD_API_MANAGE,
+				 "dpd", socket, address, address_len);
 	
 	return ret;
 }
@@ -116,7 +120,8 @@ int listen(int socket, int backlog)
 	
 	ret = listenp(socket, backlog);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket, FD_API_MANAGE, "dd", socket, backlog);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_listen,
+				 ret, 0, socket, FD_API_MANAGE, "dd", socket, backlog);
 
 	return ret;
 }
@@ -129,8 +134,9 @@ int accept(int socket, struct sockaddr *address, socklen_t *address_len)
 	
 	ret = acceptp(socket, address, address_len);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket, FD_API_MANAGE,
-			"dpp", socket, address, address_len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_accept,
+				 ret, 0, socket, FD_API_MANAGE,
+				 "dpp", socket, address, address_len);
 	
 	return ret;
 }
@@ -143,8 +149,9 @@ int accept4(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags)
 	
 	ret = accept4p(sockfd, addr, addrlen, flags);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, sockfd, FD_API_MANAGE,
-			"dppd", sockfd, addr, addrlen, flags);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_accept4,
+				 ret, 0, sockfd, FD_API_MANAGE,
+				 "dppd", sockfd, addr, addrlen, flags);
 
 	return ret;
 }
@@ -157,8 +164,9 @@ int connect(int socket, const struct sockaddr *address, socklen_t address_len)
 	
 	ret = connectp(socket, address, address_len);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, address_len, socket, FD_API_MANAGE,
-			"dpd", socket, address, address_len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_connect,
+				 ret, address_len, socket, FD_API_MANAGE,
+				 "dpd", socket, address, address_len);
 	
 	return ret;
 }
@@ -171,8 +179,9 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 	
 	ret = selectp(nfds, readfds, writefds,exceptfds, timeout);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, nfds, FD_API_MANAGE,
-			"dpppp", nfds, readfds, writefds, exceptfds, timeout);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_select,
+				 ret, 0, nfds, FD_API_MANAGE,
+				 "dpppp", nfds, readfds, writefds, exceptfds, timeout);
 			
 	return ret;
 }
@@ -185,8 +194,9 @@ int pselect(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, const
 	
 	ret = pselectp(nfds, readfds, writefds,exceptfds, ntimeout, sigmask);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, nfds, FD_API_MANAGE,	"dppppp",
-			nfds, readfds, writefds, exceptfds, ntimeout, sigmask);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_pselect,
+				 ret, 0, nfds, FD_API_MANAGE,	"dppppp",
+				 nfds, readfds, writefds, exceptfds, ntimeout, sigmask);
  
 	return ret;
 }
@@ -200,8 +210,9 @@ ssize_t send(int socket, const void *message, size_t length, int flags)
 	
 	sret = sendp(socket, message, length, flags);
 
-	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_SEND,
-			"dpxd", socket, message, length, flags);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_send,
+				 sret, sret, socket, FD_API_SEND,
+				 "dpxd", socket, message, length, flags);
 	
 	return sret;
 }
@@ -215,8 +226,9 @@ ssize_t sendmsg(int socket, const struct msghdr *message, int flags)
 	
 	sret = sendmsgp(socket, message, flags);
 
- 	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_SEND,
-			"dpd", socket, message, flags);
+ 	AFTER_PACK_ORIGINAL_SOCK(API_ID_sendmsg,
+				 sret, sret, socket, FD_API_SEND,
+				 "dpd", socket, message, flags);
  
 	return sret;
 }
@@ -230,8 +242,9 @@ ssize_t sendto(int socket, const void *message, size_t length, int flags,const s
 	
 	sret = sendtop(socket, message, length, flags, dest_addr, dest_len);
 
-	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_SEND,
-			"dpxdpd", socket, message, length, flags, dest_addr, dest_len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_sendto,
+				 sret, sret, socket, FD_API_SEND,
+				 "dpxdpd", socket, message, length, flags, dest_addr, dest_len);
  
 	return sret;
 }
@@ -245,8 +258,9 @@ ssize_t recv(int socket, void *buffer, size_t length, int flags)
 
 	sret = recvp(socket, buffer, length, flags);
 
-	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_RECEIVE,
-			"dpxd", socket, buffer, length, flags);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_recv,
+				 sret, sret, socket, FD_API_RECEIVE,
+				 "dpxd", socket, buffer, length, flags);
 	
 	return sret;
 }
@@ -260,8 +274,9 @@ ssize_t recvfrom(int socket, void *buffer, size_t length, int flags, struct sock
 	
 	sret = recvfromp(socket, buffer, length, flags, address, address_len);
 
-	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_RECEIVE,
-			"dpxdpp", socket, buffer, length, flags, address, address_len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_recvfrom,
+				 sret, sret, socket, FD_API_RECEIVE,
+				 "dpxdpp", socket, buffer, length, flags, address, address_len);
 
 	return sret;
 }
@@ -275,8 +290,9 @@ ssize_t recvmsg(int socket, struct msghdr *message, int flags)
 	
 	sret = recvmsgp(socket, message, flags);
 
-	AFTER_PACK_ORIGINAL_SOCK(sret, sret, socket, FD_API_RECEIVE,
-			"dpd", socket, message, flags);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_recvmsg,
+				 sret, sret, socket, FD_API_RECEIVE,
+				 "dpd", socket, message, flags);
 
 	return sret;
 }
@@ -290,7 +306,8 @@ uint32_t htonl(uint32_t hostlong)
 	
 	uret = htonlp(hostlong);
 
- 	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", hostlong); 
+ 	AFTER_PACK_ORIGINAL_SOCK(API_ID_htonl,
+				 uret, 0, 0, FD_API_OTHER, "d", hostlong); 
  
 	return uret;
 }
@@ -304,7 +321,8 @@ uint16_t htons(uint16_t hostshort)
 	
 	uret = htonsp(hostshort);
 
-	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", hostshort); 
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_htons,
+				 uret, 0, 0, FD_API_OTHER, "d", hostshort); 
  
 	return uret;
 }
@@ -318,7 +336,8 @@ uint32_t ntohl(uint32_t netlong)
 	
 	uret = ntohlp(netlong);
 
-	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", netlong); 
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_ntohl,
+				 uret, 0, 0, FD_API_OTHER, "d", netlong); 
 
 	return uret;
 }
@@ -332,7 +351,8 @@ uint16_t ntohs(uint16_t netshort)
 	
 	uret = ntohsp(netshort);
 
-	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", netshort); 
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_ntohs,
+				 uret, 0, 0, FD_API_OTHER, "d", netshort); 
 
 	return uret;
 }
@@ -445,7 +465,8 @@ uint32_t le32toh(uint32_t little_endian_32bits)
 
 	uret = le32tohp(little_endian_32bits);
 
-	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "d", little_endian_32bits); 
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_le32toh,
+				 uret, 0, 0, FD_API_OTHER, "d", little_endian_32bits); 
 
 	return uret;
 }
@@ -501,7 +522,8 @@ uint64_t le64toh(uint64_t little_endian_64bits)
 
 	uret = le64tohp(little_endian_64bits);
 
-	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "x", little_endian_64bits); 
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_le64toh,
+				 uret, 0, 0, FD_API_OTHER, "x", little_endian_64bits); 
 
 	return uret;
 }
@@ -516,7 +538,8 @@ int inet_aton(const char *cp, struct in_addr *inp)
 	
 	ret = inet_atonp(cp,inp);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pp", cp, inp);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_inet_aton,
+				 ret, 0, 0, FD_API_OTHER, "pp", cp, inp);
  
 	return ret;
 }
@@ -530,7 +553,8 @@ in_addr_t inet_addr(const char *cp)
  
 	iret = inet_addrp(cp);
 
-	AFTER_PACK_ORIGINAL_SOCK(iret, 0, 0, FD_API_OTHER, "p", cp);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_inet_addr,
+				 iret, 0, 0, FD_API_OTHER, "p", cp);
 	
 	return iret;
 }
@@ -544,7 +568,8 @@ in_addr_t inet_network(const char *cp)
  
 	iret = inet_networkp(cp);
 
-	AFTER_PACK_ORIGINAL_SOCK(iret, 0, 0, FD_API_OTHER, "p", cp);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_inet_network,
+				 iret, 0, 0, FD_API_OTHER, "p", cp);
 
 	return iret;
 }
@@ -558,7 +583,7 @@ char *inet_ntoa(struct in_addr in)
  
 	sret = inet_ntoap(in);
 
- 	AFTER_PACK_ORIGINAL_SOCK(sret, 0, 0, FD_API_OTHER, "d", in.s_addr);
+ 	AFTER_PACK_ORIGINAL_SOCK(API_ID_inet_ntoa, sret, 0, 0, FD_API_OTHER, "d", in.s_addr);
  
 	return sret;
 }
@@ -573,8 +598,9 @@ struct in_addr inet_makeaddr(int net, int host)
  
 	iret = inet_makeaddrp(net,host);
 
-	AFTER_PACK_ORIGINAL_SOCK(iret.s_addr, 0, 0, FD_API_OTHER,
-			"dd", net, host);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_inet_makeaddr,
+				 iret.s_addr, 0, 0, FD_API_OTHER,
+				 "dd", net, host);
 
 	return iret;
 }
@@ -589,7 +615,8 @@ in_addr_t inet_lnaof(struct in_addr in)
  
 	iret = inet_lnaofp(in);
 
-	AFTER_PACK_ORIGINAL_SOCK(iret, 0, 0, FD_API_OTHER, "d", in.s_addr);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_inet_lnaof,
+				 iret, 0, 0, FD_API_OTHER, "d", in.s_addr);
  
 	return iret;
 }
@@ -603,7 +630,8 @@ in_addr_t inet_netof(struct in_addr in)
  
 	iret = inet_netofp(in);
 
-	AFTER_PACK_ORIGINAL_SOCK(iret, 0, 0, FD_API_OTHER, "d", in.s_addr);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_inet_netof,
+				 iret, 0, 0, FD_API_OTHER, "d", in.s_addr);
  
 	return iret;
 }
@@ -617,8 +645,9 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size)
  
 	cret = inet_ntopp(af, src, dst, size);
 
-	AFTER_PACK_ORIGINAL_SOCK(cret, size, 0, FD_API_OTHER,
-			"dppd", af, src, dst, size);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_inet_ntop,
+				 cret, size, 0, FD_API_OTHER,
+				 "dppd", af, src, dst, size);
  
 	return cret;
 }
@@ -631,7 +660,8 @@ int inet_pton(int af, const char *src, void *dst)
  
 	ret = inet_ptonp(af, src, dst);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "%dpp", af, src, dst);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_inet_pton,
+				 ret, 0, 0, FD_API_OTHER, "%dpp", af, src, dst);
  
 	return ret;
 }
@@ -644,7 +674,8 @@ int getaddrinfo(const char *node, const char *service, const struct addrinfo *hi
  
 	ret = getaddrinfop(node, service, hints, res);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pppp", node, service, hints, res);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getaddrinfo,
+				 ret, 0, 0, FD_API_OTHER, "pppp", node, service, hints, res);
 
 	return ret;
 }
@@ -657,7 +688,8 @@ void freeaddrinfo(struct addrinfo *res)
  
  	freeaddrinfop(res);
 
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "p", res);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_freeaddrinfo,
+				 0, 0, 0, FD_API_OTHER, "p", res);
 }
 
 const char *gai_strerror(int errcode)
@@ -669,7 +701,8 @@ const char *gai_strerror(int errcode)
  
 	cret = gai_strerrorp(errcode);
 
-	AFTER_PACK_ORIGINAL_SOCK(cret, 0, 0, FD_API_OTHER, "d", errcode);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gai_strerror,
+				 cret, 0, 0, FD_API_OTHER, "d", errcode);
 
 	return cret;
 }
@@ -682,7 +715,8 @@ int gai_suspend(const struct gaicb* const list[], int nitems, const struct times
  
 	ret = gai_suspendp(list,nitems,timeout);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pdp", list, nitems, timeout);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gai_suspend,
+				 ret, 0, 0, FD_API_OTHER, "pdp", list, nitems, timeout);
 
 	return ret;
 }
@@ -695,7 +729,8 @@ int gai_error(struct gaicb *req)
  
 	ret = gai_errorp(req);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "p", req);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gai_error,
+				 ret, 0, 0, FD_API_OTHER, "p", req);
  
 	return ret;
 }
@@ -708,7 +743,8 @@ int gai_cancel(struct gaicb *req)
  
 	ret = gai_cancelp(req);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "p", req);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gai_cancel,
+				 ret, 0, 0, FD_API_OTHER, "p", req);
  
 	return ret;
 }
@@ -721,7 +757,8 @@ int getaddrinfo_a(int mode, struct gaicb *list[], int nitems, struct sigevent *s
  
 	ret = getaddrinfo_ap(mode, list,nitems, sevp);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "dpdp", mode, list, nitems, sevp);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getaddrinfo_a,
+				 ret, 0, 0, FD_API_OTHER, "dpdp", mode, list, nitems, sevp);
  
 	return ret;
 }
@@ -735,8 +772,9 @@ int getsockopt(int socket, int level, int option_name, void *option_value, sockl
  
 	ret = getsockoptp(socket, level, option_name, option_value, option_len);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, socket, FD_API_OPTION, "dddpp",
-			socket, level, option_name, option_value, option_len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getsockopt,
+				 ret, 0, socket, FD_API_OPTION, "dddpp",
+				 socket, level, option_name, option_value, option_len);
  
 	return ret;
 }
@@ -749,8 +787,9 @@ int setsockopt(int socket, int level, int option_name, const void *option_value,
 
 	ret = setsockoptp(socket, level, option_name, option_value, option_len);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, option_len, socket, FD_API_OPTION, "dddpd",
-			socket, level, option_name, option_value, option_len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_setsockopt,
+				 ret, option_len, socket, FD_API_OPTION, "dddpd",
+				 socket, level, option_name, option_value, option_len);
 
 	return ret;
 }
@@ -764,7 +803,8 @@ int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen )
  
 	ret = getsocknamep(sockfd, addr, addrlen);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, sockfd, FD_API_OTHER, "dpp", sockfd, addr, addrlen);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getsockname,
+				 ret, 0, sockfd, FD_API_OTHER, "dpp", sockfd, addr, addrlen);
 
 	return ret;
 }
@@ -777,7 +817,8 @@ int getdomainname(char *name, size_t len)
  
 	ret = getdomainnamep(name, len);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, len, 0, FD_API_OTHER, "px", name, len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getdomainname,
+				 ret, len, 0, FD_API_OTHER, "px", name, len);
 
 	return ret;
 }
@@ -790,7 +831,8 @@ int setdomainname(const char *name, size_t len)
  
 	ret = setdomainnamep(name, len);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, len, 0, FD_API_OTHER, "px", name, len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_setdomainname,
+				 ret, len, 0, FD_API_OTHER, "px", name, len);
  
 	return ret;
 }
@@ -803,7 +845,8 @@ int gethostname(char *name, size_t len)
  
 	ret = gethostnamep(name, len);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, len, 0, FD_API_OTHER, "px", name, len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gethostname,
+				 ret, len, 0, FD_API_OTHER, "px", name, len);
  
 	return ret;
 }
@@ -816,7 +859,8 @@ int sethostname(const char *name, size_t len)
  
 	ret = sethostnamep(name, len);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, len, 0, FD_API_OTHER, "px", name, len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_sethostname,
+				 ret, len, 0, FD_API_OTHER, "px", name, len);
  
 	return ret;
 }
@@ -829,7 +873,8 @@ int getpeername(int s, struct sockaddr *addr, socklen_t *len)
  
 	ret = getpeernamep(s, addr, len);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, s, FD_API_OTHER, "dpp", s, addr, len);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getpeername,
+				 ret, 0, s, FD_API_OTHER, "dpp", s, addr, len);
  
 	return ret;
 }
@@ -842,8 +887,9 @@ int getnameinfo(const struct sockaddr *sa, socklen_t salen, char *host, socklen_
  
 	ret = getnameinfop(sa, salen,host, hostlen, serv, servlen, flags);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pdpdpdd",
-			sa, salen, host, hostlen, serv, servlen, flags);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getnameinfo,
+				 ret, 0, 0, FD_API_OTHER, "pdpdpdd",
+				 sa, salen, host, hostlen, serv, servlen, flags);
  
 	return ret;
 }
@@ -857,7 +903,8 @@ struct hostent *gethostbyname(const char *name)
 
 	pret = gethostbynamep(name);
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "p", name);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gethostbyname,
+				 pret, 0, 0, FD_API_OTHER, "p", name);
 
 	return pret;
 }
@@ -871,7 +918,8 @@ struct hostent *gethostbyaddr(const void *addr, socklen_t len, int type)
  
 	pret = gethostbyaddrp(addr, len, type);
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "pdd", addr, len, type);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gethostbyaddr,
+				 pret, 0, 0, FD_API_OTHER, "pdd", addr, len, type);
 
 	return pret;
 }
@@ -884,7 +932,8 @@ void sethostent(int stayopen)
  
 	sethostentp(stayopen);
 
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "d", stayopen);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_sethostent,
+				 0, 0, 0, FD_API_OTHER, "d", stayopen);
 }
 
 void endhostent(void)
@@ -895,7 +944,8 @@ void endhostent(void)
 
 	endhostentp();
 
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "", 0);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_endhostent,
+				 0, 0, 0, FD_API_OTHER, "", 0);
 }
 
 void herror(const char *s)
@@ -906,7 +956,8 @@ void herror(const char *s)
  
 	herrorp(s);
 
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "p", s);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_herror,
+				 0, 0, 0, FD_API_OTHER, "p", s);
 }
 
 const char *hstrerror(int err)
@@ -918,7 +969,8 @@ const char *hstrerror(int err)
  
 	cret = hstrerrorp(err);
 
-	AFTER_PACK_ORIGINAL_SOCK(cret, 0, 0, FD_API_OTHER, "d", err);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_hstrerror,
+				 cret, 0, 0, FD_API_OTHER, "d", err);
 
 	return cret;
 }
@@ -932,7 +984,8 @@ struct hostent *gethostent(void)
  
 	pret = gethostentp();
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "", 0);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gethostent,
+				 pret, 0, 0, FD_API_OTHER, "", 0);
 
 	return pret;
 }
@@ -946,7 +999,8 @@ struct hostent *gethostbyname2(const char *name, int af)
  
 	pret = gethostbyname2p(name, af);
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "pd", name, af);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gethostbyname2,
+				 pret, 0, 0, FD_API_OTHER, "pd", name, af);
 
 	return pret;
 }
@@ -959,8 +1013,9 @@ int gethostent_r(struct hostent *rret, char *buf, size_t buflen, struct hostent 
 	
 	ret = gethostent_rp(rret, buf, buflen, result, h_errnop);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ppxpp",
-			rret, buf, buflen, result, h_errnop);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gethostent_r,
+				 ret, 0, 0, FD_API_OTHER, "ppxpp",
+				 rret, buf, buflen, result, h_errnop);
 
 	return ret;
 }
@@ -973,8 +1028,9 @@ int gethostbyaddr_r(const void *addr, socklen_t len, int type, struct hostent *r
 
 	ret = gethostbyaddr_rp(addr, len, type, rret, buf, buflen, result, h_errnop);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pddppxpp",
-			addr, len, type, rret, buf, buflen, result, h_errnop);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gethostbyaddr_r,
+				 ret, 0, 0, FD_API_OTHER, "pddppxpp",
+				 addr, len, type, rret, buf, buflen, result, h_errnop);
 
 	return ret;
 }
@@ -987,8 +1043,9 @@ int gethostbyname_r(const char *name, struct hostent *rret, char *buf, size_t bu
 
 	ret = gethostbyname_rp(name, rret, buf, buflen, result, h_errnop);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pppxpp",
-			name, rret, buf, buflen, result, h_errnop);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gethostbyname_r,
+				 ret, 0, 0, FD_API_OTHER, "pppxpp",
+				 name, rret, buf, buflen, result, h_errnop);
 
 	return ret;
 }
@@ -1001,8 +1058,9 @@ int gethostbyname2_r(const char *name, int af, struct hostent *rret, char *buf, 
  
 	ret = gethostbyname2_rp(name, af, rret, buf, buflen, result, h_errnop);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pdppxpp",
-			name, af, rret, buf, buflen, result, h_errnop);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_gethostbyname2_r,
+				 ret, 0, 0, FD_API_OTHER, "pdppxpp",
+				 name, af, rret, buf, buflen, result, h_errnop);
  
 	return ret;
 }
@@ -1016,7 +1074,8 @@ struct servent *getservbyname(const char *name, const char *proto)
  
 	pret = getservbynamep(name, proto);
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "pp", name, proto);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getservbyname,
+				 pret, 0, 0, FD_API_OTHER, "pp", name, proto);
 
 	return pret;
 }
@@ -1029,7 +1088,8 @@ void setservent(int stayopen)
  
 	setserventp(stayopen);
 
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "d", stayopen);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_setservent,
+				 0, 0, 0, FD_API_OTHER, "d", stayopen);
 }
 
 void endservent(void)
@@ -1040,7 +1100,8 @@ void endservent(void)
  
 	endserventp();
 
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "", 0);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_endservent,
+				 0, 0, 0, FD_API_OTHER, "", 0);
 }
 
 struct servent *getservent(void)
@@ -1052,7 +1113,8 @@ struct servent *getservent(void)
  
 	pret = getserventp();
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "", 0);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getservent,
+				 pret, 0, 0, FD_API_OTHER, "", 0);
 
 	return pret;
 }
@@ -1066,7 +1128,8 @@ struct servent *getservbyport(int port, const char *proto)
  
 	pret = getservbyportp(port, proto);
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "dp", port, proto);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getservbyport,
+				 pret, 0, 0, FD_API_OTHER, "dp", port, proto);
 
 	return pret;
 }
@@ -1079,8 +1142,9 @@ int getservent_r(struct servent *result_buf, char *buf, size_t buflen, struct se
  
 	ret = getservent_rp(result_buf, buf, buflen, result);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ppxp",
-			result_buf, buf, buflen, result);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getservent_r,
+				 ret, 0, 0, FD_API_OTHER, "ppxp",
+				 result_buf, buf, buflen, result);
 
 	return ret;
 }
@@ -1093,8 +1157,9 @@ int getservbyname_r(const char *name, const char *proto, struct servent *result_
  
 	ret = getservbyname_rp(name, proto, result_buf, buf, buflen, result);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ppppxp",
-			name, proto, result_buf, buf, buflen, result);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getservbyname_r,
+				 ret, 0, 0, FD_API_OTHER, "ppppxp",
+				 name, proto, result_buf, buf, buflen, result);
 
 	return ret;
 }
@@ -1107,8 +1172,9 @@ int getservbyport_r(int port, const char *proto, struct servent *result_buf, cha
  
 	ret = getservbyport_rp(port, proto, result_buf, buf, buflen, result);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "dpppxp",
-			port, proto, result_buf, buf, buflen, result);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getservbyport_r,
+				 ret, 0, 0, FD_API_OTHER, "dpppxp",
+				 port, proto, result_buf, buf, buflen, result);
 
 	return ret;
 }
@@ -1122,7 +1188,8 @@ struct netent* getnetent(void)
  
 	pret = getnetentp();
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "", 0);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getnetent,
+				 pret, 0, 0, FD_API_OTHER, "", 0);
 
 	return pret;
 }
@@ -1136,7 +1203,8 @@ struct netent *getnetbyname(const char *name)
  
 	pret = getnetbynamep(name);
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "p", name);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getnetbyname,
+				 pret, 0, 0, FD_API_OTHER, "p", name);
  
 	return pret;
 }
@@ -1150,7 +1218,8 @@ struct netent *getnetbyaddr(uint32_t net, int type)
 
 	pret = getnetbyaddrp(net, type);
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "dd", net, type);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getnetbyaddr,
+				 pret, 0, 0, FD_API_OTHER, "dd", net, type);
 
 	return pret;
 }
@@ -1163,7 +1232,8 @@ void setnetent(int stayopen)
  
 	setnetentp(stayopen);
 
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "d", stayopen);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_setnetent,
+				 0, 0, 0, FD_API_OTHER, "d", stayopen);
 }
 
 void endnetent(void)
@@ -1174,7 +1244,8 @@ void endnetent(void)
  
 	endnetentp();
 
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "", 0);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_endnetent,
+				 0, 0, 0, FD_API_OTHER, "", 0);
 }
 
 int getnetent_r(struct netent *result_buf, char *buf, size_t buflen, struct netent **result, int *h_errnop)
@@ -1185,8 +1256,9 @@ int getnetent_r(struct netent *result_buf, char *buf, size_t buflen, struct nete
  
 	ret = getnetent_rp(result_buf, buf, buflen, result, h_errnop);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ppxpp",
-			result_buf, buf, buflen, result, h_errnop);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getnetent_r,
+				 ret, 0, 0, FD_API_OTHER, "ppxpp",
+				 result_buf, buf, buflen, result, h_errnop);
 
 	return ret;
 }
@@ -1199,8 +1271,9 @@ int getnetbyname_r(const char *name, struct netent *result_buf, char *buf, size_
  
 	ret = getnetbyname_rp(name,result_buf, buf, buflen, result, h_errnop);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pppxpp",
-			name, result_buf, buf, buflen, result, h_errnop);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getnetbyname_r,
+				 ret, 0, 0, FD_API_OTHER, "pppxpp",
+				 name, result_buf, buf, buflen, result, h_errnop);
 
 	return ret;
 }
@@ -1213,8 +1286,9 @@ int getnetbyaddr_r(uint32_t net, int type, struct netent *result_buf, char *buf,
  
 	ret = getnetbyaddr_rp(net, type, result_buf, buf, buflen, result, h_errnop);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ddppxpp",
-			net, type, result_buf, buf, buflen, result, h_errnop);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getnetbyaddr_r,
+				 ret, 0, 0, FD_API_OTHER, "ddppxpp",
+				 net, type, result_buf, buf, buflen, result, h_errnop);
 
 	return ret;
 }
@@ -1228,7 +1302,8 @@ struct protoent *getprotoent(void)
  
 	pret = getprotoentp();
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "", 0);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getprotoent,
+				 pret, 0, 0, FD_API_OTHER, "", 0);
  
 	return pret;
 }
@@ -1242,7 +1317,8 @@ struct protoent *getprotobyname(const char *name)
  
 	pret = getprotobynamep(name);
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "p", name);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getprotobyname,
+				 pret, 0, 0, FD_API_OTHER, "p", name);
 
 	return pret;
 }
@@ -1256,7 +1332,8 @@ struct protoent *getprotobynumber(int proto)
  
 	pret = getprotobynumberp(proto);
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "d", proto);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getprotobynumber,
+				 pret, 0, 0, FD_API_OTHER, "d", proto);
 
 	return pret;
 }
@@ -1269,7 +1346,8 @@ void setprotoent(int stayopen)
  
 	setprotoentp(stayopen);
 
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "d", stayopen);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_setprotoent,
+				 0, 0, 0, FD_API_OTHER, "d", stayopen);
 }
 
 void endprotoent(void)
@@ -1280,7 +1358,8 @@ void endprotoent(void)
  
 	endprotoentp();
  
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "", 0);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_endprotoent,
+				 0, 0, 0, FD_API_OTHER, "", 0);
 }
 
 int getprotoent_r(struct protoent *result_buf, char *buf, size_t buflen, struct protoent **result)
@@ -1291,8 +1370,9 @@ int getprotoent_r(struct protoent *result_buf, char *buf, size_t buflen, struct 
  
 	ret = getprotoent_rp(result_buf, buf, buflen, result);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "ppxp",
-			result_buf, buf, buflen, result);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getprotoent_r,
+				 ret, 0, 0, FD_API_OTHER, "ppxp",
+				 result_buf, buf, buflen, result);
 
 	return ret;
 }
@@ -1305,8 +1385,9 @@ int getprotobyname_r(const char *name, struct protoent *result_buf, char *buf, s
  
 	ret = getprotobyname_rp(name, result_buf, buf, buflen, result);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "pppxp",
-			name, result_buf, buf, buflen, result);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getprotobyname_r,
+				 ret, 0, 0, FD_API_OTHER, "pppxp",
+				 name, result_buf, buf, buflen, result);
 
 	return ret;
 }
@@ -1319,8 +1400,9 @@ int getprotobynumber_r(int proto, struct protoent *result_buf, char *buf, size_t
  
 	ret = getprotobynumber_rp(proto, result_buf, buf, buflen, result);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "dppxp",
-			proto, result_buf, buf, buflen, result);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getprotobynumber_r,
+				 ret, 0, 0, FD_API_OTHER, "dppxp",
+				 proto, result_buf, buf, buflen, result);
 
 	return ret;
 }
@@ -1334,7 +1416,8 @@ unsigned int if_nametoindex (__const char *__ifname)
  
 	uret = if_nametoindexp(__ifname);
 
-	AFTER_PACK_ORIGINAL_SOCK(uret, 0, 0, FD_API_OTHER, "p", __ifname);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_if_nametoindex,
+				 uret, 0, 0, FD_API_OTHER, "p", __ifname);
  
 	return uret;
 }
@@ -1348,8 +1431,9 @@ char *if_indextoname (unsigned int __ifindex, char *__ifname)
  
 	cret = if_indextonamep(__ifindex, __ifname);
 
-	AFTER_PACK_ORIGINAL_SOCK(cret, 0, 0, FD_API_OTHER,
-			"dp", __ifindex, __ifname);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_if_indextoname,
+				 cret, 0, 0, FD_API_OTHER,
+				 "dp", __ifindex, __ifname);
 
 	return cret;
 }
@@ -1363,7 +1447,8 @@ struct if_nameindex *if_nameindex (void)
 	
 	pret = if_nameindexp();
 
-	AFTER_PACK_ORIGINAL_SOCK(pret, 0, 0, FD_API_OTHER, "", 0);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_if_nameindex,
+				 pret, 0, 0, FD_API_OTHER, "", 0);
 
 	return pret;
 }
@@ -1376,7 +1461,8 @@ void if_freenameindex (struct if_nameindex *__ptr)
  
 	if_freenameindexp(__ptr);
  
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "p", __ptr);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_if_freenameindex,
+				 0, 0, 0, FD_API_OTHER, "p", __ptr);
 }
 
 int getifaddrs(struct ifaddrs **ifap)
@@ -1387,7 +1473,8 @@ int getifaddrs(struct ifaddrs **ifap)
  
 	ret = getifaddrsp(ifap);
 
-	AFTER_PACK_ORIGINAL_SOCK(ret, 0, 0, FD_API_OTHER, "p", ifap);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_getifaddrs,
+				 ret, 0, 0, FD_API_OTHER, "p", ifap);
  
 	return ret;
 }
@@ -1400,7 +1487,8 @@ void freeifaddrs(struct ifaddrs *ifa)
  
 	freeifaddrsp(ifa);
  
-	AFTER_PACK_ORIGINAL_SOCK(0, 0, 0, FD_API_OTHER, "p", ifa);
+	AFTER_PACK_ORIGINAL_SOCK(API_ID_freeifaddrs,
+				 0, 0, 0, FD_API_OTHER, "p", ifa);
 }
 
 #if 0

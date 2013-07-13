@@ -51,6 +51,7 @@
 
 #include <sys/socket.h>
 #include "dahelper.h"
+#include "api_id_mapping.h"
 
 #define MSG_PROBE_MEMORY 0x3001
 #define MSG_PROBE_UICONTROL 0x3002

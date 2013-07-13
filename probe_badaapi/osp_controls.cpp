@@ -73,7 +73,9 @@ result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 			setProbePoint(&probeInfo);
 
 			PREPARE_LOCAL_BUF();
-			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", &frame);
+			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+					  API_ID_result_UiApp__AddFrame_const_Tizen__Ui__Controls__Frame__frame_,
+					  "p", &frame);
 			PACK_COMMON_END(ret, 0, 0);
 			PACK_UICONTROL(parent);
 			PACK_UICONTROL(&frame);
@@ -106,7 +108,9 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 		Control* parent = NULL;
 		setProbePoint(&probeInfo);
 		
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", &frame);
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  API_ID_result_UiApp__RemoveFrame_const_Tizen__Ui__Controls__Frame__frame_,
+				  "p", &frame);
 		PACK_COMMON_END(0, 0, 0);
 		PACK_UICONTROL(parent);
 		PACK_UICONTROL(&frame);
@@ -167,7 +171,9 @@ void Control::SetName(const Tizen::Base::String &name)
 		setProbePoint(&probeInfo);
 		
 		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", this);
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  API_ID_void_Control__SetName_const_Tizen__Base__String__name_,
+				  "p", this);
 		PACK_COMMON_END(0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(parent);
@@ -220,7 +226,9 @@ result Container::AddControl(const Control &control)
 			setProbePoint(&probeInfo);
 			
 			PREPARE_LOCAL_BUF();
-			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", this);
+			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+					  API_ID_result_Container__AddControl_const_Control__control_,
+					  "p", this);
 			PACK_COMMON_END(ret, 0, 0);
 			PACK_UICONTROL(this);
 			PACK_UICONTROL(&control);
@@ -252,7 +260,9 @@ result Container::RemoveControl(const Control &control)
 	{
 		setProbePoint(&probeInfo);
 		
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", this);
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  API_ID_result_Container__RemoveControl_const_Control__control_,
+				  "p", this);
 		PACK_COMMON_END(0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(&control);
@@ -296,7 +306,9 @@ result Container::RemoveControl(int index)
 	{
 		setProbePoint(&probeInfo);
 		
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", this);
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  API_ID_result_Container__RemoveControl_int_index_,
+				  "p", this);
 		PACK_COMMON_END(0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(pcontrol);
@@ -334,7 +346,9 @@ void Container::RemoveAllControls(void)
 		setProbePoint(&probeInfo);
 		
 		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL, LC_UICREATE, "p", this);
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  API_ID_void_Container__RemoveAllControls_void_,
+				  "p", this);
 		PACK_COMMON_END(0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(pcontrol);

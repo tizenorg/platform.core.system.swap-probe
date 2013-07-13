@@ -97,7 +97,8 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 	probeBlockStart();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE,
+	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
+			  API_ID_result_UiApp__Execute_UiAppInstanceFactory_pUiAppFactory__const_IList__pArguments_,
 			  "pp", pUiAppFactory, pArguments);
 	PACK_COMMON_END(ret, 0, 0);
 	FLUSH_LOCAL_BUF();
@@ -119,7 +120,9 @@ void _AppImpl::OnTerminate(void* user_data)
 	setProbePoint(&probeInfo);
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "p", user_data);
+	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
+			  API_ID_void__AppImpl__OnTerminate_void__user_data_,
+			  "p", user_data);
 	PACK_COMMON_END(0, 0, 0);
 	FLUSH_LOCAL_BUF();
 
@@ -157,7 +160,9 @@ void _AppInfo::SetAppState(AppState appState)
 		setProbePoint(&probeInfo);
 
 		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "p", appState);
+		PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
+				  API_ID_void__AppInfo__SetAppState_AppState_appState_,
+				  "p", appState);
 		PACK_COMMON_END(0, 0, 0);
 		FLUSH_LOCAL_BUF();
 	}
@@ -179,7 +184,9 @@ void _UiAppImpl::OnBackground(void)
 	setProbePoint(&probeInfo);
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "", 0);
+	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
+			  API_ID_void__UiAppImpl__OnBackground_void_,
+			  "", 0);
 	PACK_COMMON_END(0, 0, 0);
 	FLUSH_LOCAL_BUF();
 
@@ -200,7 +207,9 @@ void _UiAppImpl::OnForeground(void)
 	setProbePoint(&probeInfo);
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, LC_LIFECYCLE, "", 0);
+	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
+			  API_ID_void__UiAppImpl__OnForeground_void_,
+			  "", 0);
 	PACK_COMMON_END(0, 0, 0);
 	FLUSH_LOCAL_BUF();
 

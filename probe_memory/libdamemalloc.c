@@ -9,6 +9,7 @@
  * Woojin Jung <woojin2.jung@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
+ * Dmitry Bogatov <d.bogatov@samsung.com>
  * 
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
@@ -96,7 +97,9 @@ static void *malloc_hook(size_t size, const void* caller)
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "xp", size, caller);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_malloc,
+			  "xp", size, caller);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
@@ -127,7 +130,9 @@ static void free_hook(void *ptr, const void *caller)
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pp", ptr, caller);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_free,
+			  "pp", ptr, caller);
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
@@ -162,7 +167,9 @@ static void* realloc_hook(void *memblock, size_t size, const void* caller)
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pxp", memblock, size, caller);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_realloc,
+			  "pxp", memblock, size, caller);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
@@ -201,7 +208,9 @@ void *calloc(size_t nelem, size_t elsize)
 	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "xx", nelem, elsize);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_calloc,
+			  "xx", nelem, elsize);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(nelem * elsize, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();

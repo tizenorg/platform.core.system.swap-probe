@@ -55,20 +55,20 @@ extern "C"{
 #define		VT_MODE_T		16
 #define		VT_DEV_T		17
 
-#define		LC_MEMORY		1
-#define		LC_UICREATE		2
-#define		LC_UIEVENT		3
-#define		LC_USERFUNC		4
-#define		LC_RESOURCE		5
-#define		LC_LIFECYCLE	6
-#define		LC_SNAPSHOT		7
-#define		LC_SCENE		8
-#define		LC_DEVICE		9
-#define		LC_ALLOCMEM		10
-#define		LC_SAMPLE		11
-#define		LC_THREAD		12
-#define		LC_CUSTOM		13
-#define		LC_SYNC			14
+/* #define		LC_MEMORY		1 */
+/* #define		LC_UICREATE		2 */
+/* #define		LC_UIEVENT		3 */
+/* #define		LC_USERFUNC		4 */
+/* #define		LC_RESOURCE		5 */
+/* #define		LC_LIFECYCLE	6 */
+/* #define		LC_SNAPSHOT		7 */
+/* #define		LC_SCENE		8 */
+/* #define		LC_DEVICE		9 */
+/* #define		LC_ALLOCMEM		10 */
+/* #define		LC_SAMPLE		11 */
+/* #define		LC_THREAD		12 */
+/* #define		LC_CUSTOM		13 */
+/* #define		LC_SYNC			14 */
 
 #define		FD_FILE		0
 #define		FD_SOCKET	1

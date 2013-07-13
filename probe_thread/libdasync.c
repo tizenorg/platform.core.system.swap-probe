@@ -51,8 +51,9 @@ int pthread_mutex_init(pthread_mutex_t *mutex,
 
 	ret = pthread_mutex_initp(mutex, attr);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, mutex, SYNC_PTHREAD_MUTEX, 
-			SYNC_API_OTHER, "pp", mutex, attr);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_init,
+				 ret, mutex, SYNC_PTHREAD_MUTEX, 
+				 SYNC_API_OTHER, "pp", mutex, attr);
 
 	return ret;
 }
@@ -64,8 +65,9 @@ int pthread_mutex_destroy(pthread_mutex_t *mutex) {
 
 	ret = pthread_mutex_destroyp(mutex);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, mutex, SYNC_PTHREAD_MUTEX, 
-			SYNC_API_OTHER, "p", mutex);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_destroy,
+				 ret, mutex, SYNC_PTHREAD_MUTEX, 
+				 SYNC_API_OTHER, "p", mutex);
 
 	return ret;
 }
@@ -87,7 +89,9 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 	PRE_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "p", mutex);
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+			  API_ID_pthread_mutex_lock,
+			  "p", mutex);
 	PACK_COMMON_END(0, 0, blockresult);
 	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
 	FLUSH_LOCAL_BUF();
@@ -102,7 +106,9 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 		setProbePoint(&probeInfo);
 
 		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "p", mutex);
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+				  API_ID_pthread_mutex_lock,
+				  "p", mutex);
 		PACK_COMMON_END(ret, errno, blockresult);
 		PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
 		FLUSH_LOCAL_BUF();
@@ -124,7 +130,9 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 	PRE_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", mutex, abs_timeout);
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+			  API_ID_pthread_mutex_timedlock,
+			  "pp", mutex, abs_timeout);
 	PACK_COMMON_END(0, 0, blockresult);
 	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
 	FLUSH_LOCAL_BUF();
@@ -139,7 +147,9 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 		setProbePoint(&probeInfo);
 
 		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", mutex, abs_timeout);
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+				  API_ID_pthread_mutex_timedlock,
+				  "pp", mutex, abs_timeout);
 		PACK_COMMON_END(ret, errno, blockresult);
 		PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
 		FLUSH_LOCAL_BUF();
@@ -157,8 +167,9 @@ int pthread_mutex_trylock(pthread_mutex_t *mutex) {
 
 	ret = pthread_mutex_trylockp(mutex);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, mutex, SYNC_PTHREAD_MUTEX, 
-			SYNC_API_TRY_ACQUIRE, "p", mutex);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_trylock,
+				 ret, mutex, SYNC_PTHREAD_MUTEX, 
+				 SYNC_API_TRY_ACQUIRE, "p", mutex);
 	
 	return ret;
 }
@@ -178,8 +189,9 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex) {
 
 	ret = pthread_mutex_unlockp(mutex);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, mutex, SYNC_PTHREAD_MUTEX, 
-			SYNC_API_RELEASE, "p", mutex);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_unlock,
+				 ret, mutex, SYNC_PTHREAD_MUTEX, 
+				 SYNC_API_RELEASE, "p", mutex);
 	
 	return ret;
 }
@@ -191,8 +203,9 @@ int pthread_mutexattr_init(pthread_mutexattr_t *attr) {
 
 	ret = pthread_mutexattr_initp(attr);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "p", attr);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_init,
+				 ret, 0, SYNC_PTHREAD_MUTEX,
+				 SYNC_API_OTHER, "p", attr);
 
 	return ret;
 }
@@ -204,8 +217,9 @@ int pthread_mutexattr_destroy(pthread_mutexattr_t *attr) {
 
 	ret = pthread_mutexattr_destroyp(attr);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "p", attr);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_destroy,
+				 ret, 0, SYNC_PTHREAD_MUTEX,
+				 SYNC_API_OTHER, "p", attr);
 
 	return ret;
 }
@@ -219,8 +233,9 @@ int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *attr,
 
 	ret = pthread_mutexattr_getprioceilingp(attr, prioceiling);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "pp", attr, prioceiling);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_getprioceiling,
+				 ret, 0, SYNC_PTHREAD_MUTEX,
+				 SYNC_API_OTHER, "pp", attr, prioceiling);
 
 	return ret;
 }
@@ -234,8 +249,9 @@ int pthread_mutexattr_setprioceiling(pthread_mutexattr_t *attr,
 
 	ret = pthread_mutexattr_setprioceilingp(attr, prioceiling);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "pd", attr, prioceiling);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_setprioceiling,
+				 ret, 0, SYNC_PTHREAD_MUTEX,
+				 SYNC_API_OTHER, "pd", attr, prioceiling);
 
 	return ret;
 }
@@ -249,8 +265,9 @@ int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *attr,
 
 	ret = pthread_mutexattr_getprotocolp(attr, protocol);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "pp", attr, protocol);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_getprotocol,
+				 ret, 0, SYNC_PTHREAD_MUTEX,
+				 SYNC_API_OTHER, "pp", attr, protocol);
 
 	return ret;
 }
@@ -264,8 +281,9 @@ int pthread_mutexattr_setprotocol(pthread_mutexattr_t *attr,
 
 	ret = pthread_mutexattr_setprotocolp(attr, protocol);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "pd", attr, protocol);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_setprotocol,
+				 ret, 0, SYNC_PTHREAD_MUTEX,
+				 SYNC_API_OTHER, "pd", attr, protocol);
 
 	return ret;
 }
@@ -279,8 +297,9 @@ int pthread_mutexattr_getpshared(const pthread_mutexattr_t *attr,
 
 	ret = pthread_mutexattr_getpsharedp(attr, pshared);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "pp", attr, pshared);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_getpshared,
+				 ret, 0, SYNC_PTHREAD_MUTEX,
+				 SYNC_API_OTHER, "pp", attr, pshared);
 
 	return ret;
 }
@@ -294,8 +313,9 @@ int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr,
 
 	ret = pthread_mutexattr_setpsharedp(attr, pshared);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "pd", attr, pshared);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_setpshared,
+				 ret, 0, SYNC_PTHREAD_MUTEX,
+				 SYNC_API_OTHER, "pd", attr, pshared);
 
 	return ret;
 }
@@ -308,8 +328,9 @@ int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int *type) {
 
 	ret = pthread_mutexattr_gettypep(attr, type);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "pp", attr, type);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_gettype,
+				 ret, 0, SYNC_PTHREAD_MUTEX,
+				 SYNC_API_OTHER, "pp", attr, type);
 
 	return ret;
 }
@@ -322,8 +343,9 @@ int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type) {
 
 	ret = pthread_mutexattr_settypep(attr, type);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, 0, SYNC_PTHREAD_MUTEX,
-			SYNC_API_OTHER, "pd", attr, type);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_settype,
+				 ret, 0, SYNC_PTHREAD_MUTEX,
+				 SYNC_API_OTHER, "pd", attr, type);
 
 	return ret;
 }
@@ -343,8 +365,9 @@ int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr) {
 
 	ret = pthread_cond_initp(cond, attr);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
-			SYNC_API_OTHER, "pp", cond, attr);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_init,
+				 ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
+				 SYNC_API_OTHER, "pp", cond, attr);
 
 	return ret;
 }
@@ -356,8 +379,9 @@ int pthread_cond_destroy(pthread_cond_t *cond) {
 
 	ret = pthread_cond_destroyp(cond);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
-			SYNC_API_OTHER, "p", cond);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_destroy,
+				 ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
+				 SYNC_API_OTHER, "p", cond);
 
 	return ret;
 }
@@ -373,7 +397,9 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 	// send WAIT_START log
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", cond, mutex);
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+			  API_ID_pthread_cond_wait,
+			  "pp", cond, mutex);
 	PACK_COMMON_END(0, 0, blockresult);
 	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_START);
 	FLUSH_LOCAL_BUF();
@@ -388,7 +414,9 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 		setProbePoint(&probeInfo);
 
 		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "pp", cond, mutex);
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+				  API_ID_pthread_cond_wait,
+				  "pp", cond, mutex);
 		PACK_COMMON_END(ret, errno, blockresult);
 		PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
 		FLUSH_LOCAL_BUF();
@@ -411,7 +439,9 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 	// send WAIT_START log
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "ppp", cond, mutex, abstime);
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+			  API_ID_pthread_cond_timedwait,
+			  "ppp", cond, mutex, abstime);
 	PACK_COMMON_END(0, 0, blockresult);
 	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_START);
 	FLUSH_LOCAL_BUF();
@@ -426,7 +456,9 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 		setProbePoint(&probeInfo);
 
 		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_SYNC, LC_SYNC, "ppp", cond, mutex, abstime);
+		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+				  API_ID_pthread_cond_timedwait,
+				  "ppp", cond, mutex, abstime);
 		PACK_COMMON_END(ret, errno, blockresult);
 		PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
 		FLUSH_LOCAL_BUF();
@@ -444,7 +476,8 @@ int pthread_cond_signal(pthread_cond_t *cond) {
 
 	ret = pthread_cond_signalp(cond);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_signal,
+				 ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
 			SYNC_API_NOTIFY, "p", cond);
 	
 	return ret;
@@ -457,8 +490,9 @@ int pthread_cond_broadcast(pthread_cond_t *cond) {
 
 	ret = pthread_cond_broadcastp(cond);
 
-	AFTER_PACK_ORIGINAL_SYNC(ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
-			SYNC_API_NOTIFY_ALL, "p", cond);
+	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_broadcast,
+				 ret, cond, SYNC_PTHREAD_COND_VARIABLE, 
+				 SYNC_API_NOTIFY_ALL, "p", cond);
 	
 	return ret;
 }

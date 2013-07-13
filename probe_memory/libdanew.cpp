@@ -69,7 +69,9 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "x", size);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_void__operator_new_std__size_t_size__throw__std__bad_alloc_,
+			  "x", size);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
@@ -100,7 +102,9 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "x", size);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_void__operator_new___std__size_t_size__throw__std__bad_alloc_,
+			  "x", size);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
@@ -130,7 +134,9 @@ void operator delete(void *ptr) throw()
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "p", ptr);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_void_operator_delete_void__ptr__throw__,
+			  "p", ptr);
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
@@ -158,7 +164,9 @@ void operator delete[](void *ptr) throw()
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "p", ptr);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_void_operator_delete___void__ptr__throw__,
+			  "p", ptr);
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
@@ -187,7 +195,9 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "xp", size, &nothrow);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_void__operator_new_std__size_t_size__const_std__nothrow_t__nothrow__throw__,
+			  "xp", size, &nothrow);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
@@ -218,7 +228,9 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "xp", size, &nothrow);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_void__operator_new___std__size_t_size__const_std__nothrow_t__nothrow__throw__,
+			  "xp", size, &nothrow);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
@@ -248,7 +260,9 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 	POST_PACK_PROBEBLOCK_BEGIN();
 	
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pp", ptr, &nothrow);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_void_operator_delete_void__ptr__const_std__nothrow_t__nothrow__throw__,
+			  "pp", ptr, &nothrow);
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
@@ -276,7 +290,9 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 	POST_PACK_PROBEBLOCK_BEGIN();
 		
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, LC_MEMORY, "pp", ptr, &nothrow);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
+			  API_ID_void_operator_delete___void__ptr__const_std__nothrow_t__nothrow__throw__,
+			  "pp", ptr, &nothrow);
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
