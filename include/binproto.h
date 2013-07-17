@@ -262,7 +262,7 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 		      file_path)					\
 	do {								\
 		BUF_PTR = pack_int64(BUF_PTR, size);			\
-		BUF_PTR = pack_int32(BUF_PTR, fd_value);		\
+		BUF_PTR = pack_int64(BUF_PTR, fd_value);		\
 		BUF_PTR = pack_int32(BUF_PTR, fd_type);			\
 		BUF_PTR = pack_int32(BUF_PTR, fd_api_type);		\
 		BUF_PTR = pack_int64(BUF_PTR, file_size);		\
