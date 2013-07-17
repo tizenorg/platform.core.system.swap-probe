@@ -310,7 +310,7 @@ int vfscanf(FILE* stream, const char* format, va_list arg)
 	BEFORE_ORIGINAL_FILE(vfscanf, LIBC);
 	ret = vfscanfp(stream, format, arg);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_vfscanf,
-				  ret, stream, FD_API_READ, "ps", stream, format);
+				  ret, ret, stream, FD_API_READ, "ps", stream, format);
 	return ret;
 }
 
