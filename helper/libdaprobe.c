@@ -670,22 +670,24 @@ int preBlockBegin(void* caller, bool bFiltering, enum DaOptions option)
 		}
 	}
 
-	if((!user) && bFiltering)
-	{
-		TRACE_STATE_UNSET(TS_ENTER_PROBE_BLOCK);
-		return 0;
-	}
-	else
-	{
-		// nothing to do
-	}
-
-	gProbeDepth++;
-
 	if(user)
+	{
+		gProbeDepth++;
 		return 2;	// user call
+	}
 	else
-		return 1;	// internal call
+	{
+		if(bFiltering)
+		{
+			TRACE_STATE_UNSET(TS_ENTER_PROBE_BLOCK);
+			return 0;	// not probing
+		}
+		else
+		{
+			gProbeDepth++;
+			return 1;	// internal call
+		}
+	}
 }
 
 int postBlockBegin(int preresult)

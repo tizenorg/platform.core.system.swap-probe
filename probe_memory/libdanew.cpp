@@ -43,9 +43,6 @@
 #include "da_memory.h"
 #include "binproto.h"
 
-//#define INTERNALFILTERING		(!isEnableInternalMalloc())
-#define INTERNALFILTERING		true
-
 static enum DaOptions _sopt = OPT_ALLOC;
 
 void *operator new(std::size_t size) throw (std::bad_alloc)
@@ -56,7 +53,7 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_Znwj,newp);
 
-	bfiltering = INTERNALFILTERING;
+	bfiltering = INTERNAL_NEW_FILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = newp(size);
@@ -89,7 +86,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_Znaj, newp);
 
-	bfiltering = INTERNALFILTERING;
+	bfiltering = INTERNAL_NEW_FILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = newp(size);
@@ -121,7 +118,7 @@ void operator delete(void *ptr) throw()
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPv, deletep);
 
-	bfiltering = INTERNALFILTERING;
+	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
 	if(ptr != NULL && getTraceState() == 0)
@@ -151,7 +148,7 @@ void operator delete[](void *ptr) throw()
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPv, deletep);
 
-	bfiltering = INTERNALFILTERING;
+	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
 	if(ptr != NULL && getTraceState() == 0)
@@ -182,7 +179,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZnwjRKSt9nothrow_t, newp);
 
-	bfiltering = INTERNALFILTERING;
+	bfiltering = INTERNAL_NEW_FILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = newp(size, nothrow);
@@ -215,7 +212,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZnajRKSt9nothrow_t, newp);
 
-	bfiltering = INTERNALFILTERING;
+	bfiltering = INTERNAL_NEW_FILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = newp(size, nothrow);
@@ -247,7 +244,7 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPvRKSt9nothrow_t, deletep);
 
-	bfiltering = INTERNALFILTERING;
+	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
 	if(ptr != NULL && getTraceState() == 0)
@@ -277,7 +274,7 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPvRKSt9nothrow_t, deletep);
 
-	bfiltering = INTERNALFILTERING;
+	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
 	if(ptr != NULL && getTraceState() == 0)

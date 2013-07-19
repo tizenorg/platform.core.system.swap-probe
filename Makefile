@@ -33,6 +33,7 @@ COMMON_SRCS =	./helper/libdaprobe.c \
 				./probe_socket/libdasocket.c \
 				./probe_event/da_event.c \
 				./probe_event/keytouch.c \
+				./probe_event/orientation.c \
 				./probe_third/libdaemon.c \
 				./probe_thread/libdathread.c \
 				./probe_thread/libdasync.c \

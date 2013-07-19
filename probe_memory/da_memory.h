@@ -35,6 +35,12 @@
 
 #include "daprobe.h"
 
+//#define INTERNALFILTERING		(!isEnableInternalMalloc())
+#define INTERNAL_MALLOC_FILTERING		true
+#define INTERNAL_FREE_FILTERING			true
+#define INTERNAL_NEW_FILTERING			true
+#define INTERNAL_DELETE_FILTERING		true
+
 /*******************************************************************
  * MEMORY PROBE MACRO
  *

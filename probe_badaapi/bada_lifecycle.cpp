@@ -3,18 +3,18 @@
  *
  * Copyright (File::*c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact: 
+ * Contact:
  *
  * Jaewon Lim <jaewon81.lim@samsung.com>
  * Woojin Jung <woojin2.jung@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
  * Free Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
@@ -27,10 +27,11 @@
  * Contributors:
  * - S-Core Co., Ltd
  * - Samsung RnD Institute Russia
- * 
+ *
  */
 
 #include <app.h>
+#include <Ecore.h>
 #include <FApp.h>
 #include <FBase.h>
 
@@ -40,6 +41,11 @@
 #include "osp_probe.h"
 
 #include "binproto.h"
+extern "C"
+{
+Ecore_Event_Handler* register_orientation_event_listener();
+void unregister_orientation_event_listener(Ecore_Event_Handler* handler);
+}
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
@@ -55,10 +61,10 @@ namespace Tizen { namespace App
 class _AppImpl
 {
 	static void OnTerminate(void* user_data);
-	static void OnDeviceOrientationChanged(app_device_orientation_e orientation, void* user_data);
+//	static void OnDeviceOrientationChanged(app_device_orientation_e orientation, void* user_data);
 };
 
-class _UiAppImpl 
+class _UiAppImpl
 //	: public Tizen::Base::Object
 //	, public _IAppImpl
 {
@@ -77,13 +83,14 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 {
 	typedef result (*methodType)(UiAppInstanceFactory pFactory, const IList* pArgs);
 	static methodType uiapp_executep;
-	probeInfo_t	probeInfo;
-	result ret;
+	DECLARE_VARIABLE_STANDARD;
+	Ecore_Event_Handler* handler;
 
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp7ExecuteEPFPS1_vEPKNS_4Base10Collection5IListE,
 		LIBOSP_UIFW, uiapp_executep);
 
 	probeBlockStart();
+	handler = register_orientation_event_listener();
 	if(gTraceInfo.exec_map.map_start == NULL)
 	{
 		get_map_address(CALLER_ADDRESS, &(gTraceInfo.exec_map.map_start),
@@ -103,6 +110,7 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 	PACK_COMMON_END(ret, 0, 0);
 	FLUSH_LOCAL_BUF();
 
+	unregister_orientation_event_listener(handler);
 	probeBlockEnd();
 
 	return ret;
@@ -113,7 +121,7 @@ void _AppImpl::OnTerminate(void* user_data)
 	typedef void (*methodType)(void*);
 	static methodType appimpl_onterminatep;
 	probeInfo_t	probeInfo;
-	
+
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppImpl11OnTerminateEPv, LIBOSP_APPFW, appimpl_onterminatep);
 
 	probeBlockStart();
@@ -130,12 +138,12 @@ void _AppImpl::OnTerminate(void* user_data)
 
 	appimpl_onterminatep(user_data);
 }
-
+/*
 void _AppImpl::OnDeviceOrientationChanged(app_device_orientation_e orientation, void* user_data)
 {
 	typedef void (*methodType)(app_device_orientation_e, void*);
 	static methodType appimpl_ondeviceorientationchangedp;
-	
+
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppImpl26OnDeviceOrientationChangedE24app_device_orientation_ePv,
 			LIBOSP_APPFW, appimpl_ondeviceorientationchangedp);
 
@@ -145,13 +153,13 @@ void _AppImpl::OnDeviceOrientationChanged(app_device_orientation_e orientation, 
 
 	appimpl_ondeviceorientationchangedp(orientation, user_data);
 }
-
+*/
 void _AppInfo::SetAppState(AppState appState)
 {
 	typedef void (*methodType)(AppState appstate);
 	static methodType appinfo_setappstatep;
 	probeInfo_t	probeInfo;
-	
+
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppInfo11SetAppStateENS0_8AppStateE, LIBOSP_APPFW, appinfo_setappstatep);
 
 	probeBlockStart();
@@ -176,7 +184,7 @@ void _UiAppImpl::OnBackground(void)
 	typedef void (_UiAppImpl::*methodType)(void);
 	static methodType uiappimpl_onbackgroundp;
 	probeInfo_t	probeInfo;
-	
+
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnBackgroundEv, LIBOSP_UIFW, uiappimpl_onbackgroundp);
 
 	probeBlockStart();
@@ -200,7 +208,7 @@ void _UiAppImpl::OnForeground(void)
 	typedef void (_UiAppImpl::*methodType)(void);
 	static methodType uiappimpl_onforegroundp;
 	probeInfo_t	probeInfo;
-	
+
 	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnForegroundEv, LIBOSP_UIFW, uiappimpl_onforegroundp);
 
 	probeBlockStart();
@@ -225,7 +233,7 @@ void _UiAppImpl::OnDeviceOrientationChanged(app_device_orientation_e orientation
 {
 	typedef void (*methodType)(_UiAppImpl* th, app_device_orientation_e orientation);
 	static methodType uiappimpl_ondeviceorientationchangedp;
-	
+
 	GET_REAL_FUNC_OSP(_ZThn4_N5Tizen3App10_UiAppImpl26OnDeviceOrientationChangedE24app_device_orientation_e,
 			LIBOSP_UIFW, uiappimpl_ondeviceorientationchangedp);
 
@@ -237,4 +245,3 @@ void _UiAppImpl::OnDeviceOrientationChanged(app_device_orientation_e orientation
 }
 */
 } }	// end of namespace
-

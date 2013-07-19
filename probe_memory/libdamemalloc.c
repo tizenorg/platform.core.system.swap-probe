@@ -3,19 +3,19 @@
  *
  * Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact: 
+ * Contact:
  *
  * Jaewon Lim <jaewon81.lim@samsung.com>
  * Woojin Jung <woojin2.jung@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
  * Dmitry Bogatov <d.bogatov@samsung.com>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
  * Free Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
@@ -28,7 +28,7 @@
  * Contributors:
  * - S-Core Co., Ltd
  * - Samsung RnD Institute Russia
- * 
+ *
  */
 
 #include <stdio.h>
@@ -46,8 +46,6 @@
 #include "da_memory.h"
 #include "binproto.h"
 
-//#define INTERNALFILTERING		(!isEnableInternalMalloc())
-#define INTERNALFILTERING		true
 static enum DaOptions _sopt = OPT_ALLOC;
 
 static void* (*saved_malloc_hook)(size_t, const void*);
@@ -84,7 +82,6 @@ static void *malloc_hook(size_t size, const void* caller)
 	void *pret;
 
 	teardown_memory_hooks();
-	bfiltering = INTERNALFILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = malloc(size);
@@ -95,7 +92,7 @@ static void *malloc_hook(size_t size, const void* caller)
 	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-	
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_malloc,
@@ -103,7 +100,7 @@ static void *malloc_hook(size_t size, const void* caller)
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 
 	install_memory_hooks();
@@ -117,7 +114,6 @@ static void free_hook(void *ptr, const void *caller)
 
 	teardown_memory_hooks();
 
-	bfiltering = INTERNALFILTERING;
 	PRE_PROBEBLOCK();
 
 	if(ptr != NULL && getTraceState() == 0)
@@ -128,7 +124,7 @@ static void free_hook(void *ptr, const void *caller)
 	free(ptr);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-	
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_free,
@@ -136,7 +132,7 @@ static void free_hook(void *ptr, const void *caller)
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 
 	install_memory_hooks();
@@ -149,7 +145,6 @@ static void* realloc_hook(void *memblock, size_t size, const void* caller)
 
 	teardown_memory_hooks();
 
-	bfiltering = INTERNALFILTERING;
 	PRE_PROBEBLOCK();
 
 	if(memblock != NULL && getTraceState() == 0)
@@ -165,7 +160,7 @@ static void* realloc_hook(void *memblock, size_t size, const void* caller)
 	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-	
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_realloc,
@@ -173,7 +168,7 @@ static void* realloc_hook(void *memblock, size_t size, const void* caller)
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 
 	install_memory_hooks();
@@ -193,12 +188,11 @@ void *calloc(size_t nelem, size_t elsize)
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 	size_t size = nelem * elsize;
-	bfiltering = INTERNALFILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = (size < elsize) ? NULL : malloc(size);
-	if (pret)
-			adhoc_bzero(pret, nelem * elsize);
+	if (pret) /* `memset' somewhy deadloops */
+		adhoc_bzero(pret, nelem * elsize);
 
 	if(pret != NULL && getTraceState() == 0)
 	{
@@ -220,4 +214,3 @@ void *calloc(size_t nelem, size_t elsize)
 
 	return pret;
 }
-

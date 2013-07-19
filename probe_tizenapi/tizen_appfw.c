@@ -31,11 +31,14 @@
  */
 
 #include <app.h>
+#include <Ecore.h>
 #include "daprobe.h"
 #include "dahelper.h"
 #include "probeinfo.h"
-
 #include "binproto.h"
+
+Ecore_Event_Handler* register_orientation_event_listener();
+void unregister_orientation_event_listener(Ecore_Event_Handler* handler);
 
 app_event_callback_s gAppCallback;
 
@@ -128,10 +131,13 @@ static void _dalc_app_deviceorientationchanged(app_device_orientation_e orientat
 int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *user_data)
 {
 	static int (*app_efl_mainp)(int* argc, char*** argv, app_event_callback_s* callback, void* user_data);
+	Ecore_Event_Handler* handler;
 	int ret;
 
 	GET_REAL_FUNC(app_efl_main, LIBCAPI_APPFW_APPLICATION);
 
+	probeBlockStart();
+	handler = register_orientation_event_listener();
 	gAppCallback.create = callback->create;
 	gAppCallback.terminate = callback->terminate;
 	gAppCallback.pause = callback->pause;
@@ -150,15 +156,19 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 	if(callback->service)
 		callback->service = _dalc_app_service;
 	callback->device_orientation = _dalc_app_deviceorientationchanged;
+	probeBlockEnd();
 
 	ret = app_efl_mainp(argc, argv, callback, user_data);
 
+	probeBlockStart();
+	unregister_orientation_event_listener(handler);
 	callback->create = gAppCallback.create;
 	callback->terminate = gAppCallback.terminate;
 	callback->pause = gAppCallback.pause;
 	callback->resume = gAppCallback.resume;
 	callback->service = gAppCallback.service;
 	callback->device_orientation = gAppCallback.device_orientation;
+	probeBlockEnd();
 
 	return ret;
 }
