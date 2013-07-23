@@ -100,7 +100,7 @@ void on_orientation_changed(int angle, bool capi)
 					  API_ID_on_orientation_changed,
 					  "dd", angle, (uint32_t)capi);
 			PACK_COMMON_END(0, 0, 0);
-			PACK_UIEVENT(_EVENT_ORIENTATION, 0, 0, 0, 0, convert_angle(external_angle));
+			PACK_UIEVENT(_EVENT_ORIENTATION, 0, 0, 0, "", convert_angle(external_angle));
 			FLUSH_LOCAL_BUF();
 		}
 
