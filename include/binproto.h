@@ -211,7 +211,7 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 #define PACK_COMMON_END(ret, errn, intern_call)		\
 	do {							\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(ret));	\
-		BUF_PTR = pack_int32(BUF_PTR, (uint64_t)errn);	\
+		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);	\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);	\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); \
 		BUF_PTR = pack_int32(BUF_PTR, 0);		\
