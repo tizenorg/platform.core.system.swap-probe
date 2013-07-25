@@ -146,13 +146,15 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 			to += sizeof(d);
 			break;
 		case 'x':
-			x = (uint64_t)va_arg(args, uint64_t);
+			x = 0; // real value may be less then uint64_t
+			x = (unsigned long)(uint64_t)va_arg(args, uint64_t);
 			*to++ = *t;
 			memcpy(to, &x, sizeof(x));
 			to += sizeof(x);
 			break;
 		case 'p':
-			p = (uintptr_t)va_arg(args, uint64_t);
+			p = 0; // real value may be less then uint64_t
+			p = (unsigned long)(uintptr_t)va_arg(args, uint64_t);
 			*to++ = *t;
 			memcpy(to, &p, sizeof(p));
 			to += sizeof(p);
