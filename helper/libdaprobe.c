@@ -72,6 +72,7 @@ int log_fd = 0;
 
 int getExecutableMappingAddress();
 
+bool printLog(log_t* log, int msgType);
 /******************************************************************************
  * internal functions
    (this means that these functions do not need to set enter/exit flag)
@@ -238,7 +239,7 @@ static void* recvThread(void* data)
 			if(recvlen > 0)
 			{
 				log.length = sprintf(log.data, "%ld", g_total_alloc_size);
-				// printLog(&log, MSG_ALLOC);
+				printLog(&log, MSG_ALLOC);
 			}
 			else
 			{
@@ -417,7 +418,7 @@ void __attribute__((destructor)) _fini_probe()
  * manipulate and print log functions
  ************************************************************************/
 
-/*bool printLog(log_t* log, int msgType)
+bool printLog(log_t* log, int msgType)
 {
 	int res;
 	if(unlikely(gTraceInfo.socket.daemonSock == -1))
@@ -434,7 +435,7 @@ void __attribute__((destructor)) _fini_probe()
 	probeBlockEnd();
 
 	return true;
-}*/
+}
 
 bool printLogStr(const char* str, int msgType)
 {
