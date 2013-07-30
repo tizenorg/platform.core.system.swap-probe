@@ -297,9 +297,10 @@ int vfprintf(FILE* stream, const char* format, va_list arg)
 	static int (*vfprintfp)(FILE* stream, const char* format, va_list arg);
 
 	BEFORE_ORIGINAL_FILE(vfprintf, LIBC);
+	FILE_API_START_BLOCK(API_ID_vfprintf, FD_API_WRITE_START);
 	ret = vfprintfp(stream, format, arg);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_vfprintf,
-				  ret, ret, stream, FD_API_WRITE, "ps", stream, format);
+				  ret, ret, stream, FD_API_WRITE_END, "ps", stream, format);
 	return ret;
 }
 
@@ -308,9 +309,10 @@ int vfscanf(FILE* stream, const char* format, va_list arg)
 	static int (*vfscanfp)(FILE* stream, const char* format, va_list arg);
 
 	BEFORE_ORIGINAL_FILE(vfscanf, LIBC);
+	FILE_API_START_BLOCK(API_ID_vfscanf, FD_API_READ_START);
 	ret = vfscanfp(stream, format, arg);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_vfscanf,
-				  ret, ret, stream, FD_API_READ, "ps", stream, format);
+				  ret, ret, stream, FD_API_READ_END, "ps", stream, format);
 	return ret;
 }
 
@@ -319,9 +321,10 @@ int fgetc(FILE* stream)
 	static int (*fgetcp)(FILE* stream);
 
 	BEFORE_ORIGINAL_FILE(fgetc, LIBC);
+	FILE_API_START_BLOCK(API_ID_fgetc, FD_API_READ_START);
 	ret = fgetcp(stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fgetc,
-				  ret, (ret == EOF ? 0 : 1), stream, FD_API_READ, "p", stream);
+				  ret, (ret == EOF ? 0 : 1), stream, FD_API_READ_END, "p", stream);
 	return ret;
 }
 
@@ -332,11 +335,13 @@ char* fgets(char* str, int size, FILE* stream)
 	char* cret;
 
 	BEFORE_ORIGINAL_FILE(fgets, LIBC);
+
+	FILE_API_START_BLOCK(API_ID_fgets, FD_API_READ_START);
 	
 	cret = fgetsp(str, size, stream);
 
-	AFTER_PACK_ORIGINAL_FILEP(cret, (ret == NULL ? 0 : strlen(cret)),
-			stream, FD_API_READ, "sdp", str, size, stream);
+	AFTER_PACK_ORIGINAL_FILEP(API_ID_fgets, cret, (ret == NULL ? 0 : strlen(cret)),
+			stream, FD_API_READ_END, "sdp", str, size, stream);
 
 	return cret;
 }
@@ -347,9 +352,10 @@ int fputc(int character, FILE* stream)
 	static int (*fputcp)(int character, FILE* stream);
 
 	BEFORE_ORIGINAL_FILE(fputc, LIBC);
+	FILE_API_START_BLOCK(API_ID_fputc, FD_API_WRITE_START);
 	ret = fputcp(character, stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fputc,
-				  ret, (ret == EOF ? 0 : 1), stream, FD_API_WRITE,
+				  ret, (ret == EOF ? 0 : 1), stream, FD_API_WRITE_END,
 				  "dp", character, stream);
 	return ret;
 }
@@ -359,9 +365,10 @@ int fputs(const char* str, FILE* stream)
 	static int (*fputsp)(const char* str, FILE* stream);
 
 	BEFORE_ORIGINAL_FILE(fputs, LIBC);
+	FILE_API_START_BLOCK(API_ID_fputs, FD_API_WRITE_START);
 	ret = fputsp(str, stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fputs,
-				  ret, ret, stream, FD_API_WRITE, "sp", str, stream);
+				  ret, ret, stream, FD_API_WRITE_END, "sp", str, stream);
 	return ret;
 }
 
@@ -370,9 +377,10 @@ int getc(FILE* stream)
 	static int (*getcp)(FILE* stream);
 
 	BEFORE_ORIGINAL_FILE(getc, LIBC);
+	FILE_API_START_BLOCK(API_ID_getc, FD_API_READ_START);
 	ret = getcp(stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_getc,
-				  ret, (ret == EOF ? 0 : 1), stream, FD_API_READ, "p", stream);
+				  ret, (ret == EOF ? 0 : 1), stream, FD_API_READ_END, "p", stream);
 	return ret;
 }
 
@@ -381,9 +389,10 @@ int putc(int character, FILE* stream)
 	static int (*putcp)(int character, FILE* stream);
 
 	BEFORE_ORIGINAL_FILE(putc, LIBC);
+	FILE_API_START_BLOCK(API_ID_putc, FD_API_WRITE_START);
 	ret = putcp(character, stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_putc,
-				  ret, (ret == EOF ? 0 : 1), stream, FD_API_WRITE,
+				  ret, (ret == EOF ? 0 : 1), stream, FD_API_WRITE_END,
 				  "dp", character, stream);
 	return ret;
 }
@@ -406,10 +415,12 @@ size_t fread(void* ptr, size_t size, size_t count, FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(fread, LIBC);
 
+	FILE_API_START_BLOCK(API_ID_fread, FD_API_READ_START);
+
 	tret = freadp(ptr, size, count, stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fread,
-				  tret, 0, stream, FD_API_READ,
+				  tret, 0, stream, FD_API_READ_END,
 				  "pxxp", ptr, size, count, stream);	
 
 	return tret;
@@ -422,10 +433,12 @@ size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream)
 
 	BEFORE_ORIGINAL_FILE(fwrite, LIBC);
 
+	FILE_API_START_BLOCK(API_ID_fwrite, FD_API_WRITE_START);
+
 	tret = fwritep(ptr, size, count, stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fwrite,
-				  tret, 0, stream, FD_API_WRITE,
+				  tret, 0, stream, FD_API_WRITE_END,
 				  "pxxp", ptr, size, count, stream);
 
 	return tret;
@@ -440,12 +453,14 @@ int fprintf(FILE* stream, const char* format, ...)
 
 	BEFORE_ORIGINAL_FILE(vfprintf, LIBC);
 
+	FILE_API_START_BLOCK(API_ID_fprintf, FD_API_WRITE_START);
+
 	va_list arg;
 	va_start(arg, format);
 	ret = vfprintfp(stream, format, arg);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fprintf,
-				  ret, ret, stream, FD_API_WRITE, "ps", stream, format);
+				  ret, ret, stream, FD_API_WRITE_END, "ps", stream, format);
 	va_end(arg);
 
 	return ret;
@@ -457,12 +472,14 @@ int fscanf(FILE* stream, const char* format, ...)
 	
 	BEFORE_ORIGINAL_FILE(vfscanf, LIBC);
 
+	FILE_API_START_BLOCK(API_ID_fscanf, FD_API_READ_START);
+
 	va_list arg;
 	va_start(arg, format);
 	ret = vfscanfp(stream, format, arg);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fscanf,
-				  ret, ret, stream, FD_API_READ, "ps", stream, format);
+				  ret, ret, stream, FD_API_READ_END, "ps", stream, format);
 	va_end(arg);
 
 	return ret;
@@ -475,12 +492,14 @@ int printf(const char* format, ...)
 	
 	BEFORE_ORIGINAL_FILE(vprintf, LIBC);
 
+	FILE_API_START_BLOCK(API_ID_printf, FD_API_WRITE_START);
+
 	va_list arg;
 	va_start(arg, format);
 	ret = vprintfp(format, arg);
 
 	AFTER_PACK_ORIGINAL_NOFD(API_ID_printf,
-				 ret, ret, FD_API_WRITE, "s", format);
+				 ret, ret, FD_API_WRITE_END, "s", format);
 	va_end(arg);
 
 	return ret;
@@ -493,12 +512,14 @@ int scanf(const char* format, ...)
 
 	BEFORE_ORIGINAL_FILE(vscanf, LIBC);
 
+	FILE_API_START_BLOCK(API_ID_scanf, FD_API_READ_START);
+
 	va_list arg;
 	va_start(arg, format);
 	ret = vscanfp(format, arg);
 
 	AFTER_PACK_ORIGINAL_NOFD(API_ID_scanf,
-				 ret, ret, FD_API_READ, "s", format);
+				 ret, ret, FD_API_READ_END, "s", format);
 	va_end(arg);
 
 	return ret;
@@ -509,9 +530,10 @@ int getchar()
 	static int (*getcharp)();
 
 	BEFORE_ORIGINAL_FILE(getchar, LIBC);
+	FILE_API_START_BLOCK(API_ID_getchar, FD_API_READ_START);
 	ret = getcharp();
 	AFTER_PACK_ORIGINAL_NOFD(API_ID_getchar,
-				 ret, (ret == EOF ? 0 : 1), FD_API_READ, "s", "");
+				 ret, (ret == EOF ? 0 : 1), FD_API_READ_END, "s", "");
 	return ret;
 }
 
@@ -520,9 +542,10 @@ int putchar(int c)
 	static int (*putcharp)(int c);
 
 	BEFORE_ORIGINAL_FILE(putchar, LIBC);
+	FILE_API_START_BLOCK(API_ID_putchar, FD_API_WRITE_START);
 	ret = putcharp(c);
 	AFTER_PACK_ORIGINAL_NOFD(API_ID_putchar,
-				 ret, (ret == EOF ? 0 : 1), FD_API_WRITE, "d", c);
+				 ret, (ret == EOF ? 0 : 1), FD_API_WRITE_END, "d", c);
 	return ret;
 }
 
@@ -533,10 +556,12 @@ char* gets(char* str)
 
 	BEFORE_ORIGINAL_FILE(gets, LIBC);
 
+	FILE_API_START_BLOCK(API_ID_gets, FD_API_READ_START);
+
 	cret = getsp(str);
 
 	AFTER_PACK_ORIGINAL_NOFD(API_ID_gets,
-				 cret, strlen(cret), FD_API_READ, "s", str);
+				 cret, strlen(cret), FD_API_READ_END, "s", str);
 
 	return cret;
 }
@@ -547,9 +572,10 @@ int puts(const char* str)
 	static int (*putsp)(const char* str);
 
 	BEFORE_ORIGINAL_FILE(puts, LIBC);
+	FILE_API_START_BLOCK(API_ID_puts, FD_API_WRITE_START);
 	ret = putsp(str);
 	AFTER_PACK_ORIGINAL_NOFD(API_ID_puts,
-				 ret, ret, FD_API_WRITE, "s", str);
+				 ret, ret, FD_API_WRITE_END, "s", str);
 	return ret;
 }
 #endif

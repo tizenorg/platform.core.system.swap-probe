@@ -632,7 +632,7 @@ result File::Read(Tizen::Base::String& buffer) {
 				  API_ID_result_File__Read_Tizen__Base__String__buffer_,
 				  "x", (unsigned long)&buffer);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ, size, temp);
+		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ_END, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -686,7 +686,7 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 				  API_ID_result_File__Read_Tizen__Base__ByteBuffer__buffer_,
 				  "x", (unsigned long)&buffer);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ, size, temp);
+		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ_END, size, temp);
 		FLUSH_LOCAL_BUF();
 		
 		 postBlockEnd();
@@ -741,7 +741,7 @@ int File::Read(void *buffer, int length) {
 				  API_ID_int_File__Read_void__buffer__int_length_,
 				  "xd", (unsigned long)buffer, length);
 		PACK_COMMON_END(ret, res, blockresult);
-		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ, size, temp);
+		PACK_RESOURCE(nRead, (unsigned long)this, FD_FILE, FD_API_READ_END, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -964,7 +964,7 @@ result File::Write(const void *buffer, int length) {
 				  API_ID_result_File__Write_const_void__buffer__int_length_,
 				  "xd", (unsigned long)buffer, length);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE, size, temp);
+		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE_END, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -1018,7 +1018,7 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 				  API_ID_result_File__Write_const_Tizen__Base__ByteBuffer__buffer_,
 				  "x", (unsigned long)&buffer);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE, size, temp);
+		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE_END, size, temp);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();
@@ -1075,7 +1075,7 @@ result File::Write(const Tizen::Base::String& buffer) {
 				  API_ID_result_File__Write_const_Tizen__Base__String__buffer_,
 				  "s", temp_buf);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE, size, temp_path);
+		PACK_RESOURCE(nWritten, (unsigned long)this, FD_FILE, FD_API_WRITE_END, size, temp_path);
 		FLUSH_LOCAL_BUF();
 
 		 postBlockEnd();

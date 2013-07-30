@@ -75,19 +75,17 @@ extern "C"{
 
 #define		FD_API_OPEN				0
 #define		FD_API_CLOSE			1
-#define		FD_API_READ				2
-#define		FD_API_WRITE			3
-#define		FD_API_DIRECTORY		4
-#define		FD_API_PERMISSION		5
-#define		FD_API_OTHER			6
-#define		FD_API_SEND				7
-#define		FD_API_RECEIVE			8
-#define		FD_API_OPTION			9
-#define		FD_API_MANAGE			10
-#define		FD_API_INTERNAL_START	11
-#define		FD_API_INTERNAL_CLOSE	12
-#define		FD_API_WAIT				13
-#define		FD_API_INTERNAL_WAIT	14
+#define		FD_API_READ_START		2
+#define		FD_API_READ_END 		3
+#define		FD_API_WRITE_START		4
+#define		FD_API_WRITE_END		5
+#define		FD_API_DIRECTORY		6
+#define		FD_API_PERMISSION		7
+#define		FD_API_OTHER			8
+#define		FD_API_SEND             9
+#define		FD_API_RECEIVE			10
+#define		FD_API_OPTION			11
+#define		FD_API_MANAGE			12
 
 #define		MEMORY_API_ALLOC	0
 #define		MEMORY_API_FREE		1

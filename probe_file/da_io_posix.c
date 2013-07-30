@@ -73,7 +73,7 @@ int open(const char* path, int oflag, ...)
 	ret = openp(path, oflag, mode);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_open,
-			       ret, 0, ret, FD_API_OPEN, "sdd", path, oflag, mode);
+				   ret, 0, ret, FD_API_OPEN, "sdd", path, oflag, mode);
 
 	return ret;
 }
@@ -97,7 +97,7 @@ int openat(int fd, const char* path, int oflag, ...)
 	ret = openatp(fd, path, oflag, mode);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_openat,
-			       ret, 0, ret, FD_API_OPEN, "dsdd", fd, path, oflag, mode);
+				   ret, 0, ret, FD_API_OPEN, "dsdd", fd, path, oflag, mode);
 
 	return ret;
 }
@@ -112,7 +112,7 @@ int creat(const char* path, mode_t mode)
 	ret = creatp(path, mode);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_creat,
-			       ret, 0, ret, FD_API_OPEN, "sd", path, mode);
+				   ret, 0, ret, FD_API_OPEN, "sd", path, mode);
 
 	return ret;
 }
@@ -168,7 +168,7 @@ int faccessat(int fd, const char *path, int amode, int flag)
 	ret = faccessatp(fd, path, amode, flag);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_faccessat,
-			       ret, 0, fd, FD_API_PERMISSION, "dsdd", fd, path, amode, flag);
+				   ret, 0, fd, FD_API_PERMISSION, "dsdd", fd, path, amode, flag);
 
 	return ret;
 }
@@ -183,8 +183,8 @@ off_t lseek(int fd, off_t offset, int whence)
 	offret = lseekp(fd, offset, whence);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_lseek,
-			       offret, (unsigned int)offset, fd, FD_API_OTHER,
-			       "dxd", fd, offset, whence);
+				   offret, (unsigned int)offset, fd, FD_API_OTHER,
+				   "dxd", fd, offset, whence);
 
 	return offret;
 }
@@ -198,7 +198,7 @@ int fsync(int fd)
 	ret = fsyncp(fd);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_fsync,
-			       ret, 0, fd, FD_API_OTHER, "d", fd);
+				   ret, 0, fd, FD_API_OTHER, "d", fd);
 
 	return ret;
 }
@@ -212,7 +212,7 @@ int fdatasync(int fd)
 	ret = fdatasyncp(fd);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_fdatasync,
-			       ret, 0, fd, FD_API_OTHER, "d", fd);
+				   ret, 0, fd, FD_API_OTHER, "d", fd);
 
 	return ret;
 }
@@ -241,7 +241,7 @@ int ftruncate(int fd, off_t length)
 	ret = ftruncatep(fd, length);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_ftruncate,
-			       ret, (unsigned int)length, fd, FD_API_DIRECTORY, "dx", fd, length);
+				   ret, (unsigned int)length, fd, FD_API_DIRECTORY, "dx", fd, length);
 
 	return ret;
 }
@@ -273,7 +273,7 @@ int mkfifoat(int fd, const char *path, mode_t mode)
 	ret = mkfifoatp(fd, path, mode);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_mkfifoat,
-			       ret, 0, fd, FD_API_OTHER, "dsd", fd, path, mode);
+				   ret, 0, fd, FD_API_OTHER, "dsd", fd, path, mode);
 
 	return ret;
 }
@@ -304,7 +304,7 @@ int mknodat(int fd, const char *path, mode_t mode, dev_t dev)
 	ret = mknodatp(fd,path, mode,dev);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_mknodat,
-			       ret, 0, fd, FD_API_OTHER,
+				   ret, 0, fd, FD_API_OTHER,
 			"dsdx", fd, path, mode, (unsigned long int)dev);
 
 	return ret;
@@ -334,8 +334,8 @@ int fchownat(int fd, const char *path, uid_t owner, gid_t group, int flag)
 	_filepath = (char*)path;
 	ret = fchownatp(fd, path, owner, group, flag);
 	AFTER_PACK_ORIGINAL_FD(API_ID_fchownat,
-			       ret, 0, fd, FD_API_PERMISSION,
-			       "dsddd", fd, path, owner, group, flag);
+				   ret, 0, fd, FD_API_PERMISSION,
+				   "dsddd", fd, path, owner, group, flag);
 	return ret;
 }
 
@@ -346,7 +346,7 @@ int fchown(int fd, uid_t owner, gid_t group)
 	BEFORE_ORIGINAL_FILE(fchown, LIBC);
 	ret = fchownp(fd, owner, group);
 	AFTER_PACK_ORIGINAL_FD(API_ID_fchown,
-			       ret, 0, fd, FD_API_PERMISSION, "ddd", fd, owner, group);
+				   ret, 0, fd, FD_API_PERMISSION, "ddd", fd, owner, group);
 	return ret;
 }
 
@@ -369,8 +369,8 @@ int lockf(int fd, int function, off_t size)
 	BEFORE_ORIGINAL_FILE(lockf, LIBC);
 	ret = lockfp(fd, function, size);
 	AFTER_PACK_ORIGINAL_FD(API_ID_lockf,
-			       ret, (unsigned int)size, fd, FD_API_PERMISSION,
-			       "ddx", fd, function, size);
+				   ret, (unsigned int)size, fd, FD_API_PERMISSION,
+				   "ddx", fd, function, size);
 	return ret;
 }
 
@@ -394,8 +394,8 @@ int fchmodat(int fd, const char *path, mode_t mode, int flag)
 	_filepath = (char*)path;
 	ret = fchmodatp(fd, path, mode, flag);
 	AFTER_PACK_ORIGINAL_FD(API_ID_fchmodat,
-			       ret,0, fd, FD_API_PERMISSION,
-			       "dsdd", fd, path, mode, flag);
+				   ret,0, fd, FD_API_PERMISSION,
+				   "dsdd", fd, path, mode, flag);
 	return ret;
 }
 
@@ -406,7 +406,7 @@ int fchmod(int fd, mode_t mode)
 	BEFORE_ORIGINAL_FILE(fchmod, LIBC);
 	ret = fchmodp(fd, mode);
 	AFTER_PACK_ORIGINAL_FD(API_ID_fchmod,
-			       ret, 0, fd, FD_API_PERMISSION, "dd", fd, mode);
+				   ret, 0, fd, FD_API_PERMISSION, "dd", fd, mode);
 	return ret;
 }
 
@@ -421,11 +421,13 @@ ssize_t pread(int fd, void *buf, size_t nbyte, off_t offset)
 
 	BEFORE_ORIGINAL_FILE(pread, LIBC);
 
+	FILE_API_START_BLOCK(API_ID_pread, FD_API_READ_START);
+
 	sret = preadp(fd, buf, nbyte, offset);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_pread,
-			       sret, (unsigned int)sret, fd, FD_API_READ,
-			       "dpxx", fd, buf, nbyte, offset);
+				   sret, (unsigned int)sret, fd, FD_API_READ_END,
+				   "dpxx", fd, buf, nbyte, offset);
 
 	return sret;
 }
@@ -436,11 +438,13 @@ ssize_t read(int fd, void *buf, size_t nbyte)
 
 	BEFORE_ORIGINAL_FILE(read, LIBC);
 
+	FILE_API_START_BLOCK(API_ID_read, FD_API_READ_START);
+
 	sret = readp(fd, buf, nbyte);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_read,
-			       sret, (unsigned int)sret, fd, FD_API_READ,
-			       "dpx", fd, buf, nbyte);
+				   sret, (unsigned int)sret, fd, FD_API_READ_END,
+				   "dpx", fd, buf, nbyte);
 
 	return sret;
 }
@@ -452,11 +456,13 @@ ssize_t pwrite(int fd, const void *buf, size_t nbyte, off_t offset)
 
 	BEFORE_ORIGINAL_FILE(pwrite, LIBC);
 
+	FILE_API_START_BLOCK(API_ID_pwrite, FD_API_WRITE_START);
+
 	sret = pwritep(fd, buf, nbyte, offset);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_pwrite,
-			       sret, (unsigned int)sret, fd, FD_API_WRITE,
-			       "dpxx", fd, buf, nbyte, offset);
+				   sret, (unsigned int)sret, fd, FD_API_WRITE_END,
+				   "dpxx", fd, buf, nbyte, offset);
 
 	return sret;
 }
@@ -468,11 +474,13 @@ ssize_t write(int fd, const void *buf, size_t nbyte)
 
 	BEFORE_ORIGINAL_FILE(write, LIBC);
 
+	FILE_API_START_BLOCK(API_ID_write, FD_API_WRITE_START);
+
 	sret = writep(fd, buf, nbyte);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_write,
-			       sret, (unsigned int)sret, fd, FD_API_WRITE,
-			       "dpx", fd, buf, nbyte);
+				   sret, (unsigned int)sret, fd, FD_API_WRITE_END,
+				   "dpx", fd, buf, nbyte);
 
 	return sret;
 }
@@ -484,11 +492,14 @@ ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_FILE(readv, LIBC);
+
+	FILE_API_START_BLOCK(API_ID_readv, FD_API_READ_START);
+
 	sret = readvp(fd,iov,iovcnt);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_readv,
-			       sret, (unsigned int)sret, fd, FD_API_READ,
-			       "dpd", fd, iov, iovcnt);
+				   sret, (unsigned int)sret, fd, FD_API_READ_END,
+				   "dpd", fd, iov, iovcnt);
 
 	return sret;
 }
@@ -530,7 +541,7 @@ int fchdir(int fd)
 	BEFORE_ORIGINAL_FILE(fchdir, LIBC);
 	ret = fchdirp(fd);
 	AFTER_PACK_ORIGINAL_FD(API_ID_fchdir,
-			       ret, 0, fd, FD_API_DIRECTORY, "d", fd);
+				   ret, 0, fd, FD_API_DIRECTORY, "d", fd);
 	return ret;
 }
 
@@ -566,8 +577,8 @@ int linkat(int fd1, const char *path1, int fd2, const char *path2, int flag)
 	_filepath = (char*)path1;
 	ret = linkatp(fd1, path1, fd2, path2, flag);
 	AFTER_PACK_ORIGINAL_FD(API_ID_linkat,
-			       ret, 0, fd2, FD_API_DIRECTORY,
-			       "dsdsd", fd1, path2, fd2, path2, flag);
+				   ret, 0, fd2, FD_API_DIRECTORY,
+				   "dsdsd", fd1, path2, fd2, path2, flag);
 	return ret;
 }
 
@@ -591,7 +602,7 @@ int unlinkat(int fd, const char *path, int flag)
 	_filepath = (char*)path;
 	ret = unlinkatp(fd, path, flag);
 	AFTER_PACK_ORIGINAL_FD(API_ID_unlinkat,
-			       ret, 0, fd, FD_API_DIRECTORY, "dsd", fd, path, flag);
+				   ret, 0, fd, FD_API_DIRECTORY, "dsd", fd, path, flag);
 	return ret;
 }
 
@@ -615,7 +626,7 @@ int symlinkat(const char *path1, int fd, const char *path2)
 	_filepath = (char*)path1;
 	ret = symlinkatp(path1, fd, path2);
 	AFTER_PACK_ORIGINAL_FD(API_ID_symlinkat,
-			       ret, 0, fd, FD_API_DIRECTORY, "sds", path1, fd, path2);
+				   ret, 0, fd, FD_API_DIRECTORY, "sds", path1, fd, path2);
 	return ret;
 }
 
@@ -647,8 +658,8 @@ ssize_t readlinkat(int fd, const char * path, char * buf, size_t bufsize)
 	sret = readlinkatp(fd, path, buf, bufsize);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_readlinkat,
-			       sret, bufsize, fd, FD_API_DIRECTORY,
-			       "dssx", fd, path, buf, bufsize);
+				   sret, bufsize, fd, FD_API_DIRECTORY,
+				   "dssx", fd, path, buf, bufsize);
 
 	return sret;
 }
@@ -673,7 +684,7 @@ int mkdirat(int fd, const char *path, mode_t mode)
 	_filepath = (char*)path;
 	ret = mkdiratp(fd, path, mode);
 	AFTER_PACK_ORIGINAL_FD(API_ID_mkdirat,
-			       ret, 0, fd, FD_API_DIRECTORY, "dsd", fd, path, mode);
+				   ret, 0, fd, FD_API_DIRECTORY, "dsd", fd, path, mode);
 	return ret;
 }
 
@@ -698,7 +709,7 @@ DIR *fdopendir(int fd)
 	dret = fdopendirp(fd);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_fdopendir,
-			       dret, 0, fd, FD_API_DIRECTORY, "d", fd);
+				   dret, 0, fd, FD_API_DIRECTORY, "d", fd);
 
 	return dret;
 }
@@ -803,7 +814,7 @@ int fcntl(int fd, int cmd, ...)
 	ret = fcntlp(fd, cmd, arg);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_fcntl,
-			       ret, 0, fd, FD_API_OTHER, "ddd", fd, cmd, arg);
+				   ret, 0, fd, FD_API_OTHER, "ddd", fd, cmd, arg);
 
 	return ret;
 }
@@ -817,7 +828,7 @@ int dup(int fd)
 	ret = dupp(fd);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_dup,
-			       ret, 0, ret, FD_API_OPEN, "d", fd);
+				   ret, 0, ret, FD_API_OPEN, "d", fd);
 
 	return ret;
 }
@@ -831,7 +842,7 @@ int dup2(int fd, int fd2)
 	ret = dup2p(fd, fd2);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_dup2,
-			       ret, 0, ret, FD_API_OPEN, "dd", fd, fd2);
+				   ret, 0, ret, FD_API_OPEN, "dd", fd, fd2);
 
 	return ret;
 }
@@ -870,7 +881,7 @@ int fstatat(int fd, const char * path, struct stat * buf, int flag)
 	_filepath = (char*)path;
 	ret = fstatatp(fd, path, buf, flag);
 	AFTER_PACK_ORIGINAL_FD(API_ID_fstatat,
-			       ret, 0, fd, FD_API_OTHER, "dspd", fd, path, buf, flag);
+				   ret, 0, fd, FD_API_OTHER, "dspd", fd, path, buf, flag);
 	return ret;
 }
 
@@ -893,7 +904,7 @@ int futimens(int fd, const struct timespec times[2])
 	BEFORE_ORIGINAL_FILE(futimens, LIBC);
 	ret = futimensp(fd, times);
 	AFTER_PACK_ORIGINAL_FD(API_ID_futimens,
-			       ret, 0, fd, FD_API_OTHER, "dp", fd, times);
+				   ret, 0, fd, FD_API_OTHER, "dp", fd, times);
 	return ret;
 }
 
@@ -905,7 +916,7 @@ int utimensat(int fd, const char *path, const struct timespec times[2], int flag
 	_filepath = (char*)path;
 	ret = utimensatp(fd, path, times, flag);
 	AFTER_PACK_ORIGINAL_FD(API_ID_utimensat,
-			       ret, 0, fd, FD_API_OTHER, "dspd", fd, path, times, flag);
+				   ret, 0, fd, FD_API_OTHER, "dspd", fd, path, times, flag);
 	return ret;
 }
 

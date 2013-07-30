@@ -101,6 +101,20 @@
 	PRE_PROBEBLOCK()
 
 // ==================================================================
+// Additional macro for READ_START and WRITE_START
+// ==================================================================
+
+#define FILE_API_START_BLOCK(API_ID, APITYPE)						\
+    PRE_PROBEBLOCK();												\
+	POST_PACK_PROBEBLOCK_BEGIN();									\
+	PREPARE_LOCAL_BUF();											\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, "", 0);			\
+	PACK_COMMON_END(0, 0, 0);										\
+	PACK_RESOURCE(0, 0, FD_FILE, APITYPE, 0, _filepath);			\
+	FLUSH_LOCAL_BUF();												\
+	POST_PACK_PROBEBLOCK_END()
+
+// ==================================================================
 // AFTER_ORIGINAL macro for file
 // ==================================================================
 
