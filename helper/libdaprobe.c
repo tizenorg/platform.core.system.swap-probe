@@ -144,7 +144,7 @@ static int createSocket(void)
 			{
 
 			}
-			sprintf(buf, "%d|%u", getpid(), gTraceInfo.app.startTime);
+			sprintf(buf, "%d|%llu", getpid(), gTraceInfo.app.startTime);
 			printLogStr(buf, MSG_PID);
 			PRINTMSG("createSocket connect() success\n");
 		}
@@ -327,7 +327,8 @@ void __attribute__((constructor)) _init_probe()
 
 	// get app start time
 	gettimeofday(&ttime, NULL);
-	gTraceInfo.app.startTime = ((ttime.tv_sec * 10000 + (ttime.tv_usec/100)));
+	gTraceInfo.app.startTime = (uint64_t)ttime.tv_sec * 1000 * 1000
+		+ ttime.tv_usec;
 
 	// create socket for communication with da_daemon
 	if(createSocket() == 0)

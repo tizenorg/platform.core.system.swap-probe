@@ -176,7 +176,7 @@ typedef struct
 typedef struct
 {
 	char appName[128];
-	unsigned int startTime;
+	uint64_t startTime;
 } __appInfo;
 
 typedef struct
