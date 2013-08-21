@@ -77,12 +77,12 @@
 // =================================================================
 
 #define POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE)			\
-	PACK_RESOURCE(SIZE, FD, FD_FILE, APITYPE,						\
+	PACK_RESOURCE(SIZE, FD, APITYPE,						        \
 		      (_fstatret == 0 ? _statbuf.st_size : 0), _filepath);	\
 	FLUSH_LOCAL_BUF()
 
 #define POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE)			\
-	PACK_RESOURCE(SIZE, 0, FD_FILE, APITYPE, 0, _filepath);		\
+	PACK_RESOURCE(SIZE, 0, APITYPE, 0, _filepath);		        \
 	FLUSH_LOCAL_BUF()
 
 // ==================================================================
@@ -110,7 +110,7 @@
 	PREPARE_LOCAL_BUF();											\
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, "", 0);			\
 	PACK_COMMON_END(0, 0, 0);										\
-	PACK_RESOURCE(0, 0, FD_FILE, APITYPE, 0, _filepath);			\
+	PACK_RESOURCE(0, 0, APITYPE, 0, _filepath);			            \
 	FLUSH_LOCAL_BUF();												\
 	POST_PACK_PROBEBLOCK_END()
 

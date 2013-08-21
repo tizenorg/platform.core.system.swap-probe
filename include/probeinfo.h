@@ -70,9 +70,6 @@ extern "C"{
 /* #define		LC_CUSTOM		13 */
 /* #define		LC_SYNC			14 */
 
-#define		FD_FILE		0
-#define		FD_SOCKET	1
-
 #define		FD_API_OPEN				0
 #define		FD_API_CLOSE			1
 #define		FD_API_READ_START		2

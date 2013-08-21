@@ -260,12 +260,11 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 		BUF_PTR = pack_int32(BUF_PTR, info2);			\
 	} while (0)
 
-#define PACK_RESOURCE(size, fd_value, fd_type, fd_api_type, file_size,	\
+#define PACK_RESOURCE(size, fd_value, fd_api_type, file_size,	\
 		      file_path)					\
 	do {								\
 		BUF_PTR = pack_int64(BUF_PTR, size);			\
 		BUF_PTR = pack_int64(BUF_PTR, fd_value);		\
-		BUF_PTR = pack_int32(BUF_PTR, fd_type);			\
 		BUF_PTR = pack_int32(BUF_PTR, fd_api_type);		\
 		BUF_PTR = pack_int64(BUF_PTR, file_size);		\
 		BUF_PTR = pack_string(BUF_PTR, file_path);		\
