@@ -307,11 +307,21 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 		BUF_PTR = pack_int64(BUF_PTR, user);					\
 	} while(0)
 
- #define PACK_THREAD(thread_id, thread_type, api_type)	\
+ #define PACK_THREAD(thread_id, thread_type, api_type)			\
 	 do {								\
-		BUF_PTR = pack_int64(BUF_PTR, thread_id);		\
-		BUF_PTR = pack_int32(BUF_PTR, thread_type);		\
-		BUF_PTR = pack_int32(BUF_PTR, api_type);		\
+	if(thread_type == THREAD_PTHREAD) {	                        \
+	    BUF_PTR = pack_int64(BUF_PTR, thread_id);			\
+	    BUF_PTR = pack_int64(BUF_PTR, 0);				\
+	} else if(thread_type == THREAD_OSPTHREAD_WORKER		\
+		    || thread_type == THREAD_OSPTHREAD_EVENTDRIVEN) {   \
+	    BUF_PTR = pack_int64(BUF_PTR, 0);				\
+	    BUF_PTR = pack_int64(BUF_PTR, thread_id);			\
+	} else {							\
+	    BUF_PTR = pack_int64(BUF_PTR, 0);				\
+	    BUF_PTR = pack_int64(BUF_PTR, 0);				\
+	}				                                \
+	BUF_PTR = pack_int32(BUF_PTR, thread_type);	                \
+	BUF_PTR = pack_int32(BUF_PTR, api_type);		        \
 	} while (0)
 
 #define PACK_CUSTOM(handle, type, name, color, value)		\
