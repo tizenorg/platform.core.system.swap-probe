@@ -89,7 +89,7 @@ result Mutex::Create(void) {
 				  API_ID_result_Mutex__Create_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_NEW);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -145,7 +145,7 @@ result Mutex::Create(const Tizen::Base::String& name) {
 				  API_ID_result_Mutex__Create_const_Tizen__Base__String__name_,
 				  "s", temp);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_NEW);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -198,7 +198,7 @@ result Mutex::Release(void) {
 				  API_ID_result_Mutex__Release_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_RELEASE);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_RELEASE);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -245,7 +245,7 @@ result Mutex::Acquire(void) {
 				  API_ID_result_Mutex__Acquire_void_,
 				  "", 0);
 		PACK_COMMON_END(0, 0, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -261,7 +261,7 @@ result Mutex::Acquire(void) {
 				  API_ID_result_Mutex__Acquire_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -314,7 +314,7 @@ result Mutex::TryToAcquire(void) {
 				  API_ID_result_Mutex__TryToAcquire_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_TRY_ACQUIRE);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MUTEX, SYNC_API_TRY_ACQUIRE);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -368,7 +368,7 @@ result Semaphore::Create(int count) {
 				  API_ID_result_Semaphore__Create_int_count_,
 				  "d", count);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_NEW);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -424,7 +424,7 @@ result Semaphore::Create(const Tizen::Base::String& name, int count) {
 				  API_ID_result_Semaphore__Create_const_Tizen__Base__String__name__int_count_,
 				  "sd", temp, count);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_NEW);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -472,7 +472,7 @@ result Semaphore::Acquire(long timeout) {
 				  API_ID_result_Semaphore__Acquire_long_timeout_,
 				  "x", timeout);
 		PACK_COMMON_END(0, 0, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_START);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_START);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -488,7 +488,7 @@ result Semaphore::Acquire(long timeout) {
 				  API_ID_result_Semaphore__Acquire_long_timeout_,
 				  "x", timeout);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_END);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_END);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -541,7 +541,7 @@ result Semaphore::TryToAcquire(void) {
 				  API_ID_result_Semaphore__TryToAcquire_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_TRY_ACQUIRE);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_TRY_ACQUIRE);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -594,7 +594,7 @@ result Semaphore::Release(void) {
 				  API_ID_result_Semaphore__Release_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_RELEASE);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_SEMAPHORE, SYNC_API_RELEASE);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -647,7 +647,7 @@ result Monitor::Construct(void) {
 				  API_ID_result_Monitor__Construct_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NEW);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -694,7 +694,7 @@ result Monitor::Enter(void) {
 				  API_ID_result_Monitor__Enter_void_,
 				  "", 0);
 		PACK_COMMON_END(0, 0, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_ACQUIRE_WAIT_START);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_ACQUIRE_WAIT_START);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -710,7 +710,7 @@ result Monitor::Enter(void) {
 				  API_ID_result_Monitor__Enter_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_ACQUIRE_WAIT_END);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_ACQUIRE_WAIT_END);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -763,7 +763,7 @@ result Monitor::Exit(void) {
 				   API_ID_result_Monitor__Exit_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_RELEASE);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_RELEASE);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -810,7 +810,7 @@ result Monitor::Wait(void) {
 				  API_ID_result_Monitor__Wait_void_,
 				  "", 0);
 		PACK_COMMON_END(0, 0, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_COND_WAIT_START);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_COND_WAIT_START);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -826,7 +826,7 @@ result Monitor::Wait(void) {
 				  API_ID_result_Monitor__Wait_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_COND_WAIT_END);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_COND_WAIT_END);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -879,7 +879,7 @@ result Monitor::Notify(void) {
 				  API_ID_result_Monitor__Notify_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NOTIFY);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NOTIFY);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -932,7 +932,7 @@ result Monitor::NotifyAll(void) {
 				  API_ID_result_Monitor__NotifyAll_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NOTIFY_ALL);
+		PACK_SYNC((unsigned int) this, SYNC_OSP_MONITOR, SYNC_API_NOTIFY_ALL);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
