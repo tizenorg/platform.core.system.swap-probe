@@ -83,8 +83,11 @@ void on_orientation_changed(int angle, bool capi)
 	probeBlockStart();
 
 	internal_angle = angle;
-	runtime_info_get_value_bool(
-			RUNTIME_INFO_KEY_AUTO_ROTATION_ENABLED, &autoRotation);
+	if(runtime_info_get_value_bool(
+			RUNTIME_INFO_KEY_AUTO_ROTATION_ENABLED, &autoRotation) < 0)
+	{
+		PRINTMSG("ERROR: could not get auto rotation value!\n");
+	}
 
 	if(autoRotation)	// rotation is not locked
 	{

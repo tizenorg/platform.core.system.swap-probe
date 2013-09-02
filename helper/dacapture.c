@@ -266,8 +266,7 @@ static Evas* create_canvas(int width, int height)
 
 	// ARGB32 is sizeof(int), that is 4 bytes, per pixel
 	pixels = malloc(width * height * sizeof(int));
-	if(unlikely(pixels == NULL))
-	{
+	if (unlikely(pixels == NULL)) {
 		// ERROR: could not allocate canvas pixels!
 		evas_free(canvas);
 		return NULL;
@@ -280,7 +279,11 @@ static Evas* create_canvas(int width, int height)
 	einfo->info.alpha_threshold = 0;
 	einfo->info.func.new_update_region = NULL;
 	einfo->info.func.free_update_region = NULL;
-	evas_engine_info_set(canvas, (Evas_Engine_Info*)einfo);
+	if (unlikely(evas_engine_info_set(canvas,(Evas_Engine_Info*)einfo) == EINA_FALSE)) {
+		PRINTMSG("ERROR: could not set evas engine info!\n");
+		evas_free(canvas);
+		return NULL;
+	}
 
 	return canvas;
 }
