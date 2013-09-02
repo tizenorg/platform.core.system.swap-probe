@@ -69,7 +69,6 @@ extern "C"{
 #define SCREENSHOT_LOCK()										\
 	do {														\
 		int old;												\
-		LOG("screenshot_lock : %d, %s\n", gTraceInfo.screenshot.state, __func__); \
 		pthread_mutex_lock(&(gTraceInfo.screenshot.ssMutex));	\
 		old = gTraceInfo.screenshot.state;						\
 		gTraceInfo.screenshot.state = -1;						\
@@ -82,7 +81,6 @@ extern "C"{
 
 #define SCREENSHOT_UNLOCK()										\
 	do {														\
-		LOG("screenshot_unlock : %d, %s\n", gTraceInfo.screenshot.state, __func__); \
 		pthread_mutex_lock(&(gTraceInfo.screenshot.ssMutex));	\
 		if(gTraceInfo.screenshot.state < 0)						\
 			gTraceInfo.screenshot.state = 1;					\
@@ -92,7 +90,6 @@ extern "C"{
 #define SCREENSHOT_SET()										\
 	do {														\
 		int old;												\
-		LOG("screenshot_set : %d, %s\n", gTraceInfo.screenshot.state, __func__); \
 		pthread_mutex_lock(&(gTraceInfo.screenshot.ssMutex));	\
 		old = gTraceInfo.screenshot.state;						\
 		if(gTraceInfo.screenshot.state >= 0)					\
@@ -106,7 +103,6 @@ extern "C"{
 
 #define SCREENSHOT_UNSET()										\
 	do {														\
-		LOG("screenshot_unset : %d, %s\n", gTraceInfo.screenshot.state, __func__); \
 		pthread_mutex_lock(&(gTraceInfo.screenshot.ssMutex));	\
 		if(gTraceInfo.screenshot.state >= 0)					\
 			gTraceInfo.screenshot.state = 0;					\
@@ -116,7 +112,6 @@ extern "C"{
 #define SCREENSHOT_DONE()										\
 	do {														\
 		int old;												\
-		LOG("screenshot_done : %d, %s\n", gTraceInfo.screenshot.state, __func__); \
 		pthread_mutex_lock(&(gTraceInfo.screenshot.ssMutex));	\
 		old = gTraceInfo.screenshot.state;						\
 		if(gTraceInfo.screenshot.state == 1) 					\
@@ -130,7 +125,6 @@ extern "C"{
 #define SCREENSHOT_TIMEOUT()									\
 	do {														\
 		int old;												\
-		LOG("screenshot_timeout : %d, %s\n", gTraceInfo.screenshot.state, __func__); \
 		pthread_mutex_lock(&(gTraceInfo.screenshot.ssMutex));	\
 		old = gTraceInfo.screenshot.state;						\
 		if(gTraceInfo.screenshot.state == 2) 					\

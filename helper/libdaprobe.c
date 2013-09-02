@@ -48,6 +48,7 @@
 #include <sys/un.h>			// for sockaddr_un
 #include <sys/timerfd.h>	// for timerfd
 
+#include <app.h>
 #include "probeinfo.h"
 #include "dautil.h"
 #include "dahelper.h"
@@ -274,7 +275,7 @@ static void* recvThread(void* data)
 				}
 				else if(log.type == MSG_STOP)
 				{
-					exit(0);
+					app_efl_exit();
 				}
 				else
 				{
