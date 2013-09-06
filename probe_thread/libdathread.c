@@ -53,6 +53,10 @@ void _da_cleanup_handler(void *data)
 
 	probeInfo_t	probeInfo;
 
+	// unlock socket mutex to prevent deadlock
+	// in case of cancellation happened while log sending
+	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
+
 	PRE_UNCONDITIONAL_BLOCK_BEGIN();
 
 	pSelf = pthread_self();
@@ -76,8 +80,13 @@ void *_da_ThreadProc(void *params)
 	thread_routine_call *ptrc;
 	ptrc = (thread_routine_call *) params;
 	pthread_t pSelf;
+	int old_state;
+	int new_state = PTHREAD_CANCEL_DISABLE;
 
 	probeInfo_t	probeInfo;
+
+	// disable cancellation to prevent deadlock
+	real_pthread_setcancelstate(new_state, &old_state);
 
 	PRE_UNCONDITIONAL_BLOCK_BEGIN();
 
@@ -93,10 +102,16 @@ void *_da_ThreadProc(void *params)
 	
 	PRE_UNCONDITIONAL_BLOCK_END();
 
+	// restore cancellation state
+	real_pthread_setcancelstate(old_state, NULL);
+
 	pthread_cleanup_push(_da_cleanup_handler, NULL);
 	// call user-defined thread routine
 	ret = ptrc->thread_routine(ptrc->argument);
 	pthread_cleanup_pop(0);
+
+	// disable cancellation to prevent deadlock
+	real_pthread_setcancelstate(new_state, &old_state);
 
 	PRE_UNCONDITIONAL_BLOCK_BEGIN();
 
@@ -273,6 +288,15 @@ int pthread_equal(pthread_t t1, pthread_t t2)
 				   ret, t1, THREAD_API_OTHER, "xx", t1, t2);
 
 	return ret;
+}
+
+int real_pthread_setcancelstate(int state, int *oldstate)
+{
+	static int (*pthread_setcancelstatep)(int state, int *oldstate);
+
+	GET_REAL_FUNC(pthread_setcancelstate, LIBPTHREAD);
+
+	return pthread_setcancelstatep(state, oldstate);
 }
 
 int pthread_setcancelstate(int state, int *oldstate)

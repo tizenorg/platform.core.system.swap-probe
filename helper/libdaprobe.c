@@ -53,6 +53,7 @@
 #include "dautil.h"
 #include "dahelper.h"
 #include "dacollection.h"
+#include "da_sync.h"
 
 #include "binproto.h"
 
@@ -431,9 +432,9 @@ bool printLog(log_t* log, int msgType)
 
 	probeBlockStart();
 	log->type = msgType;
-	pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
+	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
 	res = send(gTraceInfo.socket.daemonSock, log, sizeof(log->type) + sizeof(log->length) + log->length, 0);
-	pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
+	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 	probeBlockEnd();
 
 	return true;
@@ -460,9 +461,9 @@ bool printLogStr(const char* str, int msgType)
 		log.length = 0;
 	}
 
-	pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
+	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
 	res = send(gTraceInfo.socket.daemonSock, &log, sizeof(log.type) + sizeof(log.length) + log.length, MSG_DONTWAIT);
-	pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
+	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 
 	probeBlockEnd();
 
@@ -755,9 +756,9 @@ bool setProbePoint(probeInfo_t* iProbe)
 	probeBlockStart();
 
 	// atomic operaion(gcc builtin) is more expensive then pthread_mutex
-	pthread_mutex_lock(&(gTraceInfo.index.eventMutex));	
+	real_pthread_mutex_lock(&(gTraceInfo.index.eventMutex));
 	iProbe->eventIndex = gTraceInfo.index.eventIndex++;
-	pthread_mutex_unlock(&(gTraceInfo.index.eventMutex));
+	real_pthread_mutex_unlock(&(gTraceInfo.index.eventMutex));
 
 	iProbe->currentTime = getCurrentTime();
 	iProbe->pID = getpid();
