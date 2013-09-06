@@ -45,7 +45,7 @@
  *
  * log format
  * 		SeqNumber`,ApiName`,Time`,Pid`,Tid`,InputParm`,Return`,PCAddr`,Error`,
- *		Size`,FDValue`,FDType`,FDApiType`,\n
+ *		Size`,FDValue`,FDType`,FDApiType`,					\n
  *		callstack_start`,callstack`,callstack_end
  *
  * fd type
@@ -62,42 +62,42 @@
 // macro for file probe
 // ===================================================================
 
-#define GET_FD_FROM_FILEP(FILEP)	\
+#define GET_FD_FROM_FILEP(FILEP)							\
 	_fd = (FILEP != NULL) ? fileno(FILEP) : -1
 
-#define DECLARE_VARIABLE_FD							\
-		DECLARE_VARIABLE_STANDARD;					\
-		char* _filepath = "";						\
-		int __attribute((unused)) _fd;				\
-		int __attribute((unused)) _fstatret = -1;	\
+#define DECLARE_VARIABLE_FD								\
+		DECLARE_VARIABLE_STANDARD;						\
+		char* _filepath = "";							\
+		int __attribute((unused)) _fd;						\
+		int __attribute((unused)) _fstatret = -1;				\
 		struct stat __attribute((unused)) _statbuf
 
 // =================================================================
 // POST_PROBEBLOCK_MIDDLE for file
 // =================================================================
 
-#define POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE)			\
-	PACK_RESOURCE(SIZE, FD, APITYPE,						        \
-		      (_fstatret == 0 ? _statbuf.st_size : 0), _filepath);	\
+#define POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE)				\
+	PACK_RESOURCE(SIZE, FD, APITYPE,						\
+		      (_fstatret == 0 ? _statbuf.st_size : 0), _filepath);		\
 	FLUSH_LOCAL_BUF()
 
-#define POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE)			\
-	PACK_RESOURCE(SIZE, 0, APITYPE, 0, _filepath);		        \
+#define POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE)					\
+	PACK_RESOURCE(SIZE, 0, APITYPE, 0, _filepath);					\
 	FLUSH_LOCAL_BUF()
 
 // ==================================================================
 // BEFORE_ORIGINAL macro for file
 // ==================================================================
 
-#define BEFORE_ORIGINAL_FILE(FUNCNAME, LIBNAME)	\
-	DECLARE_VARIABLE_FD;						\
-	GET_REAL_FUNC(FUNCNAME, LIBNAME);			\
+#define BEFORE_ORIGINAL_FILE(FUNCNAME, LIBNAME)						\
+	DECLARE_VARIABLE_FD;								\
+	GET_REAL_FUNC(FUNCNAME, LIBNAME);						\
 	PRE_PROBEBLOCK()
 
-#define BEFORE_ORIGINAL_FILE_NOFILTER(FUNCNAME, LIBNAME)	\
-	DECLARE_VARIABLE_FD;									\
+#define BEFORE_ORIGINAL_FILE_NOFILTER(FUNCNAME, LIBNAME)				\
+	DECLARE_VARIABLE_FD;								\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);						\
-	bfiltering = false;										\
+	bfiltering = false;								\
 	PRE_PROBEBLOCK()
 
 // ==================================================================
@@ -105,46 +105,46 @@
 // ==================================================================
 
 #define FILE_API_START_BLOCK(API_ID, APITYPE)						\
-    PRE_PROBEBLOCK();												\
-	POST_PACK_PROBEBLOCK_BEGIN();									\
-	PREPARE_LOCAL_BUF();											\
-	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, "", 0);			\
-	PACK_COMMON_END(0, 0, 0);										\
-	PACK_RESOURCE(0, 0, APITYPE, 0, _filepath);			            \
-	FLUSH_LOCAL_BUF();												\
+    PRE_PROBEBLOCK();									\
+	POST_PACK_PROBEBLOCK_BEGIN();							\
+	PREPARE_LOCAL_BUF();								\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, "", 0);				\
+	PACK_COMMON_END(0, 0, 0);							\
+	PACK_RESOURCE(0, 0, APITYPE, 0, _filepath);					\
+	FLUSH_LOCAL_BUF();								\
 	POST_PACK_PROBEBLOCK_END()
 
 // ==================================================================
 // AFTER_ORIGINAL macro for file
 // ==================================================================
 
-#define AFTER_PACK_ORIGINAL_FD(API_ID, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...) \
-	POST_PACK_PROBEBLOCK_BEGIN();													\
-	PREPARE_LOCAL_BUF();															\
+#define AFTER_PACK_ORIGINAL_FD(API_ID, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)	\
+	POST_PACK_PROBEBLOCK_BEGIN();							\
+	PREPARE_LOCAL_BUF();								\
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-	PACK_COMMON_END(RVAL, newerrno, blockresult);									\
-	_fstatret = fstat(FD, &_statbuf);												\
-	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE);								\
+	PACK_COMMON_END(RVAL, newerrno, blockresult);					\
+	_fstatret = fstat(FD, &_statbuf);						\
+	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE);				\
 	POST_PACK_PROBEBLOCK_END()
 
-#define AFTER_PACK_ORIGINAL_NOFD(API_ID, RVAL, SIZE, APITYPE, INPUTFORMAT, ...) \
-	POST_PACK_PROBEBLOCK_BEGIN();														\
-	PREPARE_LOCAL_BUF();																\
-	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
-	PACK_COMMON_END(RVAL, newerrno, blockresult);										\
-	POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE);									\
+#define AFTER_PACK_ORIGINAL_NOFD(API_ID, RVAL, SIZE, APITYPE, INPUTFORMAT, ...)		\
+	POST_PACK_PROBEBLOCK_BEGIN();							\
+	PREPARE_LOCAL_BUF();								\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
+	PACK_COMMON_END(RVAL, newerrno, blockresult);					\
+	POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE);				\
 	POST_PACK_PROBEBLOCK_END()
 
 #define AFTER_PACK_ORIGINAL_FILEP(API_ID, RVAL, SIZE, FILEP, APITYPE, INPUTFORMAT, ...) \
-	POST_PACK_PROBEBLOCK_BEGIN();														\
-	GET_FD_FROM_FILEP(FILEP);															\
-	if(_fd != -1) { 																	\
-		_fstatret = fstat(_fd, &_statbuf);												\
-	}																					\
-	PREPARE_LOCAL_BUF();																\
-	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
-	PACK_COMMON_END(RVAL, newerrno, blockresult);										\
-	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, _fd, APITYPE);									\
+	POST_PACK_PROBEBLOCK_BEGIN();							\
+	GET_FD_FROM_FILEP(FILEP);							\
+	if(_fd != -1) { 								\
+		_fstatret = fstat(_fd, &_statbuf);					\
+	}										\
+	PREPARE_LOCAL_BUF();								\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
+	PACK_COMMON_END(RVAL, newerrno, blockresult);					\
+	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, _fd, APITYPE);				\
 	POST_PACK_PROBEBLOCK_END()
 
 #endif	// __DA_IO_H__
