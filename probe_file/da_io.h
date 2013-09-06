@@ -37,6 +37,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include "daprobe.h"
 
@@ -69,6 +70,7 @@
 		DECLARE_VARIABLE_STANDARD;						\
 		char* _filepath = "";							\
 		int __attribute((unused)) _fd;						\
+		ssize_t __attribute((unused)) _filesize;				\
 		int __attribute((unused)) _fstatret = -1;				\
 		struct stat __attribute((unused)) _statbuf
 
@@ -99,20 +101,30 @@
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);						\
 	bfiltering = false;								\
 	PRE_PROBEBLOCK()
-
 // ==================================================================
 // Additional macro for READ_START and WRITE_START
 // ==================================================================
 
-#define FILE_API_START_BLOCK(API_ID, APITYPE)						\
-    PRE_PROBEBLOCK();									\
-	POST_PACK_PROBEBLOCK_BEGIN();							\
-	PREPARE_LOCAL_BUF();								\
-	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, "", 0);				\
-	PACK_COMMON_END(0, 0, 0);							\
-	PACK_RESOURCE(0, 0, APITYPE, 0, _filepath);					\
-	FLUSH_LOCAL_BUF();								\
-	POST_PACK_PROBEBLOCK_END()
+#define DEFINE_FILESIZE_FD(fd) _fd = (fd); _filesize = get_fd_filesize(_fd);
+#define DEFINE_FILESIZE_FP(fp) _fd = checked_fileno(fp); _filesize = get_fd_filesize(_fd);
+#define DEFINE_FILESIZE_0() _fd = _filesize = 0;
+
+#define AFTER_PACK_ORIGINAL(API_ID, RVAL, SIZE, ERRNO, FD, FILESIZE, APITYPE, INPUTFORMAT, ...)	\
+	POST_PACK_PROBEBLOCK_BEGIN();								\
+	PREPARE_LOCAL_BUF();									\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
+	PACK_COMMON_END(RVAL,ERRNO, blockresult);						\
+	PACK_RESOURCE(SIZE, FD, APITYPE, FILESIZE, _filepath);					\
+	FLUSH_LOCAL_BUF();									\
+	POST_PACK_PROBEBLOCK_END();
+
+#define FILE_API_START_BLOCK(API_ID, APITYPE, INPUTFORMAT, ...)					\
+	AFTER_PACK_ORIGINAL(API_ID, 0, 0, 0, _fd, _filesize, APITYPE, INPUTFORMAT, __VA_ARGS__)
+
+#define FILE_API_END_BLOCK(API_ID, RVAL, SIZE, APITYPE, INPUTFORMAT,...)			\
+	blockresult = 0; bfiltering = 1;							\
+	PRE_PROBEBLOCK();                                                                  	\
+	AFTER_PACK_ORIGINAL(API_ID,RVAL, SIZE, newerrno, _fd, _filesize, APITYPE, INPUTFORMAT, __VA_ARGS__)
 
 // ==================================================================
 // AFTER_ORIGINAL macro for file
@@ -146,5 +158,32 @@
 	PACK_COMMON_END(RVAL, newerrno, blockresult);					\
 	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, _fd, APITYPE);				\
 	POST_PACK_PROBEBLOCK_END()
+
+
+
+static inline ssize_t get_fd_filesize(int fd)
+{
+	/**
+	 * Calling library function on invalid file descriptiors is okay,
+	 * for such cases we assume size == 0
+	 * FIXME: Separate empty files and invalid descriptors.
+	 **/
+	struct stat buf;
+	int err = fstat(fd, &buf);
+	if (err)
+		return 0;
+	return buf.st_size ?: 0;
+}
+
+static inline int checked_fileno(FILE *fp)
+{
+	assert((fp != NULL) &&
+	       "This function (checked_fileno) is only called from probes\n"
+	       "on library functions. Passing NULL instead of file pointer\n"
+	       "to standart C functions is undefined behavior\n"
+	       "and as such fatal error.\n");
+	return fileno(fp);
+}
+
 
 #endif	// __DA_IO_H__

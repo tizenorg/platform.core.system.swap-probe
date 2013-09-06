@@ -143,7 +143,7 @@ int getBacktraceString(log_t* log, int bufsize);
 // declare variable for standard api (not tizen related api)
 #define DECLARE_VARIABLE_STANDARD		\
 		probeInfo_t	probeInfo; 			\
-		int blockresult;				\
+		int blockresult = 0;				\
 		bool bfiltering = true;			\
 		int olderrno, newerrno;			\
 		int __attribute__((unused)) ret

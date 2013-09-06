@@ -420,14 +420,12 @@ ssize_t pread(int fd, void *buf, size_t nbyte, off_t offset)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_FILE(pread, LIBC);
-
-	FILE_API_START_BLOCK(API_ID_pread, FD_API_READ_START);
-
+	DEFINE_FILESIZE_FD(fd);
+	FILE_API_START_BLOCK(API_ID_pread,FD_API_READ_START,
+				 "dpxx", fd, buf, nbyte, offset);
 	sret = preadp(fd, buf, nbyte, offset);
-
-	AFTER_PACK_ORIGINAL_FD(API_ID_pread,
-				   sret, (unsigned int)sret, fd, FD_API_READ_END,
-				   "dpxx", fd, buf, nbyte, offset);
+	FILE_API_END_BLOCK(API_ID_pread, sret, (unsigned int)sret,
+				FD_API_READ_END, "dpxx", fd, buf, nbyte, offset);
 
 	return sret;
 }
@@ -437,14 +435,14 @@ ssize_t read(int fd, void *buf, size_t nbyte)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_FILE(read, LIBC);
-
-	FILE_API_START_BLOCK(API_ID_read, FD_API_READ_START);
+	DEFINE_FILESIZE_FD(fd);
+	FILE_API_START_BLOCK(API_ID_read, FD_API_READ_START,
+				 "dpx", fd, buf, nbyte);
 
 	sret = readp(fd, buf, nbyte);
 
-	AFTER_PACK_ORIGINAL_FD(API_ID_read,
-				   sret, (unsigned int)sret, fd, FD_API_READ_END,
-				   "dpx", fd, buf, nbyte);
+	FILE_API_END_BLOCK(API_ID_read, sret, (unsigned int)sret,
+				FD_API_READ_END, "dpx", fd, buf, nbyte);
 
 	return sret;
 }
@@ -455,14 +453,14 @@ ssize_t pwrite(int fd, const void *buf, size_t nbyte, off_t offset)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_FILE(pwrite, LIBC);
-
-	FILE_API_START_BLOCK(API_ID_pwrite, FD_API_WRITE_START);
+	DEFINE_FILESIZE_FD(fd);
+	FILE_API_START_BLOCK(API_ID_pwrite, FD_API_WRITE_START,
+				 "dpxx", fd, buf, nbyte, offset);
 
 	sret = pwritep(fd, buf, nbyte, offset);
 
-	AFTER_PACK_ORIGINAL_FD(API_ID_pwrite,
-				   sret, (unsigned int)sret, fd, FD_API_WRITE_END,
-				   "dpxx", fd, buf, nbyte, offset);
+	FILE_API_END_BLOCK(API_ID_pwrite, sret, (unsigned int)sret,
+			       FD_API_WRITE_END, "dpxx", fd, buf, nbyte, offset);
 
 	return sret;
 }
@@ -473,14 +471,13 @@ ssize_t write(int fd, const void *buf, size_t nbyte)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_FILE(write, LIBC);
-
-	FILE_API_START_BLOCK(API_ID_write, FD_API_WRITE_START);
-
+	DEFINE_FILESIZE_FD(fd);
+	FILE_API_START_BLOCK(API_ID_write, FD_API_WRITE_START,
+			     "dpx", fd, buf, nbyte);
 	sret = writep(fd, buf, nbyte);
 
-	AFTER_PACK_ORIGINAL_FD(API_ID_write,
-				   sret, (unsigned int)sret, fd, FD_API_WRITE_END,
-				   "dpx", fd, buf, nbyte);
+	FILE_API_END_BLOCK(API_ID_write, sret, (unsigned int)sret,
+				FD_API_WRITE_END, "dpx", fd, buf, nbyte);
 
 	return sret;
 }
@@ -492,14 +489,13 @@ ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_FILE(readv, LIBC);
-
-	FILE_API_START_BLOCK(API_ID_readv, FD_API_READ_START);
-
+	DEFINE_FILESIZE_FD(fd);
+	FILE_API_START_BLOCK(API_ID_readv, FD_API_READ_START,
+				 "dpd", fd, iov, iovcnt);
 	sret = readvp(fd,iov,iovcnt);
 
-	AFTER_PACK_ORIGINAL_FD(API_ID_readv,
-				   sret, (unsigned int)sret, fd, FD_API_READ_END,
-				   "dpd", fd, iov, iovcnt);
+	FILE_API_END_BLOCK(API_ID_readv, sret, (unsigned int)sret,
+				FD_API_READ_END, "dpd", fd, iov, iovcnt);
 
 	return sret;
 }
