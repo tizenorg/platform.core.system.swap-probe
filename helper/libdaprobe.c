@@ -54,6 +54,7 @@
 #include "dahelper.h"
 #include "dacollection.h"
 #include "da_sync.h"
+#include "daprobe.h"
 
 #include "binproto.h"
 
@@ -84,7 +85,7 @@ bool printLog(log_t* log, int msgType);
 static void _configure(char* configstr)
 {
 	char buf[64];
-	gTraceInfo.optionflag = atoi(configstr);
+	gTraceInfo.optionflag = atoll(configstr);
 
 	sprintf(buf, "configure in probe : %s, %lx\n", configstr, gTraceInfo.optionflag);
 	PRINTMSG(buf);
@@ -420,8 +421,7 @@ void __attribute__((destructor)) _fini_probe()
 /************************************************************************
  * manipulate and print log functions
  ************************************************************************/
-
-bool printLog(log_t* log, int msgType)
+bool printLog(log_t *log, int msgType)
 {
 	int res;
 	if(unlikely(gTraceInfo.socket.daemonSock == -1))

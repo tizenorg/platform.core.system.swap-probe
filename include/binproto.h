@@ -64,6 +64,8 @@
 #define MSG_PROBE_CUSTOM 0x3009
 #define MSG_PROBE_SYNC 0x3010
 
+#define MSG_PROBE_GL 0x3012
+
 // TODO: remove this copy-paste
 #define CALLER_ADDRESS							\
 	((void*) __builtin_extract_return_addr(__builtin_return_address(0)))
@@ -342,15 +344,15 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 
 #define LOCAL_BUF_SIZE 1024
 #define PREPARE_LOCAL_BUF()			\
-		char buf[LOCAL_BUF_SIZE];	\
-		char *p = buf;			\
-		char *ret_p = NULL;
+		char msg_buf[LOCAL_BUF_SIZE];	\
+		char *BUF_PTR = msg_buf;			\
+		char *RET_PTR = NULL;
 
 #define MSG_LEN_OFFSET 16
 #define MSG_HDR_LEN 20
 #define FLUSH_LOCAL_BUF()						\
-		*(uint32_t *)(buf + MSG_LEN_OFFSET) = (p - buf) - MSG_HDR_LEN; \
-		send(gTraceInfo.socket.daemonSock, buf, (p - buf), 0);
+		*(uint32_t *)(msg_buf + MSG_LEN_OFFSET) = (p - msg_buf) - MSG_HDR_LEN; \
+		send(gTraceInfo.socket.daemonSock, msg_buf, (p - msg_buf), 0);
 
 // =========================== post block macro ===========================
 

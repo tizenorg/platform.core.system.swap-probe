@@ -59,7 +59,8 @@ OSP_SRCS =	$(COMMON_SRCS) \
 			./probe_ui/osp_capture.cpp \
 			./probe_ui/osp_scenemanager.cpp \
 			./probe_ui/osp_frameani.cpp \
-			./probe_ui/osp_display.cpp 
+			./probe_ui/osp_display.cpp \
+			./probe_graphics/da_gles20.cpp
 
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
 
@@ -84,6 +85,10 @@ all:	$(TIZEN_TARGET) $(OSP_TARGET) $(DUMMY_TARGET)
 tizen:	$(TIZEN_TARGET)
 osp:	$(OSP_TARGET)
 dummy:	$(DUMMY_TARGET)
+
+headers:
+	cat ./scripts/api_names.txt | awk -f ./scripts/gen_api_id_mapping_header.awk > include/api_id_mapping.h
+	cat ./scripts/api_names.txt | awk -f ./scripts/gen_api_id_mapping_header_list.awk > include/api_id_list.h
 
 $(TIZEN_TARGET): $(TIZEN_SRCS)
 	$(CC) $(INC_TIZEN) $(TIZEN_FLAGS) $(LIBDIR_TIZEN) -o $@ $(TIZEN_SRCS) $(TIZEN_LDFLAGS)

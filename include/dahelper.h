@@ -136,7 +136,7 @@ extern "C"{
 		}														\
 	} while(0)
 
-#define	NUM_ORIGINAL_LIBRARY	9
+#define	NUM_ORIGINAL_LIBRARY	11
 
 typedef enum
 {
@@ -148,7 +148,9 @@ typedef enum
 	LIBOSP_WEB = 5,
 	LIBECORE_INPUT_EVAS = 6,
 	LIBDAEMON = 7,
-	LIBCAPI_APPFW_APPLICATION = 8
+	LIBCAPI_APPFW_APPLICATION = 8,
+	LIBGLES20 = 9,
+	LIBEGL = 10
 } ORIGINAL_LIBRARY;
 
 extern char *lib_string[NUM_ORIGINAL_LIBRARY];

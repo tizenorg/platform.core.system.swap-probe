@@ -35,9 +35,19 @@
 
 #include "dahelper.h"
 
-char *lib_string[NUM_ORIGINAL_LIBRARY] = {"libc.so.6", "libpthread.so.0", 
-	"libelementary.so", "libosp-uifw.so", "libosp-appfw.so", "libosp-web.so", 
-	"libecore_input_evas.so.1", "libdaemon.so.0", "libcapi-appfw-application.so.0"};
+char *lib_string[NUM_ORIGINAL_LIBRARY] = {
+	"libc.so.6",
+	"libpthread.so.0",
+	"libelementary.so",
+	"libosp-uifw.so",
+	"libosp-appfw.so",
+	"libosp-web.so",
+	"libecore_input_evas.so.1",
+	"libdaemon.so.0",
+	"libcapi-appfw-application.so.0",
+	"libGLESv2.so",
+	"libEGL.so"
+};
 void *lib_handle[NUM_ORIGINAL_LIBRARY];
 
 /* trace info global variable */

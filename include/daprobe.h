@@ -148,24 +148,34 @@ int getBacktraceString(log_t* log, int bufsize);
 		int olderrno, newerrno;			\
 		int __attribute__((unused)) ret
 
+// declare variable for standard api (not tizen related api) without ret
+#define DECLARE_VARIABLE_STANDARD_NORET		\
+		probeInfo_t	probeInfo; 			\
+		int blockresult;				\
+		bool bfiltering = true;			\
+		int olderrno, newerrno;			\
+
 // ========================== get function pointer =========================
 
 #define GET_REAL_FUNCP(FUNCNAME, SONAME, FUNCTIONPOINTER)			\
+	GET_REAL_FUNCP_STR(#FUNCNAME, SONAME, FUNCTIONPOINTER)
+
+#define GET_REAL_FUNCP_STR(FUNCNAME, SONAME, FUNCTIONPOINTER)			\
 		do {														\
-			if(!FUNCTIONPOINTER) {									\
+			if (!FUNCTIONPOINTER) {									\
 				probeBlockStart();									\
-				if(lib_handle[SONAME] == NULL) {					\
+				if (lib_handle[SONAME] == NULL) {					\
 					lib_handle[SONAME] = dlopen(lib_string[SONAME], RTLD_LAZY);			\
-					if(lib_handle[SONAME] == NULL) {				\
+					if (lib_handle[SONAME] == NULL) {				\
 						char perror_msg[PERROR_MSG_MAX];			\
-						sprintf(perror_msg, "dlopen failed : %s", lib_string[SONAME]);	\
+						sprintf(perror_msg, "dlopen failed : %s\n", lib_string[SONAME]);	\
 						perror(perror_msg);							\
 						exit(0);									\
-					}												\
+					} \
 				}													\
-				FUNCTIONPOINTER = dlsym(lib_handle[SONAME], #FUNCNAME);		\
-				if(FUNCTIONPOINTER == NULL || dlerror() != NULL) {	\
-					perror("dlsym failed : " #FUNCNAME);			\
+				FUNCTIONPOINTER = dlsym(lib_handle[SONAME], FUNCNAME);		\
+				if (FUNCTIONPOINTER == NULL || dlerror() != NULL) {		\
+					perror("dlsym failed : <" FUNCNAME ">\n");			\
 					exit(0);										\
 				}													\
 				probeBlockEnd();									\

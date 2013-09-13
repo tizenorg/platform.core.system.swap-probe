@@ -69,6 +69,7 @@ extern "C"{
 /* #define		LC_THREAD		12 */
 /* #define		LC_CUSTOM		13 */
 /* #define		LC_SYNC			14 */
+/* #define		LC_GLES20		16 */
 
 #define		FD_API_OPEN				0
 #define		FD_API_CLOSE			1
@@ -160,6 +161,7 @@ enum DaOptions
 	OPT_SNAPSHOT	=	0x00000080,
 	OPT_EVENT		=	0x00000100,
 	OPT_RECORD		=	0x00000200,
+	OPT_GLES		=	0x00040000,
 	OPT_ALWAYSON	=	0x11111111
 };
 
