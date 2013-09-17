@@ -527,3 +527,6 @@
 #define API_ID_glIsRenderbuffer                                                                                                                 504 // glIsRenderbuffer
 #define API_ID_glIsShader                                                                                                                       505 // glIsShader
 #define API_ID_glIsTexture                                                                                                                      506 // glIsTexture
+
+#define API_ID__SglSwapBuffers                                                                                                                  507 // _SglSwapBuffers
+#define API_ID_eglSwapBuffers                                                                                                                   508 // eglSwapBuffers
