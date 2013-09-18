@@ -78,9 +78,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	ret = (this->*Constructp)(filePath, openMode, createParentDirectories);
 
 	if(postBlockBegin(blockresult)) {
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
 		WcharToChar(temp_path,filePath.GetPointer());
 		WcharToChar(temp_mode,openMode.GetPointer()); 
 		 
@@ -91,7 +90,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp_path);
 		FLUSH_LOCAL_BUF();
 		 
-		 postBlockEnd();
+		postBlockEnd();
 	}
 
 	return ret;
@@ -135,9 +134,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	if(postBlockBegin(blockresult)) {
 		WcharToChar(temp_path,filePath.GetPointer());
 		WcharToChar(temp_mode,openMode.GetPointer());
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
@@ -147,7 +145,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp_path);
 		FLUSH_LOCAL_BUF();
 
-		 postBlockEnd();
+		postBlockEnd();
 	}
 
 	return ret;
@@ -190,9 +188,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	if(postBlockBegin(blockresult)) {
 
 		WcharToChar(temp,filePath.GetPointer());
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
@@ -202,7 +199,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp);
 		FLUSH_LOCAL_BUF();
 
-		 postBlockEnd();
+		postBlockEnd();
 	}
 
 	return ret;
@@ -247,9 +244,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 
 	if(postBlockBegin(blockresult)) {
 		WcharToChar(temp,filePath.GetPointer());
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
@@ -259,7 +255,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp);
 		FLUSH_LOCAL_BUF();
 
-		 postBlockEnd();
+		postBlockEnd();
 	}
 	
 	return ret;
@@ -299,9 +295,8 @@ result File::Flush(void) {
 
 	if(postBlockBegin(blockresult)) {
 		WcharToChar(temp,this->GetName().GetPointer());
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
@@ -311,7 +306,7 @@ result File::Flush(void) {
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OTHER, size, temp);
 		FLUSH_LOCAL_BUF();
 
-		 postBlockEnd();
+		postBlockEnd();
 	}
 
 	return ret;
@@ -353,7 +348,7 @@ Tizen::Base::String File::GetName(void) const{
 	if(postBlockBegin(blockresult)) {
 		WcharToChar(temp,ret.GetPointer());
 		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
+			size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
@@ -398,16 +393,28 @@ result File::Read(Tizen::Base::String& buffer) {
 
 	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
+		WcharToChar(temp, this->GetName().GetPointer());
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
+				  API_ID_result_File__Read_Tizen__Base__String__buffer_,
+				  "x", (unsigned long)&buffer);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_RESOURCE(0, (unsigned long)this, FD_API_READ_START, size, temp);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 
 	ret = (this->*Readp)(buffer);
 
 	if(postBlockBegin(blockresult)) {
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
-		WcharToChar(temp,this->GetName().GetPointer());
+		setProbePoint(&probeInfo);
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
+		WcharToChar(temp, this->GetName().GetPointer());
 		nRead = buffer.GetLength();
 
 		PREPARE_LOCAL_BUF();
@@ -418,7 +425,7 @@ result File::Read(Tizen::Base::String& buffer) {
 		PACK_RESOURCE(nRead, (unsigned long)this, FD_API_READ_END, size, temp);
 		FLUSH_LOCAL_BUF();
 
-		 postBlockEnd();
+		postBlockEnd();
 	}
 
 	return ret;
@@ -453,16 +460,28 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 
 	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
+		WcharToChar(temp, this->GetName().GetPointer());
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
+				  API_ID_result_File__Read_Tizen__Base__ByteBuffer__buffer_,
+				  "x", (unsigned long)&buffer);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_RESOURCE(0, (unsigned long)this, FD_API_READ_START, size, temp);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 
 	ret = (this->*Readp)(buffer);
 
 	if(postBlockBegin(blockresult)) {
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
-		WcharToChar(temp,this->GetName().GetPointer());
+		setProbePoint(&probeInfo);
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
+		WcharToChar(temp, this->GetName().GetPointer());
 		buffer.GetInt(nRead);
 
 		PREPARE_LOCAL_BUF();
@@ -473,7 +492,7 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 		PACK_RESOURCE(nRead, (unsigned long)this, FD_API_READ_END, size, temp);
 		FLUSH_LOCAL_BUF();
 		
-		 postBlockEnd();
+		postBlockEnd();
 	}
 
 	return ret;
@@ -508,6 +527,18 @@ int File::Read(void *buffer, int length) {
 	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nRead = Tell();
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
+		WcharToChar(temp, this->GetName().GetPointer());
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
+				  API_ID_int_File__Read_void__buffer__int_length_,
+				  "xd", (unsigned long)buffer, length);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_RESOURCE(0, (unsigned long)this, FD_API_READ_START, size, temp);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 
@@ -515,9 +546,10 @@ int File::Read(void *buffer, int length) {
 	result res = GetLastResult();
 
 	if(postBlockBegin(blockresult)) {
-		File::GetAttributes(this->GetName(),attr);
-		WcharToChar(temp,this->GetName().GetPointer());
-		size = attr.GetFileSize();
+		setProbePoint(&probeInfo);
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
+		WcharToChar(temp, this->GetName().GetPointer());
 		nRead = Tell() - nRead;
 
 		PREPARE_LOCAL_BUF();
@@ -528,7 +560,7 @@ int File::Read(void *buffer, int length) {
 		PACK_RESOURCE(nRead, (unsigned long)this, FD_API_READ_END, size, temp);
 		FLUSH_LOCAL_BUF();
 
-		 postBlockEnd();
+		postBlockEnd();
 	}
 
 	return ret;
@@ -581,10 +613,9 @@ result File::Seek(FileSeekPosition position, long offset) {
 
 		sprintf(temp_pos, "%d", position);
 
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
-		WcharToChar(temp,this->GetName().GetPointer());
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
+		WcharToChar(temp, this->GetName().GetPointer());
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
@@ -635,9 +666,8 @@ int File::Tell(void) const {
 	result res = GetLastResult();
 
 	if(postBlockBegin(blockresult)) {
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
 		WcharToChar(temp,this->GetName().GetPointer());
 
 		PREPARE_LOCAL_BUF();
@@ -687,9 +717,8 @@ result File::Truncate(int length) {
 	ret = (this->*Truncatep)(length);
 
 	if(postBlockBegin(blockresult)) {
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
 		WcharToChar(temp,this->GetName().GetPointer());
 
 		PREPARE_LOCAL_BUF();
@@ -735,16 +764,28 @@ result File::Write(const void *buffer, int length) {
 	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nWritten = Tell();
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
+		WcharToChar(temp, this->GetName().GetPointer());
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
+				  API_ID_result_File__Write_const_void__buffer__int_length_,
+				  "xd", (unsigned long)buffer, length);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_RESOURCE(0, (unsigned long)this, FD_API_WRITE_START, size, temp);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 
 	ret = (this->*Writep)(buffer, length);
 
 	if(postBlockBegin(blockresult)) {
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
-		WcharToChar(temp,this->GetName().GetPointer());
+		setProbePoint(&probeInfo);
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
+		WcharToChar(temp, this->GetName().GetPointer());
 		nWritten = Tell() - nWritten;
 
 		PREPARE_LOCAL_BUF();
@@ -755,7 +796,7 @@ result File::Write(const void *buffer, int length) {
 		PACK_RESOURCE(nWritten, (unsigned long)this, FD_API_WRITE_END, size, temp);
 		FLUSH_LOCAL_BUF();
 
-		 postBlockEnd();
+		postBlockEnd();
 	}
 
 	return ret;
@@ -790,15 +831,27 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nWritten = Tell();
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
+		WcharToChar(temp,this->GetName().GetPointer());
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
+				  API_ID_result_File__Write_const_Tizen__Base__ByteBuffer__buffer_,
+				  "x", (unsigned long)&buffer);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_RESOURCE(0, (unsigned long)this, FD_API_WRITE_START, size, temp);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 
 	ret = (this->*Writep)(buffer);
 
 	if(postBlockBegin(blockresult)) {
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
+		setProbePoint(&probeInfo);
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
 		WcharToChar(temp,this->GetName().GetPointer());
 		nWritten = Tell() - nWritten;
 
@@ -810,7 +863,7 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 		PACK_RESOURCE(nWritten, (unsigned long)this, FD_API_WRITE_END, size, temp);
 		FLUSH_LOCAL_BUF();
 
-		 postBlockEnd();
+		postBlockEnd();
 	}
 
 	return ret;
@@ -846,18 +899,31 @@ result File::Write(const Tizen::Base::String& buffer) {
 	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nWritten = Tell();
+		WcharToChar(temp_buf, buffer.GetPointer());
+		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+			size = attr.GetFileSize();
+		WcharToChar(temp_path, this->GetName().GetPointer());
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
+				  API_ID_result_File__Write_const_Tizen__Base__String__buffer_,
+				  "s", temp_buf);
+		PACK_COMMON_END(0, 0, blockresult);
+		PACK_RESOURCE(0, (unsigned long)this, FD_API_WRITE_START, size, temp_path);
+		FLUSH_LOCAL_BUF();
+
 		preBlockEnd();
 	}
 
 	ret = (this->*Writep)(buffer);
 
 	if(postBlockBegin(blockresult)) {
+		setProbePoint(&probeInfo);
 		WcharToChar(temp_buf,buffer.GetPointer());
 		WcharToChar(temp_path,this->GetName().GetPointer());
 		nWritten = Tell() - nWritten;
-		if (ret == E_SUCCESS &&
-		    E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-		    size = attr.GetFileSize();
+		if(E_SUCCESS == File::GetAttributes(this->GetName(),attr))
+			size = attr.GetFileSize();
 		nWritten = Tell() - nWritten;
 
 		PREPARE_LOCAL_BUF();
@@ -868,7 +934,7 @@ result File::Write(const Tizen::Base::String& buffer) {
 		PACK_RESOURCE(nWritten, (unsigned long)this, FD_API_WRITE_END, size, temp_path);
 		FLUSH_LOCAL_BUF();
 
-		 postBlockEnd();
+		postBlockEnd();
 	}
 	return ret;
 }
