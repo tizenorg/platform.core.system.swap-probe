@@ -36,6 +36,7 @@
 #include "probeinfo.h"
 #include "dahelper.h"
 #include "da_thread.h"
+#include "da_sync.h"
 
 #include "binproto.h"
 
