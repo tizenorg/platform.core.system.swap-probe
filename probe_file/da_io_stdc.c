@@ -133,30 +133,6 @@ int fclose(FILE* stream)
 	return ret;
 }
 
-int remove(const char* filename)
-{
-	static int (*removep)(const char* filename);
-
-	BEFORE_ORIGINAL_FILE(remove, LIBC);
-	_filepath = (char*)filename;
-	ret = removep(filename);
-	AFTER_PACK_ORIGINAL_NOFD(API_ID_remove,
-				 ret, 0, FD_API_DIRECTORY, "s", filename);
-	return ret;
-}
-
-int rename(const char* oldname, const char* newname)
-{
-	static int (*renamep)(const char* oldname, const char* newname);
-
-	BEFORE_ORIGINAL_FILE(rename, LIBC);
-	_filepath = (char*)newname;
-	ret = renamep(oldname, newname);
-	AFTER_PACK_ORIGINAL_NOFD(API_ID_rename,
-				 ret, 0, FD_API_DIRECTORY, "ss", oldname, newname);
-	return ret;
-}
-
 FILE * tmpfile ( void )
 {
 	static FILE* (*tmpfilep) ( void );
@@ -276,17 +252,7 @@ int fileno(FILE* stream)
 	return ret;
 }
 
-void perror(const char* string)
-{
-	static void (*perrorp)(const char* string);
 
-	BEFORE_ORIGINAL_FILE(perror, LIBC);
-
-	perrorp(string);
-
-	AFTER_PACK_ORIGINAL_NOFD(API_ID_perror,
-				 0, 0, FD_API_OTHER, "s", string);
-}
 
 // *******************************************************************
 // File read / write APIs
@@ -606,20 +572,7 @@ int puts(const char* str)
 }
 #endif
 
-char* tmpnam(char* str)
-{
-	static char* (*tmpnamp)(char* str);
-	char* cret;
 
-	BEFORE_ORIGINAL_FILE(tmpnam, LIBC);
-
-	cret = tmpnamp(str);
-
-	AFTER_PACK_ORIGINAL_NOFD(API_ID_tmpnam,
-				 cret, 0, FD_API_OTHER, "s", str);
-
-	return cret;
-}
 
 void setbuf(FILE* stream, char* buf)
 {
