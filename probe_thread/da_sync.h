@@ -41,6 +41,7 @@ extern "C"{
 
 int real_pthread_mutex_lock(pthread_mutex_t *mutex);
 int real_pthread_mutex_unlock(pthread_mutex_t *mutex);
+int real_pthread_setcancelstate(int state, int *oldstate);
 
 #define BEFORE_ORIGINAL_SYNC(FUNCNAME, LIBNAME) 	\
 	DECLARE_VARIABLE_STANDARD;						\
