@@ -473,15 +473,27 @@ void glEnableVertexAttribArray(GLuint index) {
 	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", index);
 }
 
-//EGLBoolean eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
-//	typedef EGLBoolean (*methodType)(EGLDisplay, EGLSurface);
-//	BEFORE_EGL(eglSwapBuffers);
-//	EGLBoolean ret = eglSwapBuffersp(dpy, surface);
-//	error = glGetError();
-//AFTER_NO_PARAM(ret, APITYPE_CONTEXT, "");
-//
-//	return ret;
-//}
+#undef eglSwapBuffers
+extern "C" EGLBoolean eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
+	typedef EGLBoolean (*methodType)(EGLDisplay, EGLSurface);
+	BEFORE_EGL(eglSwapBuffers);
+	EGLBoolean ret = eglSwapBuffersp(dpy, surface);
+	error = eglGetError();
+	AFTER_NO_PARAM(ret, APITYPE_CONTEXT, "");
+
+	return ret;
+}
+#define eglSwapBuffers _SglSwapBuffers
+
+EGLBoolean _SglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
+	typedef EGLBoolean (*methodType)(EGLDisplay, EGLSurface);
+	BEFORE_OSP_UIFW(_SglSwapBuffers);
+	EGLBoolean ret = _SglSwapBuffersp(dpy, surface);
+	error = eglGetError();
+	AFTER_NO_PARAM(ret, APITYPE_CONTEXT, "");
+
+	return ret;
+}
 
 // ==================================================================
 // F 5
