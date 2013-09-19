@@ -205,13 +205,13 @@ int ftruncate(int fd, off_t length)
 
 int fchown(int fd, uid_t owner, gid_t group)
 {
-       static int (*fchownp)(int fd, uid_t owner, gid_t group);
+	static int (*fchownp)(int fd, uid_t owner, gid_t group);
 
-       BEFORE_ORIGINAL_FILE(fchown, LIBC);
-       ret = fchownp(fd, owner, group);
-       AFTER_PACK_ORIGINAL_FD(API_ID_fchown, ret, 0, fd, FD_API_PERMISSION, 
-			      "ddd", fd, owner, group);
-       return ret;
+	BEFORE_ORIGINAL_FILE(fchown, LIBC);
+	ret = fchownp(fd, owner, group);
+	AFTER_PACK_ORIGINAL_FD(API_ID_fchown, ret, 0, fd, FD_API_PERMISSION,
+			  "ddd", fd, owner, group);
+	return ret;
 }
 
 
@@ -251,12 +251,12 @@ ssize_t pread(int fd, void *buf, size_t nbyte, off_t offset)
 	static ssize_t (*preadp)(int fd, void *buf, size_t nbyte, off_t offset);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(pread, LIBC);
-	DEFINE_FILESIZE_FD(fd);
-	FILE_API_START_BLOCK(API_ID_pread,FD_API_READ_START,
-				 "dpxx", fd, buf, nbyte, offset);
+	BEFORE_ORIGINAL_START_END_FD(API_ID_pread, pread, LIBC, fd,
+				FD_API_READ_START, "dpxx", fd, buf, nbyte, offset);
+
 	sret = preadp(fd, buf, nbyte, offset);
-	FILE_API_END_BLOCK(API_ID_pread, sret, (unsigned int)sret,
+
+	AFTER_ORIGINAL_START_END_FD(API_ID_pread, sret, (unsigned int)sret, fd,
 				FD_API_READ_END, "dpxx", fd, buf, nbyte, offset);
 
 	return sret;
@@ -266,14 +266,12 @@ ssize_t read(int fd, void *buf, size_t nbyte)
 	static ssize_t (*readp)(int fildes, void *buf, size_t nbyte);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(read, LIBC);
-	DEFINE_FILESIZE_FD(fd);
-	FILE_API_START_BLOCK(API_ID_read, FD_API_READ_START,
-				 "dpx", fd, buf, nbyte);
+	BEFORE_ORIGINAL_START_END_FD(API_ID_read, read, LIBC, fd, FD_API_READ_START,
+				"dpx", fd, buf, nbyte);
 
 	sret = readp(fd, buf, nbyte);
 
-	FILE_API_END_BLOCK(API_ID_read, sret, (unsigned int)sret,
+	AFTER_ORIGINAL_START_END_FD(API_ID_read, sret, (unsigned int)sret, fd,
 				FD_API_READ_END, "dpx", fd, buf, nbyte);
 
 	return sret;
@@ -284,15 +282,14 @@ ssize_t pwrite(int fd, const void *buf, size_t nbyte, off_t offset)
 	static ssize_t (*pwritep)(int fd, const void *buf, size_t nbyte, off_t offset);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(pwrite, LIBC);
-	DEFINE_FILESIZE_FD(fd);
-	FILE_API_START_BLOCK(API_ID_pwrite, FD_API_WRITE_START,
+	BEFORE_ORIGINAL_START_END_FD(API_ID_pwrite, pwrite, LIBC, fd, FD_API_WRITE_START,
 				 "dpxx", fd, buf, nbyte, offset);
 
 	sret = pwritep(fd, buf, nbyte, offset);
 
-	FILE_API_END_BLOCK(API_ID_pwrite, sret, (unsigned int)sret,
-			       FD_API_WRITE_END, "dpxx", fd, buf, nbyte, offset);
+	DEFINE_FILESIZE_FD(fd);
+	AFTER_ORIGINAL_START_END_FD(API_ID_pwrite, sret, (unsigned int)sret, fd,
+				   FD_API_WRITE_END, "dpxx", fd, buf, nbyte, offset);
 
 	return sret;
 }
@@ -302,13 +299,13 @@ ssize_t write(int fd, const void *buf, size_t nbyte)
 	static ssize_t (*writep)(int fildes, const void *buf, size_t nbyte);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(write, LIBC);
-	DEFINE_FILESIZE_FD(fd);
-	FILE_API_START_BLOCK(API_ID_write, FD_API_WRITE_START,
-			     "dpx", fd, buf, nbyte);
+	BEFORE_ORIGINAL_START_END_FD(API_ID_write, write, LIBC, fd, FD_API_WRITE_START,
+				 "dpx", fd, buf, nbyte);
+
 	sret = writep(fd, buf, nbyte);
 
-	FILE_API_END_BLOCK(API_ID_write, sret, (unsigned int)sret,
+	DEFINE_FILESIZE_FD(fd);
+	AFTER_ORIGINAL_START_END_FD(API_ID_write, sret, (unsigned int)sret, fd,
 				FD_API_WRITE_END, "dpx", fd, buf, nbyte);
 
 	return sret;
@@ -320,13 +317,12 @@ ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
 	static ssize_t (*readvp)(int fd, const struct iovec *iov, int iovcnt);
 	ssize_t sret;
 
-	BEFORE_ORIGINAL_FILE(readv, LIBC);
-	DEFINE_FILESIZE_FD(fd);
-	FILE_API_START_BLOCK(API_ID_readv, FD_API_READ_START,
+	BEFORE_ORIGINAL_START_END_FD(API_ID_readv, readv, LIBC, fd, FD_API_READ_START,
 				 "dpd", fd, iov, iovcnt);
+
 	sret = readvp(fd,iov,iovcnt);
 
-	FILE_API_END_BLOCK(API_ID_readv, sret, (unsigned int)sret,
+	AFTER_ORIGINAL_START_END_FD(API_ID_readv, sret, (unsigned int)sret, fd,
 				FD_API_READ_END, "dpd", fd, iov, iovcnt);
 
 	return sret;

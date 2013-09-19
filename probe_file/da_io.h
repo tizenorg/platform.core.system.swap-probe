@@ -101,30 +101,14 @@
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);						\
 	bfiltering = false;								\
 	PRE_PROBEBLOCK()
+
 // ==================================================================
-// Additional macro for READ_START and WRITE_START
+// macro for filesize
 // ==================================================================
 
 #define DEFINE_FILESIZE_FD(fd) _fd = (fd); _filesize = get_fd_filesize(_fd);
 #define DEFINE_FILESIZE_FP(fp) _fd = checked_fileno(fp); _filesize = get_fd_filesize(_fd);
 #define DEFINE_FILESIZE_0() _fd = _filesize = 0;
-
-#define AFTER_PACK_ORIGINAL(API_ID, RVAL, SIZE, ERRNO, FD, FILESIZE, APITYPE, INPUTFORMAT, ...)	\
-	POST_PACK_PROBEBLOCK_BEGIN();								\
-	PREPARE_LOCAL_BUF();									\
-	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
-	PACK_COMMON_END(RVAL,ERRNO, blockresult);						\
-	PACK_RESOURCE(SIZE, FD, APITYPE, FILESIZE, _filepath);					\
-	FLUSH_LOCAL_BUF();									\
-	POST_PACK_PROBEBLOCK_END();
-
-#define FILE_API_START_BLOCK(API_ID, APITYPE, INPUTFORMAT, ...)					\
-	AFTER_PACK_ORIGINAL(API_ID, 0, 0, 0, _fd, _filesize, APITYPE, INPUTFORMAT, __VA_ARGS__)
-
-#define FILE_API_END_BLOCK(API_ID, RVAL, SIZE, APITYPE, INPUTFORMAT,...)			\
-	blockresult = 0; bfiltering = 1;							\
-	PRE_PROBEBLOCK();                                                                  	\
-	AFTER_PACK_ORIGINAL(API_ID,RVAL, SIZE, newerrno, _fd, _filesize, APITYPE, INPUTFORMAT, __VA_ARGS__)
 
 // ==================================================================
 // AFTER_ORIGINAL macro for file
@@ -159,6 +143,81 @@
 	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, _fd, APITYPE);				\
 	POST_PACK_PROBEBLOCK_END()
 
+
+// ==================================================================
+// START_END macro for file
+// ==================================================================
+
+#define BEFORE_ORIGINAL_START_END_FD(API_ID, FUNCNAME, LIBNAME, FD, APITYPE, INPUTFORMAT, ...)	\
+	DECLARE_VARIABLE_FD;								\
+	GET_REAL_FUNC(FUNCNAME, LIBNAME);						\
+	PRE_PROBEBLOCK_BEGIN();								\
+	_fstatret = fstat(FD, &_statbuf);						\
+	DEFINE_FILESIZE_FD(fd);								\
+	PREPARE_LOCAL_BUF();								\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
+	PACK_COMMON_END(0, 0, blockresult);						\
+	PACK_RESOURCE(0, FD, APITYPE, _filesize, _filepath);				\
+	FLUSH_LOCAL_BUF();								\
+	PRE_PROBEBLOCK_END()
+
+#define BEFORE_ORIGINAL_START_END_NOFD(API_ID, FUNCNAME, LIBNAME, APITYPE, INPUTFORMAT, ...)	\
+	DECLARE_VARIABLE_FD;								\
+	GET_REAL_FUNC(FUNCNAME, LIBNAME);						\
+	PRE_PROBEBLOCK_BEGIN();								\
+	DEFINE_FILESIZE_0();								\
+	PREPARE_LOCAL_BUF();								\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
+	PACK_COMMON_END(0, 0, blockresult);						\
+	POST_PACK_PROBEBLOCK_MIDDLE_NOFD(0, APITYPE);					\
+	PRE_PROBEBLOCK_END()
+
+#define BEFORE_ORIGINAL_START_END_FILEP(API_ID, FUNCNAME, LIBNAME, FILEP, APITYPE, INPUTFORMAT, ...)	\
+	DECLARE_VARIABLE_FD;									\
+	GET_REAL_FUNC(FUNCNAME, LIBNAME);							\
+	PRE_PROBEBLOCK_BEGIN();									\
+	GET_FD_FROM_FILEP(FILEP);								\
+	if(_fd != -1) { 									\
+		_fstatret = fstat(_fd, &_statbuf);						\
+	}											\
+	PREPARE_LOCAL_BUF();									\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
+	PACK_COMMON_END(0, 0, blockresult);							\
+	POST_PACK_PROBEBLOCK_MIDDLE_FD(0, _fd, APITYPE);					\
+	PRE_PROBEBLOCK_END()
+
+#define AFTER_ORIGINAL_START_END_FD(API_ID, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)		\
+	POST_PACK_PROBEBLOCK_BEGIN();								\
+	setProbePoint(&probeInfo);								\
+	_fstatret = fstat(FD, &_statbuf);							\
+	PREPARE_LOCAL_BUF();									\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
+	PACK_COMMON_END(RVAL, newerrno, blockresult);						\
+	PACK_RESOURCE(SIZE, FD, APITYPE, _filesize, _filepath);					\
+	FLUSH_LOCAL_BUF();									\
+	POST_PACK_PROBEBLOCK_END()
+
+#define AFTER_ORIGINAL_START_END_NOFD(API_ID, RVAL, SIZE, APITYPE, INPUTFORMAT, ...)		\
+	POST_PACK_PROBEBLOCK_BEGIN();								\
+	setProbePoint(&probeInfo);								\
+	PREPARE_LOCAL_BUF();									\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
+	PACK_COMMON_END(RVAL, newerrno, blockresult);						\
+	POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE);					\
+	POST_PACK_PROBEBLOCK_END()
+
+#define AFTER_ORIGINAL_START_END_FILEP(API_ID, RVAL, SIZE, FILEP, APITYPE, INPUTFORMAT, ...)	\
+	POST_PACK_PROBEBLOCK_BEGIN();								\
+	setProbePoint(&probeInfo);								\
+	GET_FD_FROM_FILEP(FILEP);								\
+	if(_fd != -1) { 									\
+		_fstatret = fstat(_fd, &_statbuf);						\
+	}											\
+	PREPARE_LOCAL_BUF();									\
+	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
+	PACK_COMMON_END(RVAL, newerrno, blockresult);						\
+	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, _fd, APITYPE);					\
+	POST_PACK_PROBEBLOCK_END()
 
 
 static inline ssize_t get_fd_filesize(int fd)
