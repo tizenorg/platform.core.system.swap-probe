@@ -41,6 +41,7 @@
 #include <unistd.h>			// for write, alarm function, syscall
 #include <pthread.h>		// for pthread_mutex_lock
 #include <signal.h>
+#include <stdint.h>
 
 #include <sys/syscall.h>	// for syscall
 #include <sys/time.h>		// for gettimeofday
@@ -741,6 +742,13 @@ unsigned long getCurrentTime()
 unsigned int getCurrentEventIndex()
 {
 	return gTraceInfo.index.eventIndex;
+}
+
+uint64_t get_current_nsec(void)
+{
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	return (uint64_t)tv.tv_sec * 1000 * 1000 * 1000 + tv.tv_usec * 1000;
 }
 
 /************************************************************************

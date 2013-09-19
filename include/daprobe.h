@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <dlfcn.h>
+#include <stdint.h>
 #include "probeinfo.h"
 
 #ifdef __cplusplus
@@ -108,6 +109,7 @@ void postBlockEnd();
 
 unsigned int getCurrentEventIndex();
 unsigned long getCurrentTime();
+uint64_t get_current_nsec(void);
 bool setProbePoint(probeInfo_t * iProbe);
 int update_heap_memory_size(bool isAdd, size_t size);
 

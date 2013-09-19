@@ -50,7 +50,7 @@ char contextValue[256];
 #define PACK_GL_ADD(GL_api_type, GL_elapsed_time, GL_context_value)		\
 	do {							\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)GL_api_type);	\
-		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)GL_elapsed_time);	\
+		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)GL_elapsed_time); \
 		BUF_PTR = pack_string(BUF_PTR, GL_context_value);	\
 	} while (0)
 
@@ -61,7 +61,7 @@ char contextValue[256];
 	static methodType FUNCNAME ## p = 0;				\
 	void* tmpPtr = 0;						\
 	int32_t vAPI_ID = API_ID_ ## FUNCNAME;				\
-	long startTime = getCurrentTime();				\
+	uint64_t start_nsec = get_current_nsec();				\
 	if(!FUNCNAME##p) {						\
 		probeBlockStart();					\
 		if (lib_handle[LIBGLES20] == ((void *) 0)) {		\
@@ -94,7 +94,7 @@ char contextValue[256];
 	static methodType FUNCNAME ## p = 0;			\
 	void* tmpPtr = 0;					\
 	int32_t vAPI_ID = API_ID_ ## FUNCNAME;			\
-	long startTime = getCurrentTime();			\
+	uint64_t start_nsec = get_current_nsec();			\
 	if(!FUNCNAME##p) {						\
 		probeBlockStart();					\
 		if (lib_handle[LIBEGL] == ((void *) 0)) {		\
@@ -125,7 +125,7 @@ char contextValue[256];
 	static methodType FUNCNAME ## p = 0;			\
 	void* tmpPtr = 0;					\
 	int32_t vAPI_ID = API_ID_ ## FUNCNAME;			\
-	long startTime = getCurrentTime();			\
+	uint64_t start_nsec = get_current_nsec();				\
 	PREPARE_LOCAL_BUF();					\
 	if(!FUNCNAME##p) {						\
 		probeBlockStart();					\
@@ -156,7 +156,7 @@ char contextValue[256];
 	PREPARE_LOCAL_BUF();							\
 	PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
 	PACK_COMMON_END(RET_VAL, error, blockresult);					\
-	PACK_GL_ADD(APITYPE, getCurrentTime()-startTime, CONTEXT_VAL);		\
+	PACK_GL_ADD(APITYPE, get_current_nsec() - start_nsec, CONTEXT_VAL);	\
 	FLUSH_LOCAL_BUF();							\
 	POST_PACK_PROBEBLOCK_END()
 
