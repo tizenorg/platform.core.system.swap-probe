@@ -33,7 +33,7 @@
 #include "daprobe.h"
 #include "dahelper.h"
 #include "probeinfo.h"
-#include "osp_probe.h"
+#include "tizen_probe.h"
 #include "dacollection.h"
 #include "da_event.h"
 #include "gesture.h"
@@ -485,7 +485,7 @@ result TouchFlickGestureDetector::AddFlickGestureEventListener(ITouchFlickGestur
 	static methodType addflickgestureeventlistenerp;
 	result iret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui25TouchFlickGestureDetector28AddFlickGestureEventListenerERNS0_31ITouchFlickGestureEventListenerE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui25TouchFlickGestureDetector28AddFlickGestureEventListenerERNS0_31ITouchFlickGestureEventListenerE,
 			LIBOSP_UIFW, addflickgestureeventlistenerp);
 
 	probeBlockStart();
@@ -513,7 +513,7 @@ result TouchLongPressGestureDetector::AddLongPressGestureEventListener(ITouchLon
 	static methodType addlongpressgestureeventlistenerp;
 	result iret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui29TouchLongPressGestureDetector32AddLongPressGestureEventListenerERNS0_35ITouchLongPressGestureEventListenerE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui29TouchLongPressGestureDetector32AddLongPressGestureEventListenerERNS0_35ITouchLongPressGestureEventListenerE,
 			LIBOSP_UIFW, addlongpressgestureeventlistenerp);
 
 	probeBlockStart();
@@ -541,7 +541,7 @@ result TouchPanningGestureDetector::AddPanningGestureEventListener(ITouchPanning
 	static methodType addpanninggestureeventlistenerp;
 	result iret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui27TouchPanningGestureDetector30AddPanningGestureEventListenerERNS0_33ITouchPanningGestureEventListenerE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui27TouchPanningGestureDetector30AddPanningGestureEventListenerERNS0_33ITouchPanningGestureEventListenerE,
 			LIBOSP_UIFW, addpanninggestureeventlistenerp);
 
 	probeBlockStart();
@@ -569,7 +569,7 @@ result TouchPinchGestureDetector::AddPinchGestureEventListener(ITouchPinchGestur
 	static methodType addpinchgestureeventlistenerp;
 	result iret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui25TouchPinchGestureDetector28AddPinchGestureEventListenerERNS0_31ITouchPinchGestureEventListenerE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui25TouchPinchGestureDetector28AddPinchGestureEventListenerERNS0_31ITouchPinchGestureEventListenerE,
 			LIBOSP_UIFW, addpinchgestureeventlistenerp);
 
 	probeBlockStart();
@@ -597,7 +597,7 @@ result TouchRotationGestureDetector::AddRotationGestureEventListener(ITouchRotat
 	static methodType addrotationgestureeventlistenerp;
 	result iret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui28TouchRotationGestureDetector31AddRotationGestureEventListenerERNS0_34ITouchRotationGestureEventListenerE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui28TouchRotationGestureDetector31AddRotationGestureEventListenerERNS0_34ITouchRotationGestureEventListenerE,
 			LIBOSP_UIFW, addrotationgestureeventlistenerp);
 
 	probeBlockStart();
@@ -625,7 +625,7 @@ result TouchTapGestureDetector::AddTapGestureEventListener(ITouchTapGestureEvent
 	static methodType addtapgestureeventlistenerp;
 	result iret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui23TouchTapGestureDetector26AddTapGestureEventListenerERNS0_29ITouchTapGestureEventListenerE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui23TouchTapGestureDetector26AddTapGestureEventListenerERNS0_29ITouchTapGestureEventListenerE,
 			LIBOSP_UIFW, addtapgestureeventlistenerp);
 
 	probeBlockStart();
@@ -653,7 +653,7 @@ result TouchGestureDetector::AddGestureEventListener(ITouchGestureEventListener&
 	static methodType addgestureeventlistenerp;
 	result iret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui20TouchGestureDetector23AddGestureEventListenerERNS0_26ITouchGestureEventListenerE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui20TouchGestureDetector23AddGestureEventListenerERNS0_26ITouchGestureEventListenerE,
 			LIBOSP_UIFW, addgestureeventlistenerp);
 
 	probeBlockStart();

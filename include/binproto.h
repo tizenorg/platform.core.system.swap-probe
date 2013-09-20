@@ -314,8 +314,8 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 	if(thread_type == THREAD_PTHREAD) {	                        \
 	    BUF_PTR = pack_int64(BUF_PTR, thread_id);			\
 	    BUF_PTR = pack_int64(BUF_PTR, 0);				\
-	} else if(thread_type == THREAD_OSPTHREAD_WORKER		\
-		    || thread_type == THREAD_OSPTHREAD_EVENTDRIVEN) {   \
+	} else if(thread_type == THREAD_TIZENTHREAD_WORKER		\
+		    || thread_type == THREAD_TIZENTHREAD_EVENTDRIVEN) {   \
 	    BUF_PTR = pack_int64(BUF_PTR, 0);				\
 	    BUF_PTR = pack_int64(BUF_PTR, thread_id);			\
 	} else {							\

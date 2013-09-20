@@ -30,7 +30,7 @@
 
 #include "daprobe.h"
 #include "dahelper.h"
-#include "osp_frameani.h"
+#include "tizen_frameani.h"
 
 DAFrameAnimationEventListener DAFrameAnimationEventListener::rInstance;
 

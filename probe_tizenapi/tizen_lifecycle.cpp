@@ -38,7 +38,7 @@
 #include "daprobe.h"
 #include "dahelper.h"
 #include "probeinfo.h"
-#include "osp_probe.h"
+#include "tizen_probe.h"
 
 #include "binproto.h"
 extern "C"
@@ -87,7 +87,7 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 	int __attribute__((unused)) ret;
 	Ecore_Event_Handler* handler;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App5UiApp7ExecuteEPFPS1_vEPKNS_4Base10Collection5IListE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen3App5UiApp7ExecuteEPFPS1_vEPKNS_4Base10Collection5IListE,
 		LIBOSP_UIFW, uiapp_executep);
 
 	probeBlockStart();
@@ -123,7 +123,7 @@ void _AppImpl::OnTerminate(void* user_data)
 	static methodType appimpl_onterminatep;
 	probeInfo_t	probeInfo;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppImpl11OnTerminateEPv, LIBOSP_APPFW, appimpl_onterminatep);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen3App8_AppImpl11OnTerminateEPv, LIBOSP_APPFW, appimpl_onterminatep);
 
 	probeBlockStart();
 	setProbePoint(&probeInfo);
@@ -145,7 +145,7 @@ void _AppImpl::OnDeviceOrientationChanged(app_device_orientation_e orientation, 
 	typedef void (*methodType)(app_device_orientation_e, void*);
 	static methodType appimpl_ondeviceorientationchangedp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppImpl26OnDeviceOrientationChangedE24app_device_orientation_ePv,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen3App8_AppImpl26OnDeviceOrientationChangedE24app_device_orientation_ePv,
 			LIBOSP_APPFW, appimpl_ondeviceorientationchangedp);
 
 	probeBlockStart();
@@ -161,7 +161,7 @@ void _AppInfo::SetAppState(AppState appState)
 	static methodType appinfo_setappstatep;
 	probeInfo_t	probeInfo;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App8_AppInfo11SetAppStateENS0_8AppStateE, LIBOSP_APPFW, appinfo_setappstatep);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen3App8_AppInfo11SetAppStateENS0_8AppStateE, LIBOSP_APPFW, appinfo_setappstatep);
 
 	probeBlockStart();
 	if(appState == RUNNING)
@@ -186,7 +186,7 @@ void _UiAppImpl::OnBackground(void)
 	static methodType uiappimpl_onbackgroundp;
 	probeInfo_t	probeInfo;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnBackgroundEv, LIBOSP_UIFW, uiappimpl_onbackgroundp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen3App10_UiAppImpl12OnBackgroundEv, LIBOSP_UIFW, uiappimpl_onbackgroundp);
 
 	probeBlockStart();
 	SCREENSHOT_LOCK();
@@ -210,7 +210,7 @@ void _UiAppImpl::OnForeground(void)
 	static methodType uiappimpl_onforegroundp;
 	probeInfo_t	probeInfo;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen3App10_UiAppImpl12OnForegroundEv, LIBOSP_UIFW, uiappimpl_onforegroundp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen3App10_UiAppImpl12OnForegroundEv, LIBOSP_UIFW, uiappimpl_onforegroundp);
 
 	probeBlockStart();
 	setProbePoint(&probeInfo);
@@ -235,7 +235,7 @@ void _UiAppImpl::OnDeviceOrientationChanged(app_device_orientation_e orientation
 	typedef void (*methodType)(_UiAppImpl* th, app_device_orientation_e orientation);
 	static methodType uiappimpl_ondeviceorientationchangedp;
 
-	GET_REAL_FUNC_OSP(_ZThn4_N5Tizen3App10_UiAppImpl26OnDeviceOrientationChangedE24app_device_orientation_e,
+	GET_REAL_FUNC_TIZEN(_ZThn4_N5Tizen3App10_UiAppImpl26OnDeviceOrientationChangedE24app_device_orientation_e,
 			LIBOSP_UIFW, uiappimpl_ondeviceorientationchangedp);
 
 	probeBlockStart();

@@ -60,7 +60,7 @@
 #include "binproto.h"
 
 #define APP_INSTALL_PATH		"/opt/apps"
-#define OSP_APP_POSTFIX			".exe"
+#define TISEN_APP_POSTFIX			".exe"
 #define UDS_NAME				"/tmp/da.socket"
 #define TIMERFD_INTERVAL		100000000		// 0.1 sec
 
@@ -183,8 +183,8 @@ static int determineCaller(char* tracestring)
 	}
 	else				// user binary
 	{
-#ifdef OSPAPP
-		substr = strstr(tracestring, OSP_APP_POSTFIX);
+#ifdef TISENAPP
+		substr = strstr(tracestring, TISEN_APP_POSTFIX);
 		if(substr == NULL)
 			return 1;
 #endif

@@ -31,7 +31,7 @@
 #include "daprobe.h"
 #include "dahelper.h"
 #include "dacollection.h"
-#include "osp_probe.h"
+#include "tizen_probe.h"
 
 namespace Tizen { namespace Ui {
 
@@ -61,7 +61,7 @@ Control::Control(void)
 	typedef void (Control::*methodType)(void);
 	static methodType control_controlp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui7ControlC2Ev, LIBOSP_UIFW, control_controlp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui7ControlC2Ev, LIBOSP_UIFW, control_controlp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Control");
@@ -75,7 +75,7 @@ Control::~Control(void)
 	typedef void (Control::*methodType)(void);
 	static methodType control__controlvoidp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui7ControlD2Ev, LIBOSP_UIFW, control__controlvoidp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui7ControlD2Ev, LIBOSP_UIFW, control__controlvoidp);
 
 	probeBlockStart();
 	del_object_hash(static_cast<void*>(this));
@@ -89,7 +89,7 @@ CustomControlBase::CustomControlBase(void)
 	typedef void (CustomControlBase::*methodType)(void);
 	static methodType customcontrolbase_customcontrolbasep;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui17CustomControlBaseC2Ev, LIBOSP_UIFW, customcontrolbase_customcontrolbasep);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui17CustomControlBaseC2Ev, LIBOSP_UIFW, customcontrolbase_customcontrolbasep);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "CustomControlBase");
@@ -103,7 +103,7 @@ Container::Container(void)
 	typedef void (Container::*methodType)(void);
 	static methodType container_containerp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui9ContainerC2Ev, LIBOSP_UIFW, container_containerp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui9ContainerC2Ev, LIBOSP_UIFW, container_containerp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Container");
@@ -117,7 +117,7 @@ Window::Window(void)
 	typedef void (Window::*methodType)(void);
 	static methodType window_windowp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui6WindowC2Ev, LIBOSP_UIFW, window_windowp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui6WindowC2Ev, LIBOSP_UIFW, window_windowp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Window");
@@ -398,7 +398,7 @@ Animation::Animation(void)
 	typedef void (Animation::*methodType)(void);
 	static methodType animation_animationp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls9AnimationC2Ev, LIBOSP_UIFW, animation_animationp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls9AnimationC2Ev, LIBOSP_UIFW, animation_animationp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Animation");
@@ -412,7 +412,7 @@ Button::Button(void)
 	typedef void (Button::*methodType)(void);
 	static methodType button_buttonp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls6ButtonC2Ev, LIBOSP_UIFW, button_buttonp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6ButtonC2Ev, LIBOSP_UIFW, button_buttonp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Button");
@@ -426,7 +426,7 @@ CheckButton::CheckButton(void)
 	typedef void (CheckButton::*methodType)(void);
 	static methodType checkbutton_checkbuttonp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls11CheckButtonC2Ev, LIBOSP_UIFW, checkbutton_checkbuttonp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls11CheckButtonC2Ev, LIBOSP_UIFW, checkbutton_checkbuttonp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "CheckButton");
@@ -440,7 +440,7 @@ ColorPicker::ColorPicker(void)
 	typedef void (ColorPicker::*methodType)(void);
 	static methodType colorpicker_colorpickerp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls11ColorPickerC2Ev, LIBOSP_UIFW, colorpicker_colorpickerp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls11ColorPickerC2Ev, LIBOSP_UIFW, colorpicker_colorpickerp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "ColorPicker");
@@ -454,7 +454,7 @@ CustomList::CustomList(void)
 	typedef void (CustomList::*methodType)(void);
 	static methodType customlist_customlistp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls10CustomListC2Ev, LIBOSP_UIFW, customlist_customlistp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10CustomListC2Ev, LIBOSP_UIFW, customlist_customlistp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "CustomList");
@@ -468,7 +468,7 @@ EditArea::EditArea(void)
 	typedef void (EditArea::*methodType)(void);
 	static methodType editarea_editareap;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls8EditAreaC2Ev, LIBOSP_UIFW, editarea_editareap);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8EditAreaC2Ev, LIBOSP_UIFW, editarea_editareap);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "EditArea");
@@ -482,7 +482,7 @@ EditDate::EditDate(void)
 	typedef void (EditDate::*methodType)(void);
 	static methodType editdate_editdatep;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls8EditDateC2Ev, LIBOSP_UIFW, editdate_editdatep);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8EditDateC2Ev, LIBOSP_UIFW, editdate_editdatep);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "EditDate");
@@ -496,7 +496,7 @@ EditField::EditField(void)
 	typedef void (EditField::*methodType)(void);
 	static methodType editfield_editfieldp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls9EditFieldC2Ev, LIBOSP_UIFW, editfield_editfieldp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls9EditFieldC2Ev, LIBOSP_UIFW, editfield_editfieldp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "EditField");
@@ -510,7 +510,7 @@ EditTime::EditTime(void)
 	typedef void (EditTime::*methodType)(void);
 	static methodType edittime_edittimep;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls8EditTimeC2Ev, LIBOSP_UIFW, edittime_edittimep);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8EditTimeC2Ev, LIBOSP_UIFW, edittime_edittimep);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "EditTime");
@@ -524,7 +524,7 @@ ExpandableEditArea::ExpandableEditArea(void)
 	typedef void (ExpandableEditArea::*methodType)(void);
 	static methodType expandableeditarea_expandableeditareap;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls18ExpandableEditAreaC2Ev, LIBOSP_UIFW, expandableeditarea_expandableeditareap);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls18ExpandableEditAreaC2Ev, LIBOSP_UIFW, expandableeditarea_expandableeditareap);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "ExpandableEditArea");
@@ -538,7 +538,7 @@ ExpandableList::ExpandableList(void)
 	typedef void (ExpandableList::*methodType)(void);
 	static methodType expandablelist_expandablelistp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls14ExpandableListC2Ev, LIBOSP_UIFW, expandablelist_expandablelistp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls14ExpandableListC2Ev, LIBOSP_UIFW, expandablelist_expandablelistp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "ExpandableList");
@@ -552,7 +552,7 @@ Footer::Footer(void)
 	typedef void (Footer::*methodType)(void);
 	static methodType footer_footerp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls6FooterC2Ev, LIBOSP_UIFW, footer_footerp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6FooterC2Ev, LIBOSP_UIFW, footer_footerp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Footer");
@@ -566,7 +566,7 @@ Gallery::Gallery(void)
 	typedef void (Gallery::*methodType)(void);
 	static methodType gallery_galleryp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls7GalleryC2Ev, LIBOSP_UIFW, gallery_galleryp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls7GalleryC2Ev, LIBOSP_UIFW, gallery_galleryp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Gallery");
@@ -580,7 +580,7 @@ GroupedList::GroupedList(void)
 	typedef void (GroupedList::*methodType)(void);
 	static methodType groupedlist_groupedlistp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls11GroupedListC2Ev, LIBOSP_UIFW, groupedlist_groupedlistp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls11GroupedListC2Ev, LIBOSP_UIFW, groupedlist_groupedlistp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "GroupedList");
@@ -594,7 +594,7 @@ GroupedListView::GroupedListView(void)
 	typedef void (GroupedListView::*methodType)(void);
 	static methodType groupedlistview_groupedlistviewp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls15GroupedListViewC2Ev, LIBOSP_UIFW, groupedlistview_groupedlistviewp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls15GroupedListViewC2Ev, LIBOSP_UIFW, groupedlistview_groupedlistviewp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "GroupedListView");
@@ -608,7 +608,7 @@ Header::Header(void)
 	typedef void (Header::*methodType)(void);
 	static methodType header_headerp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls6HeaderC2Ev, LIBOSP_UIFW, header_headerp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6HeaderC2Ev, LIBOSP_UIFW, header_headerp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Header");
@@ -622,7 +622,7 @@ IconList::IconList(void)
 	typedef void (IconList::*methodType)(void);
 	static methodType iconlist_iconlistp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls8IconListC2Ev, LIBOSP_UIFW, iconlist_iconlistp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8IconListC2Ev, LIBOSP_UIFW, iconlist_iconlistp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "IconList");
@@ -636,7 +636,7 @@ IconListView::IconListView(void)
 	typedef void (IconListView::*methodType)(void);
 	static methodType iconlistview_iconlistviewp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls12IconListViewC2Ev, LIBOSP_UIFW, iconlistview_iconlistviewp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls12IconListViewC2Ev, LIBOSP_UIFW, iconlistview_iconlistviewp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "IconListView");
@@ -650,7 +650,7 @@ Label::Label(void)
 	typedef void (Label::*methodType)(void);
 	static methodType label_labelp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls5LabelC2Ev, LIBOSP_UIFW, label_labelp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls5LabelC2Ev, LIBOSP_UIFW, label_labelp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Label");
@@ -664,7 +664,7 @@ List::List(void)
 	typedef void (List::*methodType)(void);
 	static methodType list_listp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls4ListC2Ev, LIBOSP_UIFW, list_listp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls4ListC2Ev, LIBOSP_UIFW, list_listp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "List");
@@ -678,7 +678,7 @@ ListView::ListView(void)
 	typedef void (ListView::*methodType)(void);
 	static methodType listview_listviewp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls8ListViewC2Ev, LIBOSP_UIFW, listview_listviewp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8ListViewC2Ev, LIBOSP_UIFW, listview_listviewp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "ListView");
@@ -692,7 +692,7 @@ Progress::Progress(void)
 	typedef void (Progress::*methodType)(void);
 	static methodType progress_progressp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls8ProgressC2Ev, LIBOSP_UIFW, progress_progressp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8ProgressC2Ev, LIBOSP_UIFW, progress_progressp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Progress");
@@ -706,7 +706,7 @@ RadioGroup::RadioGroup(void)
 	typedef void (RadioGroup::*methodType)(void);
 	static methodType radiogroup_radiogroupp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls10RadioGroupC2Ev, LIBOSP_UIFW, radiogroup_radiogroupp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10RadioGroupC2Ev, LIBOSP_UIFW, radiogroup_radiogroupp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "RadioGroup");
@@ -720,7 +720,7 @@ SearchBar::SearchBar(void)
 	typedef void (SearchBar::*methodType)(void);
 	static methodType searchbar_searchbarp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls9SearchBarC2Ev, LIBOSP_UIFW, searchbar_searchbarp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls9SearchBarC2Ev, LIBOSP_UIFW, searchbar_searchbarp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "SearchBar");
@@ -734,7 +734,7 @@ SlidableGroupedList::SlidableGroupedList(void)
 	typedef void (SlidableGroupedList::*methodType)(void);
 	static methodType slidablegroupedlist_slidablegroupedlistp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls19SlidableGroupedListC2Ev, LIBOSP_UIFW, slidablegroupedlist_slidablegroupedlistp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls19SlidableGroupedListC2Ev, LIBOSP_UIFW, slidablegroupedlist_slidablegroupedlistp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "SlidableGroupedList");
@@ -748,7 +748,7 @@ SlidableList::SlidableList(void)
 	typedef void (SlidableList::*methodType)(void);
 	static methodType slidablelist_slidablelistp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls12SlidableListC2Ev, LIBOSP_UIFW, slidablelist_slidablelistp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls12SlidableListC2Ev, LIBOSP_UIFW, slidablelist_slidablelistp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "SlidableList");
@@ -762,7 +762,7 @@ Slider::Slider(void)
 	typedef void (Slider::*methodType)(void);
 	static methodType slider_sliderp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls6SliderC2Ev, LIBOSP_UIFW, slider_sliderp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6SliderC2Ev, LIBOSP_UIFW, slider_sliderp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Slider");
@@ -776,7 +776,7 @@ SplitPanel::SplitPanel(void)
 	typedef void (SplitPanel::*methodType)(void);
 	static methodType splitpanel_splitpanelp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls10SplitPanelC2Ev, LIBOSP_UIFW, splitpanel_splitpanelp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10SplitPanelC2Ev, LIBOSP_UIFW, splitpanel_splitpanelp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "SplitPanel");
@@ -790,7 +790,7 @@ Tab::Tab(void)
 	typedef void (Tab::*methodType)(void);
 	static methodType tab_tabp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls3TabC2Ev, LIBOSP_UIFW, tab_tabp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls3TabC2Ev, LIBOSP_UIFW, tab_tabp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Tab");
@@ -804,7 +804,7 @@ TabBar::TabBar(void)
 	typedef void (TabBar::*methodType)(void);
 	static methodType tabbar_tabbarp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls6TabBarC2Ev, LIBOSP_UIFW, tabbar_tabbarp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6TabBarC2Ev, LIBOSP_UIFW, tabbar_tabbarp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "TabBar");
@@ -818,7 +818,7 @@ TextBox::TextBox(void)
 	typedef void (TextBox::*methodType)(void);
 	static methodType textbox_textboxp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls7TextBoxC2Ev, LIBOSP_UIFW, textbox_textboxp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls7TextBoxC2Ev, LIBOSP_UIFW, textbox_textboxp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "TextBox");
@@ -832,7 +832,7 @@ Form::Form(void)
 	typedef void (Form::*methodType)(void);
 	static methodType form_formp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls4FormC2Ev, LIBOSP_UIFW, form_formp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls4FormC2Ev, LIBOSP_UIFW, form_formp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Form");
@@ -846,7 +846,7 @@ GroupedTableView::GroupedTableView(void)
 	typedef void (GroupedTableView::*methodType)(void);
 	static methodType groupedtableview_groupedtableviewp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls16GroupedTableViewC2Ev, LIBOSP_UIFW, groupedtableview_groupedtableviewp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls16GroupedTableViewC2Ev, LIBOSP_UIFW, groupedtableview_groupedtableviewp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "GroupedTableView");
@@ -860,7 +860,7 @@ Panel::Panel(void)
 	typedef void (Panel::*methodType)(void);
 	static methodType panel_panelp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls5PanelC2Ev, LIBOSP_UIFW, panel_panelp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls5PanelC2Ev, LIBOSP_UIFW, panel_panelp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Panel");
@@ -874,7 +874,7 @@ OverlayPanel::OverlayPanel(void)
 	typedef void (OverlayPanel::*methodType)(void);
 	static methodType overlaypanel_overlaypanelp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls12OverlayPanelC2Ev, LIBOSP_UIFW, overlaypanel_overlaypanelp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls12OverlayPanelC2Ev, LIBOSP_UIFW, overlaypanel_overlaypanelp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "OverlayPanel");
@@ -888,7 +888,7 @@ ScrollPanel::ScrollPanel(void)
 	typedef void (ScrollPanel::*methodType)(void);
 	static methodType scrollpanel_scrollpanelp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls11ScrollPanelC2Ev, LIBOSP_UIFW, scrollpanel_scrollpanelp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls11ScrollPanelC2Ev, LIBOSP_UIFW, scrollpanel_scrollpanelp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "ScrollPanel");
@@ -902,7 +902,7 @@ SectionTableView::SectionTableView(void)
 	typedef void (SectionTableView::*methodType)(void);
 	static methodType sectiontableview_sectiontableviewp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls16SectionTableViewC2Ev, LIBOSP_UIFW, sectiontableview_sectiontableviewp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls16SectionTableViewC2Ev, LIBOSP_UIFW, sectiontableview_sectiontableviewp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "SectionTableView");
@@ -916,7 +916,7 @@ TableView::TableView(void)
 	typedef void (TableView::*methodType)(void);
 	static methodType tableview_tableviewp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls9TableViewC2Ev, LIBOSP_UIFW, tableview_tableviewp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls9TableViewC2Ev, LIBOSP_UIFW, tableview_tableviewp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "TableView");
@@ -930,7 +930,7 @@ TableViewItemBase::TableViewItemBase(void)
 	typedef void (TableViewItemBase::*methodType)(void);
 	static methodType tableviewitembase_tableviewitembasep;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls17TableViewItemBaseC2Ev, LIBOSP_UIFW, tableviewitembase_tableviewitembasep);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls17TableViewItemBaseC2Ev, LIBOSP_UIFW, tableviewitembase_tableviewitembasep);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "TableViewItemBase");
@@ -944,7 +944,7 @@ TableViewContextItem::TableViewContextItem(void)
 	typedef void (TableViewContextItem::*methodType)(void);
 	static methodType tableviewcontextitem_tableviewcontextitemp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls20TableViewContextItemC2Ev, LIBOSP_UIFW, tableviewcontextitem_tableviewcontextitemp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls20TableViewContextItemC2Ev, LIBOSP_UIFW, tableviewcontextitem_tableviewcontextitemp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "TableViewContextItem");
@@ -958,7 +958,7 @@ TableViewGroupItem::TableViewGroupItem(void)
 	typedef void (TableViewGroupItem::*methodType)(void);
 	static methodType tableviewgroupitem_tableviewgroupitemp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls18TableViewGroupItemC2Ev, LIBOSP_UIFW, tableviewgroupitem_tableviewgroupitemp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls18TableViewGroupItemC2Ev, LIBOSP_UIFW, tableviewgroupitem_tableviewgroupitemp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "TableViewGroupItem");
@@ -972,7 +972,7 @@ TableViewItem::TableViewItem(void)
 	typedef void (TableViewItem::*methodType)(void);
 	static methodType tableviewitem_tableviewitemp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls13TableViewItemC2Ev, LIBOSP_UIFW, tableviewitem_tableviewitemp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls13TableViewItemC2Ev, LIBOSP_UIFW, tableviewitem_tableviewitemp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "TableViewItem");
@@ -986,7 +986,7 @@ TableViewSimpleGroupItem::TableViewSimpleGroupItem(void)
 	typedef void (TableViewSimpleGroupItem::*methodType)(void);
 	static methodType tableviewsimplegroupitem_tableviewsimplegroupitemp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls24TableViewSimpleGroupItemC2Ev, LIBOSP_UIFW, tableviewsimplegroupitem_tableviewsimplegroupitemp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls24TableViewSimpleGroupItemC2Ev, LIBOSP_UIFW, tableviewsimplegroupitem_tableviewsimplegroupitemp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "TableViewSimpleGroupItem");
@@ -1000,7 +1000,7 @@ TableViewSimpleItem::TableViewSimpleItem(void)
 	typedef void (TableViewSimpleItem::*methodType)(void);
 	static methodType tableviewsimpleitem_tableviewsimpleitemp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls19TableViewSimpleItemC2Ev, LIBOSP_UIFW, tableviewsimpleitem_tableviewsimpleitemp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls19TableViewSimpleItemC2Ev, LIBOSP_UIFW, tableviewsimpleitem_tableviewsimpleitemp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "TableViewSimpleItem");
@@ -1014,7 +1014,7 @@ ContextMenu::ContextMenu(void)
 	typedef void (ContextMenu::*methodType)(void);
 	static methodType contextmenu_contextmenup;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls11ContextMenuC2Ev, LIBOSP_UIFW, contextmenu_contextmenup);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls11ContextMenuC2Ev, LIBOSP_UIFW, contextmenu_contextmenup);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "ContextMenu");
@@ -1028,7 +1028,7 @@ DatePicker::DatePicker(void)
 	typedef void (DatePicker::*methodType)(void);
 	static methodType datepicker_datepickerp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls10DatePickerC2Ev, LIBOSP_UIFW, datepicker_datepickerp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10DatePickerC2Ev, LIBOSP_UIFW, datepicker_datepickerp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "DatePicker");
@@ -1042,7 +1042,7 @@ DateTimePicker::DateTimePicker(void)
 	typedef void (DateTimePicker::*methodType)(void);
 	static methodType datetimepicker_datetimepickerp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls14DateTimePickerC2Ev, LIBOSP_UIFW, datetimepicker_datetimepickerp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls14DateTimePickerC2Ev, LIBOSP_UIFW, datetimepicker_datetimepickerp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "DateTimePicker");
@@ -1056,7 +1056,7 @@ Frame::Frame(void)
 	typedef void (Frame::*methodType)(void);
 	static methodType frame_framep;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls5FrameC2Ev, LIBOSP_UIFW, frame_framep);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls5FrameC2Ev, LIBOSP_UIFW, frame_framep);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Frame");
@@ -1070,7 +1070,7 @@ Keypad::Keypad(void)
 	typedef void (Keypad::*methodType)(void);
 	static methodType keypad_keypadp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls6KeypadC2Ev, LIBOSP_UIFW, keypad_keypadp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6KeypadC2Ev, LIBOSP_UIFW, keypad_keypadp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Keypad");
@@ -1084,7 +1084,7 @@ MessageBox::MessageBox(void)
 	typedef void (MessageBox::*methodType)(void);
 	static methodType messagebox_messageboxp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls10MessageBoxC2Ev, LIBOSP_UIFW, messagebox_messageboxp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10MessageBoxC2Ev, LIBOSP_UIFW, messagebox_messageboxp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "MessageBox");
@@ -1098,7 +1098,7 @@ OptionMenu::OptionMenu(void)
 	typedef void (OptionMenu::*methodType)(void);
 	static methodType optionmenu_optionmenup;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls10OptionMenuC2Ev, LIBOSP_UIFW, optionmenu_optionmenup);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10OptionMenuC2Ev, LIBOSP_UIFW, optionmenu_optionmenup);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "OptionMenu");
@@ -1112,7 +1112,7 @@ Popup::Popup(void)
 	typedef void (Popup::*methodType)(void);
 	static methodType popup_popupp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls5PopupC2Ev, LIBOSP_UIFW, popup_popupp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls5PopupC2Ev, LIBOSP_UIFW, popup_popupp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Popup");
@@ -1126,7 +1126,7 @@ TimePicker::TimePicker(void)
 	typedef void (TimePicker::*methodType)(void);
 	static methodType timepicker_timepickerp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls10TimePickerC2Ev, LIBOSP_UIFW, timepicker_timepickerp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10TimePickerC2Ev, LIBOSP_UIFW, timepicker_timepickerp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "TimePicker");
@@ -1152,7 +1152,7 @@ Web::Web(void)
 	typedef void (Web::*methodType)(void);
 	static methodType web_webp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen3Web8Controls3WebC2Ev, LIBOSP_WEB, web_webp);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen3Web8Controls3WebC2Ev, LIBOSP_WEB, web_webp);
 
 	probeBlockStart();
 	add_object_hash_type((void*)this, "Web");

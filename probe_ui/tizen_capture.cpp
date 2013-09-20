@@ -40,7 +40,7 @@
 #include "dacollection.h"
 #include "daerror.h"
 //#include "da_ui.h"
-#include "osp_probe.h"
+#include "tizen_probe.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -237,7 +237,7 @@ void _EcoreEvasMgr::SetEcoreEvas(const _EcoreEvas& ecoreevas)
 	typedef void (_EcoreEvasMgr::*methodType)(const _EcoreEvas& ecoreevas);
 	static methodType _ecoreevasmgr_setecoreevasp;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui13_EcoreEvasMgr12SetEcoreEvasERKNS0_10_EcoreEvasE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui13_EcoreEvasMgr12SetEcoreEvasERKNS0_10_EcoreEvasE,
 			LIBOSP_UIFW, _ecoreevasmgr_setecoreevasp);
 
 	probeBlockStart();
@@ -255,7 +255,7 @@ result Control::SetShowState(bool state)
 	static methodType control_setshowstatep;
 	result ret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui7Control12SetShowStateEb,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui7Control12SetShowStateEb,
 			LIBOSP_UIFW, control_setshowstatep);
 
 	ret = (this->*control_setshowstatep)(state);
@@ -293,7 +293,7 @@ result Frame::SetCurrentForm(const Form& form)
 	static methodType frame_setcurrentformp;
 	result ret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls5Frame14SetCurrentFormERKNS1_4FormE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls5Frame14SetCurrentFormERKNS1_4FormE,
 			LIBOSP_UIFW, frame_setcurrentformp);
 
 	ret = (this->*frame_setcurrentformp)(form);
@@ -312,7 +312,7 @@ result Frame::SetCurrentForm(Form* pForm)
 	static methodType frame_setcurrentformp;
 	result ret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui8Controls5Frame14SetCurrentFormEPNS1_4FormE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls5Frame14SetCurrentFormEPNS1_4FormE,
 			LIBOSP_UIFW, frame_setcurrentformp);
 
 	ret = (this->*frame_setcurrentformp)(pForm);
@@ -336,7 +336,7 @@ result FrameAnimator::SetCurrentForm(const Tizen::Ui::Controls::Form& form)
 	static methodType frameanimator_setcurrentformp;
 	result ret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations13FrameAnimator14SetCurrentFormERKNS0_8Controls4FormE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui10Animations13FrameAnimator14SetCurrentFormERKNS0_8Controls4FormE,
 			LIBOSP_UIFW, frameanimator_setcurrentformp);
 
 	ret = (this->*frameanimator_setcurrentformp)(form);
@@ -355,7 +355,7 @@ result FrameAnimator::SetCurrentForm(Tizen::Ui::Controls::Form* pForm)
 	static methodType frameanimator_setcurrentformp;
 	result ret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui10Animations13FrameAnimator14SetCurrentFormEPNS0_8Controls4FormE,
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui10Animations13FrameAnimator14SetCurrentFormEPNS0_8Controls4FormE,
 			LIBOSP_UIFW, frameanimator_setcurrentformp);
 
 	ret = (this->*frameanimator_setcurrentformp)(pForm);

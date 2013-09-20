@@ -33,7 +33,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %files
 %manifest swap-probe.manifest
 %defattr(-,root,root,-)
-%{_prefix}/lib/da_probe_osp.so
+%{_prefix}/lib/da_probe_tizen.so
 %{_prefix}/lib/libdaprobe.so
 
 

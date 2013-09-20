@@ -37,7 +37,7 @@
 #include "daprobe.h"
 #include "dacollection.h"	// for find_object_hash
 #include "dahelper.h"		// for captureScreen
-#include "osp_probe.h"
+#include "tizen_probe.h"
 
 #include "binproto.h"
 
@@ -137,7 +137,7 @@ SceneManager* SceneManager::GetInstance(void)
 	static int initialized = 0;
 	SceneManager* ret;
 
-	GET_REAL_FUNC_OSP(_ZN5Tizen2Ui6Scenes12SceneManager11GetInstanceEv, LIBOSP_UIFW, scenemanager_getinstancep);
+	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui6Scenes12SceneManager11GetInstanceEv, LIBOSP_UIFW, scenemanager_getinstancep);
 
 	ret = scenemanager_getinstancep();
 

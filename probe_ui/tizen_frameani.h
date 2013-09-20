@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef __OSP_FRAMEANI_H__
-#define __OSP_FRAMEANI_H__
+#ifndef __TIZEN_FRAMEANI_H__
+#define __TIZEN_FRAMEANI_H__
 
 #include <FUi.h>
 
@@ -54,5 +54,5 @@ private:
 };
 
 
-#endif	// __OSP_FRAMEANI_H__
+#endif	// __TIZEN_FRAMEANI_H__
 

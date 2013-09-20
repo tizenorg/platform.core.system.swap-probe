@@ -107,7 +107,7 @@ private:
 //		//PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
 //		log.length += sprintf(log.data + log.length,
 //				"`,0`,%ld`,%d`,0`,%u`,0x%x`,%d`,%d`,`,", res,blockresult,
-//				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
+//				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER);
 //		//callstack
 //		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
 //		getBacktraceString(&log, 4096 - log.length - 17);
@@ -164,7 +164,7 @@ _ThreadImpl::ThreadProc(void* params) {
 				  API_ID_void___ThreadImpl__ThreadProc_void__params_,
 				  "p", params);
 		PACK_COMMON_END((unsigned int)pSelf, 0, blockresult);
-		PACK_THREAD((unsigned int)pThread, THREAD_OSPTHREAD_WORKER, THREAD_API_INTERNAL_START);
+		PACK_THREAD((unsigned int)pThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_INTERNAL_START);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -188,7 +188,7 @@ _ThreadImpl::ThreadProc(void* params) {
 				  API_ID_void___ThreadImpl__ThreadProc_void__params_,
 				  "p", params);
 		PACK_COMMON_END((unsigned int)pSelf, 0, blockresult);
-		PACK_THREAD((unsigned int)pThread, THREAD_OSPTHREAD_WORKER, THREAD_API_INTERNAL_STOP);
+		PACK_THREAD((unsigned int)pThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_INTERNAL_STOP);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -243,7 +243,7 @@ _ThreadImpl::ThreadProc(void* params) {
 //		//PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
 //		log.length += sprintf(log.data + log.length,
 //				"`,0`,%ld`,%d`,0`,%u`,0x%x`,%d`,%d`,`,", ret, blockresult,
-//				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_CLOSE);
+//				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_CLOSE);
 //		//callstack
 //		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
 //		getBacktraceString(&log, 4096 - log.length - 17);
@@ -302,7 +302,7 @@ _ThreadImpl::ThreadProc(void* params) {
 //		//PCAddr,errno,InternalCall,size,FD,FDType,FDApiType,FileSize,FilePath
 //		log.length += sprintf(log.data + log.length,
 //				"`,0`,%ld`,%d`,0`,%u`,0x%x`,%d`,%d`,`,", ret, blockresult,
-//				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_CLOSE);
+//				(unsigned int)CALLER_ADDRESS, (unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_CLOSE);
 //		//callstack
 //		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
 //		getBacktraceString(&log, 4096 - log.length - 17);
@@ -361,7 +361,7 @@ _ThreadImpl::ThreadProc(void* params) {
 //
 //		log.length += sprintf(log.data + log.length,
 //				"`,0`,0`,%d`,0`,0x%x`,%d`,%d`,`,", blockresult,
-//				(unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_OPEN);
+//				(unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_OPEN);
 //		//callstack
 //		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
 //		getBacktraceString(&log, 4096 - log.length - 17);
@@ -420,7 +420,7 @@ _ThreadImpl::ThreadProc(void* params) {
 //
 //		log.length += sprintf(log.data + log.length,
 //				"`,0`,0`,%d`,0`,0x%x`,%d`,%d`,`,", blockresult,
-//				(unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_CLOSE);
+//				(unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_CLOSE);
 //		//callstack
 //		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
 //		getBacktraceString(&log, 4096 - log.length - 17);
@@ -471,7 +471,7 @@ result Thread::Sleep(long milliSeconds) {
 				  API_ID_result_Thread__Sleep_long_milliSeconds_,
 				  "x", milliSeconds);
 		PACK_COMMON_END(0, 0, blockresult);
-		PACK_THREAD((unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_START);
+		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_START);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -490,7 +490,7 @@ result Thread::Sleep(long milliSeconds) {
 				  API_ID_result_Thread__Yield_void_,
 				  "x", milliSeconds);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_END);
+		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_END);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -543,7 +543,7 @@ Thread* Thread::GetCurrentThread(void) {
 				  API_ID_Thread__Thread__GetCurrentThread_void_,
 				  "", 0);
 		PACK_COMMON_END((unsigned int)currentThread, res, blockresult);
-		PACK_THREAD((unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
+		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -597,7 +597,7 @@ result Thread::Yield(void) {
 				  API_ID_result_Thread__Yield_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
+		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -646,7 +646,7 @@ result Thread::Exit(int exitCode) {
 				  API_ID_result_Thread__Exit_int_exitCode_,
 				  "d", exitCode);
 		PACK_COMMON_END(0, 0, blockresult);
-		PACK_THREAD((unsigned int)currentThread, THREAD_OSPTHREAD_WORKER, THREAD_API_EXIT);
+		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_EXIT);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -706,7 +706,7 @@ result Thread::Construct(ThreadType threadType, long stackSize,
 				  API_ID_result_Thread__Construct_ThreadType_threadType__long_stackSize__ThreadPriority_priority_,
 				  "dxd", threadType, stackSize, priority);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -757,7 +757,7 @@ result Thread::Construct(long stackSize, ThreadPriority priority) {
 				  API_ID_result_Thread__Construct_long_stackSize__ThreadPriority_priority_,
 				  "xd", stackSize, priority);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -814,7 +814,7 @@ result Thread::Construct(const Tizen::Base::String &name, long stackSize,
 				  API_ID_result_Thread__Construct_const_Tizen__Base__String__name__long_stackSize__ThreadPriority_priority_,
 				  "sxd", temp, stackSize, priority);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -873,7 +873,7 @@ result Thread::Construct(const Tizen::Base::String &name, ThreadType threadType,
 				  API_ID_result_Thread__Construct_const_Tizen__Base__String__name__ThreadType_threadType__long_stackSize__ThreadPriority_priority_,
 				  "sdxd", temp, threadType, stackSize, priority);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -929,7 +929,7 @@ result Thread::Construct(IRunnable &target, long stackSize,
 				  API_ID_result_Thread__Construct_IRunnable__target__long_stackSize__ThreadPriority_priority_,
 				  "xxd", (unsigned int) &target, stackSize, priority);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -988,7 +988,7 @@ result Thread::Construct(const Tizen::Base::String &name, IRunnable &target,
 				  API_ID_result_Thread__Construct_const_Tizen__Base__String__name__IRunnable__target__long_stackSize__ThreadPriority_priority_,
 				  "sxxd", temp, (unsigned int) &target, stackSize, priority);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1042,7 +1042,7 @@ result Thread::GetExitCode(int &exitCode) const {
 				  API_ID_result_Thread__GetExitCode_int__exitCode__const,
 				  "d", exitCode);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1097,7 +1097,7 @@ const Tizen::Base::String & Thread::GetName(void) const {
 				  API_ID_const_Tizen__Base__String___Thread__GetName_void__const,
 				  "", 0);
 		PACK_COMMON_END(ret.GetPointer(), res, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1143,7 +1143,7 @@ result Thread::Join(void) {
 				  API_ID_result_Thread__Join_void_,
 				  "", 0);
 		PACK_COMMON_END(0, 0, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_START);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_START);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -1159,7 +1159,7 @@ result Thread::Join(void) {
 				  API_ID_result_Thread__Join_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_WAIT_END);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_END);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1233,7 +1233,7 @@ result Thread::Join(void) {
 //
 //		log.length += sprintf(log.data + log.length,
 //				"`,0`,0`,%d`,0`,0x%x`,%d`,%d`,`,", blockresult,
-//				(unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_OTHER);
+//				(unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER);
 //		//callstack
 //		log.length += sprintf(log.data + log.length, "`,\ncallstack_start`,");
 //		getBacktraceString(&log, 4096 - log.length - 17);
@@ -1288,7 +1288,7 @@ result Thread::Start(void) {
 				  API_ID_result_Thread__Start_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_START);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_START);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1338,7 +1338,7 @@ result Thread::Stop(void) {
 				  API_ID_result_Thread__Stop_void_,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_WORKER, THREAD_API_STOP);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_STOP);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1390,7 +1390,7 @@ result EventDrivenThread::Construct(long stackSize, ThreadPriority priority) {
 				  API_ID_result_EventDrivenThread__Construct_long_stackSize__ThreadPriority_priority_,
 				  "xd", stackSize, priority);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_EVENTDRIVEN, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_EVENTDRIVEN, THREAD_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1450,7 +1450,7 @@ result EventDrivenThread::Construct(const Tizen::Base::String &name, long stackS
 				  API_ID_result_EventDrivenThread__Construct_const_Tizen__Base__String__name__long_stackSize__ThreadPriority_priority_,
 				  "sx", temp, stackSize);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_EVENTDRIVEN, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_EVENTDRIVEN, THREAD_API_NEW);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1502,7 +1502,7 @@ result EventDrivenThread::Quit() {
 				  API_ID_result_EventDrivenThread__Quit__,
 				  "", 0);
 		PACK_COMMON_END(ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_OSPTHREAD_EVENTDRIVEN, THREAD_API_STOP);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_EVENTDRIVEN, THREAD_API_STOP);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
