@@ -179,8 +179,9 @@ static inline bool stat_regular_or_socket_p(struct stat *buf)
 		PACK_COMMON_END(RVAL, newerrno, blockresult);					\
 		PACK_RESOURCE(SIZE, FD, APITYPE, _filesize, _filepath);				\
 		FLUSH_LOCAL_BUF();								\
-		POST_PACK_PROBEBLOCK_END();							\
-	}
+	}											\
+	POST_PACK_PROBEBLOCK_END();
+
 
 #define BEFORE_ORIGINAL_START_END_NOFD(API_ID, FUNCNAME, LIBNAME, APITYPE, INPUTFORMAT, ...)	\
 	DECLARE_VARIABLE_FD;								\
