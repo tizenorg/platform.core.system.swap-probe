@@ -143,23 +143,44 @@
 	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, _fd, APITYPE);				\
 	POST_PACK_PROBEBLOCK_END()
 
-
-// ==================================================================
-// START_END macro for file
-// ==================================================================
-
+/*!
+ * Macros {BEFORE,AFTER}_ORIGINAL_START_END_FD only used in {p,v,}{read,write}
+ * in which we should log only about files and sockets. Given this lucky
+ * coincidence we can implement this login in macros. As such, they should not
+ * be used in functions for which this logic do not apply.
+ */
+static inline bool stat_regular_or_socket_p(struct stat *buf)
+{
+  return S_ISREG(buf->st_mode) || S_ISSOCK(buf->st_mode);
+}
 #define BEFORE_ORIGINAL_START_END_FD(API_ID, FUNCNAME, LIBNAME, FD, APITYPE, INPUTFORMAT, ...)	\
-	DECLARE_VARIABLE_FD;								\
-	GET_REAL_FUNC(FUNCNAME, LIBNAME);						\
-	PRE_PROBEBLOCK_BEGIN();								\
-	_fstatret = fstat(FD, &_statbuf);						\
-	DEFINE_FILESIZE_FD(fd);								\
-	PREPARE_LOCAL_BUF();								\
-	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-	PACK_COMMON_END(0, 0, blockresult);						\
-	PACK_RESOURCE(0, FD, APITYPE, _filesize, _filepath);				\
-	FLUSH_LOCAL_BUF();								\
-	PRE_PROBEBLOCK_END()
+	DECLARE_VARIABLE_FD;									\
+	GET_REAL_FUNC(FUNCNAME, LIBNAME);							\
+	PRE_PROBEBLOCK_BEGIN();									\
+	_fstatret = fstat(FD, &_statbuf);							\
+	if (stat_regular_or_socket_p(&_statbuf)) {						\
+		DEFINE_FILESIZE_FD(fd);								\
+		PREPARE_LOCAL_BUF();								\
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
+		PACK_COMMON_END(0, 0, blockresult);						\
+		PACK_RESOURCE(0, FD, APITYPE, _filesize, _filepath);				\
+		FLUSH_LOCAL_BUF();								\
+		PRE_PROBEBLOCK_END();								\
+	}
+
+
+#define AFTER_ORIGINAL_START_END_FD(API_ID, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)		\
+	POST_PACK_PROBEBLOCK_BEGIN();								\
+	setProbePoint(&probeInfo);								\
+	_fstatret = fstat(FD, &_statbuf);							\
+	if (stat_regular_or_socket_p(&_statbuf)) {						\
+		PREPARE_LOCAL_BUF();								\
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
+		PACK_COMMON_END(RVAL, newerrno, blockresult);					\
+		PACK_RESOURCE(SIZE, FD, APITYPE, _filesize, _filepath);				\
+		FLUSH_LOCAL_BUF();								\
+		POST_PACK_PROBEBLOCK_END();							\
+	}
 
 #define BEFORE_ORIGINAL_START_END_NOFD(API_ID, FUNCNAME, LIBNAME, APITYPE, INPUTFORMAT, ...)	\
 	DECLARE_VARIABLE_FD;								\
@@ -185,17 +206,6 @@
 	PACK_COMMON_END(0, 0, blockresult);							\
 	POST_PACK_PROBEBLOCK_MIDDLE_FD(0, _fd, APITYPE);					\
 	PRE_PROBEBLOCK_END()
-
-#define AFTER_ORIGINAL_START_END_FD(API_ID, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)		\
-	POST_PACK_PROBEBLOCK_BEGIN();								\
-	setProbePoint(&probeInfo);								\
-	_fstatret = fstat(FD, &_statbuf);							\
-	PREPARE_LOCAL_BUF();									\
-	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
-	PACK_COMMON_END(RVAL, newerrno, blockresult);						\
-	PACK_RESOURCE(SIZE, FD, APITYPE, _filesize, _filepath);					\
-	FLUSH_LOCAL_BUF();									\
-	POST_PACK_PROBEBLOCK_END()
 
 #define AFTER_ORIGINAL_START_END_NOFD(API_ID, RVAL, SIZE, APITYPE, INPUTFORMAT, ...)		\
 	POST_PACK_PROBEBLOCK_BEGIN();								\
