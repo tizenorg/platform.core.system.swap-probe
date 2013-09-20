@@ -126,7 +126,6 @@ char contextValue[256];
 	void* tmpPtr = 0;					\
 	int32_t vAPI_ID = API_ID_ ## FUNCNAME;			\
 	uint64_t start_nsec = get_current_nsec();				\
-	PREPARE_LOCAL_BUF();					\
 	if(!FUNCNAME##p) {						\
 		probeBlockStart();					\
 		if (lib_handle[LIBOSP_UIFW] == ((void *) 0)) {		\

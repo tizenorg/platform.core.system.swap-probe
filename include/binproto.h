@@ -63,7 +63,7 @@
 #define MSG_PROBE_THREAD 0x3008
 #define MSG_PROBE_CUSTOM 0x3009
 #define MSG_PROBE_SYNC 0x3010
-
+#define MSG_PROBE_NETWORK 0x3011
 #define MSG_PROBE_GL 0x3012
 
 // TODO: remove this copy-paste
@@ -343,10 +343,11 @@ static inline char *pack_args(char *to, const char *fmt, ...)
 	} while (0)
 
 #define LOCAL_BUF_SIZE 1024
+
 #define PREPARE_LOCAL_BUF()			\
-		char msg_buf[LOCAL_BUF_SIZE];	\
+		char msg_buf[LOCAL_BUF_SIZE];\
 		char *BUF_PTR = msg_buf;			\
-		char *RET_PTR = NULL;
+		char *RET_PTR = NULL
 
 #define MSG_LEN_OFFSET 16
 #define MSG_HDR_LEN 20

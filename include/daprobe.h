@@ -114,7 +114,7 @@ bool setProbePoint(probeInfo_t * iProbe);
 int update_heap_memory_size(bool isAdd, size_t size);
 
 bool printLogStr(const char* str, int msgType);
-//bool printLog(log_t* log, int msgType);
+bool printLog(log_t* log, int msgType);
 int __appendTypeLog(log_t* log, int nInput, char* token, ...);
 int getBacktraceString(log_t* log, int bufsize);
 
@@ -169,15 +169,13 @@ int getBacktraceString(log_t* log, int bufsize);
 				if (lib_handle[SONAME] == NULL) {					\
 					lib_handle[SONAME] = dlopen(lib_string[SONAME], RTLD_LAZY);			\
 					if (lib_handle[SONAME] == NULL) {				\
-						char perror_msg[PERROR_MSG_MAX];			\
-						sprintf(perror_msg, "dlopen failed : %s\n", lib_string[SONAME]);	\
-						perror(perror_msg);							\
+						fprintf(stderr, "dlopen failed : %s\n", lib_string[SONAME]);	\
 						exit(0);									\
 					} \
 				}													\
 				FUNCTIONPOINTER = dlsym(lib_handle[SONAME], FUNCNAME);		\
 				if (FUNCTIONPOINTER == NULL || dlerror() != NULL) {		\
-					perror("dlsym failed : <" FUNCNAME ">\n");			\
+					fprintf(stderr, "dlsym failed : <" FUNCNAME ">\n");			\
 					exit(0);										\
 				}													\
 				probeBlockEnd();									\
@@ -185,7 +183,7 @@ int getBacktraceString(log_t* log, int bufsize);
 		} while(0)
 
 #define GET_REAL_FUNC(FUNCNAME, SONAME)		\
-		GET_REAL_FUNCP(FUNCNAME, SONAME, FUNCNAME##p)
+	GET_REAL_FUNCP(FUNCNAME, SONAME, FUNCNAME##p)
 
 #define GET_REAL_FUNCP_RTLD_NEXT(FUNCNAME, FUNCTIONPOINTER)			\
 		do {														\
@@ -193,7 +191,7 @@ int getBacktraceString(log_t* log, int bufsize);
 				probeBlockStart(); 									\
 				FUNCTIONPOINTER = dlsym(RTLD_NEXT, #FUNCNAME);		\
 				if(FUNCTIONPOINTER == NULL || dlerror() != NULL) {	\
-					perror("dlsym failed");							\
+					fprintf(stderr, "dlsym failed <%s>\n", #FUNCNAME);							\
 					exit(0);										\
 				}													\
 				probeBlockEnd(); 									\
@@ -209,7 +207,7 @@ int getBacktraceString(log_t* log, int bufsize);
 				probeBlockStart(); 									\
 				void* funcp = dlsym(RTLD_NEXT, #FUNCNAME);			\
 				if(funcp == NULL || dlerror() != NULL) {			\
-					perror("dlsym failed : " #FUNCNAME);			\
+					fprintf(stderr, "dlsym failed <%s>\n", #FUNCNAME);							\
 					exit(0);										\
 				}													\
 				memcpy(&FUNCTIONPOINTER, &funcp, sizeof(void*));	\
@@ -247,16 +245,20 @@ int getBacktraceString(log_t* log, int bufsize);
 		probeBlockEnd();				\
 	} while(0)
 
-#define POST_UNCONDITIONAL_BLOCK_BEGIN(LCTYPE)	\
-	do {										\
-		probeBlockStart();						\
-		INIT_LOG;								\
-		APPEND_LOG_BASIC(LCTYPE)
-		
-#define POST_UNCONDITIONAL_BLOCK_END()			\
-		printLog(&log, MSG_LOG);				\
-		probeBlockEnd();						\
-	} while(0)
+// =========================== post block macro ===========================
+
+#define POST_PROBEBLOCK_BEGIN(LCTYPE, RETTYPE, RETVALUE, INPUTFORMAT, ...)	\
+	newerrno = errno;														\
+	if(postBlockBegin(blockresult)) {										\
+		PREPARE_LOCAL_BUF(); \
+		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
+		PACK_COMMON_END(RETVALUE, errno, blockresult);
+
+#define POST_PROBEBLOCK_END() 						\
+		FLUSH_LOCAL_BUF();						\
+		postBlockEnd();								\
+	}												\
+	errno = (newerrno != 0) ? newerrno : olderrno
 
 // ========================= simplify macro ================================
 

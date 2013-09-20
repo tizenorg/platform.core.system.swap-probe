@@ -48,7 +48,7 @@ extern "C"{
 #define		VT_OFF_T		9
 #define		VT_SIZE_T		10
 #define		VT_SSIZE_T		11
-#define		VT_SOCKLEN_T	12
+#define		VT_SOCKLEN_T		12
 #define		VT_UINT16_T		13
 #define		VT_UINT32_T		14
 #define		VT_UINT64_T		15
@@ -60,7 +60,7 @@ extern "C"{
 /* #define		LC_UIEVENT		3 */
 /* #define		LC_USERFUNC		4 */
 /* #define		LC_RESOURCE		5 */
-/* #define		LC_LIFECYCLE	6 */
+/* #define		LC_LIFECYCLE		6 */
 /* #define		LC_SNAPSHOT		7 */
 /* #define		LC_SCENE		8 */
 /* #define		LC_DEVICE		9 */
@@ -69,9 +69,11 @@ extern "C"{
 /* #define		LC_THREAD		12 */
 /* #define		LC_CUSTOM		13 */
 /* #define		LC_SYNC			14 */
+/* #define		LC_SOCKET		15 */
 /* #define		LC_GLES20		16 */
 
-#define		FD_API_OPEN				0
+
+#define		FD_API_OPEN			0
 #define		FD_API_CLOSE			1
 #define		FD_API_READ_START		2
 #define		FD_API_READ_END 		3
@@ -80,19 +82,46 @@ extern "C"{
 #define		FD_API_DIRECTORY		6
 #define		FD_API_PERMISSION		7
 #define		FD_API_OTHER			8
-#define		FD_API_SEND             9
+#define		FD_API_SEND			9
 #define		FD_API_RECEIVE			10
 #define		FD_API_OPTION			11
 #define		FD_API_MANAGE			12
+
+
+#define		SOCKET_API_FD_OPEN		0
+#define		SOCKET_API_FD_CLOSE		1
+#define		SOCKET_API_RECV_START		2
+#define		SOCKET_API_RECV_END		3
+#define		SOCKET_API_SEND_START		4
+#define		SOCKET_API_SEND_END		5
+#define		SOCKET_API_BIND			6
+#define		SOCKET_API_LISTEN		7
+#define		SOCKET_API_CONNECT		8
+#define		SOCKET_API_ACCEPT_START		9
+#define		SOCKET_API_ACCEPT_END		10
+#define		SOCKET_API_EVENT_START		11
+#define		SOCKET_API_EVENT_END		12
+#define		SOCKET_API_OTHER		13
+#define		HTTP_API_SESSION_CONSTRUCT	14
+#define		HTTP_API_SESSION_CLOSE		15
+#define		HTTP_API_TRANSACTION_OPEN	16
+#define		HTTP_API_TRANSACTION_CLOSE	17
+#define		HTTP_API_ALLOCATION		18
+#define		HTTP_API_SUBMIT			19
+#define		HTTP_API_REQUEST		20
+#define		HTTP_API_RESPONSE		21
+#define		HTTP_API_OTHER			22
+#define		HTTP_API_CLOSE			23
+
 
 #define		MEMORY_API_ALLOC	0
 #define		MEMORY_API_FREE		1
 #define		MEMORY_API_MANAGE	2
 
-//#define		SNAPSHOT_API_WIN			0
+//#define		SNAPSHOT_API_WIN		0
 //#define		SNAPSHOT_API_CONTROLBAR		1
 //#define		SNAPSHOT_API_NAVIFRAME		2
-//#define		SNAPSHOT_API_PAGER			3
+//#define		SNAPSHOT_API_PAGER		3
 
 #define 	EVENT_TYPE_DOWN		0
 #define 	EVENT_TYPE_UP		1
@@ -101,39 +130,39 @@ extern "C"{
 #define		USERFUNC_ENTER		0
 #define		USERFUNC_EXIT		1
 
-#define		THREAD_PTHREAD					0
-#define		THREAD_OSPTHREAD_WORKER			1
+#define		THREAD_PTHREAD			0
+#define		THREAD_OSPTHREAD_WORKER		1
 #define		THREAD_OSPTHREAD_EVENTDRIVEN	2
 
-#define		THREAD_API_NEW					0
-#define		THREAD_API_START				1
-#define		THREAD_API_STOP					2
-#define		THREAD_API_EXIT					3
+#define		THREAD_API_NEW				0
+#define		THREAD_API_START			1
+#define		THREAD_API_STOP				2
+#define		THREAD_API_EXIT				3
 #define		THREAD_API_WAIT_START			4
-#define		THREAD_API_WAIT_END				5
+#define		THREAD_API_WAIT_END			5
 #define		THREAD_API_INTERNAL_START		6
 #define		THREAD_API_INTERNAL_STOP		7
-#define		THREAD_API_OTHER				8
+#define		THREAD_API_OTHER			8
 
-#define 	SYNC_OSP_MUTEX					0
-#define		SYNC_OSP_MONITOR				1
-#define		SYNC_OSP_SEMAPHORE				2
-#define		SYNC_PTHREAD_MUTEX				3
+#define 	SYNC_OSP_MUTEX				0
+#define		SYNC_OSP_MONITOR			1
+#define		SYNC_OSP_SEMAPHORE			2
+#define		SYNC_PTHREAD_MUTEX			3
 #define		SYNC_PTHREAD_COND_VARIABLE		4
-#define		SYNC_PTHREAD_RWLOCK				5
+#define		SYNC_PTHREAD_RWLOCK			5
 #define		SYNC_PTHREAD_SPINLOCK			6
 #define		SYNC_PTHREAD_BARRIER			7
 
-#define		SYNC_API_NEW					0
+#define		SYNC_API_NEW				0
 #define		SYNC_API_ACQUIRE_WAIT_START		1
 #define		SYNC_API_ACQUIRE_WAIT_END		2
-#define		SYNC_API_RELEASE				3
+#define		SYNC_API_RELEASE			3
 #define		SYNC_API_TRY_ACQUIRE			4
 #define		SYNC_API_COND_WAIT_START		5
 #define		SYNC_API_COND_WAIT_END			6
-#define		SYNC_API_NOTIFY					7
-#define		SYNC_API_NOTIFY_ALL				8
-#define		SYNC_API_OTHER					9
+#define		SYNC_API_NOTIFY				7
+#define		SYNC_API_NOTIFY_ALL			8
+#define		SYNC_API_OTHER				9
 
 enum MessageType
 {
@@ -153,16 +182,17 @@ enum MessageType
 
 enum DaOptions
 {
-	OPT_ALWAYSOFF	=	0x00000000,
+	OPT_ALWAYSOFF		=	0x00000000,
 	OPT_ALLOC		=	0x00000008,
 	OPT_FILE		=	0x00000010,
 	OPT_THREAD		=	0x00000020,
 	OPT_UI			=	0x00000040,
-	OPT_SNAPSHOT	=	0x00000080,
+	OPT_SNAPSHOT		=	0x00000080,
 	OPT_EVENT		=	0x00000100,
 	OPT_RECORD		=	0x00000200,
+	OPT_NETWORK		=	0x00020000,
 	OPT_GLES		=	0x00040000,
-	OPT_ALWAYSON	=	0x11111111
+	OPT_ALWAYSON		=	0x11111111
 };
 
 

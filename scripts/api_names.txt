@@ -374,6 +374,15 @@ setsockopt
 shutdown
 socket
 socketpair
+sockatmark
+isfdtype
+poll
+ppoll
+epoll_create
+epoll_create1
+epoll_wait
+epoll_pwait
+epoll_ctl
 
 Thread* Thread::GetCurrentThread(void)
 
@@ -530,3 +539,4 @@ glIsTexture
 
 _SglSwapBuffers
 eglSwapBuffers
+

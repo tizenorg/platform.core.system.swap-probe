@@ -1,6 +1,10 @@
 # This script generates api_id_mapping header from api list
 
 BEGIN {
+	print "/* AUTO GENERATED */"
+	print "#ifndef __API_ID_MAP__"
+	print "#define __API_ID_MAP__"
+	print
     api_id = 1
     macro_prefix = "API_ID_"
 } {
@@ -14,4 +18,8 @@ BEGIN {
 	printf "#define %-135s %d // %s\n", def, api_id, orig
 	api_id = api_id + 1
     }
+}
+END {
+	print
+	print "#endif /* __API_ID_MAP__ */"
 }

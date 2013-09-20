@@ -61,8 +61,10 @@ extern "C" {
 		}											\
 	} while(0)
 
-#define PRE_PROBEBLOCK_OSP(FILTER)							\
-	do {										\
+#define GET_REAL_FUNC_TIZEN(FUNCNAME, LIBNAME, FUNCTIONPOINTER) GET_REAL_FUNC_OSP(FUNCNAME, LIBNAME, FUNCTIONPOINTER)	\
+
+#define PRE_PROBEBLOCK_OSP(FILTER)												\
+	do {																		\
 		if((blockresult = preBlockBegin(CALLER_ADDRESS, FILTER, _sopt)) != 0) {	\
 			setProbePoint(&probeInfo);					\
 			preBlockEnd();							\

@@ -37,7 +37,6 @@
 #include "dahelper.h"
 #include "da_thread.h"
 #include "da_sync.h"
-
 #include "binproto.h"
 
 typedef struct thread_routine_call_t {
