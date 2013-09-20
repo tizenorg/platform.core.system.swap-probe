@@ -110,17 +110,20 @@
 #define DEFINE_FILESIZE_FP(fp) _fd = checked_fileno(fp); _filesize = get_fd_filesize(_fd);
 #define DEFINE_FILESIZE_0() _fd = _filesize = 0;
 
-// ==================================================================
-// AFTER_ORIGINAL macro for file
-// ==================================================================
-
-#define AFTER_PACK_ORIGINAL_FD(API_ID, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)	\
-	POST_PACK_PROBEBLOCK_BEGIN();							\
-	PREPARE_LOCAL_BUF();								\
-	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-	PACK_COMMON_END(RVAL, newerrno, blockresult);					\
-	_fstatret = fstat(FD, &_statbuf);						\
-	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE);				\
+/*!
+ * Macro AFTER_PACK_ORIGINAL_FD is used in and only in functions, which should report
+ * only about regular files or sockets, so this logic implemented in macro.
+ * Watch out when reusing it somewhere else
+ */
+#define AFTER_PACK_ORIGINAL_FD(API_ID, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)		\
+	POST_PACK_PROBEBLOCK_BEGIN();								\
+	_fstatret = fstat(FD, &_statbuf);							\
+	if (stat_regular_or_socket_p(&_statbuf)) {						\
+		PREPARE_LOCAL_BUF();								\
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
+		PACK_COMMON_END(RVAL, newerrno, blockresult);					\
+		POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE);				\
+	}											\
 	POST_PACK_PROBEBLOCK_END()
 
 #define AFTER_PACK_ORIGINAL_NOFD(API_ID, RVAL, SIZE, APITYPE, INPUTFORMAT, ...)		\
