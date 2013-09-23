@@ -56,21 +56,21 @@ TIZEN_SRCS =	$(COMMON_SRCS) \
 			./probe_tizenapi/tizen_controls.cpp \
 			./probe_tizenapi/tizen_constructor.cpp \
 			./probe_event/gesture.cpp \
-			./probe_graphics/da_gles20.cpp \
 			./probe_ui/tizen_capture.cpp \
 			./probe_ui/tizen_scenemanager.cpp \
 			./probe_ui/tizen_frameani.cpp \
-			./probe_ui/tizen_display.cpp 
+			./probe_ui/tizen_display.cpp \
+			./probe_graphics/da_gles20.cpp
 
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
 
-CAPI_TARGET = da_probe_osp.so
+CAPI_TARGET = da_probe_capi.so
 TIZEN_TARGET = da_probe_tizen.so
 DUMMY_TARGET = libdaprobe.so
 
 COMMON_FLAGS = -D_GNU_SOURCE -fPIC -shared -Wall -funwind-tables -fomit-frame-pointer -Xlinker --no-undefined
 CAPI_FLAGS = $(COMMON_FLAGS)
-TIZEN_FLAGS = $(COMMON_FLAGS) -DOSPAPP
+TIZEN_FLAGS = $(COMMON_FLAGS) -DTIZENAPP
 
 LIBDIR_COMMON = 
 LIBDIR_CAPI = $(LIBDIR_COMMON) 
