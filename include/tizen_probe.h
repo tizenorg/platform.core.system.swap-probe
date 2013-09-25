@@ -38,7 +38,12 @@
 extern "C" {
 #endif
 
-#define GET_REAL_FUNC_TISEN(FUNCNAME, LIBNAME, FUNCTIONPOINTER)						\
+typedef struct {
+	uint32_t port;
+	uint32_t ip;
+} hostinfo_t;
+
+#define GET_REAL_FUNC_TIZEN(FUNCNAME, LIBNAME, FUNCTIONPOINTER)						\
 	do {												\
 		if(!FUNCTIONPOINTER) {									\
 			probeBlockStart();								\
@@ -61,9 +66,7 @@ extern "C" {
 		}											\
 	} while(0)
 
-#define GET_REAL_FUNC_TIZEN(FUNCNAME, LIBNAME, FUNCTIONPOINTER) GET_REAL_FUNC_TISEN(FUNCNAME, LIBNAME, FUNCTIONPOINTER)	\
-
-#define PRE_PROBEBLOCK_TISEN(FILTER)												\
+#define PRE_PROBEBLOCK_TIZEN(FILTER)												\
 	do {																		\
 		if((blockresult = preBlockBegin(CALLER_ADDRESS, FILTER, _sopt)) != 0) {	\
 			setProbePoint(&probeInfo);					\

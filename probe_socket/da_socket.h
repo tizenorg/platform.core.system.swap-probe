@@ -69,7 +69,6 @@
 #define AFTER_ORIGINAL_LIBC_SOCK(RVAL,OBJECTPTR, FDVALUE, APITYPE, MESSAGE, BYTESIZE, DESTINATIONINFO, INPUTFORMAT, ...)	\
 		POST_PROBEBLOCK_BEGIN(LC_SOCKET, RTYPE, RVAL, INPUTFORMAT, __VA_ARGS__);		\
 		POST_PROBEBLOCK_MIDDLE_LIBC_SOCK(OBJECTPTR, FDVALUE, APITYPE, MESSAGE, BYTESIZE, DESTINATIONINFO );								\
-		/* POST_PROBEBLOCK_CALLSTACK(); */												\
 		POST_PROBEBLOCK_END();
 
 //lib START Function
@@ -107,26 +106,29 @@
 		PRE_PROBEBLOCK()
 
 #define DECLARE_VARIABLE_STANDARD_OSP_NET(FUNCNAME)		\
-		PREPARE_LOCAL_BUF();			\
+		probeInfo_t probeInfo;				\
+		hostinfo_t hostinfo;				\
 		int blockresult;				\
-		bool bfiltering = true;			\
-		int olderrno = 0, newerrno = 0;\
-		int32_t __attribute__((unused)) vAPI_ID = API_ID_ ## FUNCNAME /* FIXME bad way*/;
+		bool bfiltering = true;				\
+		int olderrno = 0, newerrno = 0;			\
+		int32_t __attribute__((unused)) vAPI_ID = API_ID_ ## FUNCNAME /* FUNCID FIXME bad way*/; \
+		hostinfo.ip = 0;				\
+		hostinfo.port = 0
 
 #define POST_PROBEBLOCK_MIDDLE_TIZEN_SOCK(OBJECTPTR, FDVALUE, APITYPE, MESSAGE, BYTESIZE, DESTINATIONINFO )				\
-	do {							\
+	do {									\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)OBJECTPTR);		\
-		BUF_PTR = pack_int64(BUF_PTR, FDVALUE);		\
-		BUF_PTR = pack_int32(BUF_PTR, APITYPE);		\
-		BUF_PTR = pack_int32(BUF_PTR, 1);		/* FIXME need destination IP*/\
-		BUF_PTR = pack_int32(BUF_PTR, 2);		/* FIXME need destination PORT*/\
-		BUF_PTR = pack_string(BUF_PTR, MESSAGE);		\
+		BUF_PTR = pack_int64(BUF_PTR, FDVALUE);				\
+		BUF_PTR = pack_int32(BUF_PTR, APITYPE);				\
+		BUF_PTR = pack_int32(BUF_PTR, DESTINATIONINFO.ip);		\
+		BUF_PTR = pack_int32(BUF_PTR, DESTINATIONINFO.port);		\
+		BUF_PTR = pack_string(BUF_PTR, MESSAGE);			\
 	} while (0)
 
 
 //TIZEN
 #define CALL_ORIGINAL_TIZEN_NET(FUNCNAME, FUNCTIONPOINTER)	\
-		GET_REAL_FUNC_TIZEN(FUNCNAME, LIBOSP_NET,FUNCTIONPOINTER); \
+		GET_REAL_FUNC_TIZEN(FUNCNAME, LIBOSP_NET,FUNCTIONPOINTER)
 
 
 //Tizen Common Function
@@ -139,8 +141,6 @@
 #define AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START(APINAME,RTYPE, RVAL,OBJECTPTR, FDVALUE, APITYPE, MESSAGE, BYTESIZE, DESTINATIONINFO, INPUTFORMAT, ...)	\
 	POST_PROBEBLOCK_TIZEN_FUNC_START_BEGIN(APINAME,LC_SOCKET, RTYPE, RVAL,	INPUTFORMAT, __VA_ARGS__);		\
 	POST_PROBEBLOCK_MIDDLE_TIZEN_SOCK(OBJECTPTR, FDVALUE, APITYPE, MESSAGE, BYTESIZE,DESTINATIONINFO );								\
-	APPEND_LOG_NULL_CALLSTACK();																				\
-	printLog(&log, MSG_LOG);																							\
 	PRE_PROBEBLOCK_END();
 
 //Tizen END Function
@@ -179,7 +179,6 @@
 
 #define BEFORE_ORIGINAL_SOCK(FUNCNAME, LIBNAME)	\
 	DECLARE_VARIABLE_STANDARD;	\
-	/*PREPARE_LOCAL_BUF();*/			\
 	int32_t __attribute__((unused)) vAPI_ID = API_ID_ ## FUNCNAME; \
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);		\
 	PRE_PROBEBLOCK()

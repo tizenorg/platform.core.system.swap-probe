@@ -1,6 +1,13 @@
-/* AUTO GENERATED */
+/*
+ * this file genereted by <swap-probe> project with cmd <make headers>
+ */
+
 #ifndef __API_ID_MAP__
 #define __API_ID_MAP__
+
+#ifdef __cplusplus
+extern "C"{
+#endif
 
 #define API_ID_result_UiApp__Execute_UiAppInstanceFactory_pUiAppFactory__const_IList__pArguments_                                               1 // result UiApp::Execute(UiAppInstanceFactory pUiAppFactory, const IList* pArguments)
 #define API_ID_void__AppImpl__OnTerminate_void__user_data_                                                                                      2 // void _AppImpl::OnTerminate(void* user_data)
@@ -544,5 +551,32 @@
 #define API_ID__SglSwapBuffers                                                                                                                  516 // _SglSwapBuffers
 #define API_ID_eglSwapBuffers                                                                                                                   517 // eglSwapBuffers
 
+#define API_ID__ZN5Tizen3Net7Sockets6Socket10SetSockOptENS1_17NetSocketOptLevelENS1_16NetSocketOptNameEi                                        518 // _ZN5Tizen3Net7Sockets6Socket10SetSockOptENS1_17NetSocketOptLevelENS1_16NetSocketOptNameEi###Socket::SetSockOpt
+#define API_ID__ZN5Tizen3Net7Sockets6Socket10SetSockOptENS1_17NetSocketOptLevelENS1_16NetSocketOptNameERKNS1_12LingerOptionE                    519 // _ZN5Tizen3Net7Sockets6Socket10SetSockOptENS1_17NetSocketOptLevelENS1_16NetSocketOptNameERKNS1_12LingerOptionE###Socket::SetSockOpt
+#define API_ID__ZN5Tizen3Net7Sockets6Socket17AddSocketListenerERNS1_20ISocketEventListenerE                                                     520 // _ZN5Tizen3Net7Sockets6Socket17AddSocketListenerERNS1_20ISocketEventListenerE###Socket::AddSocketListener
+#define API_ID__ZN5Tizen3Net7Sockets6Socket20RemoveSocketListenerERNS1_20ISocketEventListenerE                                                  521 // _ZN5Tizen3Net7Sockets6Socket20RemoveSocketListenerERNS1_20ISocketEventListenerE###Socket::RemoveSocketListener
+#define API_ID__ZN5Tizen3Net7Sockets6Socket21AsyncSelectByListenerEm                                                                            522 // _ZN5Tizen3Net7Sockets6Socket21AsyncSelectByListenerEm###Socket::AsyncSelectByListener
+#define API_ID__ZN5Tizen3Net7Sockets6Socket4BindERKNS0_11NetEndPointE                                                                           523 // _ZN5Tizen3Net7Sockets6Socket4BindERKNS0_11NetEndPointE###Socket::Bind
+#define API_ID__ZN5Tizen3Net7Sockets6Socket4SendERNS_4Base10ByteBufferE                                                                         524 // _ZN5Tizen3Net7Sockets6Socket4SendERNS_4Base10ByteBufferE###Socket::Send
+#define API_ID__ZN5Tizen3Net7Sockets6Socket5CloseEv                                                                                             525 // _ZN5Tizen3Net7Sockets6Socket5CloseEv###Socket::Close
+#define API_ID__ZN5Tizen3Net7Sockets6Socket6ListenEi                                                                                            526 // _ZN5Tizen3Net7Sockets6Socket6ListenEi###Socket::Listen
+#define API_ID__ZN5Tizen3Net7Sockets6Socket6SendToEPviRKNS0_11NetEndPointERi                                                                    527 // _ZN5Tizen3Net7Sockets6Socket6SendToEPviRKNS0_11NetEndPointERi###Socket::SendTo
+#define API_ID__ZN5Tizen3Net7Sockets6Socket6SendToERNS_4Base10ByteBufferERKNS0_11NetEndPointE                                                   528 // _ZN5Tizen3Net7Sockets6Socket6SendToERNS_4Base10ByteBufferERKNS0_11NetEndPointE###Socket::SendTo
+#define API_ID__ZN5Tizen3Net7Sockets6Socket7ConnectERKNS0_11NetEndPointE                                                                        529 // _ZN5Tizen3Net7Sockets6Socket7ConnectERKNS0_11NetEndPointE###Socket::Connect
+#define API_ID__ZN5Tizen3Net7Sockets6Socket9ConstructENS1_22NetSocketAddressFamilyENS1_13NetSocketTypeENS1_17NetSocketProtocolE                 530 // _ZN5Tizen3Net7Sockets6Socket9ConstructENS1_22NetSocketAddressFamilyENS1_13NetSocketTypeENS1_17NetSocketProtocolE###Socket::Construct
+#define API_ID__ZN5Tizen3Net7Sockets6Socket9ConstructERKNS0_13NetConnectionENS1_22NetSocketAddressFamilyENS1_13NetSocketTypeENS1_17NetSocketProtocolE 531 // _ZN5Tizen3Net7Sockets6Socket9ConstructERKNS0_13NetConnectionENS1_22NetSocketAddressFamilyENS1_13NetSocketTypeENS1_17NetSocketProtocolE###Socket::Construct
+#define API_ID__ZNK5Tizen3Net7Sockets6Socket10GetSockOptENS1_17NetSocketOptLevelENS1_16NetSocketOptNameERi                                      532 // _ZNK5Tizen3Net7Sockets6Socket10GetSockOptENS1_17NetSocketOptLevelENS1_16NetSocketOptNameERi###Socket::GetSockOpt
+#define API_ID__ZNK5Tizen3Net7Sockets6Socket10GetSockOptENS1_17NetSocketOptLevelENS1_16NetSocketOptNameERNS1_12LingerOptionE                    533 // _ZNK5Tizen3Net7Sockets6Socket10GetSockOptENS1_17NetSocketOptLevelENS1_16NetSocketOptNameERNS1_12LingerOptionE###Socket::GetSockOpt
+#define API_ID__ZNK5Tizen3Net7Sockets6Socket11ReceiveFromEPviRNS0_11NetEndPointERi                                                              534 // _ZNK5Tizen3Net7Sockets6Socket11ReceiveFromEPviRNS0_11NetEndPointERi###Socket::Receive/Socket::ReceiveFrom
+#define API_ID__ZNK5Tizen3Net7Sockets6Socket11ReceiveFromERNS_4Base10ByteBufferERNS0_11NetEndPointE                                             535 // _ZNK5Tizen3Net7Sockets6Socket11ReceiveFromERNS_4Base10ByteBufferERNS0_11NetEndPointE###Socket::ReceiveFrom
+#define API_ID__ZNK5Tizen3Net7Sockets6Socket5IoctlENS1_17NetSocketIoctlCmdERm                                                                   536 // _ZNK5Tizen3Net7Sockets6Socket5IoctlENS1_17NetSocketIoctlCmdERm###Socket::Ioctl
+#define API_ID__ZNK5Tizen3Net7Sockets6Socket7AcceptNEv                                                                                          537 // _ZNK5Tizen3Net7Sockets6Socket7AcceptNEv###Socket::AcceptN
+#define API_ID__ZNK5Tizen3Net7Sockets6Socket7ReceiveERNS_4Base10ByteBufferE                                                                     538 // _ZNK5Tizen3Net7Sockets6Socket7ReceiveERNS_4Base10ByteBufferE###Socket::Receive
+#define API_ID__ZZN5Tizen3Net7Sockets6Socket4SendEPviRiE19__PRETTY_FUNCTION__                                                                   539 // _ZZN5Tizen3Net7Sockets6Socket4SendEPviRiE19__PRETTY_FUNCTION__###Socket::Send
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __API_ID_MAP__ */

@@ -5,26 +5,37 @@
 # where api_names.txt is function name list file
 
 BEGIN {
-    api_id = 1
-    macro_prefix = "API_ID_"
-    print "/*"
-    print " * this file genereted by <swap-probe> progect with cmd <make headers>"
-    print " */"
-
-    print "const char *api_id_list[] = {"
-} {
-    if ( $0 == "" ) {
+	api_id = 1
+	print "/*"
+	print " * this file genereted by <swap-probe> project with cmd <make headers>"
+	print " */"
 	print
-    } else {
-	orig = $0
-	def = orig
-	gsub(/[,:()*&~\[\] ]/, "_", def)
-	def = macro_prefix def "\","
-	printf "\"%-135s//%d %s\n", def, api_id, orig
-	api_id = api_id + 1
-    }
+	print "#ifdef __cplusplus"
+	print "extern \"C\"{"
+	print "#endif"
+	print
+	print "const char *api_id_list[] = {"
+} {
+	if ( $0 == "" ) {
+		print
+	} else {
+		orig = $0
+		def = orig
+		split(def, splited, "###")
+		if (splited[2] != ""){
+			def = splited[2]
+		}
+		def = def "\","
+		printf "\"%-135s//%d %s\n", def, api_id, orig
+		api_id = api_id + 1
+	}
 }
 
 END {
-    print "};"
+	print
+	print "#ifdef __cplusplus"
+	print "}"
+	print "#endif"
+	print
+	print "};"
 }

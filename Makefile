@@ -50,6 +50,7 @@ TIZEN_SRCS =	$(COMMON_SRCS) \
 			./helper/addr-tizen.c \
 			./probe_memory/libdanew.cpp \
 			./probe_tizenapi/tizen_file.cpp \
+			./probe_tizenapi/tizen_socket.cpp \
 			./probe_tizenapi/tizen_thread.cpp \
 			./probe_tizenapi/tizen_lifecycle.cpp \
 			./probe_tizenapi/tizen_sync.cpp \
@@ -89,6 +90,7 @@ dummy:	$(DUMMY_TARGET)
 headers:
 	cat ./scripts/api_names.txt | awk -f ./scripts/gen_api_id_mapping_header.awk > include/api_id_mapping.h
 	cat ./scripts/api_names.txt | awk -f ./scripts/gen_api_id_mapping_header_list.awk > include/api_id_list.h
+	cat ./scripts/api_names.txt | awk -f ./scripts/gen_api_id_mapping_list.awk > include/id_list
 
 $(CAPI_TARGET): $(CAPI_SRCS)
 	$(CC) $(INC_CAPI) $(CAPI_FLAGS) $(LIBDIR_CAPI) -o $@ $(CAPI_SRCS) $(CAPI_LDFLAGS)

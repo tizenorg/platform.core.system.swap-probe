@@ -47,7 +47,7 @@ char *lib_string[NUM_ORIGINAL_LIBRARY] = {
 	"libcapi-appfw-application.so.0",
 	"libGLESv2.so",
 	"libEGL.so",
-	"libosp-net.so.0"
+	"libosp-net.so"
 };
 void *lib_handle[NUM_ORIGINAL_LIBRARY];
 
