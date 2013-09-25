@@ -61,7 +61,7 @@ char contextValue[256];
 	static methodType FUNCNAME ## p = 0;				\
 	void* tmpPtr = 0;						\
 	int32_t vAPI_ID = API_ID_ ## FUNCNAME;				\
-	uint64_t start_nsec = get_current_nsec();				\
+	uint64_t start_nsec = get_current_nsec();			\
 	if(!FUNCNAME##p) {						\
 		probeBlockStart();					\
 		if (lib_handle[LIBGLES20] == ((void *) 0)) {		\
@@ -73,17 +73,28 @@ char contextValue[256];
 				perror(perror_msg);			\
 				exit(0);				\
 			}						\
+			probeInfo_t tempProbeInfo;			\
+			setProbePoint(&tempProbeInfo);			\
+			/* get max value */				\
+			char maxValString[64];				\
+			GLint maxVal[2];				\
+			glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVal[0]); 		\
+			glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxVal[1]);	\
+			sprintf(maxValString, "%d,%d", maxVal[0], maxVal[1]);		\
+			PREPARE_LOCAL_BUF();						\
+			PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, "", 0);		\
+			PACK_COMMON_END(1, 0, 0);					\
+			PACK_GL_ADD(APITYPE_INIT, 0, maxValString);			\
+			FLUSH_LOCAL_BUF();						\
 		}							\
 									\
-		/* TODO: add library init event here */			\
-									\
-		tmpPtr = dlsym(lib_handle[LIBGLES20], #FUNCNAME);  \
+		tmpPtr = dlsym(lib_handle[LIBGLES20], #FUNCNAME);	\
 		if (tmpPtr == NULL || dlerror() != NULL) {		\
-			perror("dlsym failed : " #FUNCNAME);       \
+			perror("dlsym failed : " #FUNCNAME);		\
 			exit(0);					\
 		}							\
 									\
-		memcpy(&FUNCNAME##p, &tmpPtr, sizeof(tmpPtr));     \
+		memcpy(&FUNCNAME##p, &tmpPtr, sizeof(tmpPtr));		\
 		probeBlockEnd();					\
 	}								\
 	PRE_PROBEBLOCK()
