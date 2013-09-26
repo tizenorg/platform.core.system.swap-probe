@@ -1,7 +1,7 @@
 /*
  *  DA probe
  *
- * Copyright (File::*c) 2000 - 2011 Samsung Electronics Co., Ltd. All rights reserved.
+ * Copyright (File::*c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
  * Contact:
  *
@@ -25,6 +25,7 @@
  *
  * Contributors:
  * - S-Core Co., Ltd
+ * - Samsung RnD Institute Russia
  *
  */
 
@@ -558,7 +559,6 @@ result Socket::Bind(const Tizen::Net::NetEndPoint& localEndPoint) {
 	retVal = (this->*Bindp)(localEndPoint);
 
 	Ip4Address* iv4PeerAddr = (Ip4Address*) localEndPoint.GetAddress();
-	struct in_addr inp;
 	char temp[64];
 	WcharToChar(temp, iv4PeerAddr->ToString().GetPointer());
 	char addressInfo[64];

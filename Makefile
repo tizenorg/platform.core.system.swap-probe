@@ -51,6 +51,7 @@ TIZEN_SRCS =	$(COMMON_SRCS) \
 			./probe_memory/libdanew.cpp \
 			./probe_tizenapi/tizen_file.cpp \
 			./probe_tizenapi/tizen_socket.cpp \
+			./probe_tizenapi/tizen_http.cpp \
 			./probe_tizenapi/tizen_thread.cpp \
 			./probe_tizenapi/tizen_lifecycle.cpp \
 			./probe_tizenapi/tizen_sync.cpp \
