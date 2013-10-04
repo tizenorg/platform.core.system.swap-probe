@@ -93,18 +93,19 @@ headers:
 	cat ./scripts/api_names.txt | awk -f ./scripts/gen_api_id_mapping_header_list.awk > include/api_id_list.h
 	cat ./scripts/api_names.txt | awk -f ./scripts/gen_api_id_mapping_list.awk > include/id_list
 
-$(CAPI_TARGET): $(CAPI_SRCS)
+$(CAPI_TARGET): $(CAPI_SRCS) headers
 	$(CC) $(INC_CAPI) $(CAPI_FLAGS) $(LIBDIR_CAPI) -o $@ $(CAPI_SRCS) $(CAPI_LDFLAGS)
 
-$(TIZEN_TARGET): $(TIZEN_SRCS)
+$(TIZEN_TARGET): $(TIZEN_SRCS) headers
 	$(CC) $(INC_TIZEN) $(TIZEN_FLAGS) $(LIBDIR_TIZEN) -o $@ $(TIZEN_SRCS) $(TIZEN_LDFLAGS)
 
-$(DUMMY_TARGET): $(DUMMY_SRCS)
+$(DUMMY_TARGET): $(DUMMY_SRCS) headers
 	$(CC) $(INC_TIZEN) $(COMMON_FLAGS) -o $@ $(DUMMY_SRCS) $(DUMMY_LDFLAGS)
 
 install:
 	[ -d "$(DESTDIR)/$(INSTALLDIR)" ] || mkdir -p $(DESTDIR)/$(INSTALLDIR)
 	install $(TIZEN_TARGET) $(DUMMY_TARGET) $(DESTDIR)/$(INSTALLDIR)/
+	install -m 644 include/id_list $(DESTDIR)/$(INSTALLDIR)/da_api_map
 
 clean:
 	rm -f *.so *.o

@@ -35,6 +35,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root,-)
 %{_prefix}/lib/da_probe_tizen.so
 %{_prefix}/lib/libdaprobe.so
+%{_prefix}/lib/da_api_map
 
 
 %changelog
