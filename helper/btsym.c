@@ -137,7 +137,7 @@ static symdata_t* _get_symboldata(char* filepath)
 			int strtab_idx = sec_hdr[symtab_idx].sh_link;
 			if(likely((strtab_idx != 0) && (sec_hdr[strtab_idx].sh_type == SHT_STRTAB)))	// associated string table is valid
 			{
-				pdata = (symdata_t*)malloc(sizeof(symdata_t) + 
+				pdata = (symdata_t*)malloc(sizeof(symdata_t) +
 						sec_hdr[symtab_idx].sh_size +
 						sec_hdr[strtab_idx].sh_size);
 
@@ -204,7 +204,7 @@ char** cached_backtrace_symbols (void* const* array, int size)
 	for (cnt = 0; cnt < size; ++cnt)
 	{
 		struct link_map* map;
-		
+
 		if(find_symbol_hash(array[cnt], &foundsym) <= 0)	// not found or error
 		{
 			status[cnt] = dladdr1 (array[cnt], &info[cnt], (void**)&map, RTLD_DL_LINKMAP);
@@ -215,7 +215,7 @@ char** cached_backtrace_symbols (void* const* array, int size)
 				total += (strlen (info[cnt].dli_fname ?: "")
 						+ strlen (info[cnt].dli_sname ?: "")
 						+ 3 + WORD_WIDTH + 3 + WORD_WIDTH + 5);
-	
+
 				/* The load bias is more useful to the user than the load
 				address.  The use of these addresses is to calculate an
 				address in the ELF file, so its prelinked bias is not
@@ -248,7 +248,7 @@ char** cached_backtrace_symbols (void* const* array, int size)
 		for (cnt = 0; cnt < size; ++cnt)
 		{
 			result[cnt] = last;
-			
+
 			if(chararr[cnt] != NULL)		// there is a cache
 			{
 				last += (1 + sprintf(last, "%s", chararr[cnt]));
@@ -261,7 +261,7 @@ char** cached_backtrace_symbols (void* const* array, int size)
 					// We found no symbol name to use, so describe it as relative to the file.
 					if (info[cnt].dli_sname == NULL)
 						info[cnt].dli_saddr = info[cnt].dli_fbase;
-	
+
 					if (info[cnt].dli_sname == NULL && info[cnt].dli_saddr == 0)
 					{
 						tstrlen = sprintf (last, "%s(%s) [%p]", info[cnt].dli_fname ?: "", info[cnt].dli_sname ?: "", array[cnt]);
@@ -280,7 +280,7 @@ char** cached_backtrace_symbols (void* const* array, int size)
 							sign = '-';
 							offset = info[cnt].dli_saddr - array[cnt];
 						}
-	
+
 						tstrlen = sprintf (last, "%s(%s%c%#tx) [%p]",
 								info[cnt].dli_fname ?: "",
 								info[cnt].dli_sname ?: "",
@@ -292,11 +292,11 @@ char** cached_backtrace_symbols (void* const* array, int size)
 					tstrlen = sprintf (last, "[%p]", array[cnt]);
 				}
 				tstrlen++;
-				
+
 				add_symbol_hash(array[cnt], last, tstrlen);
-				
+
 				last += tstrlen;
-			}			
+			}
 		}
 
 		assert (last <= (char *) result + size * sizeof (char *) + total);
@@ -325,14 +325,14 @@ char** da_backtrace_symbols (void* const* array, int size)
 	for (cnt = 0; cnt < size; ++cnt)
 	{
 		struct link_map* map;
-		
+
 		if(find_symbol_hash(array[cnt], &foundsym) <= 0)	// not found or error
 		{
 			status[cnt] = dladdr1 (array[cnt], &info[cnt], (void**)&map, RTLD_DL_LINKMAP);
 			if(info[cnt].dli_sname == NULL)
 			{
 				char filepath[FILEPATH_MAX];	// for file path
-	
+
 				/* If this is the main program the information is incomplete.  */
 				if (map->l_name[0] == '\0' && map->l_type == lt_executable)
 				{
@@ -355,14 +355,14 @@ char** da_backtrace_symbols (void* const* array, int size)
 						filepath[0] = '\0';
 					strcat(filepath, map->l_name);
 				}
-			
+
 				symdata_t* pdata = _get_symboldata(filepath);
 				if(pdata != NULL)
 				{
 					ElfW(Sym) * sym_ent = pdata->symtab;
 					char* strtab = pdata->strtab;
 					int i, num_syms = pdata->symhdr.sh_size / pdata->symhdr.sh_entsize;
-		
+
 					for(i = 0; i < num_syms; ++i)
 					{
 						if (ELFW(ST_TYPE) (sym_ent[i].st_info) != STT_TLS
@@ -386,7 +386,7 @@ char** da_backtrace_symbols (void* const* array, int size)
 				total += (strlen (info[cnt].dli_fname ?: "")
 						+ strlen (info[cnt].dli_sname ?: "")
 						+ 3 + WORD_WIDTH + 3 + WORD_WIDTH + 5);
-	
+
 				/* The load bias is more useful to the user than the load
 				address.  The use of these addresses is to calculate an
 				address in the ELF file, so its prelinked bias is not
@@ -418,7 +418,7 @@ char** da_backtrace_symbols (void* const* array, int size)
 		for (cnt = 0; cnt < size; ++cnt)
 		{
 			result[cnt] = last;
-			
+
 			if(chararr[cnt] != NULL)		// there is a cache
 			{
 				last += (1 + sprintf(last, "%s", chararr[cnt]));
@@ -431,7 +431,7 @@ char** da_backtrace_symbols (void* const* array, int size)
 					// We found no symbol name to use, so describe it as relative to the file.
 					if (info[cnt].dli_sname == NULL)
 						info[cnt].dli_saddr = info[cnt].dli_fbase;
-	
+
 					if (info[cnt].dli_sname == NULL && info[cnt].dli_saddr == 0)
 					{
 						tstrlen = sprintf (last, "%s(%s) [%p]", info[cnt].dli_fname ?: "", info[cnt].dli_sname ?: "", array[cnt]);
@@ -450,7 +450,7 @@ char** da_backtrace_symbols (void* const* array, int size)
 							sign = '-';
 							offset = info[cnt].dli_saddr - array[cnt];
 						}
-	
+
 						tstrlen = sprintf (last, "%s(%s%c%#tx) [%p]",
 								info[cnt].dli_fname ?: "",
 								info[cnt].dli_sname ?: "",
@@ -462,11 +462,11 @@ char** da_backtrace_symbols (void* const* array, int size)
 					tstrlen = sprintf (last, "[%p]", array[cnt]);
 				}
 				tstrlen++;
-				
+
 				add_symbol_hash(array[cnt], last, tstrlen);
-				
+
 				last += tstrlen;
-			}			
+			}
 		}
 
 		assert (last <= (char *) result + size * sizeof (char *) + total);

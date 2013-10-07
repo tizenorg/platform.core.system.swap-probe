@@ -3,18 +3,18 @@
  *
  * Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact: 
+ * Contact:
  *
  * Jaewon Lim <jaewon81.lim@samsung.com>
  * Woojin Jung <woojin2.jung@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
  * Free Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
@@ -27,7 +27,7 @@
  * Contributors:
  * - S-Core Co., Ltd
  * - Samsung RnD Institute Russia
- * 
+ *
  */
 
 //#include <stdio.h>
@@ -207,33 +207,33 @@ void evas_event_feed_mouse_down(Evas *e, int b, Evas_Button_Flags flags,
 	HW_EVENT_LOG(_EVENT_TOUCH, _TOUCH_PRESSED, )
 	PRE_UNCONDITIONAL_BLOCK_END();
 
-	
+
 	DECLARE_VARIABLE_EVENT;
 	int x, y;
-	
+
 	PRE_PROBEBLOCK_BEGIN_EVENT(evas_event_feed_mouse_down, LIBEVAS, EVENT_TYPE_DOWN);
 		evas_pointer_output_xy_get(e, &x, &y);
-	PRE_PROBEBLOCK_END_EVENT();	
-	
+	PRE_PROBEBLOCK_END_EVENT();
+
 	evas_event_feed_mouse_downp(e, b, flags, timestamp, data);
-	
+
 	AFTER_ORIGINAL_EVENT(EVENT_TYPE_DOWN, "%d", b);
-}			
+}
 
 void evas_event_feed_mouse_up(Evas *e, int b, Evas_Button_Flags flags,
 		unsigned int timestamp, const void *data)
 {
 	static void (*evas_event_feed_mouse_upp)(Evas *e, int b, Evas_Button_Flags flags, unsigned int timestamp, const void *data);
-	
+
 	DECLARE_VARIABLE_EVENT;
 	int x, y;
-	
+
 	PRE_PROBEBLOCK_BEGIN_EVENT(evas_event_feed_mouse_up, LIBEVAS, EVENT_TYPE_UP);
 		evas_pointer_output_xy_get(e, &x, &y);
-	PRE_PROBEBLOCK_END_EVENT();	
-	
+	PRE_PROBEBLOCK_END_EVENT();
+
 	evas_event_feed_mouse_upp(e, b, flags, timestamp, data);
-	
+
 	AFTER_ORIGINAL_EVENT(EVENT_TYPE_UP, "%d", b);
 }
 
@@ -241,11 +241,11 @@ void evas_event_feed_mouse_move(Evas *e, int x, int y,
 		unsigned int timestamp, const void *data)
 {
 	static void (*evas_event_feed_mouse_movep)(Evas *e, int x, int y, unsigned int timestamp, const void *data);
-	
+
 	BEFORE_ORIGINAL_EVENT(evas_event_feed_mouse_move, LIBEVAS, EVENT_TYPE_MOVE);
-	
+
 	evas_event_feed_mouse_movep(e, x, y, timestamp, data);
-	
+
 	AFTER_ORIGINAL_EVENT(EVENT_TYPE_MOVE, "%u", timestamp);
 }
 
@@ -257,10 +257,10 @@ void evas_event_feed_multi_down(Evas *e, int d, int x, int y,
 	static void (*evas_event_feed_multi_downp)(Evas *e, int d, int x, int y, double rad, double radx, double rady, double pres, double ang, double fx, double fy, Evas_Button_Flags flags, unsigned int timestamp, const void *data);
 
 	BEFORE_ORIGINAL_EVENT(evas_event_feed_multi_down, LIBEVAS, EVENT_TYPE_DOWN);
-	
+
 	evas_event_feed_multi_downp(e, d, x, y, rad, radx,
 			rady, pres, ang, fx, fy, flags, timestamp, data);
-		
+
 	AFTER_ORIGINAL_EVENT(EVENT_TYPE_DOWN, "%d", d);
 }
 
@@ -271,10 +271,10 @@ void evas_event_feed_multi_up(Evas *e, int d, int x, int y, double rad, double r
 	static void (*evas_event_feed_multi_upp)(Evas *e, int d, int x, int y, double rad, double radx, double rady, double pres, double ang, double fx, double fy, Evas_Button_Flags flags, unsigned int timestamp, const void *data);
 
 	BEFORE_ORIGINAL_EVENT(evas_event_feed_multi_up, LIBEVAS, EVENT_TYPE_UP);
-	
+
 	evas_event_feed_multi_upp(e, d, x, y, rad, radx, rady,
 			pres, ang, fx, fy, flags, timestamp, data);
-			
+
 	AFTER_ORIGINAL_EVENT(EVENT_TYPE_UP, "%d", d);
 }
 
@@ -285,10 +285,10 @@ void evas_event_feed_multi_move (Evas *e, int d, int x, int y, double rad, doubl
 	static void (*evas_event_feed_multi_movep)(Evas *e, int d, int x, int y, double rad, double radx, double rady, double pres, double ang, double fx, double fy, unsigned int timestamp, const void *data);
 
 	BEFORE_ORIGINAL_EVENT(evas_event_feed_multi_move, LIBEVAS, EVENT_TYPE_MOVE);
-	
+
 	evas_event_feed_multi_movep(e, d, x, y, rad, radx, rady,
 			pres, ang, fx, fy, timestamp, data);
-			
+
 	AFTER_ORIGINAL_EVENT(EVENT_TYPE_MOVE, "%d", d);
 }
 */

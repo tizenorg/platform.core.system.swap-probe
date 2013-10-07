@@ -3,18 +3,18 @@
  *
  * Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact: 
+ * Contact:
  *
  * Jaewon Lim <jaewon81.lim@samsung.com>
  * Woojin Jung <woojin2.jung@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
  * Free Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
@@ -27,7 +27,7 @@
  * Contributors:
  * - S-Core Co., Ltd
  * - Samsung RnD Institute Russia
- * 
+ *
  */
 
 #include <stdio.h>
@@ -58,7 +58,7 @@ void *memset(void *memblock, int c, size_t n)
 	pret = memsetp(memblock, c, n);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-		
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_memset,
@@ -66,7 +66,7 @@ void *memset(void *memblock, int c, size_t n)
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(n, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
@@ -84,7 +84,7 @@ int memcmp(const void * ptr1, const void * ptr2, size_t num)
 	ret = memcmpp(ptr1, ptr2, num);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-			
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_memcmp,
@@ -92,7 +92,7 @@ int memcmp(const void * ptr1, const void * ptr2, size_t num)
 	PACK_COMMON_END(ret, newerrno, blockresult);
 	PACK_MEMORY(num, MEMORY_API_MANAGE, ret);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 
 	return ret;
@@ -111,7 +111,7 @@ void *memcpy(void * destination, const void * source, size_t num )
 	pret = memcpyp(destination, source, num);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-	
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_memcpy,
@@ -119,7 +119,7 @@ void *memcpy(void * destination, const void * source, size_t num )
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(num, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 
 	return pret;

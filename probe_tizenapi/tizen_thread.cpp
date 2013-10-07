@@ -1398,7 +1398,7 @@ result EventDrivenThread::Construct(long stackSize, ThreadPriority priority) {
 	return ret;
 }
 
-result EventDrivenThread::Construct(const Tizen::Base::String &name, long stackSize, 
+result EventDrivenThread::Construct(const Tizen::Base::String &name, long stackSize,
 		ThreadPriority priority) {
 	typedef result
 	(Thread::*methodType)(const Tizen::Base::String &name, long stackSize,

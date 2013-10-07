@@ -3,18 +3,18 @@
  *
  * Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact: 
+ * Contact:
  *
  * Woojin Jung <woojin2.jung@samsung.com>
  * Jaewon Lim <jaewon81.lim@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
  * Free Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
@@ -27,7 +27,7 @@
  * Contributors:
  * - S-Core Co., Ltd
  * - Samsung RnD Institute Russia
- * 
+ *
  */
 
 #include <stdio.h>
@@ -97,7 +97,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-	
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void__operator_new___std__size_t_size__throw__std__bad_alloc_,
@@ -105,7 +105,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
@@ -138,7 +138,7 @@ void operator delete(void *ptr) throw()
 	deletep(ptr);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-	
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void_operator_delete_void__ptr__throw__,
@@ -146,7 +146,7 @@ void operator delete(void *ptr) throw()
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 }
 
@@ -177,7 +177,7 @@ void operator delete[](void *ptr) throw()
 	deletep(ptr);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-	
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void_operator_delete___void__ptr__throw__,
@@ -185,7 +185,7 @@ void operator delete[](void *ptr) throw()
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 }
 
@@ -208,7 +208,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-	
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void__operator_new_std__size_t_size__const_std__nothrow_t__nothrow__throw__,
@@ -216,7 +216,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
@@ -241,7 +241,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-	
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void__operator_new___std__size_t_size__const_std__nothrow_t__nothrow__throw__,
@@ -249,7 +249,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 
 	return pret;
@@ -282,7 +282,7 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 	deletep(ptr, nothrow);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-	
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void_operator_delete_void__ptr__const_std__nothrow_t__nothrow__throw__,
@@ -290,7 +290,7 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 }
 
@@ -321,7 +321,7 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 	deletep(ptr, nothrow);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
-		
+
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void_operator_delete___void__ptr__const_std__nothrow_t__nothrow__throw__,
@@ -329,7 +329,7 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
-	
+
 	POST_PACK_PROBEBLOCK_END();
 }
 

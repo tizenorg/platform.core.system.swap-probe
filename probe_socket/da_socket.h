@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact: 
+ * Contact:
  *
  * Hyunjong Park <phjwithyou.park@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>

@@ -3,18 +3,18 @@
  *
  * Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact: 
+ * Contact:
  *
  * Woojin Jung <woojin2.jung@samsung.com>
  * Jaewon Lim <jaewon81.lim@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
  * Free Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
@@ -27,7 +27,7 @@
  * Contributors:
  * - S-Core Co., Ltd
  * - Samsung RnD Institute Russia
- * 
+ *
  */
 
 #include <stdio.h>
@@ -138,7 +138,7 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 			for(i = PROFIL_TRIM_STACK_DEPTH; i < sample_info_array[index].bt_size; i++)
 			{
 				stringlen = strlen(strings[i - PROFIL_TRIM_STACK_DEPTH]) + 14;
-				if(log->length + stringlen >= bufsize + initsize)	
+				if(log->length + stringlen >= bufsize + initsize)
 					break;
 
 				log->length += sprintf(log->data + log->length, "%010u`,%s`,",
@@ -191,7 +191,7 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 		for(i = 0; i < sample_info_array[index].bt_size; i++)
 		{
 			stringlen = strlen(strings[i]) + 14;
-			if(log->length + stringlen >= bufsize + initsize)	
+			if(log->length + stringlen >= bufsize + initsize)
 				break;
 
 			log->length += sprintf(log->data + log->length, "%010u`,%s`,",
@@ -223,7 +223,7 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 void *profil_log_func(void *data)
 {
 	probeBlockStart();
-	
+
 	sigset_t profsigmask;
 	sigemptyset(&profsigmask);
 	sigaddset(&profsigmask, SIGPROF);
@@ -283,7 +283,7 @@ void __cyg_profile_func_enter(void *this, void *callsite)
 		elapsed_time_array[elapsed_time_index].self = this;
 		elapsed_time_index++;
 
-	} while(0); 
+	} while(0);
 	probeBlockEnd();
 
 	pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
@@ -405,7 +405,7 @@ static inline void profil_count(void *pc)
 			int i;
 			for(i = 0; i < elapsed_time_index; i++)
 			{
-				sample_info_array[sample_write_index].bt_array[i + 1] 
+				sample_info_array[sample_write_index].bt_array[i + 1]
 					= elapsed_time_array[i].self;
 			}
 			sample_info_array[sample_write_index].bt_size = elapsed_time_index + 1;

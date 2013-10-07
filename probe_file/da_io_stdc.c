@@ -3,18 +3,18 @@
  *
  * Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact: 
+ * Contact:
  *
  * Jaewon Lim <jaewon81.lim@samsung.com>
  * Woojin Jung <woojin2.jung@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
  * Free Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
@@ -27,7 +27,7 @@
  * Contributors:
  * - S-Core Co., Ltd
  * - Samsung RnD Institute Russia
- * 
+ *
  */
 
 #include <stdio.h>
@@ -50,10 +50,10 @@ FILE* fopen(const char* filename, const char* mode)
 {
 	static FILE* (*fopenp)(const char* filename, const char* mode);
 	FILE* fret;
-	
+
 	BEFORE_ORIGINAL_FILE_NOFILTER(fopen, LIBC);
 	_filepath = (char*)filename;
-	
+
 	fret = fopenp(filename, mode);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fopen,
@@ -114,9 +114,9 @@ int fclose(FILE* stream)
 	bfiltering = false;
 	PRE_PROBEBLOCK_BEGIN();
 	GET_FD_FROM_FILEP(stream);
-	if(_fd != -1) { 																	
+	if(_fd != -1) {
 		_fstatret = fstat(_fd, &_statbuf);
-	}																				
+	}
 	PRE_PROBEBLOCK_END();
 
 	ret = fclosep(stream);
@@ -186,7 +186,7 @@ long int ftell(FILE* stream)
 	long int lret;
 
 	BEFORE_ORIGINAL_FILE(ftell, LIBC);
-	
+
 	lret = ftellp(stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_ftell,

@@ -98,16 +98,16 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen3App5UiApp11RemoveFrameERKNS_2Ui8Controls5FrameE, LIBOSP_UIFW, uiapp_removeframep);
 
 	probeBlockStart();
-	
+
 	PREPARE_LOCAL_BUF();
-	
+
 	frame.IsInTouchMode();
 
 	if((bOption = isOptionEnabled(OPT_UI)))
 	{
 		Control* parent = NULL;
 		setProbePoint(&probeInfo);
-		
+
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_result_UiApp__RemoveFrame_const_Tizen__Ui__Controls__Frame__frame_,
 				  "p", &frame);
@@ -120,16 +120,16 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 	ret = (this->*uiapp_removeframep)(frame);
 
 	probeBlockStart();
-	
+
 	if(bOption)
 	{
 		PACK_RETURN_END(ret);
 	}
-	
+
 	FLUSH_LOCAL_BUF();
-		
+
 	probeBlockEnd();
-	
+
 	return ret;
 }
 
@@ -169,7 +169,7 @@ void Control::SetName(const Tizen::Base::String &name)
 	{
 		Control* parent = NULL;
 		setProbePoint(&probeInfo);
-		
+
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_void_Control__SetName_const_Tizen__Base__String__name_,
@@ -224,7 +224,7 @@ result Container::AddControl(const Control &control)
 		if(isOptionEnabled(OPT_UI))
 		{
 			setProbePoint(&probeInfo);
-			
+
 			PREPARE_LOCAL_BUF();
 			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 					  API_ID_result_Container__AddControl_const_Control__control_,
@@ -317,7 +317,7 @@ result Container::RemoveControl(const Control &control)
 	if((bOption = isOptionEnabled(OPT_UI)))
 	{
 		setProbePoint(&probeInfo);
-		
+
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_result_Container__RemoveControl_const_Control__control_,
 				  "p", &control);
@@ -335,11 +335,11 @@ result Container::RemoveControl(const Control &control)
 	{
 		PACK_RETURN_END(ret);
 	}
-	
-	FLUSH_LOCAL_BUF();	
+
+	FLUSH_LOCAL_BUF();
 
 	probeBlockEnd();
-			
+
 	return ret;
 }
 
@@ -380,8 +380,8 @@ result Container::RemoveControl(Control* control)
 	{
 		PACK_RETURN_END(ret);
 	}
-	
-	FLUSH_LOCAL_BUF();	
+
+	FLUSH_LOCAL_BUF();
 
 	probeBlockEnd();
 
@@ -408,7 +408,7 @@ result Container::RemoveControl(int index)
 	if((bOption = isOptionEnabled(OPT_UI)))
 	{
 		setProbePoint(&probeInfo);
-		
+
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_result_Container__RemoveControl_int_index_,
 				  "d", index);
@@ -430,7 +430,7 @@ result Container::RemoveControl(int index)
 	FLUSH_LOCAL_BUF();
 
 	probeBlockEnd();
-	
+
 	return ret;
 }
 
@@ -447,7 +447,7 @@ void Container::RemoveAllControls(void)
 	{
 		Control* pcontrol = NULL;
 		setProbePoint(&probeInfo);
-		
+
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_void_Container__RemoveAllControls_void_,

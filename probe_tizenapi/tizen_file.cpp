@@ -3,18 +3,18 @@
  *
  * Copyright (File::*c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact: 
+ * Contact:
  *
  * Jaewon Lim <jaewon81.lim@samsung.com>
  * Woojin Jung <woojin2.jung@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
  * Free Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
@@ -27,7 +27,7 @@
  * Contributors:
  * - S-Core Co., Ltd
  * - Samsung RnD Institute Russia
- * 
+ *
  */
 
 #include <FIo.h>
@@ -81,15 +81,15 @@ result File::Construct(const Tizen::Base::String& filePath,
 		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp_path,filePath.GetPointer());
-		WcharToChar(temp_mode,openMode.GetPointer()); 
-		 
+		WcharToChar(temp_mode,openMode.GetPointer());
+
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_Tizen__Base__String__openMode__bool_createParentDirectories_,
 				  "ssd", temp_path, temp_mode, createParentDirectories);
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp_path);
 		FLUSH_LOCAL_BUF();
-		 
+
 		postBlockEnd();
 	}
 
@@ -257,7 +257,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 
 		postBlockEnd();
 	}
-	
+
 	return ret;
 }
 
@@ -491,7 +491,7 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(nRead, (unsigned long)this, FD_API_READ_END, size, temp);
 		FLUSH_LOCAL_BUF();
-		
+
 		postBlockEnd();
 	}
 

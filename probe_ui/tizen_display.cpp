@@ -42,7 +42,7 @@ bool _DisplayManager::Render(_RootVisualElement& root, bool check)
 	typedef bool (_DisplayManager::*methodtype)(_RootVisualElement& root, bool check);
 	static methodtype mp;
 	bool ret;
-	
+
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui10Animations15_DisplayManager6RenderERNS1_18_RootVisualElementEb, LIBOSP_UIFW, mp);
 	probeBlockStart();
 	probeBlockEnd();
@@ -58,7 +58,7 @@ result _DisplayManager::PostRender(_RootVisualElement& root)
 	typedef result (_DisplayManager::*methodtype)(_RootVisualElement& root);
 	static methodtype mp;
 	result ret;
-	
+
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui10Animations15_DisplayManager10PostRenderERNS1_18_RootVisualElementE, LIBOSP_UIFW, mp);
 	probeBlockStart();
 	probeBlockEnd();
@@ -77,7 +77,7 @@ result _DisplayManager::Flush(void)
 	typedef result (_DisplayManager::*methodtype)(void);
 	static methodtype mp;
 	result ret;
-	
+
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui10Animations15_DisplayManager5FlushEv, LIBOSP_UIFW, mp);
 	probeBlockStart();
 	probeBlockEnd();

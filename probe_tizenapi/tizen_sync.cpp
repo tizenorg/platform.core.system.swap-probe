@@ -98,7 +98,7 @@ result Mutex::Create(void) {
 }
 
 result Mutex::Create(const Tizen::Base::String& name) {
-	typedef result 
+	typedef result
 		(Mutex::*methodType)(const Tizen::Base::String& name);
 	static methodType Createp = 0;
 	result ret;
@@ -154,7 +154,7 @@ result Mutex::Create(const Tizen::Base::String& name) {
 }
 
 result Mutex::Release(void) {
-	typedef result 
+	typedef result
 		(Mutex::*methodType)(void);
 	static methodType Releasep = 0;
 	result ret;
@@ -270,7 +270,7 @@ result Mutex::Acquire(void) {
 }
 
 result Mutex::TryToAcquire(void) {
-	typedef result 
+	typedef result
 		(Mutex::*methodType)(void);
 	static methodType TryToAcquirep = 0;
 	result ret;
@@ -324,7 +324,7 @@ result Mutex::TryToAcquire(void) {
 
 
 result Semaphore::Create(int count) {
-	typedef result 
+	typedef result
 		(Semaphore::*methodType)(int count);
 	static methodType Createp = 0;
 	result ret;
@@ -377,7 +377,7 @@ result Semaphore::Create(int count) {
 }
 
 result Semaphore::Create(const Tizen::Base::String& name, int count) {
-	typedef result 
+	typedef result
 		(Semaphore::*methodType)(const Tizen::Base::String& name, int count);
 	static methodType Createp = 0;
 	result ret;
@@ -497,7 +497,7 @@ result Semaphore::Acquire(long timeout) {
 }
 
 result Semaphore::TryToAcquire(void) {
-	typedef result 
+	typedef result
 		(Semaphore::*methodType)(void);
 	static methodType TryToAcquirep = 0;
 	result ret;
@@ -550,7 +550,7 @@ result Semaphore::TryToAcquire(void) {
 }
 
 result Semaphore::Release(void) {
-	typedef result 
+	typedef result
 		(Semaphore::*methodType)(void);
 	static methodType Releasep = 0;
 	result ret;
@@ -604,7 +604,7 @@ result Semaphore::Release(void) {
 
 
 result Monitor::Construct(void) {
-	typedef result 
+	typedef result
 		(Monitor::*methodType)(void);
 	static methodType Constructp = 0;
 	result ret;
@@ -719,7 +719,7 @@ result Monitor::Enter(void) {
 }
 
 result Monitor::Exit(void) {
-	typedef result 
+	typedef result
 		(Monitor::*methodType)(void);
 	static methodType Exitp = 0;
 	result ret;
@@ -835,7 +835,7 @@ result Monitor::Wait(void) {
 }
 
 result Monitor::Notify(void) {
-	typedef result 
+	typedef result
 		(Monitor::*methodType)(void);
 	static methodType Notifyp = 0;
 	result ret;
@@ -888,7 +888,7 @@ result Monitor::Notify(void) {
 }
 
 result Monitor::NotifyAll(void) {
-	typedef result 
+	typedef result
 		(Monitor::*methodType)(void);
 	static methodType NotifyAllp = 0;
 	result ret;

@@ -74,8 +74,8 @@ COMMON_FLAGS = -D_GNU_SOURCE -fPIC -shared -Wall -funwind-tables -fomit-frame-po
 CAPI_FLAGS = $(COMMON_FLAGS)
 TIZEN_FLAGS = $(COMMON_FLAGS) -DTIZENAPP
 
-LIBDIR_COMMON = 
-LIBDIR_CAPI = $(LIBDIR_COMMON) 
+LIBDIR_COMMON =
+LIBDIR_CAPI = $(LIBDIR_COMMON)
 LIBDIR_TIZEN = $(LIBDIR_COMMON) -L/usr/lib/osp
 
 COMMON_LDFLAGS = -ldl -lpthread -lrt -lecore -levas -lecore_input -leina -lecore_x -lcapi-system-runtime-info -lcapi-appfw-application -lX11 -lXext

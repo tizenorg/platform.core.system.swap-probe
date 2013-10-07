@@ -90,7 +90,7 @@ void SceneManagerEventListener::OnSceneTransitionCompleted(const SceneId &previo
 
 				char scene_name[50];
 				WcharToChar(scene_name, sceneid.GetPointer());
-				
+
 				PREPARE_LOCAL_BUF();
 				PACK_COMMON_BEGIN(MSG_PROBE_SCENE,
 						  API_ID_void_SceneManagerEventListener__OnSceneTransitionCompleted_const_SceneId__previousSceneId__const_SceneId__currentSceneId_,

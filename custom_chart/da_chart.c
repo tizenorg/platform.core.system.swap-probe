@@ -3,18 +3,18 @@
  *
  * Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact: 
+ * Contact:
  *
  * Jaewon Lim <jaewon81.lim@samsung.com>
  * Woojin Jung <woojin2.jung@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
  * Free Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
@@ -27,7 +27,7 @@
  * Contributors:
  * - S-Core Co., Ltd
  * - Samsung RnD Institute Russia
- * 
+ *
  */
 
 #include <pthread.h>
@@ -221,7 +221,7 @@ static void add_to_callback_list(chart_interval interval, da_handle charthandle,
 		da_user_data_2_chart_data callback, void* user_data)
 {
 	chart_interval_callback* newelem;
-	
+
 	newelem = (chart_interval_callback*)malloc(sizeof(chart_interval_callback));
 	newelem->chart_handle = charthandle;
 	newelem->series_handle = series_handle;
@@ -229,7 +229,7 @@ static void add_to_callback_list(chart_interval interval, da_handle charthandle,
 	newelem->user_data = user_data;
 
 	chm.interval_for_series[charthandle][series_handle % 10] = interval;
-	
+
 	switch(interval)
 	{
 	case CHART_INTERVAL_10MSEC:
@@ -262,7 +262,7 @@ static void add_to_callback_list(chart_interval interval, da_handle charthandle,
 static void remove_all_callback_list()
 {
 	chart_interval_callback* cur;
-	
+
 	pthread_mutex_lock(&chm.interval_10ms.list_mutex);
 	while(chm.interval_10ms.callback_list != NULL)
 	{
@@ -446,9 +446,9 @@ void __attribute__((destructor)) _fini_lib()
 void da_mark(chart_color color, char* mark_text)
 {
 	DECLARE_CHART_VARIABLE;
-	
+
 	probeBlockStart();
-	
+
 	setProbePoint(&probeInfo);
 
 	PREPARE_LOCAL_BUF();
@@ -469,11 +469,11 @@ da_handle da_create_chart(char* chart_name)
 	// check if there is available chart handle slot
 	if(chm.chart_handle_index + 1 >= MAX_CHART_HANDLE)
 		return ERR_MAX_CHART_NUMBER;
-		
+
 	// check if chart_name is null
 	if(chart_name == NULL)
 		return ERR_WRONG_PARAMETER;
-		
+
 	probeBlockStart();
 	ret = ++(chm.chart_handle_index);
 
@@ -486,9 +486,9 @@ da_handle da_create_chart(char* chart_name)
 	PACK_COMMON_END(ret, 0, 2);
 	PACK_CUSTOM(0, 0, chart_name, 0, 0.0f);
 	FLUSH_LOCAL_BUF();
-	
+
 	probeBlockEnd();
-	
+
 	return ret;
 }
 
@@ -496,11 +496,11 @@ da_handle da_create_series(da_handle charthandle, char* seriesname,
 		series_type type, chart_color color)
 {
 	DECLARE_CHART_VARIABLE;
-	
+
 	// check if charthandle is valid handle or not
 	if(charthandle <= 0 || charthandle > chm.chart_handle_index)
 		return ERR_WRONG_HANDLE;
-		
+
 	// chech if extra parameter is valid
 	if(seriesname == NULL)
 		return ERR_WRONG_PARAMETER;
@@ -508,11 +508,11 @@ da_handle da_create_series(da_handle charthandle, char* seriesname,
 	// check if there is available series spot
 	if(chm.series_handle_index[(int)charthandle] + 1 >= MAX_SERIES_PER_CHART)
 		return ERR_MAX_CHART_NUMBER;
-	
+
 	probeBlockStart();
 	ret = ++(chm.series_handle_index[charthandle]);
 	ret += (10 * charthandle);
-	
+
 	setProbePoint(&probeInfo);
 
 	PREPARE_LOCAL_BUF();
@@ -524,10 +524,10 @@ da_handle da_create_series(da_handle charthandle, char* seriesname,
 	FLUSH_LOCAL_BUF();
 
 	probeBlockEnd();
-	
+
 	return ret;
 }
-		
+
 da_handle da_create_default_series(da_handle charthandle, char* seriesname)
 {
 	return da_create_series(charthandle, seriesname,
@@ -540,14 +540,14 @@ int da_set_callback(da_handle series_handle, da_user_data_2_chart_data callback,
 	int cindex, sindex;
 	cindex = (int)(series_handle / 10);
 	sindex = series_handle % 10;
-	
+
 	// check series handle
 	if(cindex <= 0 || cindex > chm.chart_handle_index)
 		return ERR_WRONG_HANDLE;
-	
+
 	if(sindex > chm.series_handle_index[(int)cindex])
 		return ERR_WRONG_HANDLE;
-	
+
 	// check rest parameters
 	if(interval == CHART_NO_CYCLE && callback != NULL)
 		return ERR_WRONG_PARAMETER;
@@ -573,20 +573,20 @@ int da_set_callback(da_handle series_handle, da_user_data_2_chart_data callback,
 void da_log(da_handle series_handle, float uservalue)
 {
 	DECLARE_CHART_VARIABLE;
-	
+
 	// chech if series handle is valid
 	int cindex, sindex;
 	cindex = (int)(series_handle / 10);
 	sindex = series_handle % 10;
-	
+
 	if(cindex <= 0 || cindex > chm.chart_handle_index)
 		return;
-	
+
 	if(sindex > chm.series_handle_index[(int)cindex])
 		return;
-	
+
 	probeBlockStart();
-	
+
 	setProbePoint(&probeInfo);
 
 	PREPARE_LOCAL_BUF();
@@ -596,6 +596,6 @@ void da_log(da_handle series_handle, float uservalue)
 	PACK_COMMON_END(0, 0, 2);
 	PACK_CUSTOM(series_handle, 0, "", 0, uservalue);
 	FLUSH_LOCAL_BUF();
-	
+
 	probeBlockEnd();
 }
