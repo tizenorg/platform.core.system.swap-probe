@@ -42,11 +42,13 @@ COMMON_SRCS =	./helper/libdaprobe.c \
 				./probe_file/da_io_stdc.c
 
 CAPI_SRCS =$(COMMON_SRCS) \
+			./helper/appfw-capi.c \
 			./helper/addr-capi.c \
 			./probe_capi/capi_appfw.c \
 			./probe_ui/capi_capture.c
 
 TIZEN_SRCS =	$(COMMON_SRCS) \
+			./helper/appfw-tizen.cpp \
 			./helper/addr-tizen.c \
 			./probe_memory/libdanew.cpp \
 			./probe_tizenapi/tizen_file.cpp \

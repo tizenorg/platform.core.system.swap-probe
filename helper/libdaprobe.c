@@ -278,7 +278,7 @@ static void* recvThread(void* data)
 				}
 				else if(log.type == MSG_STOP)
 				{
-					app_efl_exit();
+					application_exit();
 				}
 				else
 				{

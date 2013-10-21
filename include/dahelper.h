@@ -213,6 +213,8 @@ int __profil(int mode);
 //wchar_t* -> char*
 void WcharToChar(char* pstrDest, const wchar_t* pwstrSrc);
 
+void application_exit();
+
 // screen capture functions
 int initialize_screencapture();
 int finalize_screencapture();
