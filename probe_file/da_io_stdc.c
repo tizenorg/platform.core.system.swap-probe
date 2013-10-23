@@ -49,6 +49,7 @@ static enum DaOptions _sopt = OPT_FILE;
 FILE* fopen(const char* filename, const char* mode)
 {
 	static FILE* (*fopenp)(const char* filename, const char* mode);
+	char buffer[PATH_MAX];
 	FILE* fret;
 
 	BEFORE_ORIGINAL_FILE_NOFILTER(fopen, LIBC);
@@ -56,15 +57,18 @@ FILE* fopen(const char* filename, const char* mode)
 
 	fret = fopenp(filename, mode);
 
-	AFTER_PACK_ORIGINAL_FILEP(API_ID_fopen,
-				  fret, 0, fret, FD_API_OPEN, "ss", filename, mode);
+	AFTER_PACK_ORIGINAL_FILEP(API_ID_fopen, fret, 0, fret, FD_API_OPEN, "ss",
+				  absolutize_filepath(buffer, filename),
+				  mode);
 
 	return fret;
 }
 
 FILE* freopen(const char * filename, const char * mode, FILE * stream)
 {
-	static FILE* (*freopenp)(const char * filename, const char * mode, FILE * stream);
+	static FILE* (*freopenp)(const char *filename, const char *mode,
+				 FILE *stream);
+	char buffer[PATH_MAX];
  	FILE* fret;
 
 	BEFORE_ORIGINAL_FILE_NOFILTER(freopen, LIBC);
@@ -72,8 +76,9 @@ FILE* freopen(const char * filename, const char * mode, FILE * stream)
 
 	fret = freopenp(filename, mode, stream);
 
-	AFTER_PACK_ORIGINAL_FILEP(API_ID_freopen,
-				  fret, 0, fret, FD_API_OPEN, "ssp", filename, mode, stream);
+	AFTER_PACK_ORIGINAL_FILEP(API_ID_freopen, fret, 0, fret, FD_API_OPEN,
+				  "ssp", absolutize_filepath(buffer, filename),
+				  mode, stream);
 
 	return fret;
 }
@@ -624,4 +629,3 @@ int setvbuf(FILE* stream, char* buf, int mode, size_t size)
 				  "ppdx", stream, buf, mode, size);
 	return ret;
 }
-

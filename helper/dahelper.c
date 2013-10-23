@@ -32,7 +32,7 @@
 #include <unistd.h>			// for unlink
 #include <sys/types.h>
 #include <dirent.h>			// for opendir, readdir
-
+#include <assert.h>
 #include "dahelper.h"
 
 const char *lib_string[NUM_ORIGINAL_LIBRARY] = {
@@ -116,3 +116,22 @@ int remove_indir(const char *dirname)
 
 	return 0;
 }
+
+static int absolute_filepath_p(const char *fname)
+{
+	return fname[0] == '/';
+}
+
+/* Return pointer to static buffer */
+char *absolutize_filepath(char buffer[PATH_MAX], const char *fname)
+{
+	char cwd[PATH_MAX];
+
+	assert(fname && "Filename, passed to stdc function is NULL.");
+	if (absolute_filepath_p(fname) || getcwd(cwd, sizeof(cwd)) == NULL)
+		snprintf(buffer, sizeof(buffer), "%s", fname);
+	else
+		snprintf(buffer, sizeof(buffer), "%s/%s", cwd, fname);
+	return buffer;
+}
+

@@ -31,6 +31,7 @@
  */
 
 #include <FIo.h>
+#include <linux/limits.h>
 #include "daprobe.h"
 #include "probeinfo.h"
 #include "dahelper.h"
@@ -78,6 +79,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	ret = (this->*Constructp)(filePath, openMode, createParentDirectories);
 
 	if(postBlockBegin(blockresult)) {
+		char buffer[PATH_MAX];
+
 		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp_path,filePath.GetPointer());
@@ -85,7 +88,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_Tizen__Base__String__openMode__bool_createParentDirectories_,
-				  "ssd", temp_path, temp_mode, createParentDirectories);
+				  "ssd", absolutize_filepath(buffer,temp_path),
+				  temp_mode, createParentDirectories);
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp_path);
 		FLUSH_LOCAL_BUF();
@@ -132,6 +136,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	ret = (this->*Constructp)(filePath, openMode);
 
 	if(postBlockBegin(blockresult)) {
+		char buffer[PATH_MAX];
+
 		WcharToChar(temp_path,filePath.GetPointer());
 		WcharToChar(temp_mode,openMode.GetPointer());
 		// Comment this because of fault during Internet application profiling
@@ -143,7 +149,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_Tizen__Base__String__openMode_,
-				  "ss", temp_path, temp_mode);
+				  "ss", absolutize_filepath(buffer, temp_path),
+				  temp_mode);
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp_path);
 		FLUSH_LOCAL_BUF();
@@ -189,6 +196,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 	ret = (this->*Constructp)(filePath, pOpenMode);
 
 	if(postBlockBegin(blockresult)) {
+		char buffer[PATH_MAX];
 
 		WcharToChar(temp,filePath.GetPointer());
 		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
@@ -197,7 +205,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_char__pOpenMode_,
-				  "sp", temp, pOpenMode);
+				  "sp", absolutize_filepath(buffer, temp),
+				  pOpenMode);
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp);
 		FLUSH_LOCAL_BUF();

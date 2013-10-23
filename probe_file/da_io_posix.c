@@ -57,6 +57,7 @@ static enum DaOptions _sopt = OPT_FILE;
 int open(const char* path, int oflag, ...)
 {
 	static int (*openp)(const char* path, int oflag, ...);
+	char buffer[PATH_MAX];
 	int mode = 0;
 
 	BEFORE_ORIGINAL_FILE_NOFILTER(open, LIBC);
@@ -72,8 +73,8 @@ int open(const char* path, int oflag, ...)
 
 	ret = openp(path, oflag, mode);
 
-	AFTER_PACK_ORIGINAL_FD(API_ID_open,
-				   ret, 0, ret, FD_API_OPEN, "sdd", path, oflag, mode);
+	AFTER_PACK_ORIGINAL_FD(API_ID_open, ret, 0, ret, FD_API_OPEN, "sdd",
+			       absolutize_filepath(buffer, path), oflag, mode);
 
 	return ret;
 }
@@ -81,6 +82,7 @@ int open(const char* path, int oflag, ...)
 int openat(int fd, const char* path, int oflag, ...)
 {
 	static int (*openatp)(int fd, const char* path, int oflag, ...);
+	char buffer[PATH_MAX];
 	int mode = 0;
 
 	BEFORE_ORIGINAL_FILE_NOFILTER(openat, LIBC);
@@ -96,8 +98,9 @@ int openat(int fd, const char* path, int oflag, ...)
 
 	ret = openatp(fd, path, oflag, mode);
 
-	AFTER_PACK_ORIGINAL_FD(API_ID_openat,
-				   ret, 0, ret, FD_API_OPEN, "dsdd", fd, path, oflag, mode);
+	AFTER_PACK_ORIGINAL_FD(API_ID_openat, ret, 0, ret, FD_API_OPEN, "dsdd",
+			       fd, absolutize_filepath(buffer, path), oflag,
+			       mode);
 
 	return ret;
 }
@@ -105,14 +108,15 @@ int openat(int fd, const char* path, int oflag, ...)
 int creat(const char* path, mode_t mode)
 {
 	static int (*creatp)(const char* path, mode_t mode);
+	char buffer[PATH_MAX];
 
 	BEFORE_ORIGINAL_FILE_NOFILTER(creat, LIBC);
 	_filepath = (char*)path;
 
 	ret = creatp(path, mode);
 
-	AFTER_PACK_ORIGINAL_FD(API_ID_creat,
-				   ret, 0, ret, FD_API_OPEN, "sd", path, mode);
+	AFTER_PACK_ORIGINAL_FD(API_ID_creat, ret, 0, ret, FD_API_OPEN, "sd",
+			       absolutize_filepath(buffer, path), mode);
 
 	return ret;
 }

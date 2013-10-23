@@ -212,7 +212,7 @@ int __profil(int mode);
 
 //wchar_t* -> char*
 void WcharToChar(char* pstrDest, const wchar_t* pwstrSrc);
-
+char *absolutize_filepath(char buf[PATH_MAX], const char *fname);
 void application_exit();
 
 // screen capture functions
