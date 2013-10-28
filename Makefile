@@ -72,7 +72,7 @@ CAPI_TARGET = da_probe_capi.so
 TIZEN_TARGET = da_probe_tizen.so
 DUMMY_TARGET = libdaprobe.so
 
-COMMON_FLAGS = -D_GNU_SOURCE -fPIC -shared -Wall -funwind-tables -fomit-frame-pointer -Xlinker --no-undefined
+COMMON_FLAGS = -D_GNU_SOURCE -fPIC -shared -Wall -funwind-tables -fomit-frame-pointer -Xlinker --no-undefined -Werror -Wextra -O2 -Wwrite-strings -Wlogical-op -Wpacked -Winline -isystem /usr/include/osp
 CAPI_FLAGS = $(COMMON_FLAGS)
 TIZEN_FLAGS = $(COMMON_FLAGS) -DTIZENAPP
 
@@ -111,4 +111,3 @@ install:
 
 clean:
 	rm -f *.so *.o
-

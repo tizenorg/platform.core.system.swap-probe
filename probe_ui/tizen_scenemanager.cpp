@@ -114,7 +114,8 @@ void SceneManagerEventListener::OnSceneTransitionCompleted(const SceneId &previo
 	probeBlockEnd();
 }
 
-void SceneManagerEventListener::OnSceneTransitionStarted(const SceneId &currentSceneId, const SceneId &nextSceneId)
+void SceneManagerEventListener::OnSceneTransitionStarted(const SceneId&,
+							 const SceneId&)
 {
 	probeBlockStart();
 	SceneManagerUsed = 1;

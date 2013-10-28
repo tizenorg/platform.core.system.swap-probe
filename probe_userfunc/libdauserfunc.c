@@ -89,7 +89,7 @@ pthread_mutex_t profil_log_mutex;
 typedef struct sample_info_t {
 	unsigned long time;
 	void *pc;
-	int bt_size;
+	size_t bt_size;
 	void *bt_array[MAX_STACK_DEPTH];
 } sample_info;
 
@@ -220,7 +220,7 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 }
 #endif
 
-void *profil_log_func(void *data)
+void *profil_log_func(void __unused * data)
 {
 	probeBlockStart();
 
@@ -419,7 +419,7 @@ static inline void profil_count(void *pc)
 }
 
 #if defined(__i386__)
-static void profil_counter(int signo, const struct sigcontext scp)
+static void profil_counter(int __unused signo, const struct sigcontext scp)
 {
 	profil_count((void *) GET_PC(scp));
 
@@ -538,4 +538,3 @@ void _mcleanup(void)
 	profil_thread_on = 0;
 	return;
 }
-

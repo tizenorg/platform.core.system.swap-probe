@@ -98,33 +98,32 @@ static int createSocket(void)
 	ssize_t recvlen;
 	int clientLen, ret = 0;
 	struct sockaddr_un clientAddr;
-	char buf[16];
 	log_t log;
 
-	if((gTraceInfo.socket.daemonSock = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0)) != -1)
-	{
-		bzero(&clientAddr, sizeof(clientAddr));
+	gTraceInfo.socket.daemonSock =
+	  socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
+	if (gTraceInfo.socket.daemonSock != -1)	{
+		memset(&clientAddr, '\0', sizeof(clientAddr));
 		clientAddr.sun_family = AF_UNIX;
 		sprintf(clientAddr.sun_path, "%s", UDS_NAME);
 
 		clientLen = sizeof(clientAddr);
-		if(connect(gTraceInfo.socket.daemonSock, (struct sockaddr *)&clientAddr, clientLen) >= 0)
+		if (connect(gTraceInfo.socket.daemonSock,
+			    (struct sockaddr *)&clientAddr, clientLen) >= 0)
 		{
-			// recv initial configuration value
+			char buf[64];
+			/* recv initial configuration value */
 			recvlen = recv(gTraceInfo.socket.daemonSock, &log,
-					sizeof(log.type) + sizeof(log.length), MSG_WAITALL);
+				       sizeof(log.type) + sizeof(log.length),
+				       MSG_WAITALL);
 
-			if(recvlen > 0)	// recv succeed
-			{
-				if(log.length > 0)
-				{
+			if (recvlen > 0) {/* recv succeed */
+				if (log.length > 0) {
 					if(log.length >= DA_LOG_MAX)
 						log.length = DA_LOG_MAX - 1;
 					recvlen = recv(gTraceInfo.socket.daemonSock, log.data,
-						log.length, MSG_WAITALL);
-				}
-				else
-				{
+						       log.length, MSG_WAITALL);
+				} else {
 					log.length = 0;
 				}
 
@@ -138,29 +137,22 @@ static int createSocket(void)
 				{
 					// unexpected case
 				}
-			}
-			else if(recvlen < 0)
-			{
-				char buf[64];
+			} else if (recvlen < 0) {
 				sprintf(buf, "recv failed in socket creation with error(%d)\n", recvlen);
+			} else {
+				/* closed by other peer */
 			}
-			else	// closed by other peer
-			{
 
-			}
-			sprintf(buf, "%d|%llu", getpid(), gTraceInfo.app.startTime);
+			sprintf(buf, "%d|%llu", getpid(),
+				gTraceInfo.app.startTime);
 			printLogStr(buf, MSG_PID);
 			PRINTMSG("createSocket connect() success\n");
-		}
-		else
-		{
+		} else {
 			close(gTraceInfo.socket.daemonSock);
 			gTraceInfo.socket.daemonSock = -1;
 			ret = -1;
 		}
-	}
-	else
-	{
+	} else {
 		ret = -1;
 	}
 
@@ -200,7 +192,7 @@ static pid_t _gettid()
 	return gTid;
 }
 
-static void* recvThread(void* data)
+static void *recvThread(void __unused * data)
 {
 	fd_set readfds, workfds;
 	int maxfd = 0, rc;
@@ -477,10 +469,10 @@ bool printLogStr(const char* str, int msgType)
 // if token is not NULL then insert DEFAULT TOKEN before append input
 int __appendTypeLog(log_t* log, int nInput, char* token, ...)
 {
-	static char* default_token = DEFAULT_TOKEN;
+	static const char *default_token = DEFAULT_TOKEN;
 	va_list p_arg;
 	int i, type;
-	char* seperator = default_token;
+	const char *seperator = default_token;
 
 	if(nInput <= 0 || log == NULL)
 		return -1;
@@ -794,5 +786,3 @@ int update_heap_memory_size(bool isAdd, size_t size)
 
 	return 0;
 }
-
-

@@ -63,15 +63,17 @@
 // macro for file probe
 // ===================================================================
 
-#define GET_FD_FROM_FILEP(FILEP)							\
-	_fd = (FILEP != NULL) ? fileno(FILEP) : -1
+#define GET_FD_FROM_FILEP(FILEP)				\
+	do {							\
+		_fd = (FILEP != NULL) ? fileno(FILEP) : -1;	\
+	} while (0);
 
-#define DECLARE_VARIABLE_FD								\
-		DECLARE_VARIABLE_STANDARD;						\
-		char* _filepath = "";							\
-		int __attribute((unused)) _fd;						\
-		ssize_t __attribute((unused)) _filesize;				\
-		int __attribute((unused)) _fstatret = -1;				\
+#define DECLARE_VARIABLE_FD					\
+		DECLARE_VARIABLE_STANDARD;			\
+		const char *_filepath = "";			\
+		int __attribute((unused)) _fd = -1;		\
+		ssize_t __attribute((unused)) _filesize = 0;	\
+		int __attribute((unused)) _fstatret = -1;	\
 		struct stat __attribute((unused)) _statbuf
 
 // =================================================================
@@ -79,27 +81,31 @@
 // =================================================================
 
 #define POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE)				\
-	PACK_RESOURCE(SIZE, FD, APITYPE,						\
-		      (_fstatret == 0 ? _statbuf.st_size : 0), _filepath);		\
-	FLUSH_LOCAL_BUF()
+	do {										\
+		PACK_RESOURCE(SIZE, FD, APITYPE,					\
+			      (_fstatret == 0 ? _statbuf.st_size : 0), _filepath);	\
+		FLUSH_LOCAL_BUF();							\
+	} while (0)
 
-#define POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE)					\
-	PACK_RESOURCE(SIZE, 0, APITYPE, 0, _filepath);					\
-	FLUSH_LOCAL_BUF()
+#define POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE)		\
+	do {							\
+		PACK_RESOURCE(SIZE, 0, APITYPE, 0, _filepath);	\
+		FLUSH_LOCAL_BUF();				\
+	} while (0)
 
 // ==================================================================
 // BEFORE_ORIGINAL macro for file
 // ==================================================================
 
-#define BEFORE_ORIGINAL_FILE(FUNCNAME, LIBNAME)						\
-	DECLARE_VARIABLE_FD;								\
-	GET_REAL_FUNC(FUNCNAME, LIBNAME);						\
-	PRE_PROBEBLOCK()
+#define BEFORE_ORIGINAL_FILE(FUNCNAME, LIBNAME)		\
+	DECLARE_VARIABLE_FD;				\
+	GET_REAL_FUNC(FUNCNAME, LIBNAME);		\
+	PRE_PROBEBLOCK();
 
-#define BEFORE_ORIGINAL_FILE_NOFILTER(FUNCNAME, LIBNAME)				\
-	DECLARE_VARIABLE_FD;								\
-	GET_REAL_FUNC(FUNCNAME, LIBNAME);						\
-	bfiltering = false;								\
+#define BEFORE_ORIGINAL_FILE_NOFILTER(FUNCNAME, LIBNAME)	\
+	DECLARE_VARIABLE_FD;					\
+	GET_REAL_FUNC(FUNCNAME, LIBNAME);			\
+	bfiltering = false;					\
 	PRE_PROBEBLOCK()
 
 // ==================================================================
@@ -173,17 +179,18 @@ static inline bool stat_regular_or_socket_p(struct stat *buf)
 
 
 #define AFTER_ORIGINAL_START_END_FD(API_ID, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)		\
-	POST_PACK_PROBEBLOCK_BEGIN();								\
-	setProbePoint(&probeInfo);								\
-	_fstatret = fstat(FD, &_statbuf);							\
-	if (stat_regular_or_socket_p(&_statbuf)) {						\
+	POST_PACK_PROBEBLOCK_BEGIN();					\
+	setProbePoint(&probeInfo);					\
+	_fstatret = fstat(FD, &_statbuf);				\
+	if (stat_regular_or_socket_p(&_statbuf)) {			\
 		PREPARE_LOCAL_BUF();								\
-		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-		PACK_COMMON_END(RVAL, newerrno, blockresult);					\
-		PACK_RESOURCE(SIZE, FD, APITYPE, _filesize, _filepath);				\
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__); \
+		PACK_COMMON_END(RVAL, newerrno, blockresult);		\
+		PACK_RESOURCE(SIZE, FD, APITYPE, _filesize, _filepath);	\
 		FLUSH_LOCAL_BUF();								\
-	}											\
+	}								\
 	POST_PACK_PROBEBLOCK_END();
+
 
 
 #define BEFORE_ORIGINAL_START_END_NOFD(API_ID, FUNCNAME, LIBNAME, APITYPE, INPUTFORMAT, ...)	\

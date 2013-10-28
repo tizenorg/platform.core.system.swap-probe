@@ -35,7 +35,7 @@
 
 #include "dahelper.h"
 
-char *lib_string[NUM_ORIGINAL_LIBRARY] = {
+const char *lib_string[NUM_ORIGINAL_LIBRARY] = {
 	"libc.so.6",
 	"libpthread.so.0",
 	"libelementary.so",
@@ -116,4 +116,3 @@ int remove_indir(const char *dirname)
 
 	return 0;
 }
-

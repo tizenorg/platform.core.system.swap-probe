@@ -85,7 +85,7 @@ static inline char *pack_int64(char *to, uint64_t val)
 	return to + sizeof(uint64_t);
 }
 
-static inline char *pack_string(char *to, const char *str)
+static char __attribute__((used)) *pack_string(char *to, const char *str)
 {
 	size_t len = strlen(str) + 1;
 	strncpy(to, str, len);
@@ -109,7 +109,7 @@ static inline char *pack_timestamp(char *to)
 	return to;
 }
 
-static inline char *pack_args(char *to, const char *fmt, ...)
+static char __attribute__((used)) *pack_args(char *to, const char *fmt, ...)
 {
 	va_list args;
 	uint32_t num = strlen(fmt);

@@ -42,7 +42,8 @@ DAFrameAnimationEventListener::~DAFrameAnimationEventListener()
 {
 }
 
-void DAFrameAnimationEventListener::OnFormTransitionAnimationFinished(FrameAnimator &source, Frame &frame, Form &form1, Form &form2)
+void DAFrameAnimationEventListener::OnFormTransitionAnimationFinished(FrameAnimator&,
+								      Frame &, Form &, Form&)
 {
 	probeBlockStart();
 	SCREENSHOT_SET();
@@ -50,14 +51,16 @@ void DAFrameAnimationEventListener::OnFormTransitionAnimationFinished(FrameAnima
 	probeBlockEnd();
 }
 
-void DAFrameAnimationEventListener::OnFormTransitionAnimationStarted(FrameAnimator &source, Frame &frame, Form &form1, Form &form2)
+void DAFrameAnimationEventListener::OnFormTransitionAnimationStarted(FrameAnimator&,
+								     Frame&, Form&, Form&)
 {
 	probeBlockStart();
 	SCREENSHOT_UNSET();
 	probeBlockEnd();
 }
 
-void DAFrameAnimationEventListener::OnFormTransitionAnimationStopped(FrameAnimator &source, Frame &frame, Form &form1, Form &form2)
+void DAFrameAnimationEventListener::OnFormTransitionAnimationStopped(FrameAnimator&,
+								     Frame&, Form&, Form&)
 {
 	probeBlockStart();
 	SCREENSHOT_SET();
@@ -75,4 +78,3 @@ IFrameAnimatorEventListener& GetFrameAnimatorEventListener()
 	DAFrameAnimationEventListener& listener = DAFrameAnimationEventListener::GetInstance();
 	return static_cast<IFrameAnimatorEventListener&>(listener);
 }
-

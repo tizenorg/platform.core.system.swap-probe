@@ -48,6 +48,7 @@ extern "C"{
 #define likely(x)       __builtin_expect((x),1)
 #define unlikely(x)     __builtin_expect((x),0)
 #endif
+#define __unused __attribute__((unused))
 
 #define NUM_OF_MONITOR		3
 #define DA_LOG_MAX			4096
@@ -143,12 +144,13 @@ int getBacktraceString(log_t* log, int bufsize);
 // array variable initialization with declare is expensive than memset
 
 // declare variable for standard api (not tizen related api)
-#define DECLARE_VARIABLE_STANDARD		\
-		probeInfo_t	probeInfo; 			\
-		int blockresult = 0;				\
-		bool bfiltering = true;			\
-		int olderrno, newerrno;			\
-		int __attribute__((unused)) ret
+#define DECLARE_VARIABLE_STANDARD	\
+	probeInfo_t probeInfo;		\
+	int blockresult = 0;		\
+	bool bfiltering = true;		\
+	int olderrno = 0;		\
+	int newerrno = 0;		\
+	int __attribute__((unused)) ret
 
 // declare variable for standard api (not tizen related api) without ret
 #define DECLARE_VARIABLE_STANDARD_NORET		\

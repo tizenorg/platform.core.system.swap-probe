@@ -573,10 +573,10 @@ result File::Seek(FileSeekPosition position, long offset) {
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[1024];
 	char temp_pos[50];
 	FileAttributes attr;
-	long long size;
+	long long size = 0;
 
 	if (!Seekp) {
 		probeBlockStart();

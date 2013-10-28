@@ -154,7 +154,7 @@ typedef enum
 	LIBOSP_NET = 11
 } ORIGINAL_LIBRARY;
 
-extern char *lib_string[NUM_ORIGINAL_LIBRARY];
+extern const char *lib_string[NUM_ORIGINAL_LIBRARY];
 extern void *lib_handle[NUM_ORIGINAL_LIBRARY];
 
 // type definition for global variable

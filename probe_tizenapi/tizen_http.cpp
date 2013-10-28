@@ -1827,7 +1827,7 @@ public:
 			HttpSession& httpSession, HttpTransaction& httpTransaction,
 			Tizen::Base::String* pCert) = 0;
 	virtual bool OnTransactionCertVerificationRequestedN(
-			HttpSession& httpSession, HttpTransaction& httpTransaction,
+			HttpSession&, HttpTransaction&,
 			Tizen::Base::Collection::IList* pCertList) {
 		std::unique_ptr < Tizen::Base::Collection::IList
 				> upCertList(pCertList);
@@ -1881,4 +1881,3 @@ protected:
 }
 }
 } // namespace Tizen { namespace Net { namespace Http
-

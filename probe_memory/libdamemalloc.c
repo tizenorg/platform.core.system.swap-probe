@@ -178,7 +178,7 @@ static void* realloc_hook(void *memblock, size_t size, const void* caller)
 
 static inline void adhoc_bzero(char *p, size_t size)
 {
-	int index;
+	unsigned int index;
 	for (index = 0; index != size; index++)
 		p[index] = '\0';
 }

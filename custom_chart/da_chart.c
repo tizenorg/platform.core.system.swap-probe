@@ -196,17 +196,21 @@ static int start_callback_thread(chart_interval interval)
 		return ERR_WRONG_PARAMETER;
 	}
 
-	if(*timerfd != -1 || *thread_handle != -1)
+	/**
+	 * FIXME: Type of pthread_t is undefined.
+	 * Comparing it with -1 is *very* bad
+	 */
+	if (*timerfd != -1 || *thread_handle != (pthread_t) -1)
 		return 0;		// already thread exist
 
 	*timerfd = timerfd_create(CLOCK_REALTIME, 0);
-	if(*timerfd == -1)
+	if (*timerfd == -1)
 		return errno;
 
-	if(timerfd_settime(*timerfd, 0, &timevalue, NULL) == -1)
+	if (timerfd_settime(*timerfd, 0, &timevalue, NULL) == -1)
 		return errno;
 
-	if(pthread_create(thread_handle, NULL, _chart_timerThread, pman) < 0)
+	if (pthread_create(thread_handle, NULL, _chart_timerThread, pman) < 0)
 		return ERR_THREAD_CREATE_FAIL;
 
 	return 0;
@@ -415,25 +419,19 @@ void __attribute__((destructor)) _fini_lib()
 	probeBlockStart();
 
 	remove_all_callback_list();
-	if(chm.interval_10ms.timerfd != -1)
+	if (chm.interval_10ms.timerfd != -1)
 		close(chm.interval_10ms.timerfd);
-	if(chm.interval_100ms.timerfd != -1)
+	if (chm.interval_100ms.timerfd != -1)
 		close(chm.interval_100ms.timerfd);
-	if(chm.interval_1s.timerfd != -1)
+	if (chm.interval_1s.timerfd != -1)
 		close(chm.interval_1s.timerfd);
-
-	if(chm.interval_10ms.thread_handle != -1)
-	{
+	/*! Bad. Ugly. Unportable */
+	if (chm.interval_10ms.thread_handle != (pthread_t) -1)
 		pthread_join(chm.interval_10ms.thread_handle, NULL);
-	}
-	if(chm.interval_100ms.thread_handle != -1)
-	{
+	if (chm.interval_100ms.thread_handle != (pthread_t) -1)
 		pthread_join(chm.interval_100ms.thread_handle, NULL);
-	}
-	if(chm.interval_1s.thread_handle != -1)
-	{
+	if (chm.interval_1s.thread_handle != (pthread_t) -1)
 		pthread_join(chm.interval_1s.thread_handle, NULL);
-	}
 
 	probeBlockEnd();
 }

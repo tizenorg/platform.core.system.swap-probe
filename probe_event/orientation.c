@@ -34,7 +34,8 @@
 #include "daprobe.h"
 #include "dahelper.h"
 
-Eina_Bool _da_onclientmessagereceived(void* pData, int type, void* pEvent)
+Eina_Bool _da_onclientmessagereceived(void __unused * pData, int __unused type,
+				      void *pEvent)
 {
 	Ecore_X_Event_Client_Message* pClientEvent;
 

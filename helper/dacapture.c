@@ -410,7 +410,7 @@ int finalize_screencapture()
 // screen shot manipulation functions
 // =======================================================================
 
-static Eina_Bool _captureTimer(void* data)
+static Eina_Bool _captureTimer(void __unused * data)
 {
 	probeBlockStart();
 	SCREENSHOT_TIMEOUT();
@@ -425,10 +425,10 @@ int activateCaptureTimer()
 	return 0;
 }
 
-void _cb_render_post(void* data, Evas* e, void* eventinfo)
+void _cb_render_post(void __unused * data, Evas __unused * e,
+		     void __unused * eventinfo)
 {
 	probeBlockStart();
 	SCREENSHOT_DONE();
 	probeBlockEnd();
 }
-

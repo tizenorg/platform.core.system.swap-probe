@@ -34,32 +34,39 @@
 // =====================================================================
 // api definition
 // =====================================================================
-
-void da_mark(chart_color color, char* mark_text)
+#define __unused __attribute__((unused))
+void da_mark(chart_color __unused color, char __unused * mark_text)
 {
+
 }
 
-da_handle da_create_chart(char* chart_name)
-{
-	return 0;
-}
-
-da_handle da_create_series(da_handle charthandle, char* seriesname,
-		series_type type, chart_color color)
+da_handle da_create_chart(char __unused * chart_name)
 {
 	return 0;
 }
 
-da_handle da_create_default_series(da_handle charthandle, char* seriesname)
+da_handle da_create_series(da_handle __unused charthandle,
+			   char __unused * seriesname,
+			   series_type __unused type,
+			   chart_color __unused color)
 {
 	return 0;
 }
 
-int da_set_callback(da_handle series_handle, da_user_data_2_chart_data callback, void* data_addr, chart_interval interval)
+da_handle da_create_default_series(da_handle __unused charthandle,
+				   char __unused * seriesname)
 {
 	return 0;
 }
 
-void da_log(da_handle series_handle, float uservalue)
+int da_set_callback(da_handle __unused series_handle,
+		    da_user_data_2_chart_data __unused callback,
+		    void __unused * data_addr,
+		    chart_interval __unused interval)
+{
+	return 0;
+}
+
+void da_log(da_handle __unused series_handle, float __unused uservalue)
 {
 }
