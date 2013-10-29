@@ -134,8 +134,11 @@ result File::Construct(const Tizen::Base::String& filePath,
 	if(postBlockBegin(blockresult)) {
 		WcharToChar(temp_path,filePath.GetPointer());
 		WcharToChar(temp_mode,openMode.GetPointer());
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
-			size = attr.GetFileSize();
+		// Comment this because of fault during Internet application profiling
+		// (it closes unexpectedly) but for DATizenTestApp it is ok
+		// There is the same problem at File::~File(void)
+		//if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		//	size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
