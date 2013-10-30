@@ -22,24 +22,32 @@ INC_COMMON = -I./include \
 INC_CAPI = $(INC_COMMON) #-I/usr/include/vconf -I/usr/include/pixman-1
 INC_TIZEN = $(INC_COMMON) -I/usr/include/osp
 
-COMMON_SRCS =	./helper/libdaprobe.c \
-				./helper/dahelper.c \
-				./helper/btsym.c \
-				./helper/dacollection.c \
-				./helper/dacapture.c \
-				./probe_memory/libdamemalloc.c \
-				./probe_memory/libdamemmanage.c \
-				./custom_chart/da_chart.c \
-				./probe_socket/libdasocket.c \
-				./probe_event/da_event.c \
-				./probe_event/keytouch.c \
-				./probe_event/orientation.c \
-				./probe_third/libdaemon.c \
-				./probe_thread/libdathread.c \
-				./probe_thread/libdasync.c \
-				./probe_userfunc/libdauserfunc.c \
-				./probe_file/da_io_posix.c \
-				./probe_file/da_io_stdc.c
+UTILITY_SRCS :=				\
+	./helper/libdaprobe.c		\
+	./helper/dahelper.c		\
+	./helper/btsym.c		\
+	./helper/dacollection.c		\
+	./helper/dacapture.c		\
+	./custom_chart/da_chart.c	\
+
+
+PROBE_SRCS :=   				\
+	./probe_memory/libdamemalloc.c		\
+	./probe_memory/libdamemmanage.c		\
+	./probe_socket/libdasocket.c		\
+	./probe_event/da_event.c		\
+	./probe_event/keytouch.c		\
+	./probe_event/orientation.c		\
+	./probe_third/libdaemon.c		\
+	./probe_thread/libdathread.c		\
+	./probe_thread/libdasync.c		\
+	./probe_userfunc/libdauserfunc.c	\
+	./probe_file/da_io_posix.c		\
+	./probe_file/da_io_stdc.c		\
+
+
+
+COMMON_SRCS := $(UTILITY_SRCS) $(PROBE_SRCS)
 
 CAPI_SRCS =$(COMMON_SRCS) \
 			./helper/appfw-capi.c \
