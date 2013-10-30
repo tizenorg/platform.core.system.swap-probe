@@ -352,7 +352,7 @@ void mcount(void)
 }
 
 #elif defined(__arm__)
-void mcount_internal(u_long frompc, u_long selfpc)
+void mcount_internal(u_long __unused frompc, u_long __unused selfpc)
 {
 	return;
 }
@@ -429,7 +429,8 @@ static void profil_counter(int __unused signo, const struct sigcontext scp)
 	asm volatile("");
 }
 #elif defined(__arm__)
-static void profil_counter(int signr, siginfo_t *si, struct ucontext *uctx)
+static void profil_counter(int __unused signr, siginfo_t __unused * si,
+			   struct ucontext *uctx)
 {
 	profil_count((void *) GET_PC(uctx));
 
