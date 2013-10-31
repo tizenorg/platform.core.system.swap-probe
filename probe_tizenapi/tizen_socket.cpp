@@ -621,7 +621,7 @@ result Socket::Receive(Tizen::Base::ByteBuffer& buffer) const {
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::Receive", VT_ULONG, pret,
 			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_END, out,
 			buffer.GetLimit(), hostinfo, "x", (unsigned int)&buffer);
-	delete out;
+	delete [] out;
 	return pret;
 }
 
@@ -695,7 +695,7 @@ result Socket::ReceiveFrom(Tizen::Base::ByteBuffer& buffer,
 			pret, (unsigned int)this, (unsigned int)this, SOCKET_API_RECV_END,
 			out, buffer.GetLimit(), hostinfo, "xs",
 			(unsigned int)&buffer, temp);
-	delete out;
+	delete [] out;
 	return pret;
 }
 result Socket::ReceiveFrom(void* pBuffer, int length,
@@ -762,7 +762,7 @@ result Socket::Send(Tizen::Base::ByteBuffer& buffer) {
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::Send", VT_ULONG, pret,
 			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_END, out,
 			buffer.GetLimit(), hostinfo, "x", (unsigned int)&buffer);
-	delete out;
+	delete [] out;
 	return pret;
 }
 
@@ -835,7 +835,7 @@ result Socket::SendTo(Tizen::Base::ByteBuffer& buffer,
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::SendTo", VT_ULONG, pret,
 			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_END, out,
 			buffer.GetLimit(), hostinfo, "xs", (unsigned int)&buffer, temp);
-	delete out;
+	delete [] out;
 	return pret;
 }
 

@@ -312,7 +312,7 @@ Tizen::Base::String* HttpHeader::GetRawHeaderN(void) const
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpHeader::GetRawHeaderN", VT_NULL, NULL,
 			(unsigned int)this, (unsigned int)this, HTTP_API_RESPONSE, out,
 			retVal->GetLength(), hostinfo, "s", "void");
-	delete out;
+	delete [] out;
 	return retVal;
 }
 
@@ -1271,7 +1271,7 @@ result HttpRequest::WriteBody(const Tizen::Base::ByteBuffer& body)
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::WriteBody", VT_ULONG, retVal,
 			(unsigned int)this, (unsigned int)this, HTTP_API_REQUEST, out,
 			body.GetLimit(), hostinfo, "x", (unsigned int)&body);
-	delete out;
+	delete [] out;
 	return retVal;
 }
 
