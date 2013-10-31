@@ -119,6 +119,69 @@ static inline char *pack_timestamp(char *to)
 	return to;
 }
 
+static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va_list *args)
+{
+	uint8_t c;
+	uint32_t d;
+	uint64_t x;
+	uint64_t p;
+	float f;
+	double w;
+	char *s;
+	int n;
+
+	*to++ = t;
+
+	switch (t) {
+	case 'c':
+		c = (uint8_t)va_arg(*args, uint32_t);
+		memcpy(to, &c, sizeof(c));
+		to += sizeof(c);
+		break;
+	case 'd':
+		d = va_arg(*args, uint32_t);
+		memcpy(to, &d, sizeof(d));
+		to += sizeof(d);
+		break;
+	case 'x':
+		x = 0; // real value may be less then uint64_t
+		x = (unsigned long)(uint64_t)va_arg(*args, uint64_t);
+		memcpy(to, &x, sizeof(x));
+		to += sizeof(x);
+		break;
+	case 'p':
+		p = 0; // real value may be less then uint64_t
+		p = (unsigned long)(uintptr_t)va_arg(*args, uint64_t);
+		memcpy(to, &p, sizeof(p));
+		to += sizeof(p);
+		break;
+	case 'f':
+		f = (float)va_arg(*args, double);
+		memcpy(to, &f, sizeof(f));
+		to += sizeof(f);
+		break;
+	case 'w':
+		w = va_arg(*args, double);
+		memcpy(to, &w, sizeof(w));
+		to += sizeof(w);
+		break;
+	case 's':
+		s = va_arg(*args, char *);
+		n = strlen(s) + 1;
+		strncpy(to, s, n);
+		to += n;
+		break;
+	case 'v':
+	case 'n':
+		break;
+	default:
+		to--;
+		break;
+	}
+
+	return to;
+}
+
 static char __attribute__((used)) *pack_args(char *to, const char *fmt, ...)
 {
 	va_list args;
@@ -134,67 +197,20 @@ static char __attribute__((used)) *pack_args(char *to, const char *fmt, ...)
 
 	va_start(args, fmt);
 
-	uint8_t c;
-	uint32_t d;
-	uint64_t x;
-	uint64_t p;
-	float f;
-	double w;
-	char *s;
-	int n;
+	for (t = fmt; *t != '\0'; t++)
+		to = pack_value_by_type(to, *t, &args);
 
-	for (t = fmt; *t != '\0'; t++) {
-		switch (*t) {
-		case 'c':
-			c = (uint8_t)va_arg(args, uint32_t);
-			*to++ = *t;
-			memcpy(to, &c, sizeof(c));
-			to += sizeof(c);
-			break;
-		case 'd':
-			d = va_arg(args, uint32_t);
-			*to++ = *t;
-			memcpy(to, &d, sizeof(d));
-			to += sizeof(d);
-			break;
-		case 'x':
-			x = 0; // real value may be less then uint64_t
-			x = (unsigned long)(uint64_t)va_arg(args, uint64_t);
-			*to++ = *t;
-			memcpy(to, &x, sizeof(x));
-			to += sizeof(x);
-			break;
-		case 'p':
-			p = 0; // real value may be less then uint64_t
-			p = (unsigned long)(uintptr_t)va_arg(args, uint64_t);
-			*to++ = *t;
-			memcpy(to, &p, sizeof(p));
-			to += sizeof(p);
-			break;
-		case 'f':
-			f = (float)va_arg(args, double);
-			*to++ = *t;
-			memcpy(to, &f, sizeof(f));
-			to += sizeof(f);
-			break;
-		case 'w':
-			w = va_arg(args, double);
-			*to++ = *t;
-			memcpy(to, &w, sizeof(w));
-			to += sizeof(w);
-			break;
-		case 's':
-			s = va_arg(args, char *);
-			*to++ = *t;
-			n = strlen(s) + 1;
-			strncpy(to, s, n);
-			to += n;
-			break;
-		default:
-			break;
-		}
-	}
+	va_end(args);
 
+	return to;
+}
+
+static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
+{
+	va_list args;
+
+	va_start(args, ret_type);
+	to = pack_value_by_type(to, ret_type, &args);
 	va_end(args);
 
 	return to;
@@ -222,17 +238,19 @@ static char __attribute__((used)) *pack_args(char *to, const char *fmt, ...)
 		RET_PTR = BUF_PTR;		\
 	} while (0)
 
-#define PACK_COMMON_END(ret, errn, intern_call)		\
-	do {							\
-		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(ret));	\
-		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);	\
-		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);	\
-		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); \
-		BUF_PTR = pack_int32(BUF_PTR, 0);		\
-		BUF_PTR = pack_int32(BUF_PTR, 0);		\
+#define PACK_COMMON_END(ret_type, ret, errn, intern_call)			\
+	do {									\
+		/*BUF_PTR = pack_ret(BUF_PTR, ret_type, (uintptr_t)ret);*/	\
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(ret));		\
+		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);			\
+		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);		\
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); 	\
+		BUF_PTR = pack_int32(BUF_PTR, 0);				\
+		BUF_PTR = pack_int32(BUF_PTR, 0);				\
 	} while (0)
 
-#define PACK_RETURN_END(ret)								\
+#define PACK_RETURN_END(ret_type, ret)						\
+		/*RET_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret);*/	\
 		RET_PTR = pack_int64(RET_PTR, (uintptr_t)(ret));
 
 #define PACK_MEMORY(size, memory_api_type, addr)		\
@@ -383,7 +401,7 @@ static char __attribute__((used)) *pack_args(char *to, const char *fmt, ...)
 
 /* 	p = PACK_COMMON_BEGIN(p, 42, "cdxpfws", 'a', 10, (uint64_t)80, */
 /* 			      (uint64_t)0, 0.19, 0.33, "hello!"); */
-/* 	p = PACK_COMMON_END(p, 0); */
+/* 	p = PACK_COMMON_END('p', p, 0); */
 
 /* 	int fd = creat("out.bin", 0644); */
 /* 	if (fd == -1) { */

@@ -48,13 +48,13 @@ int real_pthread_setcancelstate(int state, int *oldstate);
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);				\
 	PRE_PROBEBLOCK()
 
-#define AFTER_PACK_ORIGINAL_SYNC(API_ID, RVAL, SYNCVAL, SYNCTYPE, APITYPE, INPUTFORMAT, ...) \
-	POST_PACK_PROBEBLOCK_BEGIN();																\
-	PREPARE_LOCAL_BUF();																		\
-	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, API_ID, INPUTFORMAT, __VA_ARGS__);						\
-	PACK_COMMON_END(RVAL, errno, blockresult);													\
-	PACK_SYNC(SYNCVAL, SYNCTYPE, APITYPE);														\
-	FLUSH_LOCAL_BUF();																			\
+#define AFTER_PACK_ORIGINAL_SYNC(API_ID, RTYPE, RVAL, SYNCVAL, SYNCTYPE, APITYPE, INPUTFORMAT, ...) 	\
+	POST_PACK_PROBEBLOCK_BEGIN();									\
+	PREPARE_LOCAL_BUF();										\
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, API_ID, INPUTFORMAT, __VA_ARGS__);				\
+	PACK_COMMON_END(RTYPE, RVAL, errno, blockresult);						\
+	PACK_SYNC(SYNCVAL, SYNCTYPE, APITYPE);								\
+	FLUSH_LOCAL_BUF();										\
 	POST_PACK_PROBEBLOCK_END()
 
 #ifdef __cplusplus

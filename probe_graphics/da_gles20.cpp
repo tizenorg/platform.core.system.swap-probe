@@ -41,7 +41,7 @@ void glActiveTexture(GLenum texture) {
 	BEFORE(glActiveTexture);
 	glActiveTexturep(texture);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
 	      (uint64_t)(texture));
 }
 
@@ -50,7 +50,7 @@ void glAttachShader(GLuint program, GLuint shader) {
 	BEFORE(glAttachShader);
 	glAttachShaderp(program, shader);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
 			program, shader);
 }
 
@@ -63,7 +63,7 @@ void glBindAttribLocation(GLuint program, GLuint index, const char *name) {
 	BEFORE(glBindAttribLocation);
 	glBindAttribLocationp(program, index, name);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dds",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dds",
 			program, index, name);
 }
 
@@ -72,7 +72,7 @@ void glBindBuffer(GLenum target, GLuint buffer) {
 	BEFORE(glBindBuffer);
 	glBindBufferp(target, buffer);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
 	      (uint64_t)(target), buffer);
 }
 
@@ -81,7 +81,7 @@ void glBindFramebuffer(GLenum target, GLuint framebuffer) {
 	BEFORE(glBindFramebuffer);
 	glBindFramebufferp(target, framebuffer);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
 	      (uint64_t)(target), framebuffer);
 }
 
@@ -90,7 +90,7 @@ void glBindRenderbuffer(GLenum target, GLuint renderbuffer) {
 	BEFORE(glBindRenderbuffer);
 	glBindRenderbufferp(target, renderbuffer);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
 	      (uint64_t)(target), renderbuffer);
 }
 
@@ -99,7 +99,7 @@ void glBindTexture(GLenum target, GLuint texture) {
 	BEFORE(glBindTexture);
 	glBindTexturep(target, texture);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
 	      (uint64_t)(target), texture);
 }
 
@@ -108,7 +108,7 @@ void glBlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
 	BEFORE(glBlendColor);
 	glBlendColorp(red, green, blue, alpha);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ffff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ffff",
 			red, green, blue, alpha);
 }
 
@@ -117,7 +117,7 @@ void glBlendEquation(GLenum mode) {
 	BEFORE(glBlendEquation);
 	glBlendEquationp(mode);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
 	      (uint64_t)(mode));
 }
 
@@ -126,7 +126,7 @@ void glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha) {
 	BEFORE(glBlendEquationSeparate);
 	glBlendEquationSeparatep(modeRGB, modeAlpha);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
 	      (uint64_t)(modeRGB), (uint64_t)(modeAlpha));
 }
 
@@ -135,7 +135,7 @@ void glBlendFunc(GLenum sfactor, GLenum dfactor) {
 	BEFORE(glBlendFunc);
 	glBlendFuncp(sfactor, dfactor);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
 	      (uint64_t)(sfactor), (uint64_t)(dfactor));
 }
 
@@ -145,7 +145,7 @@ void glBlendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha,
 	BEFORE(glBlendFuncSeparate);
 	glBlendFuncSeparatep(srcRGB, dstRGB, srcAlpha, dstAlpha);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxx",
 	      (uint64_t)(srcRGB), (uint64_t)(dstRGB),
 	      (uint64_t)(srcAlpha), (uint64_t)(dstAlpha));
 }
@@ -156,7 +156,7 @@ void glBufferData(GLenum target, GLsizeiptr size, const GLvoid * data,
 	BEFORE(glBufferData);
 	glBufferDatap(target, size, data, usage);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxpx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxpx",
 	      (uint64_t)(target), (uint64_t)(size),
 	      voidp_to_uint64(data), (uint64_t)(usage));
 }
@@ -167,7 +167,7 @@ void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size,
 	BEFORE(glBufferSubData);
 	glBufferSubDatap(target, offset, size, data);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxp",
 	      (uint64_t)(target), (uint64_t)(offset),
 	      (uint64_t)(size), voidp_to_uint64(data));
 }
@@ -181,7 +181,7 @@ GLenum glCheckFramebufferStatus(GLenum target) {
 	BEFORE(glCheckFramebufferStatus);
 	GLenum ret = glCheckFramebufferStatusp(target);
 	error = glGetError();
-	AFTER(ret, APITYPE_CONTEXT, "", "x",
+	AFTER('d', ret, APITYPE_CONTEXT, "", "x",
 	      (uint64_t)(target));
 
 	return ret;
@@ -192,7 +192,7 @@ void glClear(GLbitfield mask) {
 	BEFORE(glClear);
 	glClearp(mask);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
 	      (uint64_t)(mask));
 }
 
@@ -201,7 +201,7 @@ void glClearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
 	BEFORE(glClearColor);
 	glClearColorp(red, green, blue, alpha);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ffff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ffff",
 			red, green, blue, alpha);
 }
 
@@ -210,7 +210,7 @@ void glClearDepthf(GLclampf depth) {
 	BEFORE(glClearDepthf);
 	glClearDepthfp(depth);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "f", depth);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "f", depth);
 }
 
 void glClearStencil(GLint s) {
@@ -218,7 +218,7 @@ void glClearStencil(GLint s) {
 	BEFORE(glClearStencil);
 	glClearStencilp(s);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", s);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", s);
 }
 
 void glColorMask(GLboolean red, GLboolean green, GLboolean blue,
@@ -227,7 +227,7 @@ void glColorMask(GLboolean red, GLboolean green, GLboolean blue,
 	BEFORE(glColorMask);
 	glColorMaskp(red, green, blue, alpha);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
 			red, green, blue, alpha);
 }
 
@@ -236,7 +236,7 @@ void glCompileShader(GLuint shader) {
 	BEFORE(glCompileShader);
 	glCompileShaderp(shader);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(shader));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(shader));
 }
 
 void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat,
@@ -248,7 +248,7 @@ void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat,
 	glCompressedTexImage2Dp(target, level, internalformat, width, height,
 			border, imageSize, data);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdxddddp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdxddddp",
 	      (uint64_t)(target), level,
 	      (uint64_t)(internalformat), width, height, border, imageSize,
 	      voidp_to_uint64(data));
@@ -263,7 +263,7 @@ void glCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset,
 	glCompressedTexSubImage2Dp(target, level, xoffset, yoffset, width, height,
 			format, imageSize, data);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdddddxdp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdddddxdp",
 	      (uint64_t)(target), level, xoffset, yoffset, width, height,
 	      (uint64_t)(format), imageSize, voidp_to_uint64(data));
 }
@@ -276,7 +276,7 @@ void glCopyTexImage2D(GLenum target, GLint level, GLenum internalformat,
 	glCopyTexImage2Dp(target, level, internalformat, x, y, width, height,
 			border);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdxddddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdxddddd",
 	      (uint64_t)(target), level,
 	      (uint64_t)(internalformat), x, y, width, height, border);
 }
@@ -288,7 +288,7 @@ void glCopyTexSubImage2D(GLenum target, GLint level, GLint xoffset,
 	BEFORE(glCopyTexSubImage2D);
 	glCopyTexSubImage2Dp(target, level, xoffset, yoffset, x, y, width, height);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xddddddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xddddddd",
 	      (uint64_t)(target), level, xoffset, yoffset, x, y, width,
 	      height);
 }
@@ -298,7 +298,7 @@ GLuint glCreateProgram(void) {
 	BEFORE(glCreateProgram);
 	GLuint ret = glCreateProgramp();
 	error = glGetError();
-	AFTER_NO_PARAM(ret, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
 
 	return ret;
 }
@@ -308,7 +308,7 @@ GLuint glCreateShader(GLenum shaderType) {
 	BEFORE(glCreateShader);
 	GLuint ret = glCreateShaderp(shaderType);
 	error = glGetError();
-	AFTER(ret, APITYPE_CONTEXT, "", "x", (uint64_t)(shaderType));
+	AFTER('d', ret, APITYPE_CONTEXT, "", "x", (uint64_t)(shaderType));
 
 	return ret;
 }
@@ -318,7 +318,7 @@ void glCullFace(GLenum mode) {
 	BEFORE(glCullFace);
 	glCullFacep(mode);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(mode));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(mode));
 }
 
 // ==================================================================
@@ -330,7 +330,7 @@ void glDeleteBuffers(GLsizei n, const GLuint * buffers) {
 	BEFORE(glDeleteBuffers);
 	glDeleteBuffersp(n, buffers);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
 	      n, voidp_to_uint64(buffers));
 }
 
@@ -339,7 +339,7 @@ void glDeleteFramebuffers(GLsizei n, const GLuint * framebuffers) {
 	BEFORE(glDeleteFramebuffers);
 	glDeleteFramebuffersp(n, framebuffers);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
 	      n, voidp_to_uint64(framebuffers));
 }
 
@@ -348,7 +348,7 @@ void glDeleteProgram(GLuint program) {
 	BEFORE(glDeleteProgram);
 	glDeleteProgramp(program);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d",
 			program);
 }
 
@@ -357,7 +357,7 @@ void glDeleteRenderbuffers(GLsizei n, const GLuint * renderbuffers) {
 	BEFORE(glDeleteRenderbuffers);
 	glDeleteRenderbuffersp(n, renderbuffers);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
 	      n, voidp_to_uint64(renderbuffers));
 }
 
@@ -366,7 +366,7 @@ void glDeleteShader(GLuint shader) {
 	BEFORE(glDeleteShader);
 	glDeleteShaderp(shader);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", shader);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", shader);
 }
 
 void glDeleteTextures(GLsizei n, const GLuint * textures) {
@@ -383,10 +383,10 @@ void glDeleteTextures(GLsizei n, const GLuint * textures) {
 				bufP += sprintf(buf + bufP, ",");
 			}
 		}
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
 		      n, voidp_to_uint64(textures));
 	} else {
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
 		      n, voidp_to_uint64(textures));
 	}
 }
@@ -396,7 +396,7 @@ void glDepthFunc(GLenum func) {
 	BEFORE(glDepthFunc);
 	glDepthFuncp(func);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(func));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(func));
 }
 
 void glDepthMask(GLboolean flag) {
@@ -404,7 +404,7 @@ void glDepthMask(GLboolean flag) {
 	BEFORE(glDepthMask);
 	glDepthMaskp(flag);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(flag));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(flag));
 }
 
 void glDepthRangef(GLclampf nearVal, GLclampf farVal) {
@@ -412,7 +412,7 @@ void glDepthRangef(GLclampf nearVal, GLclampf farVal) {
 	BEFORE(glDepthRangef);
 	glDepthRangefp(nearVal, farVal);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ff",
 			nearVal, farVal);
 }
 
@@ -421,7 +421,7 @@ void glDetachShader(GLuint program, GLuint shader) {
 	BEFORE(glDetachShader);
 	glDetachShaderp(program, shader);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
 			program, shader);
 }
 
@@ -430,7 +430,7 @@ void glDisable(GLenum cap) {
 	BEFORE(glDisable);
 	glDisablep(cap);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(cap));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(cap));
 }
 
 void glDisableVertexAttribArray(GLuint index) {
@@ -438,7 +438,7 @@ void glDisableVertexAttribArray(GLuint index) {
 	BEFORE(glDisableVertexAttribArray);
 	glDisableVertexAttribArrayp(index);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", index);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", index);
 }
 
 void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
@@ -446,7 +446,7 @@ void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
 	BEFORE(glDrawArrays);
 	glDrawArraysp(mode, first, count);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdd",
 	      (uint64_t)(mode), first, count);
 }
 
@@ -456,7 +456,7 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type,
 	BEFORE(glDrawElements);
 	glDrawElementsp(mode, count, type, indices);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdxp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdxp",
 	      (uint64_t)(mode), count, (uint64_t)(type), indices);
 }
 
@@ -469,7 +469,7 @@ void glEnable(GLenum cap) {
 	BEFORE(glEnable);
 	glEnablep(cap);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(cap));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(cap));
 }
 
 void glEnableVertexAttribArray(GLuint index) {
@@ -477,7 +477,7 @@ void glEnableVertexAttribArray(GLuint index) {
 	BEFORE(glEnableVertexAttribArray);
 	glEnableVertexAttribArrayp(index);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", index);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", index);
 }
 
 #undef eglSwapBuffers
@@ -486,7 +486,7 @@ extern "C" EGLBoolean eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 	BEFORE_EGL(eglSwapBuffers);
 	EGLBoolean ret = eglSwapBuffersp(dpy, surface);
 	error = eglGetError();
-	AFTER_NO_PARAM(ret, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
 
 	return ret;
 }
@@ -497,7 +497,7 @@ EGLBoolean _SglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 	BEFORE_OSP_UIFW(_SglSwapBuffers);
 	EGLBoolean ret = _SglSwapBuffersp(dpy, surface);
 	error = eglGetError();
-	AFTER_NO_PARAM(ret, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
 
 	return ret;
 }
@@ -511,7 +511,7 @@ void glFinish(void) {
 	BEFORE(glFinish);
 	glFinishp();
 	error = glGetError();
-	AFTER_NO_PARAM(NO_RETURN_VALUE, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "");
 }
 
 void glFlush(void) {
@@ -519,7 +519,7 @@ void glFlush(void) {
 	BEFORE(glFlush);
 	glFlushp();
 	error = glGetError();
-	AFTER_NO_PARAM(NO_RETURN_VALUE, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "");
 }
 
 void glFramebufferRenderbuffer(GLenum target, GLenum attachment,
@@ -529,7 +529,7 @@ void glFramebufferRenderbuffer(GLenum target, GLenum attachment,
 	glFramebufferRenderbufferp(target, attachment, renderbuffertarget,
 			renderbuffer);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxd",
 	      (uint64_t)(target), (uint64_t)(attachment),
 	      (uint64_t)(renderbuffertarget), renderbuffer);
 }
@@ -540,7 +540,7 @@ void glFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget,
 	BEFORE(glFramebufferTexture2D);
 	glFramebufferTexture2Dp(target, attachment, textarget, texture, level);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxdd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxdd",
 	      (uint64_t)(target), (uint64_t)(attachment),
 	      (uint64_t)(textarget), texture, level);
 }
@@ -550,7 +550,7 @@ void glFrontFace(GLenum mode) {
 	BEFORE(glFrontFace);
 	glFrontFacep(mode);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
 	      (uint64_t)(mode));
 }
 
@@ -572,10 +572,10 @@ void glGenBuffers(GLsizei n, GLuint * buffers) {
 				bufP += sprintf(buf + bufP, ",");
 			}
 		}
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
 		      n, voidp_to_uint64(buffers));
 	} else {
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
 		      n, voidp_to_uint64(buffers));
 	}
 }
@@ -585,7 +585,7 @@ void glGenFramebuffers(GLsizei n, GLuint * framebuffers) {
 	BEFORE(glGenFramebuffers);
 	glGenFramebuffersp(n, framebuffers);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
 	      n, voidp_to_uint64(framebuffers));
 }
 
@@ -594,7 +594,7 @@ void glGenRenderbuffers(GLsizei n, GLuint * renderbuffers) {
 	BEFORE(glGenRenderbuffers);
 	glGenRenderbuffersp(n, renderbuffers);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
 	      n, voidp_to_uint64(renderbuffers));
 }
 
@@ -612,10 +612,10 @@ void glGenTextures(GLsizei n, GLuint * textures) {
 				bufP += sprintf(buf + bufP, ",");
 			}
 		}
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
 		      n, voidp_to_uint64(textures));
 	} else {
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
 		      n, voidp_to_uint64(textures));
 	}
 }
@@ -625,7 +625,7 @@ void glGenerateMipmap(GLenum target) {
 	BEFORE(glGenerateMipmap);
 	glGenerateMipmapp(target);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(target));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(target));
 }
 
 //lsh_get
@@ -634,7 +634,7 @@ void glGetBooleanv(GLenum pname, GLboolean * params) {
 	BEFORE(glGetBooleanv);
 	glGetBooleanvp(pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(pname));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(pname));
 }
 
 //lsh_get
@@ -643,7 +643,7 @@ void glGetFloatv(GLenum pname, GLfloat * params) {
 	BEFORE(glGetFloatv);
 	glGetFloatvp(pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(pname));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(pname));
 }
 
 //lsh_get
@@ -652,7 +652,7 @@ void glGetIntegerv(GLenum pname, GLint * params) {
 	BEFORE(glGetIntegerv);
 	glGetIntegervp(pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(pname));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(pname));
 }
 
 //lsh_get
@@ -663,7 +663,7 @@ void glGetActiveAttrib(GLuint program, GLuint index, GLsizei bufSize,
 	BEFORE(glGetActiveAttrib);
 	glGetActiveAttribp(program, index, bufSize, length, size, type, name);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddd",
 			program, index, bufSize);
 }
 
@@ -675,7 +675,7 @@ void glGetActiveUniform(GLuint program, GLuint index, GLsizei bufSize,
 	BEFORE(glGetActiveUniform);
 	glGetActiveUniformp(program, index, bufSize, length, size, type, name);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddd",
 			program, index, bufSize);
 }
 
@@ -686,7 +686,7 @@ void glGetAttachedShaders(GLuint program, GLsizei maxCount, GLsizei *count,
 	BEFORE(glGetAttachedShaders);
 	glGetAttachedShadersp(program, maxCount, count, shaders);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
 			program, maxCount);
 }
 
@@ -696,7 +696,7 @@ void glGetAttribLocation(GLenum pname, GLint * params) {
 	BEFORE(glGetAttribLocation);
 	glGetAttribLocationp(pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(pname));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(pname));
 }
 
 //lsh_get
@@ -705,7 +705,7 @@ void glGetBufferParameteriv(GLenum target, GLenum value, GLint * data) {
 	BEFORE(glGetBufferParameteriv);
 	glGetBufferParameterivp(target, value, data);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
 	      (uint64_t)(target), (uint64_t)(value));
 }
 
@@ -714,7 +714,7 @@ GLenum glGetError(void) {
 	BEFORE(glGetError);
 	GLenum ret = glGetErrorp();
 //	error = glGetError();
-	AFTER_NO_PARAM(ret, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
 
 	return ret;
 }
@@ -726,7 +726,7 @@ void glGetFramebufferAttachmentParameteriv(GLenum target, GLenum attachment,
 	BEFORE(glGetFramebufferAttachmentParameteriv);
 	glGetFramebufferAttachmentParameterivp(target, attachment, pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxx",
 	      (uint64_t)(target), (uint64_t)(attachment),
 	      (uint64_t)(pname));
 }
@@ -738,7 +738,7 @@ void glGetProgramInfoLog(GLuint program, GLsizei maxLength, GLsizei *length,
 	BEFORE(glGetProgramInfoLog);
 	glGetProgramInfoLogp(program, maxLength, length, infoLog);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
 			program, maxLength);
 }
 
@@ -748,7 +748,7 @@ void glGetProgramiv(GLuint program, GLenum pname, GLint *params) {
 	BEFORE(glGetProgramiv);
 	glGetProgramivp(program, pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
 	      program, (uint64_t)(pname));
 }
 
@@ -758,7 +758,7 @@ void glGetRenderbufferParameteriv(GLenum target, GLenum pname, GLint *params) {
 	BEFORE(glGetRenderbufferParameteriv);
 	glGetRenderbufferParameterivp(target, pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
 	      (uint64_t)(target), (uint64_t)(pname));
 }
 
@@ -769,7 +769,7 @@ void glGetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei *length,
 	BEFORE(glGetShaderInfoLog);
 	glGetShaderInfoLogp(shader, maxLength, length, infoLog);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
 			shader, maxLength);
 }
 
@@ -780,7 +780,7 @@ void glGetShaderPrecisionFormat(GLenum shaderType, GLenum precisionType,
 	BEFORE(glGetShaderPrecisionFormat);
 	glGetShaderPrecisionFormatp(shaderType, precisionType, range, precision);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
 	      (uint64_t)(shaderType), (uint64_t)(precisionType));
 }
 
@@ -791,7 +791,7 @@ void glGetShaderSource(GLuint shader, GLsizei bufSize, GLsizei *length,
 	BEFORE(glGetShaderSource);
 	glGetShaderSourcep(shader, bufSize, length, source);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
 			shader, bufSize);
 }
 
@@ -801,7 +801,7 @@ void glGetShaderiv(GLuint shader, GLenum pname, GLint *params) {
 	BEFORE(glGetShaderiv);
 	glGetShaderivp(shader, pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
 	      shader, (uint64_t)(pname));
 }
 
@@ -810,7 +810,7 @@ const GLubyte* glGetString(GLenum name) {
 	BEFORE(glGetString);
 	const GLubyte* ret = glGetStringp(name);
 	error = glGetError();
-	AFTER(ret, APITYPE_CONTEXT, "", "x", (uint64_t)(name));
+	AFTER('p', ret, APITYPE_CONTEXT, "", "x", (uint64_t)(name));
 
 	return ret;
 }
@@ -821,7 +821,7 @@ void glGetTexParameterfv(GLenum target, GLenum pname, GLfloat * params) {
 	BEFORE(glGetTexParameterfv);
 	glGetTexParameterfvp(target, pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
 	      (uint64_t)(target), (uint64_t)(pname));
 }
 
@@ -831,7 +831,7 @@ void glGetTexParameteriv(GLenum target, GLenum pname, GLint * params) {
 	BEFORE(glGetTexParameteriv);
 	glGetTexParameterivp(target, pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
 	      (uint64_t)(target), (uint64_t)(pname));
 }
 
@@ -841,7 +841,7 @@ void glGetUniformfv(GLuint program, GLint location, GLfloat *params) {
 	BEFORE(glGetUniformfv);
 	glGetUniformfvp(program, location, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
 			program, location);
 }
 
@@ -851,7 +851,7 @@ void glGetUniformiv(GLuint program, GLint location, GLint *params) {
 	BEFORE(glGetUniformiv);
 	glGetUniformivp(program, location, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
 			program, location);
 }
 
@@ -861,7 +861,7 @@ GLint glGetUniformLocation(GLuint program, const char *name) {
 	BEFORE(glGetUniformLocation);
 	GLint ret = glGetUniformLocationp(program, name);
 	error = glGetError();
-	AFTER(ret, APITYPE_CONTEXT, "", "d", program);
+	AFTER('d', ret, APITYPE_CONTEXT, "", "d", program);
 
 	return ret;
 }
@@ -872,7 +872,7 @@ void glGetVertexAttribfv(GLuint index, GLenum pname, GLfloat *params) {
 	BEFORE(glGetVertexAttribfv);
 	glGetVertexAttribfvp(index, pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
 	      index, (uint64_t)(pname));
 }
 
@@ -882,7 +882,7 @@ void glGetVertexAttribiv(GLuint index, GLenum pname, GLint *params) {
 	BEFORE(glGetVertexAttribiv);
 	glGetVertexAttribivp(index, pname, params);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
 	      index, (uint64_t)(pname));
 }
 
@@ -892,7 +892,7 @@ void glGetVertexAttribPointerv(GLuint index, GLenum pname, GLvoid **pointer) {
 	BEFORE(glGetVertexAttribPointerv);
 	glGetVertexAttribPointervp(index, pname, pointer);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
 	      index, (uint64_t)(pname));
 }
 
@@ -905,7 +905,7 @@ void glHint(GLenum target, GLenum mode) {
 	BEFORE(glHint);
 	glHintp(target, mode);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
 	      (uint64_t)(target), (uint64_t)(mode));
 }
 
@@ -918,7 +918,7 @@ GLboolean glIsBuffer(GLuint buffer) {
 	BEFORE(glIsBuffer);
 	GLboolean ret = glIsBufferp(buffer);
 	error = glGetError();
-	AFTER(ret, APITYPE_CONTEXT, "", "d", buffer);
+	AFTER('c', ret, APITYPE_CONTEXT, "", "d", buffer);
 
 	return ret;
 }
@@ -928,7 +928,7 @@ GLboolean glIsEnabled(GLenum cap) {
 	BEFORE(glIsEnabled);
 	GLboolean ret = glIsEnabledp(cap);
 	error = glGetError();
-	AFTER(ret, APITYPE_CONTEXT, "", "x", (uint64_t)(cap));
+	AFTER('c', ret, APITYPE_CONTEXT, "", "x", (uint64_t)(cap));
 
 	return ret;
 }
@@ -938,7 +938,7 @@ GLboolean glIsFramebuffer(GLuint framebuffer) {
 	BEFORE(glIsFramebuffer);
 	GLboolean ret = glIsFramebufferp(framebuffer);
 	error = glGetError();
-	AFTER(ret, APITYPE_CONTEXT, "", "d", framebuffer);
+	AFTER('c', ret, APITYPE_CONTEXT, "", "d", framebuffer);
 
 	return ret;
 }
@@ -948,7 +948,7 @@ GLboolean glIsProgram(GLuint program) {
 	BEFORE(glIsProgram);
 	GLboolean ret = glIsProgramp(program);
 	error = glGetError();
-	AFTER(ret, APITYPE_CONTEXT, "", "d", program);
+	AFTER('c', ret, APITYPE_CONTEXT, "", "d", program);
 
 	return ret;
 }
@@ -958,7 +958,7 @@ GLboolean glIsRenderbuffer(GLuint renderbuffer) {
 	BEFORE(glIsRenderbuffer);
 	GLboolean ret = glIsRenderbufferp(renderbuffer);
 	error = glGetError();
-	AFTER(ret, APITYPE_CONTEXT, "", "d", renderbuffer);
+	AFTER('c', ret, APITYPE_CONTEXT, "", "d", renderbuffer);
 
 	return ret;
 }
@@ -968,7 +968,7 @@ GLboolean glIsShader(GLuint shader) {
 	BEFORE(glIsShader);
 	GLboolean ret = glIsShaderp(shader);
 	error = glGetError();
-	AFTER(ret, APITYPE_CONTEXT, "", "d", shader);
+	AFTER('c', ret, APITYPE_CONTEXT, "", "d", shader);
 
 	return ret;
 }
@@ -978,7 +978,7 @@ GLboolean glIsTexture(GLuint texture) {
 	BEFORE(glIsTexture);
 	GLboolean ret = glIsTexturep(texture);
 	error = glGetError();
-	AFTER(ret, APITYPE_CONTEXT, "", "d", texture);
+	AFTER('c', ret, APITYPE_CONTEXT, "", "d", texture);
 
 	return ret;
 }
@@ -992,7 +992,7 @@ void glLineWidth(GLfloat width) {
 	BEFORE(glLineWidth);
 	glLineWidthp(width);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "f", width);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "f", width);
 }
 
 void glLinkProgram(GLuint program) {
@@ -1033,7 +1033,7 @@ void glLinkProgram(GLuint program) {
 					type[0]);
 		}
 	}
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "d",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "d",
 			program);
 }
 
@@ -1046,7 +1046,7 @@ void glPixelStorei(GLenum pname, GLint param) {
 	BEFORE(glPixelStorei);
 	glPixelStoreip(pname, param);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
 	      (uint64_t)(pname), param);
 }
 
@@ -1055,7 +1055,7 @@ void glPolygonOffset(GLfloat factor, GLfloat units) {
 	BEFORE(glPolygonOffset);
 	glPolygonOffsetp(factor, units);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ff",
 			factor, units);
 }
 
@@ -1071,7 +1071,7 @@ void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height,
 	BEFORE(glReadPixels);
 	glReadPixelsp(x, y, width, height, format, type, data);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
 	      "ddddxx", x, y, width, height,
 	      (uint64_t)(format), (uint64_t)(type));
 }
@@ -1081,7 +1081,7 @@ void glReleaseShaderCompiler(void) {
 	BEFORE(glReleaseShaderCompiler);
 	glReleaseShaderCompilerp();
 	error = glGetError();
-	AFTER_NO_PARAM(NO_RETURN_VALUE, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "");
 }
 
 void glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width,
@@ -1090,7 +1090,7 @@ void glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width,
 	BEFORE(glRenderbufferStorage);
 	glRenderbufferStoragep(target, internalformat, width, height);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxdd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxdd",
 	      (uint64_t)(target), (uint64_t)(internalformat),
 	      width, height);
 }
@@ -1104,7 +1104,7 @@ void glSampleCoverage(GLclampf value, GLboolean invert) {
 	BEFORE(glSampleCoverage);
 	glSampleCoveragep(value, invert);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "fx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "fx",
 			value, (uint64_t)(invert));
 }
 
@@ -1113,7 +1113,7 @@ void glScissor(GLint x, GLint y, GLsizei width, GLsizei height) {
 	BEFORE(glScissor);
 	glScissorp(x, y, width, height);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
 			x, y, width, height);
 }
 
@@ -1125,7 +1125,7 @@ void glShaderBinary(GLsizei n, const GLuint *shaders, GLenum binaryformat,
 	BEFORE(glShaderBinary);
 	glShaderBinaryp(n, shaders, binaryformat, binary, length);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
 	      "dpxpd", n, voidp_to_uint64(shaders),
 	      (uint64_t)(binaryformat), voidp_to_uint64(binary), length);
 }
@@ -1142,11 +1142,11 @@ void glShaderSource(GLuint shader, GLsizei count, const char** string,
 		glGetShaderiv(shader, GL_SHADER_SOURCE_LENGTH, length);
 		char buf[length[0]];
 		glGetShaderSource(shader, length[0], NULL, buf);
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, buf,
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf,
 		      "ddpp", shader, count,
 		      voidp_to_uint64(string), voidp_to_uint64(length));
 	} else {
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
 		      "ddpp", shader, count,
 		      voidp_to_uint64(string), voidp_to_uint64(length));
 	}
@@ -1157,7 +1157,7 @@ void glStencilFunc(GLenum func, GLint ref, GLuint mask) {
 	BEFORE(glStencilFunc);
 	glStencilFuncp(func, ref, mask);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdd",
 	      (uint64_t)(func), ref, mask);
 }
 
@@ -1166,7 +1166,7 @@ void glStencilFuncSeparate(GLenum face, GLenum func, GLint ref, GLuint mask) {
 	BEFORE(glStencilFuncSeparate);
 	glStencilFuncSeparatep(face, func, ref, mask);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxdd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxdd",
 	      (uint64_t)(face), (uint64_t)(func), ref, mask);
 }
 
@@ -1175,7 +1175,7 @@ void glStencilMask(GLuint mask) {
 	BEFORE(glStencilMask);
 	glStencilMaskp(mask);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", mask);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", mask);
 }
 
 void glStencilMaskSeparate(GLenum face, GLuint mask) {
@@ -1183,7 +1183,7 @@ void glStencilMaskSeparate(GLenum face, GLuint mask) {
 	BEFORE(glStencilMaskSeparate);
 	glStencilMaskSeparatep(face, mask);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
 	      (uint64_t)(face), mask);
 }
 
@@ -1192,7 +1192,7 @@ void glStencilOp(GLenum sfail, GLenum dpfail, GLenum dppass) {
 	BEFORE(glStencilOp);
 	glStencilOpp(sfail, dpfail, dppass);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxx",
 	      (uint64_t)(sfail), (uint64_t)(dpfail),
 	      (uint64_t)(dppass));
 }
@@ -1203,7 +1203,7 @@ void glStencilOpSeparate(GLenum face, GLenum sfail, GLenum dpfail,
 	BEFORE(glStencilOpSeparate);
 	glStencilOpSeparatep(face, sfail, dpfail, dppass);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxx",
 	      (uint64_t)(face), (uint64_t)(sfail), (uint64_t)(dpfail),
 	      (uint64_t)(dppass));
 }
@@ -1221,7 +1221,7 @@ void glTexImage2D(GLenum target, GLint level, GLint internalformat,
 	glTexImage2Dp(target, level, internalformat, width, height, border, format,
 			type, data);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdddddxxp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdddddxxp",
 	      (uint64_t)(target), level, internalformat, width, height,
 	      border, (uint64_t)(format), (uint64_t)(type),
 	      voidp_to_uint64(data));
@@ -1232,7 +1232,7 @@ void glTexParameterf(GLenum target, GLenum pname, GLfloat param) {
 	BEFORE(glTexParameterf);
 	glTexParameterfp(target, pname, param);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxf",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxf",
 	      (uint64_t)(target), (uint64_t)(pname), param);
 }
 
@@ -1244,11 +1244,11 @@ void glTexParameterfv(GLenum target, GLenum pname, const GLfloat * params) {
 	if(error == GL_NO_ERROR) {
 		char param0[8];
 		sprintf(param0, "%x", (GLenum)params[0]);
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, param0, "xxp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, param0, "xxp",
 		      (uint64_t)(target), (uint64_t)(pname),
 		      voidp_to_uint64(params));
 	} else {
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxp",
 		      (uint64_t)(target), (uint64_t)(pname),
 		      voidp_to_uint64(params));
 	}
@@ -1259,7 +1259,7 @@ void glTexParameteri(GLenum target, GLenum pname, GLint param) {
 	BEFORE(glTexParameteri);
 	glTexParameterip(target, pname, param);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxx",
 	      (uint64_t)(target), (uint64_t)(pname),
 	      (uint64_t)(param));
 }
@@ -1272,11 +1272,11 @@ void glTexParameteriv(GLenum target, GLenum pname, const GLint * params) {
 	if(error == GL_NO_ERROR) {
 		char param0[8];
 		sprintf(param0, "%x", (GLenum)params[0]);
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, param0, "xxp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, param0, "xxp",
 		      (uint64_t)(target), (uint64_t)(pname),
 		      voidp_to_uint64(params));
 	} else {
-		AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxp",
 		      (uint64_t)(target),
 		      (uint64_t)(pname),
 		      voidp_to_uint64(params));
@@ -1292,7 +1292,7 @@ void glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
 	glTexImage2Dp(target, level, xoffset, yoffset, width, height, format, type,
 			data);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
 	      "xdddddxxp",
 	      (uint64_t)(target), level, xoffset, yoffset, width, height,
 	      (uint64_t)(format), (uint64_t)(type), voidp_to_uint64(data));
@@ -1307,7 +1307,7 @@ void glUniform1f(GLint location, GLfloat v0) {
 	BEFORE(glUniform1f);
 	glUniform1fp(location, v0);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "df",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "df",
 			location, v0);
 }
 
@@ -1316,7 +1316,7 @@ void glUniform2f(GLint location, GLfloat v0, GLfloat v1) {
 	BEFORE(glUniform2f);
 	glUniform2fp(location, v0, v1);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dff",
 			location, v0, v1);
 }
 
@@ -1325,7 +1325,7 @@ void glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
 	BEFORE(glUniform3f);
 	glUniform3fp(location, v0, v1, v2);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dfff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dfff",
 			location, v0, v1, v2);
 }
 
@@ -1335,7 +1335,7 @@ void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2,
 	BEFORE(glUniform4f);
 	glUniform4fp(location, v0, v1, v2, v3);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
 			"dffff", location, v0, v1, v2, v3);
 }
 
@@ -1344,7 +1344,7 @@ void glUniform1fv(GLint location, GLsizei count, const GLfloat *value) {
 	BEFORE(glUniform1fv);
 	glUniform1fvp(location, count, value);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
 	      location, count, voidp_to_uint64(value));
 }
 
@@ -1353,7 +1353,7 @@ void glUniform2fv(GLint location, GLsizei count, const GLfloat *value) {
 	BEFORE(glUniform2fv);
 	glUniform2fvp(location, count, value);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
 	      location, count, voidp_to_uint64(value));
 }
 
@@ -1362,7 +1362,7 @@ void glUniform3fv(GLint location, GLsizei count, const GLfloat *value) {
 	BEFORE(glUniform3fv);
 	glUniform3fvp(location, count, value);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
 	      location, count, voidp_to_uint64(value));
 }
 
@@ -1371,7 +1371,7 @@ void glUniform4fv(GLint location, GLsizei count, const GLfloat *value) {
 	BEFORE(glUniform4fv);
 	glUniform4fvp(location, count, value);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
 	      location, count, voidp_to_uint64(value));
 }
 
@@ -1380,7 +1380,7 @@ void glUniform1i(GLint location, GLint v0) {
 	BEFORE(glUniform1i);
 	glUniform1ip(location, v0);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
 			location, v0);
 }
 
@@ -1389,7 +1389,7 @@ void glUniform2i(GLint location, GLint v0, GLint v1) {
 	BEFORE(glUniform2i);
 	glUniform2ip(location, v0, v1);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddd",
 			location, v0, v1);
 }
 
@@ -1398,7 +1398,7 @@ void glUniform3i(GLint location, GLint v0, GLint v1, GLint v2) {
 	BEFORE(glUniform3i);
 	glUniform3ip(location, v0, v1, v2);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
 			location, v0, v1, v2);
 }
 
@@ -1407,7 +1407,7 @@ void glUniform4i(GLint location, GLint v0, GLint v1, GLint v2, GLint v3) {
 	BEFORE(glUniform4i);
 	glUniform4ip(location, v0, v1, v2, v3);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
 			"ddddd", location, v0, v1, v2, v3);
 }
 
@@ -1416,7 +1416,7 @@ void glUniform1iv(GLint location, GLsizei count, const GLint *value) {
 	BEFORE(glUniform1iv);
 	glUniform1ivp(location, count, value);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
 	      location, count, voidp_to_uint64(value));
 }
 
@@ -1425,7 +1425,7 @@ void glUniform2iv(GLint location, GLsizei count, const GLint *value) {
 	BEFORE(glUniform2iv);
 	glUniform2ivp(location, count, value);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
 	      location, count, voidp_to_uint64(value));
 }
 
@@ -1434,7 +1434,7 @@ void glUniform3iv(GLint location, GLsizei count, const GLint *value) {
 	BEFORE(glUniform3iv);
 	glUniform3ivp(location, count, value);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
 	      location, count, voidp_to_uint64(value));
 }
 
@@ -1444,7 +1444,7 @@ void glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose,
 	BEFORE(glUniformMatrix2fv);
 	glUniformMatrix2fvp(location, count, transpose, value);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxp",
 	      location, count, (uint64_t)(transpose), voidp_to_uint64(value));
 }
 
@@ -1454,7 +1454,7 @@ void glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose,
 	BEFORE(glUniformMatrix3fv);
 	glUniformMatrix3fvp(location, count, transpose, value);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxp",
 	      location, count, (uint64_t)(transpose), voidp_to_uint64(value));
 }
 
@@ -1464,7 +1464,7 @@ void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose,
 	BEFORE(glUniformMatrix4fv);
 	glUniformMatrix4fvp(location, count, transpose, value);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxp",
 	      location, count, (uint64_t)(transpose), voidp_to_uint64(value));
 }
 
@@ -1473,7 +1473,7 @@ void glUniform4iv(GLint location, GLsizei count, const GLint *value) {
 	BEFORE(glUniform4iv);
 	glUniform4ivp(location, count, value);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
 	      location, count, voidp_to_uint64(value));
 }
 
@@ -1482,7 +1482,7 @@ void glUseProgram(GLuint program) {
 	BEFORE(glUseProgram);
 	glUseProgramp(program);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d",
 			program);
 }
 
@@ -1495,7 +1495,7 @@ void glValidateProgram(GLuint program) {
 	BEFORE(glValidateProgram);
 	glValidateProgramp(program);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d",
 			program);
 }
 
@@ -1509,7 +1509,7 @@ void glVertexAttrib1f(GLuint index, GLfloat v0) {
 	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
 
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
 			"df", index, v0);
 }
 
@@ -1523,7 +1523,7 @@ void glVertexAttrib2f(GLuint index, GLfloat v0, GLfloat v1) {
 	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
 
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
 			"dff", index, v0, v1);
 }
 
@@ -1537,7 +1537,7 @@ void glVertexAttrib3f(GLuint index, GLfloat v0, GLfloat v1, GLfloat v2) {
 	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
 
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
 			"dfff", index, v0, v1, v2);
 }
 
@@ -1552,7 +1552,7 @@ void glVertexAttrib4f(GLuint index, GLfloat v0, GLfloat v1, GLfloat v2,
 	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
 
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
 			"dffff", index, v0, v1, v2, v3);
 }
 
@@ -1566,7 +1566,7 @@ void glVertexAttrib1fv(GLuint index, const GLfloat *v) {
 	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
 
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
 	      "dp", index, voidp_to_uint64(v));
 }
 
@@ -1580,7 +1580,7 @@ void glVertexAttrib2fv(GLuint index, const GLfloat *v) {
 	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
 
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
 	      "dp", index, voidp_to_uint64(v));
 }
 
@@ -1594,7 +1594,7 @@ void glVertexAttrib3fv(GLuint index, const GLfloat *v) {
 	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
 
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
 	      "dp", index, voidp_to_uint64(v));
 }
 
@@ -1607,7 +1607,7 @@ void glVertexAttrib4fv(GLuint index, const GLfloat *v) {
 	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
 
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
 	      "dp", index, voidp_to_uint64(v));
 }
 
@@ -1618,7 +1618,7 @@ void glVertexAttribPointer(GLuint index, GLint size, GLenum type,
 	BEFORE(glVertexAttribPointer);
 	glVertexAttribPointerp(index, size, type, normalized, stride, pointer);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxxdp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxxdp",
 	      index, size, (uint64_t)(type), (uint64_t)(normalized),
 	      stride, voidp_to_uint64(pointer));
 }
@@ -1628,6 +1628,6 @@ void glViewport(GLint x, GLint y, GLsizei width, GLsizei height) {
 	BEFORE(glViewport);
 	glViewportp(x, y, width, height);
 	error = glGetError();
-	AFTER(NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
 			x, y, width, height);
 }

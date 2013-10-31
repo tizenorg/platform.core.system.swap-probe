@@ -85,7 +85,7 @@
 			if(postBlockBegin(blockresult)) {										\
 				PREPARE_LOCAL_BUF(); \
 				PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
-				PACK_COMMON_END(RETVALUE, errno, blockresult)
+				PACK_COMMON_END('p', RETVALUE, errno, blockresult)
 
 
 //lib END Function
@@ -100,7 +100,7 @@
 		setProbePoint(&probeInfo);										\
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
-		PACK_COMMON_END(RETVALUE, errno, blockresult)
+		PACK_COMMON_END('p', RETVALUE, errno, blockresult)
 
 #define BEFORE_ORIGINAL_TIZEN_NET(FUNCNAME, FUNCTIONPOINTER)	\
 		DECLARE_VARIABLE_STANDARD_OSP_NET(FUNCNAME); 								\
@@ -156,7 +156,7 @@
 	if(postBlockBegin(blockresult)) {										\
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
-		PACK_COMMON_END(RETVALUE, errno, blockresult)
+		PACK_COMMON_END('p', RETVALUE, errno, blockresult)
 
 #define APPEND_NETWORK_LOG_BASIC(LCTYPE, APINAME)								\
 	log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",	\
@@ -167,14 +167,14 @@
 			if(postBlockBegin(blockresult)) {										\
 				PREPARE_LOCAL_BUF(); \
 				PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
-				PACK_COMMON_END(RETVALUE, errno, blockresult)
+				PACK_COMMON_END('p', RETVALUE, errno, blockresult)
 
 #define POST_PROBEBLOCK_TIZEN_FUNC_END_BEGIN(APINAME, LCTYPE, RETTYPE, RETVALUE, INPUTFORMAT, ...)	\
 	if(postBlockBegin(blockresult)) {										\
 		setProbePoint(&probeInfo);										\
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
-		PACK_COMMON_END(RETVALUE, errno, blockresult)
+		PACK_COMMON_END('p', RETVALUE, errno, blockresult)
 
 #define APPEND_LOG_TIZEN_RESULT(RETTYPE, RETVALUE)							\
 	__appendTypeLog(&log, 4, NULL, RETTYPE, RETVALUE, VT_INT, 0,		\

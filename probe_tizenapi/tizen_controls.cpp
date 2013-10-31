@@ -76,7 +76,7 @@ result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 					  API_ID_result_UiApp__AddFrame_const_Tizen__Ui__Controls__Frame__frame_,
 					  "p", voidp_to_uint64(&frame));
-			PACK_COMMON_END(ret, 0, 0);
+			PACK_COMMON_END('p', ret, 0, 0);
 			PACK_UICONTROL(parent);
 			PACK_UICONTROL(&frame);
 			FLUSH_LOCAL_BUF();
@@ -111,7 +111,7 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_result_UiApp__RemoveFrame_const_Tizen__Ui__Controls__Frame__frame_,
 				  "p", voidp_to_uint64(&frame));
-		PACK_COMMON_END(0, 0, 0);
+		PACK_COMMON_END('p', 0, 0, 0);
 		PACK_UICONTROL(parent);
 		PACK_UICONTROL(&frame);
 	}
@@ -123,7 +123,7 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 
 	if(bOption)
 	{
-		PACK_RETURN_END(ret);
+		PACK_RETURN_END('p', ret);
 	}
 
 	FLUSH_LOCAL_BUF();
@@ -174,7 +174,7 @@ void Control::SetName(const Tizen::Base::String &name)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_void_Control__SetName_const_Tizen__Base__String__name_,
 				  "p", voidp_to_uint64(&name));
-		PACK_COMMON_END(0, 0, 0);
+		PACK_COMMON_END('p', 0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(parent);
 		FLUSH_LOCAL_BUF();
@@ -229,7 +229,7 @@ result Container::AddControl(const Control &control)
 			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 					  API_ID_result_Container__AddControl_const_Control__control_,
 					  "p", voidp_to_uint64(&control));
-			PACK_COMMON_END(ret, 0, 0);
+			PACK_COMMON_END('p', ret, 0, 0);
 			PACK_UICONTROL(this);
 			PACK_UICONTROL(&control);
 			FLUSH_LOCAL_BUF();
@@ -287,7 +287,7 @@ result Container::AddControl(Control* control)
 			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 					  API_ID_result_Container__AddControl_Control__control_,
 					  "p", voidp_to_uint64(control));
-			PACK_COMMON_END(ret, 0, 0);
+			PACK_COMMON_END('p', ret, 0, 0);
 			PACK_UICONTROL(this);
 			PACK_UICONTROL(control);
 			FLUSH_LOCAL_BUF();
@@ -321,7 +321,7 @@ result Container::RemoveControl(const Control &control)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_result_Container__RemoveControl_const_Control__control_,
 				  "p", voidp_to_uint64(&control));
-		PACK_COMMON_END(0, 0, 0);
+		PACK_COMMON_END('p', 0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(&control);
 	}
@@ -333,7 +333,7 @@ result Container::RemoveControl(const Control &control)
 
 	if(bOption)
 	{
-		PACK_RETURN_END(ret);
+		PACK_RETURN_END('p', ret);
 	}
 
 	FLUSH_LOCAL_BUF();
@@ -366,7 +366,7 @@ result Container::RemoveControl(Control* control)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_result_Container__RemoveControl_Control__control_,
 				  "p", voidp_to_uint64(control));
-		PACK_COMMON_END(0, 0, 0);
+		PACK_COMMON_END('p', 0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(control);
 	}
@@ -378,7 +378,7 @@ result Container::RemoveControl(Control* control)
 
 	if(bOption)
 	{
-		PACK_RETURN_END(ret);
+		PACK_RETURN_END('p', ret);
 	}
 
 	FLUSH_LOCAL_BUF();
@@ -412,7 +412,7 @@ result Container::RemoveControl(int index)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_result_Container__RemoveControl_int_index_,
 				  "d", index);
-		PACK_COMMON_END(0, 0, 0);
+		PACK_COMMON_END('p', 0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(pcontrol);
 	}
@@ -424,7 +424,7 @@ result Container::RemoveControl(int index)
 
 	if(bOption)
 	{
-		PACK_RETURN_END(ret);
+		PACK_RETURN_END('p', ret);
 	}
 
 	FLUSH_LOCAL_BUF();
@@ -452,7 +452,7 @@ void Container::RemoveAllControls(void)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_void_Container__RemoveAllControls_void_,
 				  "", 0);
-		PACK_COMMON_END(0, 0, 0);
+		PACK_COMMON_END('p', 0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(pcontrol);
 		FLUSH_LOCAL_BUF();

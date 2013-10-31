@@ -42,13 +42,13 @@ void unregister_orientation_event_listener(Ecore_Event_Handler* handler);
 
 app_event_callback_s gAppCallback;
 
-#define PACK_ORIGINAL_APPFWCYCLE(API_ID, RVAL, INPUTFORMAT, ...)		\
+#define PACK_ORIGINAL_APPFWCYCLE(API_ID, RTYPE, RVAL, INPUTFORMAT, ...)		\
 	newerrno = errno;																		\
 	do {																					\
 		if(postBlockBegin(blockresult)) {													\
 			PREPARE_LOCAL_BUF();															\
 			PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-			PACK_COMMON_END(RVAL, newerrno, blockresult);									\
+			PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);									\
 			FLUSH_LOCAL_BUF();																\
 			postBlockEnd();																	\
 		}																					\
@@ -67,7 +67,7 @@ static bool _dalc_app_create(void* user_data)
 
 	bret = gAppCallback.create(user_data);
 
-	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_create, bret, "p",
+	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_create, 'b', bret, "p",
 				 voidp_to_uint64(user_data));
 
 	return bret;
@@ -82,7 +82,7 @@ static void _dalc_app_terminate(void* user_data)
 
 	gAppCallback.terminate(user_data);
 
-	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_terminate, 0, "p",
+	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_terminate, 'v', 0, "p",
 				 voidp_to_uint64(user_data));
 }
 
@@ -95,7 +95,7 @@ static void _dalc_app_pause(void* user_data)
 
 	gAppCallback.pause(user_data);
 
-	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_pause, 0, "p",
+	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_pause, 'v', 0, "p",
 				 voidp_to_uint64(user_data));
 }
 
@@ -108,7 +108,7 @@ static void _dalc_app_resume(void* user_data)
 
 	gAppCallback.resume(user_data);
 
-	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_resume, 0, "p",
+	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_resume, 'v', 0, "p",
 				 voidp_to_uint64(user_data));
 }
 
@@ -121,7 +121,7 @@ static void _dalc_app_service(service_h service, void* user_data)
 
 	gAppCallback.service(service, user_data);
 
-	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_service, 0, "dp",
+	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_service, 'v', 0, "dp",
 				 (unsigned int)service,
 				 voidp_to_uint64(user_data));
 }

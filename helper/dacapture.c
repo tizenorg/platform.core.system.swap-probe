@@ -356,7 +356,7 @@ int captureScreen()
 
 					PREPARE_LOCAL_BUF();
 					PACK_COMMON_BEGIN(MSG_PROBE_SCREENSHOT, API_ID_captureScreen, "", 0);
-					PACK_COMMON_END(0, 0, 0);
+					PACK_COMMON_END('d', 0, 0, 0);
 					PACK_SCREENSHOT(dstpath, getOrientation());
 					FLUSH_LOCAL_BUF();
 				}

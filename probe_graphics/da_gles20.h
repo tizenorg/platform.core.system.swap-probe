@@ -83,7 +83,7 @@ char contextValue[256];
 			sprintf(maxValString, "%d,%d", maxVal[0], maxVal[1]);		\
 			PREPARE_LOCAL_BUF();						\
 			PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, "", 0);		\
-			PACK_COMMON_END(1, 0, 0);					\
+			PACK_COMMON_END('p', 1, 0, 0);					\
 			PACK_GL_ADD(APITYPE_INIT, 0, maxValString);			\
 			FLUSH_LOCAL_BUF();						\
 		}							\
@@ -161,17 +161,17 @@ char contextValue[256];
 	}								\
 	PRE_PROBEBLOCK()
 
-#define AFTER(RET_VAL, APITYPE, CONTEXT_VAL, INPUTFORMAT, ...)	\
+#define AFTER(RET_TYPE, RET_VAL, APITYPE, CONTEXT_VAL, INPUTFORMAT, ...)	\
 	POST_PACK_PROBEBLOCK_BEGIN();						\
 	PREPARE_LOCAL_BUF();							\
-	PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
-	PACK_COMMON_END(RET_VAL, error, blockresult);					\
+	PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, INPUTFORMAT, __VA_ARGS__);	\
+	PACK_COMMON_END(RET_TYPE, RET_VAL, error, blockresult);			\
 	PACK_GL_ADD(APITYPE, get_current_nsec() - start_nsec, CONTEXT_VAL);	\
 	FLUSH_LOCAL_BUF();							\
 	POST_PACK_PROBEBLOCK_END()
 
-#define AFTER_NO_PARAM(RETVAL, APITYPE, CONTEXTVALUE) \
-		AFTER(RETVAL, APITYPE, CONTEXTVALUE, "", 0)
+#define AFTER_NO_PARAM(RET_TYPE, RETVAL, APITYPE, CONTEXTVALUE) \
+		AFTER(RET_TYPE, RETVAL, APITYPE, CONTEXTVALUE, "", 0)
 
 #endif /* DA_GLES20_H_ */
 

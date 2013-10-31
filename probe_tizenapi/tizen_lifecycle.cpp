@@ -109,7 +109,7 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 			  API_ID_result_UiApp__Execute_UiAppInstanceFactory_pUiAppFactory__const_IList__pArguments_,
 			  "pp", (uint64_t)(pUiAppFactory),
 			  voidp_to_uint64(pArguments));
-	PACK_COMMON_END(ret, 0, 0);
+	PACK_COMMON_END('p', ret, 0, 0);
 	FLUSH_LOCAL_BUF();
 
 	unregister_orientation_event_listener(handler);
@@ -133,7 +133,7 @@ void _AppImpl::OnTerminate(void* user_data)
 	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
 			  API_ID_void__AppImpl__OnTerminate_void__user_data_,
 			  "p", voidp_to_uint64(user_data));
-	PACK_COMMON_END(0, 0, 0);
+	PACK_COMMON_END('p', 0, 0, 0);
 	FLUSH_LOCAL_BUF();
 
 	probeBlockEnd();
@@ -173,7 +173,7 @@ void _AppInfo::SetAppState(AppState appState)
 		PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
 				  API_ID_void__AppInfo__SetAppState_AppState_appState_,
 				  "p", (uint64_t)(appState));
-		PACK_COMMON_END(0, 0, 0);
+		PACK_COMMON_END('p', 0, 0, 0);
 		FLUSH_LOCAL_BUF();
 	}
 	probeBlockEnd();
@@ -197,7 +197,7 @@ void _UiAppImpl::OnBackground(void)
 	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
 			  API_ID_void__UiAppImpl__OnBackground_void_,
 			  "", 0);
-	PACK_COMMON_END(0, 0, 0);
+	PACK_COMMON_END('p', 0, 0, 0);
 	FLUSH_LOCAL_BUF();
 
 	probeBlockEnd();
@@ -220,7 +220,7 @@ void _UiAppImpl::OnForeground(void)
 	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
 			  API_ID_void__UiAppImpl__OnForeground_void_,
 			  "", 0);
-	PACK_COMMON_END(0, 0, 0);
+	PACK_COMMON_END('p', 0, 0, 0);
 	FLUSH_LOCAL_BUF();
 
 	SCREENSHOT_UNLOCK();

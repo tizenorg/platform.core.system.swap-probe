@@ -137,7 +137,7 @@ void* _chart_timerThread(void* data)
 			PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM,
 					  API_ID__chart_timerThread,
 					  "", 0);
-			PACK_COMMON_END(0, 0, 2);
+			PACK_COMMON_END('p', 0, 0, 2);
 			PACK_CUSTOM(cur->series_handle, 0, "", 0, value);
 			FLUSH_LOCAL_BUF();
 
@@ -450,7 +450,7 @@ void da_mark(chart_color color, char* mark_text)
 	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM,
 			  API_ID_da_mark,
 			  "dp", color, voidp_to_uint64(mark_text));
-	PACK_COMMON_END(0, 0, 2);
+	PACK_COMMON_END('v', 0, 0, 2);
 	PACK_CUSTOM(0, 0, mark_text, color, 0.0f);
 	FLUSH_LOCAL_BUF();
 
@@ -478,7 +478,7 @@ da_handle da_create_chart(char* chart_name)
 	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM,
 			  API_ID_da_create_chart,
 			  "p", voidp_to_uint64(chart_name));
-	PACK_COMMON_END(ret, 0, 2);
+	PACK_COMMON_END('d', ret, 0, 2);
 	PACK_CUSTOM(0, 0, chart_name, 0, 0.0f);
 	FLUSH_LOCAL_BUF();
 
@@ -515,7 +515,7 @@ da_handle da_create_series(da_handle charthandle, char* seriesname,
 			  API_ID_da_create_series,
 			  "dpdd",  charthandle, voidp_to_uint64(seriesname),
 			  type, color);
-	PACK_COMMON_END(ret, 0, 2);
+	PACK_COMMON_END('d', ret, 0, 2);
 	PACK_CUSTOM(charthandle, type, seriesname, color, 0.0f);
 	FLUSH_LOCAL_BUF();
 
@@ -589,7 +589,7 @@ void da_log(da_handle series_handle, float uservalue)
 	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM,
 			  API_ID_da_log,
 			  "df", series_handle, uservalue);
-	PACK_COMMON_END(0, 0, 2);
+	PACK_COMMON_END('v', 0, 0, 2);
 	PACK_CUSTOM(series_handle, 0, "", 0, uservalue);
 	FLUSH_LOCAL_BUF();
 

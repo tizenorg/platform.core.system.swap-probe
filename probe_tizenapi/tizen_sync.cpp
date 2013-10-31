@@ -88,7 +88,7 @@ result Mutex::Create(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Mutex__Create_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MUTEX, SYNC_API_NEW);
 		FLUSH_LOCAL_BUF();
 
@@ -144,7 +144,7 @@ result Mutex::Create(const Tizen::Base::String& name) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Mutex__Create_const_Tizen__Base__String__name_,
 				  "s", temp);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MUTEX, SYNC_API_NEW);
 		FLUSH_LOCAL_BUF();
 
@@ -197,7 +197,7 @@ result Mutex::Release(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Mutex__Release_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MUTEX, SYNC_API_RELEASE);
 		FLUSH_LOCAL_BUF();
 
@@ -244,7 +244,7 @@ result Mutex::Acquire(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Mutex__Acquire_void_,
 				  "", 0);
-		PACK_COMMON_END(0, 0, blockresult);
+		PACK_COMMON_END('p', 0, 0, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
 		FLUSH_LOCAL_BUF();
 
@@ -260,7 +260,7 @@ result Mutex::Acquire(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Mutex__Acquire_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
 		FLUSH_LOCAL_BUF();
 
@@ -313,7 +313,7 @@ result Mutex::TryToAcquire(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Mutex__TryToAcquire_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MUTEX, SYNC_API_TRY_ACQUIRE);
 		FLUSH_LOCAL_BUF();
 
@@ -367,7 +367,7 @@ result Semaphore::Create(int count) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Semaphore__Create_int_count_,
 				  "d", count);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_SEMAPHORE, SYNC_API_NEW);
 		FLUSH_LOCAL_BUF();
 
@@ -423,7 +423,7 @@ result Semaphore::Create(const Tizen::Base::String& name, int count) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Semaphore__Create_const_Tizen__Base__String__name__int_count_,
 				  "sd", temp, count);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_SEMAPHORE, SYNC_API_NEW);
 		FLUSH_LOCAL_BUF();
 
@@ -471,7 +471,7 @@ result Semaphore::Acquire(long timeout) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Semaphore__Acquire_long_timeout_,
 				  "x", (uint64_t)(timeout));
-		PACK_COMMON_END(0, 0, blockresult);
+		PACK_COMMON_END('p', 0, 0, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_START);
 		FLUSH_LOCAL_BUF();
 
@@ -487,7 +487,7 @@ result Semaphore::Acquire(long timeout) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Semaphore__Acquire_long_timeout_,
 				  "x", (uint64_t)(timeout));
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_END);
 		FLUSH_LOCAL_BUF();
 
@@ -540,7 +540,7 @@ result Semaphore::TryToAcquire(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Semaphore__TryToAcquire_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_SEMAPHORE, SYNC_API_TRY_ACQUIRE);
 		FLUSH_LOCAL_BUF();
 
@@ -593,7 +593,7 @@ result Semaphore::Release(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Semaphore__Release_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_SEMAPHORE, SYNC_API_RELEASE);
 		FLUSH_LOCAL_BUF();
 
@@ -646,7 +646,7 @@ result Monitor::Construct(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Monitor__Construct_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MONITOR, SYNC_API_NEW);
 		FLUSH_LOCAL_BUF();
 
@@ -693,7 +693,7 @@ result Monitor::Enter(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Monitor__Enter_void_,
 				  "", 0);
-		PACK_COMMON_END(0, 0, blockresult);
+		PACK_COMMON_END('p', 0, 0, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MONITOR, SYNC_API_ACQUIRE_WAIT_START);
 		FLUSH_LOCAL_BUF();
 
@@ -709,7 +709,7 @@ result Monitor::Enter(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Monitor__Enter_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MONITOR, SYNC_API_ACQUIRE_WAIT_END);
 		FLUSH_LOCAL_BUF();
 
@@ -762,7 +762,7 @@ result Monitor::Exit(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				   API_ID_result_Monitor__Exit_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MONITOR, SYNC_API_RELEASE);
 		FLUSH_LOCAL_BUF();
 
@@ -809,7 +809,7 @@ result Monitor::Wait(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Monitor__Wait_void_,
 				  "", 0);
-		PACK_COMMON_END(0, 0, blockresult);
+		PACK_COMMON_END('p', 0, 0, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MONITOR, SYNC_API_COND_WAIT_START);
 		FLUSH_LOCAL_BUF();
 
@@ -825,7 +825,7 @@ result Monitor::Wait(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Monitor__Wait_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MONITOR, SYNC_API_COND_WAIT_END);
 		FLUSH_LOCAL_BUF();
 
@@ -878,7 +878,7 @@ result Monitor::Notify(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Monitor__Notify_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MONITOR, SYNC_API_NOTIFY);
 		FLUSH_LOCAL_BUF();
 
@@ -931,7 +931,7 @@ result Monitor::NotifyAll(void) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Monitor__NotifyAll_void_,
 				  "", 0);
-		PACK_COMMON_END(ret, ret, blockresult);
+		PACK_COMMON_END('p', ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_MONITOR, SYNC_API_NOTIFY_ALL);
 		FLUSH_LOCAL_BUF();
 
