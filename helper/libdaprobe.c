@@ -66,6 +66,7 @@
 
 __thread int		gProbeBlockCount = 0;
 __thread int		gProbeDepth = 0;
+pid_t gPid = -1;
 __thread pid_t		gTid = -1;
 
 int			g_timerfd = 0;
@@ -182,6 +183,14 @@ static int determineCaller(char* tracestring)
 #endif
 		return 0;
 	}
+}
+
+// return current process id
+static pid_t _getpid()
+{
+	if (gPid == -1)
+		gPid = getpid();
+	return gPid;
 }
 
 // return current thread id
@@ -761,7 +770,7 @@ bool setProbePoint(probeInfo_t* iProbe)
 	real_pthread_mutex_unlock(&(gTraceInfo.index.eventMutex));
 
 	iProbe->currentTime = getCurrentTime();
-	iProbe->pID = getpid();
+	iProbe->pID = _getpid();
 	iProbe->tID = _gettid();
 	iProbe->callDepth = gProbeDepth;
 
