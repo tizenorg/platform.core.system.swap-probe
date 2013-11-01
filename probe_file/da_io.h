@@ -174,8 +174,8 @@ static inline bool stat_regular_or_socket_p(struct stat *buf)
 		PACK_COMMON_END(0, 0, blockresult);						\
 		PACK_RESOURCE(0, FD, APITYPE, _filesize, _filepath);				\
 		FLUSH_LOCAL_BUF();								\
-		PRE_PROBEBLOCK_END();								\
-	}
+	}								\
+	PRE_PROBEBLOCK_END();
 
 
 #define AFTER_ORIGINAL_START_END_FD(API_ID, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)		\
