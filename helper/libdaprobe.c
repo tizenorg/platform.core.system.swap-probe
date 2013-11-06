@@ -342,11 +342,18 @@ static int init_timerfd(void)
 	return timer;
 }
 
+static uint64_t get_app_start_time(void)
+{
+	enum {nsecs_in_sec = 1000 * 1000};
+	struct timeval time;
+
+	gettimeofday(&time, NULL);
+	return nsecs_in_sec * (uint64_t) time.tv_sec + time.tv_usec;
+}
+
+
 void __attribute__((constructor)) _init_probe()
 {
-	struct timeval ttime;
-
-
 	probeBlockStart();
 
 	initialize_hash_table();
@@ -357,10 +364,7 @@ void __attribute__((constructor)) _init_probe()
 
 	getExecutableMappingAddress();
 
-	// get app start time
-	gettimeofday(&ttime, NULL);
-	gTraceInfo.app.startTime = (uint64_t)ttime.tv_sec * 1000 * 1000
-		+ ttime.tv_usec;
+	gTraceInfo.app.startTime = get_app_start_time();
 
 	// create socket for communication with da_daemon
 	if (createSocket() == 0) {
