@@ -351,6 +351,15 @@ static uint64_t get_app_start_time(void)
 	return nsecs_in_sec * (uint64_t) time.tv_sec + time.tv_usec;
 }
 
+static int create_recv_thread()
+{
+	int err = pthread_create(&g_recvthread_id, NULL, recvThread, NULL);
+
+	if (err)
+		PRINTMSG("failed to crate recv thread\n");
+
+	return err;
+}
 
 void __attribute__((constructor)) _init_probe()
 {
@@ -369,18 +378,10 @@ void __attribute__((constructor)) _init_probe()
 	// create socket for communication with da_daemon
 	if (createSocket() == 0) {
 		g_timerfd = init_timerfd();
-
-		// create recv Thread
-		if(pthread_create(&g_recvthread_id, NULL, recvThread, NULL) < 0)	// thread creation failed
-		{
-			PRINTMSG("failed to crate recv thread\n");
-		}
+		create_recv_thread();
 		update_heap_memory_size(true, 0);
 	}
-	else
-	{
 
-	}
 
 	PRINTMSG("dynamic analyzer probe helper so loading...\n");
 
