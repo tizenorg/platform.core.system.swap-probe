@@ -273,8 +273,9 @@ static void *recvThread(void __unused * data)
 
 				log.data[log.length] = '\0';
 
-				if(log.type == MSG_CONFIG)
-				{
+				if (log.type == MSG_CAPTURE_SCREEN) {
+					captureScreen();
+				} else if (log.type == MSG_CONFIG) {
 					_configure(log.data);
 				}
 				else if(log.type == MSG_STOP)

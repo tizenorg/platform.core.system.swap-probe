@@ -177,7 +177,8 @@ enum MessageType
 	MSG_ALLOC = 10,
 	MSG_ERROR = 11,
 	MSG_STOP = 101,
-	MSG_CONFIG = 103
+	MSG_CONFIG = 103,
+	MSG_CAPTURE_SCREEN= 108
 };
 
 enum DaOptions

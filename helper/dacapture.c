@@ -31,10 +31,11 @@
  */
 
 #include <stdlib.h>		// for system
-#include <sys/types.h>	// for stat, getpid
-#include <sys/stat.h>	// fot stat, chmod
+#include <sys/types.h>		// for stat, getpid
+#include <sys/stat.h>		// fot stat, chmod
 #include <unistd.h>		// fot stat, getpid
-#include <sys/shm.h>	// for shmget, shmat
+#include <sys/shm.h>		// for shmget, shmat
+#include <pthread.h>		// for mutex
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -314,6 +315,9 @@ int captureScreen()
 	screenshot_data sdata;
 	probeInfo_t	probeInfo;
 	int ret = 0;
+	static pthread_mutex_t captureScreenLock = PTHREAD_MUTEX_INITIALIZER;
+
+	pthread_mutex_lock(&captureScreenLock);
 
 	probeBlockStart();
 
@@ -387,6 +391,7 @@ int captureScreen()
 
 	probeBlockEnd();
 
+	pthread_mutex_unlock(&captureScreenLock);
 	return ret;
 }
 
