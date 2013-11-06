@@ -315,11 +315,37 @@ static void *recvThread(void __unused * data)
 /*****************************************************************************
  * initialize / finalize function
  *****************************************************************************/
+static int init_timerfd(void)
+{
+	const struct timespec interval = {
+		.tv_sec = 0,
+		.tv_nsec = TIMERFD_INTERVAL
+	};
+	const struct itimerspec ctime = {
+		.it_interval = interval,
+		.it_value = interval
+	};
+
+	int timer = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
+
+	if (timer == -1) {
+		PRINTMSG("failed to create timerdf\n");
+		return -1;
+	}
+
+	if (timerfd_settime(timer, 0, &ctime, NULL) != 0) {
+		PRINTMSG("failed to set timerfd\n");
+		close(timer);
+		return -1;
+	}
+
+	return timer;
+}
 
 void __attribute__((constructor)) _init_probe()
 {
 	struct timeval ttime;
-	struct itimerspec ctime;
+
 
 	probeBlockStart();
 
@@ -337,27 +363,8 @@ void __attribute__((constructor)) _init_probe()
 		+ ttime.tv_usec;
 
 	// create socket for communication with da_daemon
-	if(createSocket() == 0)
-	{
-		// create timerfd
-		g_timerfd = timerfd_create(CLOCK_REALTIME, TFD_CLOEXEC);
-		if(g_timerfd > 0)
-		{
-			ctime.it_value.tv_sec = 0;
-			ctime.it_value.tv_nsec = TIMERFD_INTERVAL;
-			ctime.it_interval.tv_sec = 0;
-			ctime.it_interval.tv_nsec = TIMERFD_INTERVAL;
-			if(0 > timerfd_settime(g_timerfd, 0, &ctime, NULL))
-			{
-				PRINTMSG("failed to set timerfd\n");
-				close(g_timerfd);
-				g_timerfd = 0;
-			}
-		}
-		else
-		{
-			PRINTMSG("failed to create timerdf\n");
-		}
+	if (createSocket() == 0) {
+		g_timerfd = init_timerfd();
 
 		// create recv Thread
 		if(pthread_create(&g_recvthread_id, NULL, recvThread, NULL) < 0)	// thread creation failed
