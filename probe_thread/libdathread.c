@@ -265,13 +265,9 @@ pthread_t pthread_self(void)
 	ret_pthr = pthread_selfp();
 
 	newerrno = errno;
-	if(postBlockBegin(blockresult)) {
 
-		AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_self,
-					   ret_pthr, ret_pthr, THREAD_API_OTHER, "", 0);
-
-		postBlockEnd();
-	}
+	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_self,
+				   ret_pthr, ret_pthr, THREAD_API_OTHER, "", 0);
 
 	return ret_pthr;
 }
