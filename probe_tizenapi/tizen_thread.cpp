@@ -168,13 +168,13 @@ _ThreadImpl::ThreadProc(void* params) {
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
+		probingEnd();
 	}
 	// all probe should be reachable inside thread start_routine (user implemented Thread::Run)
-	probingEnd();
 	(ThreadProcp)(params);
-	probingStart();
 	//
 	if (postBlockBegin(blockresult)) {
+		probingStart();
 		setProbePoint(&probeInfo);
 
 		_ThreadImpl* pSelf =(_ThreadImpl*)params;
