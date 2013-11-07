@@ -48,163 +48,159 @@
 
 static enum DaOptions _sopt = OPT_ALLOC;
 
-static void* (*saved_malloc_hook)(size_t, const void*);
-static void* malloc_hook(size_t, const void*);
-static void* (*saved_realloc_hook)(void*, size_t, const void*);
-static void* realloc_hook(void*, size_t, const void*);
-static void (*saved_free_hook)(void*, const void*);
-static void free_hook(void*, const void*);
+static void *rtdl_next(const char *symname)
+{
+	void *symbol;
 
-static void install_memory_hooks()
-{
-  __malloc_hook = malloc_hook;
-  __realloc_hook = realloc_hook;
-  __free_hook = free_hook;
-}
-static void teardown_memory_hooks()
-{
-  __malloc_hook = saved_malloc_hook;
-  __realloc_hook = saved_realloc_hook;
-  __free_hook = saved_free_hook;
+	probeBlockStart();
+
+	symbol = dlsym(RTLD_NEXT, symname);
+	if (symbol == NULL || dlerror() != NULL) {
+		fprintf(stderr, "dlsym failed <%s>\n", symname);
+		exit(41);
+	}
+
+	probeBlockEnd();
+
+	return symbol;
 }
 
-void memory_initialize_hook(void)
+static void rtdl_next_set_once(void **symbol, const char *symname)
 {
-  saved_malloc_hook = __malloc_hook;
-  saved_realloc_hook = __realloc_hook;
-  saved_free_hook = __free_hook;
-  install_memory_hooks();
+	if (*symbol)
+		return;
+	*symbol = rtdl_next(symname);
 }
+#define rtdl_next_current_set_once(symbol) \
+	rtdl_next_set_once((void **)(symbol), __func__)
 
-static void *malloc_hook(size_t size, const void* caller)
+void *malloc(size_t size)
 {
+	static void* (*mallocp)(size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	teardown_memory_hooks();
+	rtdl_next_current_set_once(&mallocp);
+
 	PRE_PROBEBLOCK();
 
-	pret = malloc(size);
+	pret = (*mallocp)(size);
 
 	if(pret != NULL && gProbeBlockCount == 0)
-	{
-		add_memory_hash(pret, size, MEMTYPE_ALLOC, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
-	}
+		add_memory_hash(pret, size, MEMTYPE_ALLOC,
+				blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
+
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
-			  API_ID_malloc,
-			  "xp", size, caller);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_malloc,
+			  "x", (int64_t) size);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 
 	POST_PACK_PROBEBLOCK_END();
 
-	install_memory_hooks();
-
 	return pret;
 }
 
-static void free_hook(void *ptr, const void *caller)
+void free(void *ptr)
 {
+	static void (*freep)(void *);
 	DECLARE_VARIABLE_STANDARD;
 
-	teardown_memory_hooks();
+	rtdl_next_current_set_once(&freep);
 
 	PRE_PROBEBLOCK();
 
 	if(ptr != NULL && gProbeBlockCount == 0)
-	{
 		del_memory_hash(ptr, MEMTYPE_FREE, NULL);
-	}
 
-	free(ptr);
+	(*freep)(ptr);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
-			  API_ID_free,
-			  "pp", ptr, caller);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_free, 
+			  "p", (int64_t)(int) ptr);
 	PACK_COMMON_END(0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
 
 	POST_PACK_PROBEBLOCK_END();
-
-	install_memory_hooks();
 }
 
-static void* realloc_hook(void *memblock, size_t size, const void* caller)
+void *realloc(void *memblock, size_t size)
 {
+	static void* (*reallocp)(void*, size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	teardown_memory_hooks();
-
+	rtdl_next_current_set_once(&reallocp);
 	PRE_PROBEBLOCK();
 
 	if(memblock != NULL && gProbeBlockCount == 0)
-	{
 		del_memory_hash(memblock, MEMTYPE_FREE, NULL);
-	}
 
-	pret = realloc(memblock, size);
+	pret = (*reallocp)(memblock, size);
 
 	if(pret != NULL && gProbeBlockCount == 0)
-	{
-		add_memory_hash(pret, size, MEMTYPE_ALLOC, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
-	}
+		add_memory_hash(pret, size, MEMTYPE_ALLOC,
+				blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
-			  API_ID_realloc,
-			  "pxp", memblock, size, caller);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_realloc,
+			  "px", (uint64_t)(int) memblock, (uint64_t) size);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 
 	POST_PACK_PROBEBLOCK_END();
 
-	install_memory_hooks();
-
 	return pret;
 }
 
-static inline void adhoc_bzero(char *p, size_t size)
+
+void *temp_calloc(size_t nelem, size_t elsize)
 {
-	unsigned int index;
-	for (index = 0; index != size; index++)
-		p[index] = '\0';
+	/* Magic number, but somewhy it is sufficent */
+	static char extra_mem[20] = {0};
+	return (nelem * elsize > sizeof(extra_mem))
+		? extra_mem
+		: NULL;
 }
 
 void *calloc(size_t nelem, size_t elsize)
 {
+	static void* (*callocp)(size_t, size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
-	size_t size = nelem * elsize;
+
+	if (!callocp) {
+		/**
+		 * Calloc is called by `dlsym`, so we provide small amount
+		 * of static memory via `temp_calloc`.
+		 */
+		callocp = temp_calloc;
+		callocp = rtdl_next(__func__);
+	}
+
 	PRE_PROBEBLOCK();
 
-	pret = (size < elsize) ? NULL : malloc(size);
-	if (pret) /* `memset' somewhy deadloops */
-		adhoc_bzero(pret, nelem * elsize);
+	pret = (*callocp)(nelem, elsize);
 
 	if(pret != NULL && gProbeBlockCount == 0)
-	{
-		add_memory_hash(pret, nelem * elsize, MEMTYPE_ALLOC, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
-    }
+		add_memory_hash(pret, nelem * elsize, MEMTYPE_ALLOC,
+				blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
-			  API_ID_calloc,
-			  "xx", nelem, elsize);
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_calloc,
+			  "xx", (uint64_t)nelem, (uint64_t)elsize);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(nelem * elsize, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();

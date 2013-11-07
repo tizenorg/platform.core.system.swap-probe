@@ -393,9 +393,6 @@ static void remove_from_callback_list(da_handle charthandle, da_handle series_ha
 // constructor and destructor functions
 // =====================================================================
 
-void memory_initialize_hook(void);
-void (*__malloc_initialize_hook) (void) = memory_initialize_hook;
-
 void __attribute__((constructor)) _init_lib()
 {
 	probeBlockStart();
