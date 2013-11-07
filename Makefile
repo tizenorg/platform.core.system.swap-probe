@@ -1,28 +1,68 @@
-CURDIR = `pwd`
 INSTALLDIR = usr/lib
 
-DUMMY_VERSION = 0.0.1
+## Since include directives do not impose additional dependencies, we can make
+## Makefile more clear, simply putting all includes we ever need in single
+## variable. Keep it alphabetic, please.
 
-INC_COMMON = -I./include \
-			 -I./probe_thread \
-			 -I/usr/include/system \
-			 -I/usr/include/appfw \
-			 -I/usr/include/ecore-1 \
-			 -I/usr/include/evas-1 \
-			 -I/usr/include/eina-1 \
-			 -I/usr/include/eina-1/eina \
-			 -I/usr/include/elementary-1 \
-			 -I/usr/include/eet-1 \
-			 -I/usr/include/edje-1 \
-			 -I/usr/include/efreet-1 \
-			 -I/usr/include/ethumb-1 \
-			 -I/usr/include/e_dbus-1 \
-			 -I/usr/include/dbus-1.0 \
-			 -I/usr/lib/dbus-1.0/include
-INC_CAPI = $(INC_COMMON) #-I/usr/include/vconf -I/usr/include/pixman-1
-INC_TIZEN = $(INC_COMMON) -I/usr/include/osp
+INCLUDE_CPPFLAGS =				\
+		-I./include			\
+		-I./probe_thread		\
+		-I/usr/include/appfw		\
+		-I/usr/include/dbus-1.0		\
+		-I/usr/include/e_dbus-1		\
+		-I/usr/include/ecore-1		\
+		-I/usr/include/edje-1		\
+		-I/usr/include/eet-1		\
+		-I/usr/include/efreet-1		\
+		-I/usr/include/eina-1		\
+		-I/usr/include/eina-1/eina	\
+		-I/usr/include/elementary-1	\
+		-I/usr/include/ethumb-1		\
+		-I/usr/include/evas-1		\
+		-I/usr/include/osp		\
+		-I/usr/include/pixman-1		\
+		-I/usr/include/system		\
+		-I/usr/include/vconf		\
+		-I/usr/lib/dbus-1.0/include	\
 
-UTILITY_SRCS :=				\
+WARN_CFLAGS = 				\
+		-Wall			\
+		-funwind-tables		\
+		-fomit-frame-pointer	\
+		-Xlinker		\
+		--no-undefined		\
+		-Werror			\
+		-Wextra			\
+		-O2			\
+		-Wwrite-strings		\
+		-Wlogical-op		\
+		-Wpacked		\
+		-Winline		\
+		-isystem /usr/include/osp
+
+## Since linking unneeded libraries bloats output of ldd(1), this variable
+## holds search paths and common libraries.
+
+LDFLAGS = -shared -L/usr/lib/osp  	\
+	-lX11				\
+	-lXext				\
+	-lcapi-appfw-application	\
+	-lcapi-system-runtime-info	\
+	-ldl				\
+	-lecore				\
+	-lecore_input			\
+	-lecore_x			\
+	-leina				\
+	-levas				\
+	-lpthread			\
+	-lrt
+
+## FIXME: Ideally, UTILITY_SRCS is sources for probe infrastructure and
+## PROBE_SRCS is sources for actual replacement functions.  Unfortunatelly,
+## it is not so easy and UTILITY_SRCS do not link alone.
+
+COMMON_SRCS = $(UTILITY_SRCS) $(PROBE_SRCS)
+UTILITY_SRCS =				\
 	./helper/libdaprobe.c		\
 	./helper/dahelper.c		\
 	./helper/btsym.c		\
@@ -30,8 +70,7 @@ UTILITY_SRCS :=				\
 	./helper/dacapture.c		\
 	./custom_chart/da_chart.c	\
 
-
-PROBE_SRCS :=   				\
+PROBE_SRCS =	   				\
 	./probe_memory/libdamemalloc.c		\
 	./probe_memory/libdamemmanage.c		\
 	./probe_socket/libdasocket.c		\
@@ -45,72 +84,74 @@ PROBE_SRCS :=   				\
 	./probe_file/da_io_posix.c		\
 	./probe_file/da_io_stdc.c		\
 
-
-
-COMMON_SRCS := $(UTILITY_SRCS) $(PROBE_SRCS)
-
-CAPI_SRCS =$(COMMON_SRCS) \
-			./helper/appfw-capi.c \
-			./helper/addr-capi.c \
-			./probe_capi/capi_appfw.c \
-			./probe_ui/capi_capture.c
-
-TIZEN_SRCS =	$(COMMON_SRCS) \
-			./helper/appfw-tizen.cpp \
-			./helper/addr-tizen.c \
-			./probe_memory/libdanew.cpp \
-			./probe_tizenapi/tizen_file.cpp \
-			./probe_tizenapi/tizen_socket.cpp \
-			./probe_tizenapi/tizen_http.cpp \
-			./probe_tizenapi/tizen_thread.cpp \
-			./probe_tizenapi/tizen_lifecycle.cpp \
-			./probe_tizenapi/tizen_sync.cpp \
-			./probe_tizenapi/tizen_controls.cpp \
-			./probe_tizenapi/tizen_constructor.cpp \
-			./probe_event/gesture.cpp \
-			./probe_ui/tizen_capture.cpp \
-			./probe_ui/tizen_scenemanager.cpp \
-			./probe_ui/tizen_frameani.cpp \
-			./probe_ui/tizen_display.cpp \
-			./probe_graphics/da_gles20.cpp
-
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
+CAPI_SRCS = 	$(COMMON_SRCS)			\
+		./helper/appfw-capi.c		\
+		./helper/addr-capi.c		\
+		./probe_capi/capi_appfw.c	\
+		./probe_ui/capi_capture.c
+
+TIZEN_SRCS =	$(COMMON_SRCS)				\
+		./helper/appfw-tizen.cpp		\
+		./helper/addr-tizen.c			\
+		./probe_memory/libdanew.cpp		\
+		./probe_tizenapi/tizen_file.cpp		\
+		./probe_tizenapi/tizen_socket.cpp	\
+		./probe_tizenapi/tizen_http.cpp		\
+		./probe_tizenapi/tizen_thread.cpp	\
+		./probe_tizenapi/tizen_lifecycle.cpp	\
+		./probe_tizenapi/tizen_sync.cpp		\
+		./probe_tizenapi/tizen_controls.cpp	\
+		./probe_tizenapi/tizen_constructor.cpp	\
+		./probe_event/gesture.cpp		\
+		./probe_ui/tizen_capture.cpp		\
+		./probe_ui/tizen_scenemanager.cpp	\
+		./probe_ui/tizen_frameani.cpp		\
+		./probe_ui/tizen_display.cpp		\
+		./probe_graphics/da_gles20.cpp
+
+## Totally brain-dead.
+## FIXME: Rewrite this normally with eval.
+CAPI_OBJS = $(patsubst %.c,%.o, $(CAPI_SRCS))
+TIZEN_OBJS = $(patsubst %.cpp,%.o, $(patsubst %.c,%.o, $(TIZEN_SRCS)))
+DUMMY_OBJS = $(patsubst %.c,%.o, $(DUMMY_SRCS))
+
 
 CAPI_TARGET = da_probe_capi.so
 TIZEN_TARGET = da_probe_tizen.so
 DUMMY_TARGET = libdaprobe.so
 
-COMMON_FLAGS = -D_GNU_SOURCE -fPIC -shared -Wall -funwind-tables -fomit-frame-pointer -Xlinker --no-undefined -Werror -Wextra -O2 -Wwrite-strings -Wlogical-op -Wpacked -Winline -isystem /usr/include/osp
-CAPI_FLAGS = $(COMMON_FLAGS)
-TIZEN_FLAGS = $(COMMON_FLAGS) -DTIZENAPP
+CPPFLAGS = $(INCLUDE_CPPFLAGS) -D_GNU_SOURCE
+CFLAGS = $(WARN_CFLAGS) -fPIC
 
-LIBDIR_COMMON =
-LIBDIR_CAPI = $(LIBDIR_COMMON)
-LIBDIR_TIZEN = $(LIBDIR_COMMON) -L/usr/lib/osp
+TIZEN_CPPFLAGS = -DTIZENAPP
+TIZEN_LDFLAGS = -lstdc++ -losp-uifw -losp-appfw
 
-COMMON_LDFLAGS = -ldl -lpthread -lrt -lecore -levas -lecore_input -leina -lecore_x -lcapi-system-runtime-info -lcapi-appfw-application -lX11 -lXext
-CAPI_LDFLAGS = $(COMMON_LDFLAGS)
-TIZEN_LDFLAGS = $(COMMON_LDFLAGS) -lstdc++ -losp-uifw -losp-appfw
-DUMMY_LDFLAGS =
+all:	capi tizen dummy
+capi:	headers $(CAPI_TARGET)
+tizen:	headers $(TIZEN_TARGET)
+dummy:	headers $(DUMMY_TARGET)
 
-all:	$(CAPI_TARGET) $(TIZEN_TARGET) $(DUMMY_TARGET)
-capi:	$(CAPI_TARGET)
-tizen:	$(TIZEN_TARGET)
-dummy:	$(DUMMY_TARGET)
+GENERATED_HEADERS = include/api_id_mapping.h include/api_id_list.h include/id_list
+headers: $(GENERATED_HEADERS)
 
-headers:
-	cat ./scripts/api_names.txt | awk -f ./scripts/gen_api_id_mapping_header.awk > include/api_id_mapping.h
-	cat ./scripts/api_names.txt | awk -f ./scripts/gen_api_id_mapping_header_list.awk > include/api_id_list.h
-	cat ./scripts/api_names.txt | awk -f ./scripts/gen_api_id_mapping_list.awk > include/id_list
+include/api_id_mapping.h: ./scripts/gen_api_id_mapping_header.awk
+include/api_id_list.h: ./scripts/gen_api_id_mapping_header_list.awk
+include/id_list: ./scripts/gen_api_id_mapping_list.awk
+$(GENERATED_HEADERS): APINAMES=scripts/api_names.txt
+$(GENERATED_HEADERS):
+	awk -f $< < $(APINAMES) > $@
 
-$(CAPI_TARGET): $(CAPI_SRCS) headers
-	$(CC) $(INC_CAPI) $(CAPI_FLAGS) $(LIBDIR_CAPI) -o $@ $(CAPI_SRCS) $(CAPI_LDFLAGS)
+$(CAPI_TARGET): $(CAPI_OBJS)
+	$(CC) $(LDFLAGS) $^ -o $@
 
-$(TIZEN_TARGET): $(TIZEN_SRCS) headers
-	$(CC) $(INC_TIZEN) $(TIZEN_FLAGS) $(LIBDIR_TIZEN) -o $@ $(TIZEN_SRCS) $(TIZEN_LDFLAGS)
+$(TIZEN_TARGET): LDFLAGS+=$(TIZEN_LDFLAGS)
+$(TIZEN_TARGET): CPPFLAGS+=$(TIZEN_CPPFLAGS)
+$(TIZEN_TARGET): $(TIZEN_OBJS)
+	$(CC) $(LDFLAGS) $^ -o $@
 
-$(DUMMY_TARGET): $(DUMMY_SRCS) headers
-	$(CC) $(INC_TIZEN) $(COMMON_FLAGS) -o $@ $(DUMMY_SRCS) $(DUMMY_LDFLAGS)
+$(DUMMY_TARGET): $(DUMMY_OBJS)
+	$(CC) $(LDFLAGS) $^ -o $@
 
 install:
 	[ -d "$(DESTDIR)/$(INSTALLDIR)" ] || mkdir -p $(DESTDIR)/$(INSTALLDIR)
@@ -119,3 +160,5 @@ install:
 
 clean:
 	rm -f *.so *.o
+
+.PHONY: all capi tizen dummy clean install headers

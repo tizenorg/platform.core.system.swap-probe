@@ -24,7 +24,7 @@ This library will be installed in target.
 %setup -q -n %{name}_%{version}
 
 %build
-make
+make -j
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
