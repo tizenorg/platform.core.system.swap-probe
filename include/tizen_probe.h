@@ -38,10 +38,6 @@
 extern "C" {
 #endif
 
-typedef struct {
-	uint32_t port;
-	uint32_t ip;
-} hostinfo_t;
 
 #define GET_REAL_FUNC_TIZEN(FUNCNAME, LIBNAME, FUNCTIONPOINTER)						\
 	do {												\

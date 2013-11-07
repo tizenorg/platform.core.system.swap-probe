@@ -451,8 +451,8 @@ result Socket::Construct(NetSocketAddressFamily addressFamily,
 	retVal = (this->*Constructp)(addressFamily, socketType, protocol);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::Construct", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_FD_OPEN, "", 0,
-			hostinfo, "ddd", addressFamily, socketType, protocol);
+			(unsigned int)this, (unsigned int)this, SOCKET_API_FD_OPEN, 
+			info, "ddd", addressFamily, socketType, protocol);
 
 	return retVal;
 }
@@ -474,8 +474,8 @@ result Socket::Construct(const NetConnection& netConnection,
 			protocol);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::Construct", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_FD_OPEN, "", 0,
-			hostinfo, "xddd",
+			(unsigned int)this, (unsigned int)this, SOCKET_API_FD_OPEN, 
+			info, "xddd",
 			(unsigned int)&netConnection, addressFamily, socketType, protocol);
 
 	return retVal;
@@ -490,15 +490,15 @@ Socket* Socket::AcceptN(void) const {
 			AcceptNp);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::AcceptN", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_ACCEPT_START, "",
-			0, hostinfo, "s", "void");
+			(unsigned int)this, (unsigned int)this, SOCKET_API_ACCEPT_START, 
+			info, "s", "void");
 
 	pret = (this->*AcceptNp)();
 	if (pret == NULL)
 		newerrno = 1;
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::AcceptN", VT_PTR, pret,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_ACCEPT_END, "",
-			0, hostinfo, "s", "void");
+			(unsigned int)this, (unsigned int)this, SOCKET_API_ACCEPT_END, 
+			info, "s", "void");
 
 	return pret;
 }
@@ -519,14 +519,14 @@ result Socket::Connect(const Tizen::Net::NetEndPoint& remoteEndPoint) {
 	WcharToChar(temp, iv4PeerAddr->ToString().GetPointer());
 	char addressInfo[64];
 	sprintf(addressInfo, "%s:%d", temp, remoteEndPoint.GetPort());
-	hostinfo.port = remoteEndPoint.GetPort();
-	iv4PeerAddr->GetAddress(&hostinfo.ip);
+	info.host_port = remoteEndPoint.GetPort();
+	iv4PeerAddr->GetAddress(&info.host_ip);
 	retVal = (this->*Connectp)(remoteEndPoint);
 
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::Connect", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_CONNECT, "", 0,
-			hostinfo, "s", addressInfo);
+			(unsigned int)this, (unsigned int)this, SOCKET_API_CONNECT, 
+			info, "s", addressInfo);
 
 	return retVal;
 }
@@ -541,8 +541,8 @@ result Socket::Close(void) {
 	retVal = (this->*Closep)();
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::Close", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_FD_CLOSE, "", 0,
-			hostinfo, "s", "void");
+			(unsigned int)this, (unsigned int)this, SOCKET_API_FD_CLOSE, 
+			info, "s", "void");
 
 	return retVal;
 }
@@ -563,12 +563,12 @@ result Socket::Bind(const Tizen::Net::NetEndPoint& localEndPoint) {
 	WcharToChar(temp, iv4PeerAddr->ToString().GetPointer());
 	char addressInfo[64];
 	sprintf(addressInfo, "%s:%d", temp, localEndPoint.GetPort());
-	hostinfo.port = localEndPoint.GetPort();
-	iv4PeerAddr->GetAddress(&hostinfo.ip);
+	info.host_port = localEndPoint.GetPort();
+	iv4PeerAddr->GetAddress(&info.host_ip);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::Bind", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_BIND, "", 0,
-			hostinfo, "s", addressInfo);
+			(unsigned int)this, (unsigned int)this, SOCKET_API_BIND, 
+			info, "s", addressInfo);
 	return retVal;
 }
 
@@ -582,8 +582,8 @@ result Socket::Listen(int backLog) {
 	retVal = (this->*Listenp)(backLog);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::Listen", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_LISTEN, "", 0,
-			hostinfo, "d", backLog);
+			(unsigned int)this, (unsigned int)this, SOCKET_API_LISTEN, 
+			info, "d", backLog);
 
 	return retVal;
 }
@@ -598,30 +598,21 @@ result Socket::Receive(Tizen::Base::ByteBuffer& buffer) const {
 			Receivep);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::Receive", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_START, "",
-			0, hostinfo, "x", (unsigned int)&buffer);
+			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_START,
+			info, "x", (unsigned int)&buffer);
 
 	pret = (this->*Receivep)(buffer);
 
-	int bufferSize = buffer.GetLimit();
-	char* pBuffer = (char*) (buffer.GetPointer());
-	Tizen::Base::String strData;
-	strData.SetCapacity(bufferSize);
-	strData.Append(pBuffer);
-	char* out = new char[bufferSize];
-	WcharToChar(out, strData.GetPointer());
-	int socketSendSize = SOCKET_SEND_SIZE;
-	if (socketSendSize != 0 && socketSendSize < bufferSize) {
-		out[socketSendSize + 1] = '.';
-		out[socketSendSize + 2] = '.';
-		out[socketSendSize + 3] = '.';
-		out[socketSendSize + 4] = '\0';
-	}
+	info.msg_total_size = buffer.GetLimit();
+	info.msg_pack_size = info.msg_total_size;
+	info.msg_buf = (char*)(buffer.GetPointer());
+
+	if (info.msg_pack_size > SOCKET_SEND_SIZE)
+		info.msg_pack_size = SOCKET_SEND_SIZE;
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::Receive", VT_ULONG, pret,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_END, out,
-			buffer.GetLimit(), hostinfo, "x", (unsigned int)&buffer);
-	delete [] out;
+			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_END,
+			info, "x", (unsigned int)&buffer);
 	return pret;
 }
 
@@ -636,16 +627,18 @@ result Socket::Receive(void* pBuffer, int length, int& rcvdLength) const {
 			Receivep);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::Receive", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_START, "",
-			0, hostinfo, "xdx",
+			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_START, 
+			info, "xdx",
 			(unsigned int)&pBuffer, length, rcvdLength);
 
 	pret = (this->*Receivep)(pBuffer, length, rcvdLength);
+	info.msg_buf = (char *)pBuffer;
+	info.msg_total_size = rcvdLength;
+	info.msg_pack_size = rcvdLength > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : rcvdLength;
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::Receive", VT_ULONG, pret,
 			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_END,
-			(char*)pBuffer, length, hostinfo, "xdx",
-			(unsigned int)&pBuffer, length, rcvdLength);
+			info, "xdx", (unsigned int)&pBuffer, length, rcvdLength);
 
 	return pret;
 }
@@ -666,13 +659,13 @@ result Socket::ReceiveFrom(Tizen::Base::ByteBuffer& buffer,
 	WcharToChar(temp, iv4PeerAddr->ToString().GetPointer());
 	char addressInfo[64];
 	sprintf(addressInfo, "%s:%d", temp, remoteEndPoint.GetPort());
-	hostinfo.port = remoteEndPoint.GetPort();
-	iv4PeerAddr->GetAddress(&hostinfo.ip);
+	info.host_port = remoteEndPoint.GetPort();
+	iv4PeerAddr->GetAddress(&info.host_ip);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::ReceiveFrom", VT_NULL,
 			NULL, (unsigned int)this, (unsigned int)this, SOCKET_API_RECV_START,
-			"", 0,
-			hostinfo, "xs", (unsigned int)&buffer, temp);
+			
+			info, "xs", (unsigned int)&buffer, temp);
 
 	pret = (this->*ReceiveFromp)(buffer, remoteEndPoint);
 
@@ -683,18 +676,14 @@ result Socket::ReceiveFrom(Tizen::Base::ByteBuffer& buffer,
 	strData.Append(pBuffer);
 	char* out = new char[bufferSize];
 	WcharToChar(out, strData.GetPointer());
-	int socketSendSize = SOCKET_SEND_SIZE;
-	if (socketSendSize != 0 && socketSendSize < bufferSize) {
-		out[socketSendSize + 1] = '.';
-		out[socketSendSize + 2] = '.';
-		out[socketSendSize + 3] = '.';
-		out[socketSendSize + 4] = '\0';
-	}
+
+	info.msg_buf = out;
+	info.msg_total_size = bufferSize;
+	info.msg_pack_size = bufferSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : bufferSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::ReceiveFrom", VT_ULONG,
 			pret, (unsigned int)this, (unsigned int)this, SOCKET_API_RECV_END,
-			out, buffer.GetLimit(), hostinfo, "xs",
-			(unsigned int)&buffer, temp);
+			info, "xs", (unsigned int)&buffer, temp);
 	delete [] out;
 	return pret;
 }
@@ -714,20 +703,23 @@ result Socket::ReceiveFrom(void* pBuffer, int length,
 	WcharToChar(temp, iv4PeerAddr->ToString().GetPointer());
 	char addressInfo[64];
 	sprintf(addressInfo, "%s:%d", temp, remoteEndPoint.GetPort());
-	hostinfo.port = remoteEndPoint.GetPort();
-	iv4PeerAddr->GetAddress(&hostinfo.ip);
+	info.host_port = remoteEndPoint.GetPort();
+	iv4PeerAddr->GetAddress(&info.host_ip);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::ReceiveFrom", VT_NULL,
 			NULL, (unsigned int)this, (unsigned int)this, SOCKET_API_RECV_START,
-			"", 0, hostinfo, "xdsx",
+			 info, "xdsx",
 			(unsigned int)&pBuffer, length, temp, rcvdLength);
 
 	pret = (this->*ReceiveFromp)(pBuffer, length, remoteEndPoint, rcvdLength);
 
+	info.msg_buf = (char *)pBuffer;
+	info.msg_total_size = length;
+	info.msg_pack_size = length > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : length;
+
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::ReceiveFrom", VT_ULONG,
 			pret, (unsigned int)this, (unsigned int)this, SOCKET_API_RECV_END,
-			(char*)pBuffer, length, hostinfo, "xdsx",
-			(unsigned int)&pBuffer, length, temp, rcvdLength);
+			info, "xdsx", (unsigned int)&pBuffer, length, temp, rcvdLength);
 
 	return pret;
 }
@@ -741,8 +733,8 @@ result Socket::Send(Tizen::Base::ByteBuffer& buffer) {
 			_ZN5Tizen3Net7Sockets6Socket4SendERNS_4Base10ByteBufferE, Sendp);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::Send", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_START, "",
-			0, hostinfo, "x", (unsigned int)&buffer);
+			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_START,
+			info, "x", (unsigned int)&buffer);
 
 	pret = (this->*Sendp)(buffer);
 	int bufferSize = buffer.GetLimit();
@@ -752,16 +744,14 @@ result Socket::Send(Tizen::Base::ByteBuffer& buffer) {
 	strData.Append(pBuffer);
 	char* out = new char[bufferSize];
 	WcharToChar(out, strData.GetPointer());
-	int socketSendSize = SOCKET_SEND_SIZE;
-	if (socketSendSize != 0 && socketSendSize < bufferSize) {
-		out[socketSendSize + 1] = '.';
-		out[socketSendSize + 2] = '.';
-		out[socketSendSize + 3] = '.';
-		out[socketSendSize + 4] = '\0';
-	}
+
+	info.msg_buf = out;
+	info.msg_total_size = bufferSize;
+	info.msg_pack_size = bufferSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : bufferSize;
+
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::Send", VT_ULONG, pret,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_END, out,
-			buffer.GetLimit(), hostinfo, "x", (unsigned int)&buffer);
+			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_END,
+			info, "x", (unsigned int)&buffer);
 	delete [] out;
 	return pret;
 }
@@ -777,16 +767,19 @@ result Socket::Send(void* pBuffer, int length, int& sentLength) {
 			Sendp);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::Send", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_START, "",
-			0, hostinfo, "xdx",
+			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_START, 
+			info, "xdx",
 			(unsigned int)&pBuffer, length, (unsigned int)&sentLength);
 
 	pret = (this->*Sendp)(pBuffer, length, sentLength);
 
+	info.msg_buf = (char *)pBuffer;
+	info.msg_total_size = length;
+	info.msg_pack_size = length > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : length;
+
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::Send", VT_ULONG, pret,
 			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_END,
-			(char*)pBuffer, length, hostinfo, "xdx",
-			(unsigned int)&pBuffer, length, (unsigned int)&sentLength);
+			info, "xdx", (unsigned int)&pBuffer, length, (unsigned int)&sentLength);
 
 	return pret;
 
@@ -808,12 +801,12 @@ result Socket::SendTo(Tizen::Base::ByteBuffer& buffer,
 	WcharToChar(temp, iv4PeerAddr->ToString().GetPointer());
 	char addressInfo[64];
 	sprintf(addressInfo, "%s:%d", temp, remoteEndPoint.GetPort());
-	hostinfo.port = remoteEndPoint.GetPort();
-	iv4PeerAddr->GetAddress(&hostinfo.ip);
+	info.host_port = remoteEndPoint.GetPort();
+	iv4PeerAddr->GetAddress(&info.host_ip);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::SendTo", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_START, "",
-			0, hostinfo, "xs", (unsigned int)&buffer, temp);
+			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_START, 
+			info, "xs", (unsigned int)&buffer, temp);
 
 	pret = (this->*SendTop)(buffer, remoteEndPoint);
 
@@ -824,17 +817,14 @@ result Socket::SendTo(Tizen::Base::ByteBuffer& buffer,
 	strData.Append(pBuffer);
 	char* out = new char[bufferSize];
 	WcharToChar(out, strData.GetPointer());
-	int socketSendSize = SOCKET_SEND_SIZE;
-	if (socketSendSize != 0 && socketSendSize < bufferSize) {
-		out[socketSendSize + 1] = '.';
-		out[socketSendSize + 2] = '.';
-		out[socketSendSize + 3] = '.';
-		out[socketSendSize + 4] = '\0';
-	}
+
+	info.msg_buf = out;
+	info.msg_total_size = bufferSize;
+	info.msg_pack_size = bufferSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : bufferSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::SendTo", VT_ULONG, pret,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_END, out,
-			buffer.GetLimit(), hostinfo, "xs", (unsigned int)&buffer, temp);
+			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_END,
+			info, "xs", (unsigned int)&buffer, temp);
 	delete [] out;
 	return pret;
 }
@@ -855,20 +845,24 @@ result Socket::SendTo(void* pBuffer, int length,
 	WcharToChar(temp, iv4PeerAddr->ToString().GetPointer());
 	char addressInfo[64];
 	sprintf(addressInfo, "%s:%d", temp, remoteEndPoint.GetPort());
-	hostinfo.port = remoteEndPoint.GetPort();
-	iv4PeerAddr->GetAddress(&hostinfo.ip);
+	info.host_port = remoteEndPoint.GetPort();
+	iv4PeerAddr->GetAddress(&info.host_ip);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::SendTo", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_START, "",
-			0, hostinfo, "xdsx,",
+			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_START, 
+			info, "xdsx,",
 			(unsigned int)&pBuffer, length, temp, (unsigned int)&sentLength);
 
 	pret = (this->*SendTop)(pBuffer, length, remoteEndPoint, sentLength);
 
+	info.msg_buf = (char *)pBuffer;
+	info.msg_total_size = length;
+	info.msg_pack_size = length > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : length;
+
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::SendTo", VT_ULONG, pret,
 			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_END,
-			(char*)pBuffer, length, hostinfo, "xdsx,",
-			(unsigned int)&pBuffer, length, temp, (unsigned int)&sentLength);
+			info, "xdsx,", (unsigned int)&pBuffer, length, temp,
+			(unsigned int)&sentLength);
 
 	return pret;
 
@@ -887,7 +881,7 @@ result Socket::AddSocketListener(ISocketEventListener& listener) {
 	retVal = (this->*AddSocketListenerp)(listener);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::AddSocketListener", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
 			"x", (unsigned int) &listener);
 
 	return retVal;
@@ -905,7 +899,7 @@ result Socket::AsyncSelectByListener(unsigned long socketEventType) {
 	retVal = (this->*AsyncSelectByListenerp)(socketEventType);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::AsyncSelectByListener", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
 			"x", socketEventType);
 
 	return retVal;
@@ -924,7 +918,7 @@ result Socket::Ioctl(NetSocketIoctlCmd cmd, unsigned long& value) const {
 	retVal = (this->*Ioctlp)(cmd, value);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::Ioctl", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
 			"dx", cmd, (unsigned int) &value);
 
 	return retVal;
@@ -944,7 +938,7 @@ result Socket::SetSockOpt(NetSocketOptLevel optionLevel,
 	retVal = (this->*SetSockOptp)(optionLevel, optionName, optionValue);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::SetSockOpt", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
 			"ddd", optionLevel, optionName, optionValue);
 
 	return retVal;
@@ -963,7 +957,7 @@ result Socket::SetSockOpt(NetSocketOptLevel optionLevel,
 	retVal = (this->*SetSockOptp)(optionLevel, optionName, optionValue);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::SetSockOpt", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
 			"ddx",
 			optionLevel, optionName, (unsigned int) &optionValue);
 
@@ -985,7 +979,7 @@ result Socket::SetSockOpt(NetSocketOptLevel optionLevel,
 	retVal = (this->*SetSockOptp)(optionLevel, optionName, optionValue);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::SetSockOpt", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
 			"ddx",
 			optionLevel, optionName, (unsigned int) &optionValue);
 
@@ -1006,7 +1000,7 @@ result Socket::GetSockOpt(NetSocketOptLevel optionLevel,
 	retVal = (this->*GetSockOptp)(optionLevel, optionName, optionValue);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::GetSockOpt", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
 			"ddx",
 			optionLevel, optionName, (unsigned int) &optionValue);
 
@@ -1027,7 +1021,7 @@ result Socket::GetSockOpt(NetSocketOptLevel optionLevel,
 	retVal = (this->*GetSockOptp)(optionLevel, optionName, optionValue);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::GetSockOpt", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
 			"ddx",
 			optionLevel, optionName, (unsigned int) &optionValue);
 
@@ -1046,7 +1040,7 @@ result Socket::RemoveSocketListener(ISocketEventListener& listener) {
 	retVal = (this->*RemoveSocketListenerp)(listener);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::RemoveSocketListener", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
 			"x", (unsigned int) &listener);
 
 	return retVal;

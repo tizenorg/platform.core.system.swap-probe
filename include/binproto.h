@@ -92,6 +92,13 @@ static char __attribute__((used)) *pack_string(char *to, const char *str)
 	return to + len;
 }
 
+static char __attribute__((used)) *pack_bin(char *to, const char *from,
+					    uint32_t len)
+{
+	memcpy(to, from, len);
+	return to + len;
+}
+
 static inline char *pack_double(char *to, double val)
 {
 	*(double *)to = val;
@@ -353,7 +360,7 @@ static char __attribute__((used)) *pack_args(char *to, const char *fmt, ...)
 #define MSG_HDR_LEN 20
 #define FLUSH_LOCAL_BUF()						\
 		*(uint32_t *)(msg_buf + MSG_LEN_OFFSET) = (p - msg_buf) - MSG_HDR_LEN; \
-		send(gTraceInfo.socket.daemonSock, msg_buf, (p - msg_buf), 0);
+		send(gTraceInfo.socket.daemonSock, msg_buf, (p - msg_buf), 0)
 
 // =========================== post block macro ===========================
 

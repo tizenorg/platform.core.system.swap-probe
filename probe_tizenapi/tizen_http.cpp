@@ -301,17 +301,14 @@ Tizen::Base::String* HttpHeader::GetRawHeaderN(void) const
 	strData.Append(*retVal);
 	char* out = new char[bufferSize];
 	WcharToChar(out, strData.GetPointer());
-	int socketSendSize = SOCKET_SEND_SIZE;
-	if (socketSendSize != 0 && socketSendSize < bufferSize) {
-		out[socketSendSize + 1] = '.';
-		out[socketSendSize + 2] = '.';
-		out[socketSendSize + 3] = '.';
-		out[socketSendSize + 4] = '\0';
-	}
+
+	info.msg_buf = out;
+	info.msg_pack_size = bufferSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : bufferSize;
+	info.msg_total_size = bufferSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpHeader::GetRawHeaderN", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, HTTP_API_RESPONSE, out,
-			retVal->GetLength(), hostinfo, "s", "void");
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_RESPONSE, info, "s", "void");
 	delete [] out;
 	return retVal;
 }
@@ -388,7 +385,7 @@ result HttpSession::Construct(NetHttpSessionMode sessionMode,
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::Construct", VT_ULONG, retVal,
 			(unsigned int)this, (unsigned int)this, HTTP_API_SESSION_CONSTRUCT,
-			"", 0, hostinfo, "dssxd",
+			info, "dssxd",
 			sessionMode, temp1, temp2, (unsigned int)&pCommonHeader, flag);
 	return retVal;
 }
@@ -424,7 +421,7 @@ result HttpSession::Construct(const NetConnection& netConnection,
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::Construct", VT_ULONG, retVal,
 			(unsigned int)this, (unsigned int)this, HTTP_API_SESSION_CONSTRUCT,
-			"", 0, hostinfo, "xdssxd",
+			info, "xdssxd",
 			(unsigned int)&netConnection, sessionMode, temp1, temp2, (unsigned int)&pCommonHeader, flag);
 	return retVal;
 }
@@ -445,7 +442,7 @@ HttpTransaction* HttpSession::OpenTransactionN(void)
 		newerrno = 1;
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::OpenTransactionN", VT_PTR, retVal,
 			(unsigned int)this, (unsigned int)this, HTTP_API_TRANSACTION_OPEN,
-			"", 0, hostinfo, "s", "void");
+			info, "s", "void");
 	return retVal;
 }
 
@@ -467,7 +464,7 @@ HttpTransaction* HttpSession::OpenTransactionN(const HttpAuthentication& auth)
 		newerrno = 1;
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::OpenTransactionN", VT_PTR, retVal,
 			(unsigned int)this, (unsigned int)this, HTTP_API_TRANSACTION_OPEN,
-			"", 0, hostinfo, "x", (unsigned int)&auth);
+			info, "x", (unsigned int)&auth);
 	return retVal;
 
 }
@@ -487,7 +484,7 @@ result HttpSession::CancelTransaction(HttpTransaction& httpTransaction)
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::CancelTransaction", VT_ULONG,
 			retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_TRANSACTION_CLOSE, "", 0, hostinfo, "x",
+			HTTP_API_TRANSACTION_CLOSE, info, "x",
 			(unsigned int)&httpTransaction);
 
 	return retVal;
@@ -508,7 +505,7 @@ result HttpSession::CloseTransaction(HttpTransaction& httpTransaction)
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::CloseTransaction", VT_ULONG, retVal,
 			(unsigned int)this, (unsigned int)this, HTTP_API_TRANSACTION_CLOSE,
-			"", 0, hostinfo, "x", (unsigned int)&httpTransaction);
+			info, "x", (unsigned int)&httpTransaction);
 
 	return retVal;
 }
@@ -528,7 +525,7 @@ result HttpSession::CloseAllTransactions(void)
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::CloseAllTransactions", VT_ULONG,
 			retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_TRANSACTION_CLOSE, "", 0, hostinfo, "s", "void");
+			HTTP_API_TRANSACTION_CLOSE, info, "s", "void");
 
 	return retVal;
 }
@@ -547,7 +544,7 @@ result HttpSession::SetAutoRedirectionEnabled(bool enable)
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::SetAutoRedirectionEnabled",
 			VT_ULONG, retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_OTHER, "", 0, hostinfo, "d", enable);
+			HTTP_API_OTHER, info, "d", enable);
 	return retVal;
 }
 
@@ -564,8 +561,8 @@ bool HttpSession::IsAutoRedirectionEnabled(void) const
 	retVal = (this->*IsAutoRedirectionEnabledp)();
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::IsAutoRedirectionEnabled", VT_INT,
-			retVal, (unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "",
-			0, hostinfo, "s", "void");
+				  retVal, (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info, "s", "void");
 	return retVal;
 }
 
@@ -582,8 +579,8 @@ int HttpSession::GetActiveTransactionCount(void) const
 	retVal = (this->*GetActiveTransactionCountp)();
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::GetActiveTransactionCount", VT_INT,
-			retVal, (unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "",
-			0, hostinfo, "s", "void");
+				  retVal, (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info, "s", "void");
 	return retVal;
 }
 
@@ -600,8 +597,8 @@ int HttpSession::GetMaxTransactionCount(void) const
 	retVal = (this->*GetMaxTransactionCountp)();
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::GetMaxTransactionCount", VT_INT,
-			retVal, (unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "",
-			0, hostinfo, "s", "void");
+				  retVal, (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info, "s", "void");
 	return retVal;
 }
 
@@ -620,7 +617,7 @@ HttpCookieStorageManager* HttpSession::GetCookieStorageManager(void) const
 		newerrno = 1;
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::GetCookieStorageManager", VT_PTR,
 			retVal, (unsigned int)this, (unsigned int)this, HTTP_API_ALLOCATION,
-			"", 0, hostinfo, "s", "void");
+			info, "s", "void");
 	return retVal;
 }
 
@@ -738,7 +735,7 @@ HttpAuthentication* HttpTransaction::OpenAuthenticationInfoN(void)
 		newerrno = 1;
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::OpenAuthenticationInfoN",
 			VT_PTR, retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_ALLOCATION, "", 0, hostinfo, "s", "void");
+			HTTP_API_ALLOCATION, info, "s", "void");
 	return retVal;
 }
 
@@ -755,8 +752,8 @@ HttpRequest* HttpTransaction::GetRequest(void) const
 	if (retVal == NULL)
 		newerrno = 1;
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::GetRequest", VT_PTR, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_ALLOCATION, "", 0,
-			hostinfo, "s", "void");
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_ALLOCATION, info, "s", "void");
 	return retVal;
 }
 
@@ -773,8 +770,8 @@ HttpResponse* HttpTransaction::GetResponse(void) const
 	if (retVal == NULL)
 		newerrno = 1;
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::GetResponse", VT_PTR, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_ALLOCATION, "", 0,
-			hostinfo, "s", "void");
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_ALLOCATION, info, "s", "void");
 	return retVal;
 }
 
@@ -793,7 +790,7 @@ result HttpTransaction::AddHttpTransactionListener(
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::AddHttpTransactionListener",
 			VT_ULONG, retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_OTHER, "", 0, hostinfo, "x", (unsigned int)&listener);
+			HTTP_API_OTHER, info, "x", (unsigned int)&listener);
 	return retVal;
 }
 
@@ -812,7 +809,7 @@ result HttpTransaction::RemoveHttpTransactionListener(
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::RemoveHttpTransactionListener",
 			VT_ULONG, retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_OTHER, "", 0, hostinfo, "x", (unsigned int)&listener);
+			HTTP_API_OTHER, info, "x", (unsigned int)&listener);
 	return retVal;
 }
 
@@ -831,7 +828,7 @@ result HttpTransaction::SetHttpProgressListener(
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::SetHttpProgressListener",
 			VT_ULONG, retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_OTHER, "", 0, hostinfo, "x", (unsigned int)&listener);
+			HTTP_API_OTHER, info, "x", (unsigned int)&listener);
 	return retVal;
 }
 
@@ -849,8 +846,9 @@ result HttpTransaction::SetUserObject(const Tizen::Base::Object* pUserData)
 	retVal = (this->*SetUserObjectp)(pUserData);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::SetUserObject", VT_ULONG,
-			retVal, (unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "",
-			0, hostinfo, "x", (unsigned int)&pUserData);
+				  retVal, (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info, "x",
+				  (unsigned int)&pUserData);
 	return retVal;
 }
 
@@ -867,7 +865,7 @@ Tizen::Base::Object* HttpTransaction::GetUserObject(void) const
 	retVal = (this->*GetUserObjectp)();
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::GetUserObject", VT_PTR, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"s", "void");
 	return retVal;
 }
@@ -885,7 +883,7 @@ bool HttpTransaction::EnableTransactionReadyToWrite(void)
 	retVal = (this->*EnableTransactionReadyToWritep)();
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::GetUserObject", VT_INT, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"s", "void");
 	return retVal;
 }
@@ -902,7 +900,7 @@ result HttpTransaction::Submit(void)
 	retVal = (this->*Submitp)();
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::Submit", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_SUBMIT, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_SUBMIT, info,
 			"s", "void");
 	return retVal;
 }
@@ -919,7 +917,7 @@ result HttpTransaction::Resume(void)
 	retVal = (this->*Resumep)();
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::Resume", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"s", "void");
 	return retVal;
 }
@@ -936,7 +934,7 @@ result HttpTransaction::Pause(void)
 	retVal = (this->*Pausep)();
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::Pause", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"s", "void");
 	return retVal;
 }
@@ -954,8 +952,8 @@ result HttpTransaction::SetClientCertificate(int certificateId)
 	retVal = (this->*SetClientCertificatep)(certificateId);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::SetClientCertificate", VT_ULONG,
-			retVal, (unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "",
-			0, hostinfo, "d", certificateId);
+				  retVal, (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info, "d", certificateId);
 	return retVal;
 }
 
@@ -971,7 +969,7 @@ result HttpTransaction::SetTimeout(int timeout)
 	retVal = (this->*SetTimeoutp)(timeout);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::SetTimeout", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"d", timeout);
 	return retVal;
 }
@@ -988,10 +986,10 @@ result HttpTransaction::SetServerCertificateVerification(
 
 	retVal = (this->*SetServerCertificateVerificationp)(flag);
 
-	AFTER_ORIGINAL_TIZEN_SOCK(
-			"HttpTransaction::SetServerCertificateVerification", VT_ULONG,
-			retVal, (unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "",
-			0, hostinfo, "d", flag);
+	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::SetServerCertificateVerification",
+				  VT_ULONG, retVal, (unsigned int)this,
+				  (unsigned int)this, HTTP_API_OTHER, info, "d",
+				  flag);
 	return retVal;
 }
 
@@ -1174,7 +1172,7 @@ result HttpRequest::SetMethod(NetHttpMethod method)
 	retVal = (this->*SetMethodp)(method);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::SetMethod", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"d", method);
 	return retVal;
 }
@@ -1195,10 +1193,14 @@ result HttpRequest::SetCustomMethod(const Tizen::Base::String& method)
 	int nSize = method.GetLength();
 	char temp[nSize];
 	WcharToChar(temp, method.GetPointer());
+	info.msg_buf = temp;
+	info.msg_total_size = nSize;
+	info.msg_pack_size = nSize;
 
-	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::SetCustomMethod", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_REQUEST, temp,
-			nSize, hostinfo, "x", (unsigned int)&method);
+	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::SetCustomMethod", VT_ULONG,
+				  retVal, (unsigned int)this, (unsigned int)this,
+				  HTTP_API_REQUEST, info, "x",
+				  (unsigned int)&method);
 	return retVal;
 }
 
@@ -1215,7 +1217,7 @@ result HttpRequest::SetVersion(HttpVersion version)
 	retVal = (this->*SetVersionp)(version);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::SetVersion", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"d", version);
 	return retVal;
 }
@@ -1236,7 +1238,7 @@ result HttpRequest::SetUri(const Tizen::Base::String& uri)
 	WcharToChar(temp, uri.GetPointer());
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::SetUri", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_REQUEST, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_REQUEST, info,
 			"s", temp);
 	return retVal;
 }
@@ -1260,17 +1262,16 @@ result HttpRequest::WriteBody(const Tizen::Base::ByteBuffer& body)
 	strData.SetCapacity(bufferSize);
 	strData.Append(pBuffer);
 	char* out = new char[bufferSize];
-	int socketSendSize = SOCKET_SEND_SIZE;
-	if (socketSendSize != 0 && socketSendSize < bufferSize) {
-		out[socketSendSize + 1] = '.';
-		out[socketSendSize + 2] = '.';
-		out[socketSendSize + 3] = '.';
-		out[socketSendSize + 4] = '\0';
-	}
+	WcharToChar(out, strData.GetPointer());
+
+	info.msg_buf = out;
+	info.msg_pack_size = bufferSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : bufferSize;
+	info.msg_total_size = bufferSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::WriteBody", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_REQUEST, out,
-			body.GetLimit(), hostinfo, "x", (unsigned int)&body);
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_REQUEST, info, "x",
+				  (unsigned int)&body);
 	delete [] out;
 	return retVal;
 }
@@ -1288,7 +1289,7 @@ result HttpRequest::SetEntity(IHttpEntity& entity)
 	retVal = (this->*SetEntityp)(entity);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::SetEntity", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"x", (unsigned int)& entity);
 	return retVal;
 }
@@ -1305,8 +1306,8 @@ HttpHeader* HttpRequest::GetHeader(void) const
 	if (retVal == NULL)
 		newerrno = 1;
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::GetHeader", VT_PTR, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_ALLOCATION, "", 0,
-			hostinfo, "s", "void");
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_ALLOCATION, info, "s", "void");
 	return retVal;
 }
 
@@ -1326,10 +1327,14 @@ result HttpRequest::SetCookie(const Tizen::Base::String& cookieString)
 	int nSize = cookieString.GetLength();
 	char temp[nSize];
 	WcharToChar(temp, cookieString.GetPointer());
+	info.msg_buf = temp;
+	info.msg_total_size = nSize;
+	info.msg_pack_size = nSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : nSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::SetCookie", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_REQUEST, temp,
-			nSize, hostinfo, "x", (unsigned int)&cookieString);
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_REQUEST, info, "x",
+				  (unsigned int)&cookieString);
 	return retVal;
 }
 
@@ -1347,10 +1352,14 @@ Tizen::Base::String HttpRequest::GetCookie(void) const
 	int nSize = retVal.GetLength();
 	char temp[nSize];
 	WcharToChar(temp, retVal.GetPointer());
+	info.msg_buf = temp;
+	info.msg_total_size = nSize;
+	info.msg_pack_size = nSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : nSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::GetCookie", VT_PTR,
-			(unsigned int)&retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_OTHER, temp, nSize, hostinfo, "s", "void");
+				  (unsigned int)&retVal,
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info, "s", "void");
 	return retVal;
 }
 
@@ -1369,10 +1378,13 @@ result HttpRequest::SetAcceptEncoding(const Tizen::Base::String& encoding)
 	int nSize = encoding.GetLength();
 	char temp[nSize];
 	WcharToChar(temp, encoding.GetPointer());
+	info.msg_buf = temp;
+	info.msg_total_size = nSize;
+	info.msg_pack_size = nSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : nSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::SetAcceptEncoding", VT_ULONG,
-			retVal, (unsigned int)this, (unsigned int)this, HTTP_API_REQUEST,
-			temp, nSize, hostinfo, "s", temp);
+				  retVal, (unsigned int)this, (unsigned int)this,
+				  HTTP_API_REQUEST, info, "s", temp);
 	return retVal;
 }
 
@@ -1391,18 +1403,14 @@ Tizen::Base::ByteBuffer* HttpRequest::ReadBodyN(void)
 	copybuffer.Construct(bufferSize + 4);
 	copybuffer.CopyFrom(*retVal);
 
-	char* out = (char*) (copybuffer.GetPointer());
-	int socketSendSize = SOCKET_SEND_SIZE;
-	if (socketSendSize != 0 && socketSendSize < bufferSize) {
-		out[socketSendSize + 1] = '.';
-		out[socketSendSize + 2] = '.';
-		out[socketSendSize + 3] = '.';
-		out[socketSendSize + 4] = '\0';
-	}
+	info.msg_buf = (char *)(copybuffer.GetPointer());
+	info.msg_total_size = bufferSize;
+	info.msg_pack_size = bufferSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : bufferSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::ReadBodyN", VT_PTR,
-			(unsigned int)&retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_OTHER, out, retVal->GetLimit(), hostinfo, "s", "void");
+				  (unsigned int)&retVal,
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info, "s", "void");
 	return retVal;
 }
 
@@ -1420,10 +1428,14 @@ Tizen::Base::String HttpRequest::GetAcceptEncoding(void) const
 	int nSize = retVal.GetLength();
 	char temp[nSize];
 	WcharToChar(temp, retVal.GetPointer());
+	info.msg_buf = temp;
+	info.msg_total_size = nSize;
+	info.msg_pack_size = nSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : nSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::GetAcceptEncoding", VT_PTR,
-			(unsigned int)&retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_OTHER, temp, nSize, hostinfo, "s", "void");
+				  (unsigned int)&retVal,
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info, "s", "void");
 	return retVal;
 }
 
@@ -1475,7 +1487,7 @@ NetHttpStatusCode HttpResponse::GetStatusCode(void) const
 
 	retVal = (this->*GetHttpStatusCodep)();
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::GetStatusCode", VT_INT, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"s", "void");
 	return retVal;
 
@@ -1494,7 +1506,7 @@ int HttpResponse::GetHttpStatusCode(void) const
 	retVal = (this->*GetHttpStatusCodep)();
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::GetHttpStatusCode", VT_INT, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"s", "void");
 	return retVal;
 }
@@ -1513,9 +1525,13 @@ Tizen::Base::String HttpResponse::GetStatusText(void) const
 	char temp[nSize];
 	WcharToChar(temp, retVal.GetPointer());
 
+	info.msg_buf = temp;
+	info.msg_total_size = nSize;
+	info.msg_pack_size = nSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : nSize;
+
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::GetStatusText", VT_PTR,
 			(unsigned int)&retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_RESPONSE, temp, nSize, hostinfo, "s", "void");
+			HTTP_API_RESPONSE, info, "s", "void");
 	return retVal;
 }
 
@@ -1533,9 +1549,13 @@ Tizen::Base::String HttpResponse::GetVersion(void) const
 	char temp[nSize];
 	WcharToChar(temp, retVal.GetPointer());
 
+	info.msg_buf = temp;
+	info.msg_total_size = nSize;
+	info.msg_pack_size = nSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : nSize;
+
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::GetVersion", VT_PTR,
 			(unsigned int)&retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_RESPONSE, temp, nSize, hostinfo, "s", "void");
+			HTTP_API_RESPONSE, info, "s", "void");
 	return retVal;
 }
 
@@ -1551,8 +1571,8 @@ HttpHeader* HttpResponse::GetHeader(void) const
 	if (retVal == NULL)
 		newerrno = 1;
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::GetHeader", VT_PTR, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_ALLOCATION, "", 0,
-			hostinfo, "s", "void");
+			(unsigned int)this, (unsigned int)this, HTTP_API_ALLOCATION,
+			info, "s", "void");
 	return retVal;
 }
 
@@ -1574,17 +1594,14 @@ Tizen::Base::ByteBuffer* HttpResponse::ReadBodyN(void)
 	copybuffer.CopyFrom(*retVal);
 
 	char* out = (char*) (copybuffer.GetPointer());
-	int socketSendSize = SOCKET_SEND_SIZE;
-	if (socketSendSize != 0 && socketSendSize < bufferSize) {
-		out[socketSendSize + 1] = '.';
-		out[socketSendSize + 2] = '.';
-		out[socketSendSize + 3] = '.';
-		out[socketSendSize + 4] = '\0';
-	}
+
+	info.msg_buf = out;
+	info.msg_pack_size = bufferSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : bufferSize;
+	info.msg_total_size = bufferSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::ReadBodyN", VT_PTR,
 			(unsigned int)&retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_RESPONSE, out, retVal->GetLimit(), hostinfo, "s", "void");
+			HTTP_API_RESPONSE, info, "s", "void");
 	return retVal;
 }
 
@@ -1603,7 +1620,7 @@ Tizen::Base::Collection::IList* HttpResponse::GetCookies(void) const
 		newerrno = 1;
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::GetCookies", VT_PTR,
 			(unsigned int)&retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_OTHER, "", 0, hostinfo, "s", "void");
+			HTTP_API_OTHER, info, "s", "void");
 	return retVal;
 }
 
@@ -1620,7 +1637,7 @@ result HttpResponse::SetStatusCode(NetHttpStatusCode statusCode)
 	retVal = (this->*SetStatusCodep)(statusCode);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::SetStatusCode", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"d", statusCode);
 	return retVal;
 }
@@ -1638,8 +1655,8 @@ result HttpResponse::SetHttpStatusCode(int statusCode)
 	retVal = (this->*SetHttpStatusCodep)(statusCode);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::SetHttpStatusCode", VT_ULONG,
-			retVal, (unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "",
-			0, hostinfo, "d", statusCode);
+				  retVal, (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info, "d", statusCode);
 	return retVal;
 }
 
@@ -1661,7 +1678,7 @@ result HttpResponse::SetStatusText(const Tizen::Base::String& statusText)
 	WcharToChar(temp, statusText.GetPointer());
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::SetStatusText", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"s", temp);
 	return retVal;
 }
@@ -1684,7 +1701,7 @@ result HttpResponse::SetVersion(const Tizen::Base::String& httpVersion)
 	WcharToChar(temp, httpVersion.GetPointer());
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::SetVersion", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"s", temp);
 	return retVal;
 }
@@ -1708,17 +1725,15 @@ result HttpResponse::WriteBody(const Tizen::Base::ByteBuffer& body)
 	strData.SetCapacity(bufferSize);
 	strData.Append(pBuffer);
 	char* out = new char[bufferSize];
-	int socketSendSize = SOCKET_SEND_SIZE;
-	if (socketSendSize != 0 && socketSendSize < bufferSize) {
-		out[socketSendSize + 1] = '.';
-		out[socketSendSize + 2] = '.';
-		out[socketSendSize + 3] = '.';
-		out[socketSendSize + 4] = '\0';
-	}
+	WcharToChar(out, strData.GetPointer());
+
+	info.msg_buf = out;
+	info.msg_pack_size = bufferSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : bufferSize;
+	info.msg_total_size = bufferSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::WriteBody", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_RESPONSE, out,
-			body.GetLimit(), hostinfo, "x", (unsigned int)&body);
+			(unsigned int)this, (unsigned int)this, HTTP_API_RESPONSE,
+			info, "x", (unsigned int)&body);
 	delete out;
 	return retVal;
 }
@@ -1736,7 +1751,7 @@ result HttpResponse::Read(int headerLen, int bodyLen, int& rcvHeaderLen,
 	retVal = (this->*Readp)(headerLen, bodyLen, rcvHeaderLen, rcvBodyLen);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::Read", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"ddxx",
 			headerLen, bodyLen, (unsigned int)&rcvHeaderLen, (unsigned int)&rcvBodyLen);
 	return retVal;
@@ -1756,7 +1771,7 @@ result HttpResponse::SetCookie(Tizen::Net::Http::HttpHeader* pHeader)
 	retVal = (this->*SetCookiep)(pHeader);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::SetCookie", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, "", 0, hostinfo,
+			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
 			"x", (unsigned int)&pHeader);
 	return retVal;
 }

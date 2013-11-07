@@ -139,6 +139,25 @@ int getBacktraceString(log_t* log, int bufsize);
 // ========================= print log =====================================
 #define PRINTMSG(msg)	printLogStr(msg, MSG_MSG)
 
+#define INIT_INFO						\
+		info.host_ip = 0;				\
+		info.host_port = 0;				\
+		info.msg_total_size = 0;			\
+		info.msg_pack_size = 0;				\
+		info.sock = NULL;				\
+		info.msg_buf = (char *)""
+
+typedef struct {
+	uint32_t host_port;
+	uint32_t host_ip;
+	struct sockaddr *sock;
+
+	uint64_t msg_total_size;
+	uint32_t msg_pack_size;
+	char *msg_buf;
+
+} info_t;
+
 // =========================== declare variables ===========================
 // local variable is faster than heap allocated variable
 // array variable initialization with declare is expensive than memset
@@ -226,10 +245,10 @@ int getBacktraceString(log_t* log, int bufsize);
 	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {	\
 		setProbePoint(&probeInfo)
 
-#define PRE_PROBEBLOCK_END()	\
-		preBlockEnd();			\
-	}							\
-	olderrno = errno;			\
+#define PRE_PROBEBLOCK_END()							\
+		preBlockEnd();							\
+	}									\
+	olderrno = errno;							\
 	errno = 0
 
 #define PRE_PROBEBLOCK() \
