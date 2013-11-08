@@ -129,9 +129,8 @@ char *absolutize_filepath(char buffer[PATH_MAX], const char *fname)
 
 	assert(fname && "Filename, passed to stdc function is NULL.");
 	if (absolute_filepath_p(fname) || getcwd(cwd, sizeof(cwd)) == NULL)
-		snprintf(buffer, sizeof(buffer), "%s", fname);
+		snprintf(buffer, PATH_MAX, "%s", fname);
 	else
-		snprintf(buffer, sizeof(buffer), "%s/%s", cwd, fname);
+		snprintf(buffer, PATH_MAX, "%s/%s", cwd, fname);
 	return buffer;
 }
-
