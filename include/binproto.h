@@ -70,7 +70,10 @@
 #define CALLER_ADDRESS							\
 	((void*) __builtin_extract_return_addr(__builtin_return_address(0)))
 
-
+static inline uint64_t voidp_to_uint64(const void *p)
+{
+	return (uint64_t)(uintptr_t)p;
+}
 
 // COMMON
 static inline char *pack_int32(char *to, uint32_t val)

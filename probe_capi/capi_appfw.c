@@ -67,7 +67,8 @@ static bool _dalc_app_create(void* user_data)
 
 	bret = gAppCallback.create(user_data);
 
-	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_create, bret, "p", user_data);
+	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_create, bret, "p",
+				 voidp_to_uint64(user_data));
 
 	return bret;
 }
@@ -81,7 +82,8 @@ static void _dalc_app_terminate(void* user_data)
 
 	gAppCallback.terminate(user_data);
 
-	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_terminate, 0, "p", user_data);
+	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_terminate, 0, "p",
+				 voidp_to_uint64(user_data));
 }
 
 static void _dalc_app_pause(void* user_data)
@@ -93,7 +95,8 @@ static void _dalc_app_pause(void* user_data)
 
 	gAppCallback.pause(user_data);
 
-	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_pause, 0, "p", user_data);
+	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_pause, 0, "p",
+				 voidp_to_uint64(user_data));
 }
 
 static void _dalc_app_resume(void* user_data)
@@ -105,7 +108,8 @@ static void _dalc_app_resume(void* user_data)
 
 	gAppCallback.resume(user_data);
 
-	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_resume, 0, "p", user_data);
+	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_resume, 0, "p",
+				 voidp_to_uint64(user_data));
 }
 
 static void _dalc_app_service(service_h service, void* user_data)
@@ -117,7 +121,9 @@ static void _dalc_app_service(service_h service, void* user_data)
 
 	gAppCallback.service(service, user_data);
 
-	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_service, 0, "dp", (unsigned int)service, user_data);
+	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_service, 0, "dp",
+				 (unsigned int)service,
+				 voidp_to_uint64(user_data));
 }
 
 static void _dalc_app_deviceorientationchanged(app_device_orientation_e orientation, void* user_data)

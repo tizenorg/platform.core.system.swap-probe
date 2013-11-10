@@ -62,7 +62,8 @@ void *memset(void *memblock, int c, size_t n)
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_memset,
-			  "pdx", memblock, c, n);
+			  "pdx", voidp_to_uint64(memblock), c,
+			  (uint64_t)(n));
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(n, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();
@@ -88,7 +89,8 @@ int memcmp(const void * ptr1, const void * ptr2, size_t num)
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_memcmp,
-			  "ppx", ptr1, ptr2, num);
+			  "ppx", voidp_to_uint64(ptr1), voidp_to_uint64(ptr2),
+			  (uint64_t)(num));
 	PACK_COMMON_END(ret, newerrno, blockresult);
 	PACK_MEMORY(num, MEMORY_API_MANAGE, ret);
 	FLUSH_LOCAL_BUF();
@@ -115,7 +117,9 @@ void *memcpy(void * destination, const void * source, size_t num )
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_memcpy,
-			  "ppx", destination, source, num);
+			  "ppx", voidp_to_uint64(destination),
+			  voidp_to_uint64(source),
+			  (uint64_t)(num));
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(num, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();

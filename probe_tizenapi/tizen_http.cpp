@@ -384,9 +384,11 @@ result HttpSession::Construct(NetHttpSessionMode sessionMode,
 	WcharToChar(temp2, hostAddr.GetPointer());
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::Construct", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_SESSION_CONSTRUCT,
-			info, "dssxd",
-			sessionMode, temp1, temp2, (unsigned int)&pCommonHeader, flag);
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_SESSION_CONSTRUCT,
+				  info, "dssxd",
+				  sessionMode, temp1, temp2,
+				  voidp_to_uint64(&pCommonHeader), flag);
 	return retVal;
 }
 
@@ -420,9 +422,12 @@ result HttpSession::Construct(const NetConnection& netConnection,
 	WcharToChar(temp2, hostAddr.GetPointer());
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::Construct", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_SESSION_CONSTRUCT,
-			info, "xdssxd",
-			(unsigned int)&netConnection, sessionMode, temp1, temp2, (unsigned int)&pCommonHeader, flag);
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_SESSION_CONSTRUCT,
+				  info, "xdssxd",
+				  voidp_to_uint64(&netConnection), sessionMode,
+				  temp1, temp2,
+				  voidp_to_uint64(&pCommonHeader), flag);
 	return retVal;
 }
 
@@ -463,8 +468,9 @@ HttpTransaction* HttpSession::OpenTransactionN(const HttpAuthentication& auth)
 	if (retVal == NULL)
 		newerrno = 1;
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::OpenTransactionN", VT_PTR, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_TRANSACTION_OPEN,
-			info, "x", (unsigned int)&auth);
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_TRANSACTION_OPEN,
+				  info, "x", voidp_to_uint64(&auth));
 	return retVal;
 
 }
@@ -483,9 +489,10 @@ result HttpSession::CancelTransaction(HttpTransaction& httpTransaction)
 	retVal = (this->*CancelTransactionp)(httpTransaction);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::CancelTransaction", VT_ULONG,
-			retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_TRANSACTION_CLOSE, info, "x",
-			(unsigned int)&httpTransaction);
+				  retVal, (unsigned int)this,
+				  (unsigned int)this,
+				  HTTP_API_TRANSACTION_CLOSE, info, "x",
+				  voidp_to_uint64(&httpTransaction));
 
 	return retVal;
 }
@@ -504,8 +511,9 @@ result HttpSession::CloseTransaction(HttpTransaction& httpTransaction)
 	retVal = (this->*CloseTransactionp)(httpTransaction);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpSession::CloseTransaction", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_TRANSACTION_CLOSE,
-			info, "x", (unsigned int)&httpTransaction);
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_TRANSACTION_CLOSE,
+				  info, "x", voidp_to_uint64(&httpTransaction));
 
 	return retVal;
 }
@@ -789,8 +797,10 @@ result HttpTransaction::AddHttpTransactionListener(
 	retVal = (this->*AddHttpTransactionListenerp)(listener);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::AddHttpTransactionListener",
-			VT_ULONG, retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_OTHER, info, "x", (unsigned int)&listener);
+				  VT_ULONG, retVal, (unsigned int)this,
+				  (unsigned int)this,
+				  HTTP_API_OTHER, info,
+				  "x", voidp_to_uint64(&listener));
 	return retVal;
 }
 
@@ -808,8 +818,10 @@ result HttpTransaction::RemoveHttpTransactionListener(
 	retVal = (this->*RemoveHttpTransactionListenerp)(listener);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::RemoveHttpTransactionListener",
-			VT_ULONG, retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_OTHER, info, "x", (unsigned int)&listener);
+				  VT_ULONG, retVal, (unsigned int)this,
+				  (unsigned int)this,
+				  HTTP_API_OTHER, info, "x",
+				  voidp_to_uint64(&listener));
 	return retVal;
 }
 
@@ -827,8 +839,10 @@ result HttpTransaction::SetHttpProgressListener(
 	retVal = (this->*SetHttpProgressListenerp)(listener);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::SetHttpProgressListener",
-			VT_ULONG, retVal, (unsigned int)this, (unsigned int)this,
-			HTTP_API_OTHER, info, "x", (unsigned int)&listener);
+				  VT_ULONG, retVal, (unsigned int)this,
+				  (unsigned int)this,
+				  HTTP_API_OTHER, info, "x",
+				  voidp_to_uint64(&listener));
 	return retVal;
 }
 
@@ -846,9 +860,10 @@ result HttpTransaction::SetUserObject(const Tizen::Base::Object* pUserData)
 	retVal = (this->*SetUserObjectp)(pUserData);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpTransaction::SetUserObject", VT_ULONG,
-				  retVal, (unsigned int)this, (unsigned int)this,
+				  retVal, (unsigned int)this,
+				  (unsigned int)this,
 				  HTTP_API_OTHER, info, "x",
-				  (unsigned int)&pUserData);
+				  voidp_to_uint64(&pUserData));
 	return retVal;
 }
 
@@ -1198,9 +1213,10 @@ result HttpRequest::SetCustomMethod(const Tizen::Base::String& method)
 	info.msg_pack_size = nSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::SetCustomMethod", VT_ULONG,
-				  retVal, (unsigned int)this, (unsigned int)this,
+				  retVal, (unsigned int)this,
+				  (unsigned int)this,
 				  HTTP_API_REQUEST, info, "x",
-				  (unsigned int)&method);
+				  voidp_to_uint64(&method));
 	return retVal;
 }
 
@@ -1271,7 +1287,7 @@ result HttpRequest::WriteBody(const Tizen::Base::ByteBuffer& body)
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::WriteBody", VT_ULONG, retVal,
 				  (unsigned int)this, (unsigned int)this,
 				  HTTP_API_REQUEST, info, "x",
-				  (unsigned int)&body);
+				  voidp_to_uint64(&body));
 	delete [] out;
 	return retVal;
 }
@@ -1289,8 +1305,9 @@ result HttpRequest::SetEntity(IHttpEntity& entity)
 	retVal = (this->*SetEntityp)(entity);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::SetEntity", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
-			"x", (unsigned int)& entity);
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info,
+				  "x", voidp_to_uint64(&entity));
 	return retVal;
 }
 
@@ -1334,7 +1351,7 @@ result HttpRequest::SetCookie(const Tizen::Base::String& cookieString)
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpRequest::SetCookie", VT_ULONG, retVal,
 				  (unsigned int)this, (unsigned int)this,
 				  HTTP_API_REQUEST, info, "x",
-				  (unsigned int)&cookieString);
+				  voidp_to_uint64(&cookieString));
 	return retVal;
 }
 
@@ -1732,8 +1749,9 @@ result HttpResponse::WriteBody(const Tizen::Base::ByteBuffer& body)
 	info.msg_total_size = bufferSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::WriteBody", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_RESPONSE,
-			info, "x", (unsigned int)&body);
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_RESPONSE,
+				  info, "x", voidp_to_uint64(&body));
 	delete out;
 	return retVal;
 }
@@ -1751,9 +1769,11 @@ result HttpResponse::Read(int headerLen, int bodyLen, int& rcvHeaderLen,
 	retVal = (this->*Readp)(headerLen, bodyLen, rcvHeaderLen, rcvBodyLen);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::Read", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
-			"ddxx",
-			headerLen, bodyLen, (unsigned int)&rcvHeaderLen, (unsigned int)&rcvBodyLen);
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info,
+				  "ddxx", headerLen, bodyLen,
+				  voidp_to_uint64(&rcvHeaderLen),
+				  voidp_to_uint64(&rcvBodyLen));
 	return retVal;
 }
 
@@ -1771,8 +1791,9 @@ result HttpResponse::SetCookie(Tizen::Net::Http::HttpHeader* pHeader)
 	retVal = (this->*SetCookiep)(pHeader);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpResponse::SetCookie", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, HTTP_API_OTHER, info,
-			"x", (unsigned int)&pHeader);
+				  (unsigned int)this, (unsigned int)this,
+				  HTTP_API_OTHER, info,
+				  "x", voidp_to_uint64(&pHeader));
 	return retVal;
 }
 

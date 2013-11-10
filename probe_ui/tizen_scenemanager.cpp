@@ -94,7 +94,9 @@ void SceneManagerEventListener::OnSceneTransitionCompleted(const SceneId &previo
 				PREPARE_LOCAL_BUF();
 				PACK_COMMON_BEGIN(MSG_PROBE_SCENE,
 						  API_ID_void_SceneManagerEventListener__OnSceneTransitionCompleted_const_SceneId__previousSceneId__const_SceneId__currentSceneId_,
-						  "pp", &previousSceneId, &currentSceneId);
+						  "pp",
+						  voidp_to_uint64(&previousSceneId),
+						  voidp_to_uint64(&currentSceneId));
 				PACK_COMMON_END(0, 0, 0);
 				PACK_SCENE(scene_name, formid, pform, panelid, ppanel, transition, user);
 				FLUSH_LOCAL_BUF();

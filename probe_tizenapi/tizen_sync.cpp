@@ -470,7 +470,7 @@ result Semaphore::Acquire(long timeout) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Semaphore__Acquire_long_timeout_,
-				  "x", timeout);
+				  "x", (uint64_t)(timeout));
 		PACK_COMMON_END(0, 0, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_START);
 		FLUSH_LOCAL_BUF();
@@ -486,7 +486,7 @@ result Semaphore::Acquire(long timeout) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_result_Semaphore__Acquire_long_timeout_,
-				  "x", timeout);
+				  "x", (uint64_t)(timeout));
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_SYNC((unsigned int) this, SYNC_TIZEN_SEMAPHORE, SYNC_API_ACQUIRE_WAIT_END);
 		FLUSH_LOCAL_BUF();

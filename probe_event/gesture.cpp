@@ -44,7 +44,7 @@
 		char info1_str[16];														\
 		setProbePoint(&probeInfo);												\
 		PREPARE_LOCAL_BUF();													\
-		PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID, "p", _ARGDETECTOR);	\
+		PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID, "p", voidp_to_uint64(_ARGDETECTOR));	\
 		PACK_COMMON_END(0, 0, 0);												\
 		sprintf(info1_str, "%d", _INFO1);										\
 		PACK_UIEVENT(_EVENT_GESTURE, _GESTURETYPE, _X, _Y, info1_str, _INFO2);	\

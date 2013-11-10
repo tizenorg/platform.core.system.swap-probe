@@ -206,7 +206,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_char__pOpenMode_,
 				  "sp", absolutize_filepath(buffer, temp),
-				  pOpenMode);
+				  voidp_to_uint64(pOpenMode));
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -262,7 +262,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_char__pOpenMode__const_Tizen__Base__ByteBuffer__secretKey_,
-				  "sp", temp, pOpenMode);
+				  "sp", temp,
+				  voidp_to_uint64(pOpenMode));
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -412,7 +413,7 @@ result File::Read(Tizen::Base::String& buffer) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Read_Tizen__Base__String__buffer_,
-				  "x", (unsigned long)&buffer);
+				  "x", (uint64_t)(&buffer));
 		PACK_COMMON_END(0, 0, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_READ_START, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -432,7 +433,7 @@ result File::Read(Tizen::Base::String& buffer) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Read_Tizen__Base__String__buffer_,
-				  "x", (unsigned long)&buffer);
+				  "x", (uint64_t)(&buffer));
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(nRead, (unsigned long)this, FD_API_READ_END, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -479,7 +480,7 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Read_Tizen__Base__ByteBuffer__buffer_,
-				  "x", (unsigned long)&buffer);
+				  "x", (uint64_t)(&buffer));
 		PACK_COMMON_END(0, 0, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_READ_START, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -499,7 +500,7 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Read_Tizen__Base__ByteBuffer__buffer_,
-				  "x", (unsigned long)&buffer);
+				  "x", (uint64_t)(&buffer));
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(nRead, (unsigned long)this, FD_API_READ_END, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -546,7 +547,7 @@ int File::Read(void *buffer, int length) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_int_File__Read_void__buffer__int_length_,
-				  "xd", (unsigned long)buffer, length);
+				  "xd", (uint64_t)(buffer), length);
 		PACK_COMMON_END(0, 0, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_READ_START, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -567,7 +568,7 @@ int File::Read(void *buffer, int length) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_int_File__Read_void__buffer__int_length_,
-				  "xd", (unsigned long)buffer, length);
+				  "xd", (uint64_t)(buffer), length);
 		PACK_COMMON_END(ret, res, blockresult);
 		PACK_RESOURCE(nRead, (unsigned long)this, FD_API_READ_END, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -632,7 +633,7 @@ result File::Seek(FileSeekPosition position, long offset) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Seek_FileSeekPosition_position__long_offset_,
-				  "sx", temp_pos, offset);
+				  "sx", temp_pos, (uint64_t)(offset));
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OTHER, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -783,7 +784,7 @@ result File::Write(const void *buffer, int length) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Write_const_void__buffer__int_length_,
-				  "xd", (unsigned long)buffer, length);
+				  "xd", (uint64_t)(buffer), length);
 		PACK_COMMON_END(0, 0, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_WRITE_START, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -803,7 +804,7 @@ result File::Write(const void *buffer, int length) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Write_const_void__buffer__int_length_,
-				  "xd", (unsigned long)buffer, length);
+				  "xd", (uint64_t)(buffer), length);
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(nWritten, (unsigned long)this, FD_API_WRITE_END, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -850,7 +851,7 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Write_const_Tizen__Base__ByteBuffer__buffer_,
-				  "x", (unsigned long)&buffer);
+				  "x", (uint64_t)(&buffer));
 		PACK_COMMON_END(0, 0, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_WRITE_START, size, temp);
 		FLUSH_LOCAL_BUF();
@@ -870,7 +871,7 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Write_const_Tizen__Base__ByteBuffer__buffer_,
-				  "x", (unsigned long)&buffer);
+				  "x", (uint64_t)(&buffer));
 		PACK_COMMON_END(ret, ret, blockresult);
 		PACK_RESOURCE(nWritten, (unsigned long)this, FD_API_WRITE_END, size, temp);
 		FLUSH_LOCAL_BUF();

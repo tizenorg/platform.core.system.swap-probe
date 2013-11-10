@@ -158,7 +158,7 @@ off_t lseek(int fd, off_t offset, int whence)
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_lseek,
 				   offret, (unsigned int)offset, fd, FD_API_OTHER,
-				   "dxd", fd, offset, whence);
+				   "dxd", fd, (uint64_t)(offset), whence);
 
 	return offret;
 }
@@ -202,7 +202,8 @@ int ftruncate(int fd, off_t length)
 	ret = ftruncatep(fd, length);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_ftruncate,
-				   ret, (unsigned int)length, fd, FD_API_DIRECTORY, "dx", fd, length);
+			       ret, (unsigned int)length, fd,
+			       FD_API_DIRECTORY, "dx", fd, (uint64_t)(length));
 
 	return ret;
 }
@@ -229,7 +230,7 @@ int lockf(int fd, int function, off_t size)
 	ret = lockfp(fd, function, size);
 	AFTER_PACK_ORIGINAL_FD(API_ID_lockf,
 				   ret, (unsigned int)size, fd, FD_API_PERMISSION,
-				   "ddx", fd, function, size);
+				   "ddx", fd, function, (uint64_t)(size));
 	return ret;
 }
 
@@ -256,12 +257,18 @@ ssize_t pread(int fd, void *buf, size_t nbyte, off_t offset)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_pread, pread, LIBC, fd,
-				FD_API_READ_START, "dpxx", fd, buf, nbyte, offset);
+				     FD_API_READ_START, "dpxx", fd,
+				     voidp_to_uint64(buf),
+				     (uint64_t)(nbyte),
+				     (uint64_t)(offset));
 
 	sret = preadp(fd, buf, nbyte, offset);
 
 	AFTER_ORIGINAL_START_END_FD(API_ID_pread, sret, (unsigned int)sret, fd,
-				FD_API_READ_END, "dpxx", fd, buf, nbyte, offset);
+				    FD_API_READ_END, "dpxx", fd,
+				    voidp_to_uint64(buf),
+				    (uint64_t)(nbyte),
+				    (uint64_t)(offset));
 
 	return sret;
 }
@@ -271,12 +278,15 @@ ssize_t read(int fd, void *buf, size_t nbyte)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_read, read, LIBC, fd, FD_API_READ_START,
-				"dpx", fd, buf, nbyte);
+				     "dpx", fd, voidp_to_uint64(buf),
+				     (uint64_t)(nbyte));
 
 	sret = readp(fd, buf, nbyte);
 
 	AFTER_ORIGINAL_START_END_FD(API_ID_read, sret, (unsigned int)sret, fd,
-				FD_API_READ_END, "dpx", fd, buf, nbyte);
+				    FD_API_READ_END, "dpx", fd,
+				    voidp_to_uint64(buf),
+				    (uint64_t)(nbyte));
 
 	return sret;
 }
@@ -287,13 +297,18 @@ ssize_t pwrite(int fd, const void *buf, size_t nbyte, off_t offset)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_pwrite, pwrite, LIBC, fd, FD_API_WRITE_START,
-				 "dpxx", fd, buf, nbyte, offset);
+				     "dpxx", fd, voidp_to_uint64(buf),
+				     (uint64_t)(nbyte),
+				     (uint64_t)(offset));
 
 	sret = pwritep(fd, buf, nbyte, offset);
 
 	DEFINE_FILESIZE_FD(fd);
 	AFTER_ORIGINAL_START_END_FD(API_ID_pwrite, sret, (unsigned int)sret, fd,
-				   FD_API_WRITE_END, "dpxx", fd, buf, nbyte, offset);
+				   FD_API_WRITE_END, "dpxx", fd,
+				    voidp_to_uint64(buf),
+				    (uint64_t)(nbyte),
+				    (uint64_t)(offset));
 
 	return sret;
 }
@@ -304,13 +319,16 @@ ssize_t write(int fd, const void *buf, size_t nbyte)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_write, write, LIBC, fd, FD_API_WRITE_START,
-				 "dpx", fd, buf, nbyte);
+				     "dpx", fd, voidp_to_uint64(buf),
+				     (uint64_t)(nbyte));
 
 	sret = writep(fd, buf, nbyte);
 
 	DEFINE_FILESIZE_FD(fd);
 	AFTER_ORIGINAL_START_END_FD(API_ID_write, sret, (unsigned int)sret, fd,
-				FD_API_WRITE_END, "dpx", fd, buf, nbyte);
+				    FD_API_WRITE_END, "dpx", fd,
+				    voidp_to_uint64(buf),
+				    (uint64_t)(nbyte));
 
 	return sret;
 }
@@ -322,12 +340,13 @@ ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_readv, readv, LIBC, fd, FD_API_READ_START,
-				 "dpd", fd, iov, iovcnt);
+				     "dpd", fd, voidp_to_uint64(iov), iovcnt);
 
 	sret = readvp(fd,iov,iovcnt);
 
 	AFTER_ORIGINAL_START_END_FD(API_ID_readv, sret, (unsigned int)sret, fd,
-				FD_API_READ_END, "dpd", fd, iov, iovcnt);
+				    FD_API_READ_END, "dpd", fd,
+				    voidp_to_uint64(iov), iovcnt);
 
 	return sret;
 }
@@ -414,7 +433,8 @@ int fstat(int fd, struct stat *buf)
 
 	BEFORE_ORIGINAL_FILE(fstat, LIBC);
 	ret = fstatp(fd, buf);
-	AFTER_PACK_ORIGINAL_FD(ret, 0, fd, FD_API_OTHER, "dp", fd, buf);
+	AFTER_PACK_ORIGINAL_FD(ret, 0, fd, FD_API_OTHER, "dp", fd,
+			       voidp_to_uint64(buf));
 	return ret;
 }
 #endif
@@ -426,6 +446,7 @@ int futimens(int fd, const struct timespec times[2])
 	BEFORE_ORIGINAL_FILE(futimens, LIBC);
 	ret = futimensp(fd, times);
 	AFTER_PACK_ORIGINAL_FD(API_ID_futimens,
-				   ret, 0, fd, FD_API_OTHER, "dp", fd, times);
+			       ret, 0, fd, FD_API_OTHER, "dp", fd,
+			       voidp_to_uint64(times));
 	return ret;
 }

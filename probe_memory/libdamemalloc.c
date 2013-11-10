@@ -153,7 +153,7 @@ void *realloc(void *memblock, size_t size)
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_realloc,
-			  "px", (uint64_t)(int) memblock, (uint64_t) size);
+			  "px", voidp_to_uint64(memblock), (uint64_t) size);
 	PACK_COMMON_END(pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();

@@ -60,7 +60,8 @@ bool touch_pressed = false;
 		setProbePoint(&probeInfo);												\
 		PREPARE_LOCAL_BUF();													\
 		PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID, "pdp",					\
-				  _ARGDATA, _ARGTYPE, _ARGEVENT);								\
+				  voidp_to_uint64(_ARGDATA), _ARGTYPE,	\
+				  voidp_to_uint64(_ARGEVENT));		\
 		PACK_COMMON_END(0, 0, 0);												\
 		PACK_UIEVENT(_EVENTTYPE, _DETAILTYPE, _X, _Y, _KEYCODE, _EXTRA);		\
 		FLUSH_LOCAL_BUF();														\

@@ -107,7 +107,8 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
 			  API_ID_result_UiApp__Execute_UiAppInstanceFactory_pUiAppFactory__const_IList__pArguments_,
-			  "pp", pUiAppFactory, pArguments);
+			  "pp", (uint64_t)(pUiAppFactory),
+			  voidp_to_uint64(pArguments));
 	PACK_COMMON_END(ret, 0, 0);
 	FLUSH_LOCAL_BUF();
 
@@ -131,7 +132,7 @@ void _AppImpl::OnTerminate(void* user_data)
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
 			  API_ID_void__AppImpl__OnTerminate_void__user_data_,
-			  "p", user_data);
+			  "p", voidp_to_uint64(user_data));
 	PACK_COMMON_END(0, 0, 0);
 	FLUSH_LOCAL_BUF();
 
@@ -171,7 +172,7 @@ void _AppInfo::SetAppState(AppState appState)
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
 				  API_ID_void__AppInfo__SetAppState_AppState_appState_,
-				  "p", appState);
+				  "p", (uint64_t)(appState));
 		PACK_COMMON_END(0, 0, 0);
 		FLUSH_LOCAL_BUF();
 	}

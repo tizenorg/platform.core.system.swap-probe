@@ -476,7 +476,7 @@ result Socket::Construct(const NetConnection& netConnection,
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::Construct", VT_ULONG, retVal,
 			(unsigned int)this, (unsigned int)this, SOCKET_API_FD_OPEN, 
 			info, "xddd",
-			(unsigned int)&netConnection, addressFamily, socketType, protocol);
+			(uint64_t)(&netConnection), addressFamily, socketType, protocol);
 
 	return retVal;
 }
@@ -599,7 +599,7 @@ result Socket::Receive(Tizen::Base::ByteBuffer& buffer) const {
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::Receive", VT_NULL, NULL,
 			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_START,
-			info, "x", (unsigned int)&buffer);
+			info, "x", (uint64_t)(&buffer));
 
 	pret = (this->*Receivep)(buffer);
 
@@ -612,7 +612,7 @@ result Socket::Receive(Tizen::Base::ByteBuffer& buffer) const {
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::Receive", VT_ULONG, pret,
 			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_END,
-			info, "x", (unsigned int)&buffer);
+			info, "x", (uint64_t)(&buffer));
 	return pret;
 }
 
@@ -626,19 +626,29 @@ result Socket::Receive(void* pBuffer, int length, int& rcvdLength) const {
 			_ZNK5Tizen3Net7Sockets6Socket11ReceiveFromEPviRNS0_11NetEndPointERi,
 			Receivep);
 
-	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::Receive", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_START, 
-			info, "xdx",
-			(unsigned int)&pBuffer, length, rcvdLength);
+	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::Receive", VT_NULL,
+						  NULL,
+						  (unsigned int)this,
+						  (unsigned int)this,
+						  SOCKET_API_RECV_START,
+						  info, "xdx",
+						  (uint64_t)(&pBuffer),
+						  length,
+						  (uint64_t)(rcvdLength));
 
 	pret = (this->*Receivep)(pBuffer, length, rcvdLength);
 	info.msg_buf = (char *)pBuffer;
 	info.msg_total_size = rcvdLength;
 	info.msg_pack_size = rcvdLength > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : rcvdLength;
 
-	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::Receive", VT_ULONG, pret,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_RECV_END,
-			info, "xdx", (unsigned int)&pBuffer, length, rcvdLength);
+	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::Receive", VT_ULONG,
+						pret,
+						(unsigned int)this,
+						(unsigned int)this,
+						SOCKET_API_RECV_END,
+						info, "xdx",
+						(uint64_t)(&pBuffer), length,
+						(uint64_t)(rcvdLength));
 
 	return pret;
 }
@@ -665,7 +675,7 @@ result Socket::ReceiveFrom(Tizen::Base::ByteBuffer& buffer,
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::ReceiveFrom", VT_NULL,
 			NULL, (unsigned int)this, (unsigned int)this, SOCKET_API_RECV_START,
 			
-			info, "xs", (unsigned int)&buffer, temp);
+			info, "xs", (uint64_t)(&buffer), temp);
 
 	pret = (this->*ReceiveFromp)(buffer, remoteEndPoint);
 
@@ -683,7 +693,7 @@ result Socket::ReceiveFrom(Tizen::Base::ByteBuffer& buffer,
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::ReceiveFrom", VT_ULONG,
 			pret, (unsigned int)this, (unsigned int)this, SOCKET_API_RECV_END,
-			info, "xs", (unsigned int)&buffer, temp);
+			info, "xs", (uint64_t)(&buffer), temp);
 	delete [] out;
 	return pret;
 }
@@ -706,10 +716,15 @@ result Socket::ReceiveFrom(void* pBuffer, int length,
 	info.host_port = remoteEndPoint.GetPort();
 	iv4PeerAddr->GetAddress(&info.host_ip);
 
-	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::ReceiveFrom", VT_NULL,
-			NULL, (unsigned int)this, (unsigned int)this, SOCKET_API_RECV_START,
-			 info, "xdsx",
-			(unsigned int)&pBuffer, length, temp, rcvdLength);
+	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::ReceiveFrom",
+						  VT_NULL,
+						  NULL, (unsigned int)this,
+						  (unsigned int)this,
+						  SOCKET_API_RECV_START,
+						  info, "xdsx",
+						  (uint64_t)(&pBuffer),
+						  length, temp,
+						  (uint64_t)(rcvdLength));
 
 	pret = (this->*ReceiveFromp)(pBuffer, length, remoteEndPoint, rcvdLength);
 
@@ -718,8 +733,13 @@ result Socket::ReceiveFrom(void* pBuffer, int length,
 	info.msg_pack_size = length > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : length;
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::ReceiveFrom", VT_ULONG,
-			pret, (unsigned int)this, (unsigned int)this, SOCKET_API_RECV_END,
-			info, "xdsx", (unsigned int)&pBuffer, length, temp, rcvdLength);
+						pret, (unsigned int)this,
+						(unsigned int)this,
+						SOCKET_API_RECV_END,
+						info, "xdsx",
+						(uint64_t)(&pBuffer),
+						length, temp,
+						(uint64_t)(rcvdLength));
 
 	return pret;
 }
@@ -733,8 +753,11 @@ result Socket::Send(Tizen::Base::ByteBuffer& buffer) {
 			_ZN5Tizen3Net7Sockets6Socket4SendERNS_4Base10ByteBufferE, Sendp);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::Send", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_START,
-			info, "x", (unsigned int)&buffer);
+						  (unsigned int)this,
+						  (unsigned int)this,
+						  SOCKET_API_SEND_START,
+						  info, "x",
+						  (uint64_t)(&buffer));
 
 	pret = (this->*Sendp)(buffer);
 	int bufferSize = buffer.GetLimit();
@@ -750,8 +773,11 @@ result Socket::Send(Tizen::Base::ByteBuffer& buffer) {
 	info.msg_pack_size = bufferSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : bufferSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::Send", VT_ULONG, pret,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_END,
-			info, "x", (unsigned int)&buffer);
+						(unsigned int)this,
+						(unsigned int)this,
+						SOCKET_API_SEND_END,
+						info, "x",
+						(uint64_t)(&buffer));
 	delete [] out;
 	return pret;
 }
@@ -767,9 +793,13 @@ result Socket::Send(void* pBuffer, int length, int& sentLength) {
 			Sendp);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::Send", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_START, 
-			info, "xdx",
-			(unsigned int)&pBuffer, length, (unsigned int)&sentLength);
+						  (unsigned int)this,
+						  (unsigned int)this,
+						  SOCKET_API_SEND_START,
+						  info, "xdx",
+						  (uint64_t)(&pBuffer),
+						  length,
+						  (uint64_t)(&sentLength));
 
 	pret = (this->*Sendp)(pBuffer, length, sentLength);
 
@@ -778,8 +808,12 @@ result Socket::Send(void* pBuffer, int length, int& sentLength) {
 	info.msg_pack_size = length > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : length;
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::Send", VT_ULONG, pret,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_END,
-			info, "xdx", (unsigned int)&pBuffer, length, (unsigned int)&sentLength);
+						(unsigned int)this,
+						(unsigned int)this,
+						SOCKET_API_SEND_END,
+						info, "xdx",
+						(uint64_t)(&pBuffer), length,
+						(uint64_t)(&sentLength));
 
 	return pret;
 
@@ -805,8 +839,12 @@ result Socket::SendTo(Tizen::Base::ByteBuffer& buffer,
 	iv4PeerAddr->GetAddress(&info.host_ip);
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_START("Socket::SendTo", VT_NULL, NULL,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_START, 
-			info, "xs", (unsigned int)&buffer, temp);
+						  (unsigned int)this,
+						  (unsigned int)this,
+						  SOCKET_API_SEND_START, 
+						  info, "xs",
+						  (uint64_t)(&buffer),
+						  temp);
 
 	pret = (this->*SendTop)(buffer, remoteEndPoint);
 
@@ -823,8 +861,12 @@ result Socket::SendTo(Tizen::Base::ByteBuffer& buffer,
 	info.msg_pack_size = bufferSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : bufferSize;
 
 	AFTER_ORIGINAL_TIZEN_SOCK_WAIT_FUNC_END("Socket::SendTo", VT_ULONG, pret,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_SEND_END,
-			info, "xs", (unsigned int)&buffer, temp);
+						(unsigned int)this,
+						(unsigned int)this,
+						SOCKET_API_SEND_END,
+						info, "xs",
+						(uint64_t)(&buffer),
+						temp);
 	delete [] out;
 	return pret;
 }
@@ -918,8 +960,9 @@ result Socket::Ioctl(NetSocketIoctlCmd cmd, unsigned long& value) const {
 	retVal = (this->*Ioctlp)(cmd, value);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::Ioctl", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
-			"dx", cmd, (unsigned int) &value);
+				  (unsigned int)this, (unsigned int)this,
+				  SOCKET_API_OTHER, info,
+				  "dx", cmd, (uint64_t)(&value));
 
 	return retVal;
 }
@@ -957,9 +1000,10 @@ result Socket::SetSockOpt(NetSocketOptLevel optionLevel,
 	retVal = (this->*SetSockOptp)(optionLevel, optionName, optionValue);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::SetSockOpt", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
-			"ddx",
-			optionLevel, optionName, (unsigned int) &optionValue);
+				  (unsigned int)this, (unsigned int)this,
+				  SOCKET_API_OTHER, info,
+				  "ddx", optionLevel, optionName,
+				  (uint64_t)(&optionValue));
 
 	return retVal;
 }
@@ -979,9 +1023,10 @@ result Socket::SetSockOpt(NetSocketOptLevel optionLevel,
 	retVal = (this->*SetSockOptp)(optionLevel, optionName, optionValue);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::SetSockOpt", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
-			"ddx",
-			optionLevel, optionName, (unsigned int) &optionValue);
+				  (unsigned int)this, (unsigned int)this,
+				  SOCKET_API_OTHER, info,
+				  "ddx", optionLevel, optionName,
+				  (uint64_t)(&optionValue));
 
 	return retVal;
 }
@@ -1000,9 +1045,10 @@ result Socket::GetSockOpt(NetSocketOptLevel optionLevel,
 	retVal = (this->*GetSockOptp)(optionLevel, optionName, optionValue);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::GetSockOpt", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
-			"ddx",
-			optionLevel, optionName, (unsigned int) &optionValue);
+				  (unsigned int)this, (unsigned int)this,
+				  SOCKET_API_OTHER, info,
+				  "ddx", optionLevel, optionName,
+				  (uint64_t)(&optionValue));
 
 	return retVal;
 }
@@ -1021,9 +1067,10 @@ result Socket::GetSockOpt(NetSocketOptLevel optionLevel,
 	retVal = (this->*GetSockOptp)(optionLevel, optionName, optionValue);
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::GetSockOpt", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
-			"ddx",
-			optionLevel, optionName, (unsigned int) &optionValue);
+				  (unsigned int)this, (unsigned int)this,
+				  SOCKET_API_OTHER, info,
+				  "ddx", optionLevel, optionName,
+				  (uint64_t)(&optionValue));
 
 	return retVal;
 }
@@ -1041,7 +1088,7 @@ result Socket::RemoveSocketListener(ISocketEventListener& listener) {
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::RemoveSocketListener", VT_ULONG, retVal,
 			(unsigned int)this, (unsigned int)this, SOCKET_API_OTHER, info,
-			"x", (unsigned int) &listener);
+			"x", (uint64_t)(&listener));
 
 	return retVal;
 }
