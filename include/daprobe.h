@@ -273,7 +273,7 @@ typedef struct {
 	if(postBlockBegin(blockresult)) {										\
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
-		PACK_COMMON_END('p', RETVALUE, errno, blockresult);
+		PACK_COMMON_END(RETTYPE, RETVALUE, errno, blockresult);
 
 #define POST_PROBEBLOCK_END() 						\
 		FLUSH_LOCAL_BUF();						\

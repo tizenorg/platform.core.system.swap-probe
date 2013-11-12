@@ -37,23 +37,23 @@
 extern "C"{
 #endif
 
-#define		VT_INT			1
-#define		VT_UINT			2
-#define		VT_LONG			3
-#define		VT_ULONG		4
-#define		VT_STR			5
-#define		VT_CHAR			6
-#define		VT_PTR			7
-#define		VT_NULL			8
-#define		VT_OFF_T		9
-#define		VT_SIZE_T		10
-#define		VT_SSIZE_T		11
-#define		VT_SOCKLEN_T		12
-#define		VT_UINT16_T		13
-#define		VT_UINT32_T		14
-#define		VT_UINT64_T		15
-#define		VT_MODE_T		16
-#define		VT_DEV_T		17
+#define		VT_INT			'd'
+#define		VT_UINT			'd'
+#define		VT_LONG			'x'
+#define		VT_ULONG		'x'
+#define		VT_STR			's'
+#define		VT_CHAR			'c'
+#define		VT_PTR			'p'
+#define		VT_NULL			'x'
+#define		VT_OFF_T		'd'
+#define		VT_SIZE_T		'x'
+#define		VT_SSIZE_T		'x'
+#define		VT_SOCKLEN_T		'd'
+#define		VT_UINT16_T		'd'
+#define		VT_UINT32_T		'd'
+#define		VT_UINT64_T		'x'
+#define		VT_MODE_T		'd'
+#define		VT_DEV_T		'd'
 
 /* #define		LC_MEMORY		1 */
 /* #define		LC_UICREATE		2 */

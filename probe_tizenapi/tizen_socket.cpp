@@ -525,7 +525,7 @@ result Socket::Connect(const Tizen::Net::NetEndPoint& remoteEndPoint) {
 
 
 	AFTER_ORIGINAL_TIZEN_SOCK("Socket::Connect", VT_ULONG, retVal,
-			(unsigned int)this, (unsigned int)this, SOCKET_API_CONNECT, 
+			(unsigned int)this, (unsigned int)this, SOCKET_API_CONNECT,
 			info, "s", addressInfo);
 
 	return retVal;

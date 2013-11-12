@@ -80,7 +80,7 @@ int socket(int domain, int type, int protocol) {
 	BEFORE_ORIGINAL_SOCK(socket, LIBC);
 	ret = socketp(domain, type, protocol);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
 				 "ddd", domain, type, protocol);
 
 	return ret;
@@ -94,16 +94,18 @@ int accept(int socket, struct sockaddr *address, socklen_t *address_len) {
 	BEFORE_ORIGINAL_SOCK(accept, LIBC);
 
 	char* callAddress = getAddress(address);
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, socket,
-			SOCKET_API_ACCEPT_START, info, "dsp",
-			socket, callAddress, voidp_to_uint64(address_len));
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, socket,
+						 SOCKET_API_ACCEPT_START, info,
+						 "dsp", socket, callAddress,
+						 voidp_to_uint64(address_len));
 
 	ret = acceptp(socket, address, address_len);
 	info.sock = (struct sockaddr *)address;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(ret, OBJ_DUMMY, socket,
-			SOCKET_API_ACCEPT_END, info, "dsp",
-			socket, callAddress, voidp_to_uint64(address_len));
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, socket,
+					       SOCKET_API_ACCEPT_END, info,
+					       "dsp", socket, callAddress,
+					       voidp_to_uint64(address_len));
 
 	return ret;
 }
@@ -115,16 +117,19 @@ int accept4(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags) {
 	BEFORE_ORIGINAL_SOCK(accept4, LIBC);
 	char* callAddress = getAddress(addr);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, sockfd,
-			SOCKET_API_ACCEPT_START, info, "dspd",
-			sockfd, callAddress, voidp_to_uint64(addrlen), flags);
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, sockfd,
+						 SOCKET_API_ACCEPT_START, info,
+						 "dspd", sockfd, callAddress,
+						 voidp_to_uint64(addrlen),
+						 flags);
 
 	ret = accept4p(sockfd, addr, addrlen, flags);
 	info.sock = (struct sockaddr *)addr;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(ret, OBJ_DUMMY, sockfd,
-			SOCKET_API_ACCEPT_END, info,  "dspd",
-			sockfd, callAddress, voidp_to_uint64(addrlen), flags);
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, sockfd,
+					       SOCKET_API_ACCEPT_END, info,
+					       "dspd", sockfd, callAddress,
+					       voidp_to_uint64(addrlen), flags);
 
 	return ret;
 }
@@ -138,7 +143,7 @@ int connect(int socket, const struct sockaddr *address, socklen_t address_len) {
 	ret = connectp(socket, address, address_len);
 	info.sock = (struct sockaddr *)address;
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, socket, SOCKET_API_CONNECT,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_CONNECT,
 			info, "dsd",
 			socket, getAddress(address), address_len);
 
@@ -152,7 +157,7 @@ int shutdown(int socket, int how) {
 
 	ret = shutdownp(socket, how);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, socket, SOCKET_API_FD_CLOSE,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_FD_CLOSE,
 			info, "dd", socket, how);
 
 	return ret;
@@ -167,7 +172,7 @@ int bind(int socket, const struct sockaddr *address, socklen_t address_len) {
 	ret = bindp(socket, address, address_len);
 	info.sock = (struct sockaddr *)address;
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, socket, SOCKET_API_BIND,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_BIND,
 			info, "dsd", socket, getAddress(address), address_len);
 
 	return ret;
@@ -178,7 +183,7 @@ int listen(int socket, int backlog) {
 	BEFORE_ORIGINAL_SOCK(listen, LIBC);
 	ret = listenp(socket, backlog);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, socket, SOCKET_API_LISTEN,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_LISTEN,
 				 info, "dd", socket, backlog);
 
 	return ret;
@@ -192,9 +197,11 @@ ssize_t send(int socket, const void *message, size_t length, int flags) {
 
 	char *messagP = (char *)message;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, socket,
-			SOCKET_API_SEND_START, info, "dpdd",
-			socket, voidp_to_uint64(messagP), length, flags);
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
+						  SOCKET_API_SEND_START, info,
+						  "dpdd", socket,
+						  voidp_to_uint64(messagP),
+						  length, flags);
 
 	sret = sendp(socket, message, length, flags);
 	result = sret;
@@ -204,9 +211,11 @@ ssize_t send(int socket, const void *message, size_t length, int flags) {
 	info.msg_pack_size = result>SOCKET_SEND_SIZE?SOCKET_SEND_SIZE:result;
 	info.msg_buf = messagP;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(sret, OBJ_DUMMY, socket,
-			SOCKET_API_SEND_END, info, "dpdd",
-			socket, voidp_to_uint64(messagP), length, flags);
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
+					       SOCKET_API_SEND_END, info,
+					       "dpdd", socket,
+					       voidp_to_uint64(messagP),
+					       length, flags);
 	return sret;
 }
 
@@ -218,9 +227,11 @@ ssize_t recv(int socket, void *buffer, size_t length, int flags) {
 
 	char *bufferP = (char *)buffer;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, socket,
-			SOCKET_API_RECV_START, info, "dpdd",
-			socket, voidp_to_uint64(bufferP), length, flags);
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
+						 SOCKET_API_RECV_START, info,
+						 "dpdd", socket,
+						 voidp_to_uint64(bufferP),
+						 length, flags);
 
 	sret = recvp(socket, buffer, length, flags);
 	result = sret;
@@ -230,9 +241,11 @@ ssize_t recv(int socket, void *buffer, size_t length, int flags) {
 	info.msg_pack_size = result>SOCKET_SEND_SIZE?SOCKET_SEND_SIZE:result;
 	info.msg_buf = bufferP;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(sret, OBJ_DUMMY, socket,
-			SOCKET_API_RECV_END, info, "dpdd",
-			socket, voidp_to_uint64(bufferP), length, flags);
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
+					       SOCKET_API_RECV_END, info,
+					       "dpdd", socket,
+					       voidp_to_uint64(bufferP),
+					       length, flags);
 	return sret;
 }
 
@@ -247,10 +260,9 @@ ssize_t sendto(int socket, const void *message, size_t length, int flags,
 	char *bufferP = (char *)message;
 	info.sock = (struct sockaddr *) dest_addr;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, socket,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
 						 SOCKET_API_SEND_START, info,
-						 "dpddpd",
-						 socket,
+						 "dpddpd", socket,
 						 voidp_to_uint64(bufferP),
 						 length, flags,
 						 voidp_to_uint64(dest_addr),
@@ -264,14 +276,12 @@ ssize_t sendto(int socket, const void *message, size_t length, int flags,
 	info.msg_pack_size = result>SOCKET_SEND_SIZE?SOCKET_SEND_SIZE:result;
 	info.msg_buf = bufferP;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(sret, OBJ_DUMMY, socket,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
 					       SOCKET_API_SEND_END, info,
-					       "dpddpd",
-					       socket,
+					       "dpddpd", socket,
 					       voidp_to_uint64(bufferP),
 					       length, flags,
-					       voidp_to_uint64(dest_addr),
-					       dest_len);
+					       voidp_to_uint64(dest_addr), dest_len);
 	return sret;
 }
 
@@ -285,12 +295,12 @@ ssize_t recvfrom(int socket, void *buffer, size_t length, int flags,
 
 	char *bufferP = (char *)buffer;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, socket,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
 						 SOCKET_API_RECV_START, info,
-						 "dpddpp",
-						 socket,
-						 voidp_to_uint64(bufferP), length,
-						 flags, voidp_to_uint64(address),
+						 "dpddpp", socket,
+						 voidp_to_uint64(bufferP),
+						 length, flags,
+						 voidp_to_uint64(address),
 						 voidp_to_uint64(address_len));
 
 	sret = recvfromp(socket, buffer, length, flags, address, address_len);
@@ -303,11 +313,12 @@ ssize_t recvfrom(int socket, void *buffer, size_t length, int flags,
 	info.msg_pack_size = result>SOCKET_SEND_SIZE?SOCKET_SEND_SIZE:result;
 	info.msg_buf = bufferP;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(sret, OBJ_DUMMY, socket,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
 					       SOCKET_API_RECV_END, info,
 					       "dpddpp", socket,
-					       voidp_to_uint64(bufferP), length,
-					       flags, voidp_to_uint64(address),
+					       voidp_to_uint64(bufferP),
+					       length, flags,
+					       voidp_to_uint64(address),
 					       voidp_to_uint64(address_len));
 	return sret;
 }
@@ -320,10 +331,11 @@ ssize_t recvmsg(int socket, struct msghdr *message, int flags) {
 
 	int* bufferP = (int*) message->msg_name;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, socket,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
 						 SOCKET_API_RECV_START, info,
 						 "dpd", socket,
-						 voidp_to_uint64(message), flags);
+						 voidp_to_uint64(message),
+						 flags);
 
 	sret = recvmsgp(socket, message, flags);
 	if (sret <= 0) {
@@ -346,7 +358,7 @@ ssize_t recvmsg(int socket, struct msghdr *message, int flags) {
 		}
 	}
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(sret, OBJ_DUMMY, socket,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
 					       SOCKET_API_RECV_END, info, "dpd",
 					       socket, voidp_to_uint64(bufferP),
 					       flags);
@@ -363,11 +375,11 @@ ssize_t sendmsg(int socket, const struct msghdr *message, int flags) {
 
 	int* bufferP = (int*) message->msg_name;
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, socket,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
 						 SOCKET_API_SEND_START, info,
-						 "dpd",
-						 socket,
-						 voidp_to_uint64(message), flags);
+						 "dpd", socket,
+						 voidp_to_uint64(message),
+						 flags);
 
 	sret = sendmsgp(socket, message, flags);
 	if (sret <= 0) {
@@ -389,10 +401,10 @@ ssize_t sendmsg(int socket, const struct msghdr *message, int flags) {
 		}
 	}
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(sret, OBJ_DUMMY, socket,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
 					       SOCKET_API_SEND_END, info, "dpd",
-					       socket,
-					       voidp_to_uint64(bufferP), flags);
+					       socket, voidp_to_uint64(bufferP),
+					       flags);
 	free(out);
 	return sret;
 }
@@ -406,8 +418,8 @@ int getsockopt(int socket, int level, int option_name, void *option_value,
 
 	ret = getsockoptp(socket, level, option_name, option_value, option_len);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, socket, SOCKET_API_OTHER, info,
-				 "dddpp", socket, level, option_name,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_OTHER,
+				 info, "dddpp", socket, level, option_name,
 				 voidp_to_uint64(option_value),
 				 voidp_to_uint64(option_len));
 
@@ -423,8 +435,8 @@ int setsockopt(int socket, int level, int option_name, const void *option_value,
 
 	ret = setsockoptp(socket, level, option_name, option_value, option_len);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, socket, SOCKET_API_OTHER, info,
-				 "dddpd", socket, level, option_name,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_OTHER,
+				 info, "dddpd", socket, level, option_name,
 				 voidp_to_uint64(option_value), option_len);
 
 	return ret;
@@ -438,8 +450,8 @@ int getpeername(int fd, struct sockaddr *addr, socklen_t *len) {
 	ret = getpeernamep(fd, addr, len);
 	info.sock = (struct sockaddr *)addr;
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, fd, SOCKET_API_OTHER, info,
-				 "dsp", fd, getAddress(addr),
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, fd, SOCKET_API_OTHER,
+				 info, "dsp", fd, getAddress(addr),
 				 voidp_to_uint64(len));
 	return ret;
 }
@@ -453,8 +465,8 @@ int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
 	ret = getsocknamep(sockfd, addr, addrlen);
 	info.sock = (struct sockaddr *)addr;
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, sockfd, SOCKET_API_OTHER, info,
-				 "dsp", sockfd, getAddress(addr),
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, sockfd, SOCKET_API_OTHER,
+				 info, "dsp", sockfd, getAddress(addr),
 				 voidp_to_uint64(addrlen));
 
 	return ret;
@@ -468,7 +480,7 @@ int socketpair(int domain, int type, int protocol, int socket_vector[2]) {
 
 	ret = socketpairp(domain, type, protocol, socket_vector);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, socket_vector[0],
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket_vector[0],
 			SOCKET_API_FD_OPEN, info, "ddddd",
 			domain, type, protocol, socket_vector[0], socket_vector[1]);
 
@@ -482,7 +494,7 @@ int sockatmark(int __fd) {
 
 	ret = sockatmarkp(__fd);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, __fd,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, __fd,
 			SOCKET_API_OTHER, info, "d", __fd);
 	return ret;
 }
@@ -494,7 +506,7 @@ int isfdtype(int __fd, int __fdtype) {
 
 	ret = isfdtypep(__fd, __fdtype);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, __fd, SOCKET_API_OTHER, info,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, __fd, SOCKET_API_OTHER, info,
 				 "dd", __fd, __fdtype);
 	return ret;
 }
@@ -506,7 +518,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 
 	BEFORE_ORIGINAL_SOCK(select, LIBC);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, 0,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, 0,
 						 SOCKET_API_EVENT_START, info,
 						 "dpppp", nfds,
 						 voidp_to_uint64(readfds),
@@ -516,7 +528,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 
 	ret = selectp(nfds, readfds, writefds, exceptfds, timeout);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(ret, OBJ_DUMMY, 0,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, 0,
 					       SOCKET_API_EVENT_END, info,
 					       "dpppp", nfds,
 					       voidp_to_uint64(readfds),
@@ -535,9 +547,9 @@ int pselect(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 
 	BEFORE_ORIGINAL_SOCK(pselect, LIBC);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, 0,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, 0,
 						 SOCKET_API_EVENT_START, info,
-						 "dppppp", nfds,
+						 "dppppp",nfds,
 						 voidp_to_uint64(readfds),
 						 voidp_to_uint64(writefds),
 						 voidp_to_uint64(exceptfds),
@@ -546,7 +558,7 @@ int pselect(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 
 	ret = pselectp(nfds, readfds, writefds, exceptfds, ntimeout, sigmask);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(ret, OBJ_DUMMY, 0,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, 0,
 					       SOCKET_API_EVENT_END, info,
 					       "dppppp", nfds,
 					       voidp_to_uint64(readfds),
@@ -563,14 +575,14 @@ int poll(struct pollfd *fds, nfds_t nfds, int timeout) {
 
 	BEFORE_ORIGINAL_SOCK(poll, LIBC);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, fds->fd,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, fds->fd,
 						 SOCKET_API_EVENT_START, info,
 						 "pxd", voidp_to_uint64(fds),
 						 (uint64_t)(nfds), timeout);
 
 	ret = pollp(fds, nfds, timeout);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(ret, OBJ_DUMMY, fds->fd,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, fds->fd,
 					       SOCKET_API_EVENT_END, info,
 					       "pxd", voidp_to_uint64(fds),
 					       (uint64_t)(nfds), timeout);
@@ -585,7 +597,7 @@ int ppoll(struct pollfd *fds, nfds_t nfds, const struct timespec *timeout_ts,
 
 	BEFORE_ORIGINAL_SOCK(ppoll, LIBC);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, fds->fd,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, fds->fd,
 						 SOCKET_API_EVENT_START, info,
 						 "pxpp",
 						 voidp_to_uint64(fds),
@@ -595,7 +607,7 @@ int ppoll(struct pollfd *fds, nfds_t nfds, const struct timespec *timeout_ts,
 
 	ret = ppollp(fds, nfds, timeout_ts, sigmask);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(ret, OBJ_DUMMY, fds->fd,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, fds->fd,
 					       SOCKET_API_EVENT_END, info,
 					       "pxpp",
 					       voidp_to_uint64(fds),
@@ -612,7 +624,7 @@ int epoll_create(int __size) {
 
 	ret = epoll_createp(__size);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
 				 "d", __size);
 	return ret;
 }
@@ -623,7 +635,7 @@ int epoll_create1(int __flags) {
 
 	ret = epoll_create1p(__flags);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
 				 "d", __flags);
 	return ret;
 }
@@ -634,7 +646,7 @@ int epoll_wait(int __epfd, struct epoll_event *__events, int __maxevents,
 			int __maxevents, int __timeout);
 	BEFORE_ORIGINAL_SOCK(epoll_wait, LIBC);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, __epfd,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, __epfd,
 						 SOCKET_API_EVENT_START, info,
 						 "dpdd", __epfd,
 						 voidp_to_uint64(__events),
@@ -642,7 +654,7 @@ int epoll_wait(int __epfd, struct epoll_event *__events, int __maxevents,
 
 	ret = epoll_waitp(__epfd, __events, __maxevents, __timeout);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(ret, OBJ_DUMMY, __epfd,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, __epfd,
 					       SOCKET_API_EVENT_END, info,
 					       "dpdd", __epfd,
 					       voidp_to_uint64(__events),
@@ -657,17 +669,16 @@ int epoll_pwait(int __epfd, struct epoll_event *__events, int __maxevents,
 			int __maxevents, int __timeout, __const                          __sigset_t *__ss);
 	BEFORE_ORIGINAL_SOCK(epoll_pwait, LIBC);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START(NULL, OBJ_DUMMY, __epfd,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, __epfd,
 						 SOCKET_API_EVENT_START, info,
 						 "dpddp", __epfd,
 						 voidp_to_uint64(__events),
-						 __maxevents,
-						 __timeout,
+						 __maxevents, __timeout,
 						 voidp_to_uint64(__ss));
 
 	ret = epoll_pwaitp(__epfd, __events, __maxevents, __timeout, __ss);
 
-	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END(ret, OBJ_DUMMY, __epfd,
+	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, __epfd,
 					       SOCKET_API_EVENT_END, info,
 					       "dpddp", __epfd,
 					       voidp_to_uint64(__events),
@@ -685,8 +696,8 @@ int epoll_ctl(int __epfd, int __op, int __fd, struct epoll_event *__event) {
 
 	ret = epoll_ctlp(__epfd, __op, __fd, __event);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, __fd, SOCKET_API_OTHER, info,
-				 "dddp", __epfd, __op, __fd,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, __fd, SOCKET_API_OTHER,
+				 info, "dddp", __epfd, __op, __fd,
 				 voidp_to_uint64(__event));
 	return ret;
 }
@@ -702,8 +713,8 @@ uint32_t htonl(uint32_t hostlong) {
 
 	uret = htonlp(hostlong);
 
-	AFTER_ORIGINAL_LIBC_SOCK(VT_UINT32_T, uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info "d", hostlong);
+	AFTER_ORIGINAL_LIBC_SOCK('d', uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+			info, "d", hostlong);
 
 	return uret;
 }
@@ -716,8 +727,8 @@ uint16_t htons(uint16_t hostshort) {
 
 	uret = htonsp(hostshort);
 
-	AFTER_ORIGINAL_LIBC_SOCK(VT_UINT16_T, uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info "d", hostshort);
+	AFTER_ORIGINAL_LIBC_SOCK('d', (uint32_t)uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+			info, "d", hostshort);
 
 	return uret;
 }
@@ -729,7 +740,7 @@ int inet_aton(const char *cp, struct in_addr *inp) {
 
 	ret = inet_atonp(cp, inp);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "pp", voidp_to_uint64(cp),
 				 voidp_to_uint64(inp));
 
@@ -773,7 +784,7 @@ char *inet_ntoa(struct in_addr in) {
 	sret = inet_ntoap(in);
 
 	AFTER_ORIGINAL_LIBC_SOCK(sret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "d", in.s_addr);
+				 info, "d", in.s_addr);
 
 	return sret;
 }
@@ -786,8 +797,8 @@ uint32_t ntohl(uint32_t netlong) {
 
 	uret = ntohlp(netlong);
 
-	AFTER_ORIGINAL_LIBC_SOCK(VT_UINT32_T, uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info "d", netlong);
+	AFTER_ORIGINAL_LIBC_SOCK('d', uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "d", netlong);
 
 	return uret;
 }
@@ -800,8 +811,8 @@ uint16_t ntohs(uint16_t netshort) {
 
 	uret = ntohsp(netshort);
 
-	AFTER_ORIGINAL_LIBC_SOCK(VT_UINT16_T, uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info "d", netshort);
+	AFTER_ORIGINAL_LIBC_SOCK('d', (uint32_t)uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "d", netshort);
 
 	return uret;
 }
@@ -814,8 +825,8 @@ in_addr_t inet_lnaof(struct in_addr in) {
 
 	iret = inet_lnaofp(in);
 
-	AFTER_ORIGINAL_LIBC_SOCK(VT_UINT32_T, iret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info "d", in.s_addr);
+	AFTER_ORIGINAL_LIBC_SOCK('d', iret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "d", in.s_addr);
 
 	return iret;
 }
@@ -828,8 +839,8 @@ in_addr_t inet_netof(struct in_addr in) {
 
 	iret = inet_netofp(in);
 
-	AFTER_ORIGINAL_LIBC_SOCK(VT_UINT32_T, iret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info "d", in.s_addr);
+	AFTER_ORIGINAL_LIBC_SOCK('d', iret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "d", in.s_addr);
 
 	return iret;
 }
@@ -844,8 +855,7 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size) {
 	cret = inet_ntopp(af, src, dst, size);
 
 	AFTER_ORIGINAL_LIBC_SOCK(cret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "dppd", af, voidp_to_uint64(src),
-				 voidp_to_uint64(dst), size);
+				 info, "dppd", af, voidp_to_uint64(src), voidp_to_uint64(dst), size);
 
 	return cret;
 }
@@ -857,9 +867,8 @@ int inet_pton(int af, const char *src, void *dst) {
 
 	ret = inet_ptonp(af, src, dst);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "dpp", af, voidp_to_uint64(src),
-				 voidp_to_uint64(dst));
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "dpp", af, voidp_to_uint64(src), voidp_to_uint64(dst));
 
 	return ret;
 }
@@ -873,12 +882,8 @@ int getaddrinfo(const char *node, const char *service,
 
 	ret = getaddrinfop(node, service, hints, res);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pppp",
-				 voidp_to_uint64(node),
-				 voidp_to_uint64(service),
-				 voidp_to_uint64(hints),
-				 voidp_to_uint64(res));
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "pppp", voidp_to_uint64(node), voidp_to_uint64(service), voidp_to_uint64(hints), voidp_to_uint64(res));
 
 	return ret;
 }
@@ -917,9 +922,8 @@ int gai_suspend(const struct gaicb* const list[], int nitems,
 
 	ret = gai_suspendp(list, nitems, timeout);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pdp", voidp_to_uint64(list), nitems,
-				 voidp_to_uint64(timeout));
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "pdp", voidp_to_uint64(list), nitems, voidp_to_uint64(timeout));
 
 	return ret;
 }
@@ -931,7 +935,7 @@ int gai_error(struct gaicb *req) {
 
 	ret = gai_errorp(req);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "p", voidp_to_uint64(req));
 
 	return ret;
@@ -944,7 +948,7 @@ int gai_cancel(struct gaicb *req) {
 
 	ret = gai_cancelp(req);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "p", voidp_to_uint64(req));
 
 	return ret;
@@ -959,10 +963,8 @@ int getaddrinfo_a(int mode, struct gaicb *list[], int nitems,
 
 	ret = getaddrinfo_ap(mode, list, nitems, sevp);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "dpdp", mode,
-				 voidp_to_uint64(list), nitems,
-				 voidp_to_uint64(sevp));
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "dpdp", mode, voidp_to_uint64(list), nitems, voidp_to_uint64(sevp));
 
 	return ret;
 }
@@ -974,9 +976,9 @@ int getdomainname(char *name, size_t len) {
 
 	ret = getdomainnamep(name, len);
 
-	//AFTER_ORIGINAL_NOSOCK(FD_API_OTHER, "pd", name, len);
+	//AFTER_ORIGINAL_NOSOCK(FD_API_OTHER, "pd", voidp_to_uint64(name), len);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "pd", voidp_to_uint64(name), len);
 
 	return ret;
@@ -989,7 +991,7 @@ int setdomainname(const char *name, size_t len) {
 
 	ret = setdomainnamep(name, len);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "pd", voidp_to_uint64(name), len);
 
 	return ret;
@@ -1002,7 +1004,7 @@ int gethostname(char *name, size_t len) {
 
 	ret = gethostnamep(name, len);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "pd", voidp_to_uint64(name), len);
 
 	return ret;
@@ -1015,7 +1017,7 @@ int sethostname(const char *name, size_t len) {
 
 	ret = sethostnamep(name, len);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "pd", voidp_to_uint64(name), len);
 
 	return ret;
@@ -1031,10 +1033,10 @@ int getnameinfo(const struct sockaddr *sa, socklen_t salen, char *host,
 
 	ret = getnameinfop(sa, salen, host, hostlen, serv, servlen, flags);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pdpdpdd",
-				 voidp_to_uint64(sa), salen, voidp_to_uint64(host),
-				 hostlen, voidp_to_uint64(serv), servlen, flags);
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "pdpdpdd", voidp_to_uint64(sa), salen,
+				 voidp_to_uint64(host), hostlen,
+				 voidp_to_uint64(serv), servlen, flags);
 
 	return ret;
 }
@@ -1154,7 +1156,7 @@ int gethostent_r(struct hostent *rret, char *buf, size_t buflen,
 
 	ret = gethostent_rp(rret, buf, buflen, result, h_errnop);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "ppdpp", voidp_to_uint64(rret),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result),
@@ -1175,11 +1177,11 @@ int gethostbyaddr_r(const void *addr, socklen_t len, int type,
 	ret = gethostbyaddr_rp(addr, len, type, rret, buf, buflen, result,
 			h_errnop);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pddppdpp",
-				 voidp_to_uint64(addr), len, type,
-				 voidp_to_uint64(rret), voidp_to_uint64(buf),
-				 buflen, voidp_to_uint64(result),
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "pddppdpp", voidp_to_uint64(addr), len,
+				 type, voidp_to_uint64(rret),
+				 voidp_to_uint64(buf), buflen,
+				 voidp_to_uint64(result),
 				 voidp_to_uint64(h_errnop));
 
 	return ret;
@@ -1194,12 +1196,10 @@ int gethostbyname_r(const char *name, struct hostent *rret, char *buf,
 
 	ret = gethostbyname_rp(name, rret, buf, buflen, result, h_errnop);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pppdpp",
-				 voidp_to_uint64(name),
-				 voidp_to_uint64(rret),
-				 voidp_to_uint64(buf), buflen,
-				 voidp_to_uint64(result),
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "pppdpp", voidp_to_uint64(name),
+				 voidp_to_uint64(rret), voidp_to_uint64(buf),
+				 buflen, voidp_to_uint64(result),
 				 voidp_to_uint64(h_errnop));
 
 	return ret;
@@ -1215,11 +1215,10 @@ int gethostbyname2_r(const char *name, int af, struct hostent *rret, char *buf,
 
 	ret = gethostbyname2_rp(name, af, rret, buf, buflen, result, h_errnop);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pdppdpp",
-				 voidp_to_uint64(name), af, voidp_to_uint64(rret),
-				 voidp_to_uint64(buf), buflen,
-				 voidp_to_uint64(result),
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "pdppdpp", voidp_to_uint64(name), af,
+				 voidp_to_uint64(rret), voidp_to_uint64(buf),
+				 buflen, voidp_to_uint64(result),
 				 voidp_to_uint64(h_errnop));
 
 	return ret;
@@ -1300,9 +1299,8 @@ int getservent_r(struct servent *result_buf, char *buf, size_t buflen,
 
 	ret = getservent_rp(result_buf, buf, buflen, result);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "ppdp",
-				 voidp_to_uint64(result_buf),
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "ppdp", voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result));
 
@@ -1320,11 +1318,12 @@ int getservbyname_r(const char *name, const char *proto,
 
 	ret = getservbyname_rp(name, proto, result_buf, buf, buflen, result);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "ppppdp",
-				 voidp_to_uint64(name), voidp_to_uint64(proto),
-				 voidp_to_uint64(result_buf), voidp_to_uint64(buf),
-				 buflen, voidp_to_uint64(result));
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "ppppdp", voidp_to_uint64(name),
+				 voidp_to_uint64(proto),
+				 voidp_to_uint64(result_buf),
+				 voidp_to_uint64(buf), buflen,
+				 voidp_to_uint64(result));
 
 	return ret;
 }
@@ -1339,9 +1338,8 @@ int getservbyport_r(int port, const char *proto, struct servent *result_buf,
 
 	ret = getservbyport_rp(port, proto, result_buf, buf, buflen, result);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "dpppdp",
-				 port, voidp_to_uint64(proto),
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "dpppdp", port, voidp_to_uint64(proto),
 				 voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result));
@@ -1422,9 +1420,8 @@ int getnetent_r(struct netent *result_buf, char *buf, size_t buflen,
 
 	ret = getnetent_rp(result_buf, buf, buflen, result, h_errnop);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "ppdpp",
-				 voidp_to_uint64(result_buf),
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "ppdpp", voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result),
 				 voidp_to_uint64(h_errnop));
@@ -1441,9 +1438,8 @@ int getnetbyname_r(const char *name, struct netent *result_buf, char *buf,
 
 	ret = getnetbyname_rp(name, result_buf, buf, buflen, result, h_errnop);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pppdpp",
-				 voidp_to_uint64(name),
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "pppdpp", voidp_to_uint64(name),
 				 voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result),
@@ -1462,9 +1458,9 @@ int getnetbyaddr_r(uint32_t net, int type, struct netent *result_buf, char *buf,
 
 	ret = getnetbyaddr_rp(net, type, result_buf, buf, buflen, result, h_errnop);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "ddppdpp",
-				 net, type, voidp_to_uint64(result_buf),
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+				 info, "ddppdpp", net, type,
+				 voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result),
 				 voidp_to_uint64(h_errnop));
@@ -1545,7 +1541,7 @@ int getprotoent_r(struct protoent *result_buf, char *buf, size_t buflen,
 
 	ret = getprotoent_rp(result_buf, buf, buflen, result);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "ppdp", voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result));
@@ -1563,7 +1559,7 @@ int getprotobyname_r(const char *name, struct protoent *result_buf, char *buf,
 
 	ret = getprotobyname_rp(name, result_buf, buf, buflen, result);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "pppdp", voidp_to_uint64(name),
 				 voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
@@ -1581,7 +1577,7 @@ int getprotobynumber_r(int proto, struct protoent *result_buf, char *buf,
 
 	ret = getprotobynumber_rp(proto, result_buf, buf, buflen, result);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "dppdp", proto,
 				 voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
@@ -1651,7 +1647,7 @@ int getifaddrs(struct ifaddrs **ifap) {
 
 	ret = getifaddrsp(ifap);
 
-	AFTER_ORIGINAL_LIBC_SOCK(ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 info, "p", voidp_to_uint64(ifap));
 
 	return ret;
@@ -1679,7 +1675,7 @@ uint16_t htobe16(uint16_t host_16bits)
 
 	uret = htobe16p(host_16bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT16_T, uret, 0, FD_API_OTHER, "d", host_16bits);
+	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER, "d", host_16bits);
 
 	return uret;
 }
@@ -1693,7 +1689,7 @@ uint16_t htole16(uint16_t host_16bits)
 
 	uret = htole16p(host_16bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT16_T, uret, 0, FD_API_OTHER, "d", host_16bits);
+	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER, "d", host_16bits);
 
 	return uret;
 }
@@ -1707,7 +1703,7 @@ uint16_t be16toh(uint16_t big_endian_16bits)
 
 	uret = be16tohp(big_endian_16bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT16_T, uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER,
 			"d", big_endian_16bits);
 
 	return uret;
@@ -1722,7 +1718,7 @@ uint16_t le16toh(uint16_t little_endian_16bits)
 
 	uret = le16tohp(little_endian_16bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT16_T, uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER,
 			"d", little_endian_16bits);
 
 	return uret;
@@ -1737,7 +1733,7 @@ uint32_t htobe32(uint32_t host_32bits)
 
 	uret = htobe32p(host_32bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
 			"d", host_32bits);
 
 	return uret;
@@ -1752,7 +1748,7 @@ uint32_t htole32(uint32_t host_32bits)
 
 	uret = htole32p(host_32bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
 			"d", host_32bits);
 
 	return uret;
@@ -1767,7 +1763,7 @@ uint32_t be32toh(uint32_t big_endian_32bits)
 
 	uret = be32tohp(big_endian_32bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
 			"d", big_endian_32bits);
 
 	return uret;
@@ -1782,7 +1778,7 @@ uint32_t le32toh(uint32_t little_endian_32bits)
 
 	uret = le32tohp(little_endian_32bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
 			"d", little_endian_32bits);
 
 	return uret;
@@ -1797,7 +1793,7 @@ uint64_t htobe64(uint64_t host_64bits)
 
 	uret = htobe64p(host_64bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT64_T, uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER,
 			"d", host_64bits);
 
 	return uret;
@@ -1812,7 +1808,7 @@ uint64_t htole64(uint64_t host_64bits)
 
 	uret = htole64p(host_64bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT64_T, uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER,
 			"d", host_64bits);
 
 	return uret;
@@ -1827,7 +1823,7 @@ uint64_t be64toh(uint64_t big_endian_64bits)
 
 	uret = be64tohp(big_endian_64bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT64_T, uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER,
 			"d", big_endian_64bits);
 
 	return uret;
@@ -1842,7 +1838,7 @@ uint64_t le64toh(uint64_t little_endian_64bits)
 
 	uret = le64tohp(little_endian_64bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT64_T, uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER,
 			"d", little_endian_64bits);
 
 	return uret;
@@ -1857,7 +1853,7 @@ struct in_addr inet_makeaddr(int net, int host)
 
 	iret = inet_makeaddrp(net,host);
 
-	AFTER_ORIGINAL_NOSOCK_RET(VT_UINT32_T, iret.s_addr, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('d', iret.s_addr, 0, FD_API_OTHER,
 			"dd", net, host);
 
 	return iret;
