@@ -172,7 +172,7 @@ void _AppInfo::SetAppState(AppState appState)
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE,
 				  API_ID_void__AppInfo__SetAppState_AppState_appState_,
-				  "p", (uint64_t)(appState));
+				  "x", (uint64_t)(appState));
 		PACK_COMMON_END('v', 0, 0, 0);
 		FLUSH_LOCAL_BUF();
 	}
