@@ -76,7 +76,7 @@ result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 					  API_ID_result_UiApp__AddFrame_const_Tizen__Ui__Controls__Frame__frame_,
 					  "p", voidp_to_uint64(&frame));
-			PACK_COMMON_END('p', ret, 0, 0);
+			PACK_COMMON_END('x', ret, 0, 0);
 			PACK_UICONTROL(parent);
 			PACK_UICONTROL(&frame);
 			FLUSH_LOCAL_BUF();
@@ -92,7 +92,7 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 	typedef result (UiApp::*methodType)(const Tizen::Ui::Controls::Frame& frame);
 	static methodType uiapp_removeframep;
 	probeInfo_t	probeInfo;
-	result ret;
+	result ret = 0;
 	bool bOption;
 
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen3App5UiApp11RemoveFrameERKNS_2Ui8Controls5FrameE, LIBOSP_UIFW, uiapp_removeframep);
@@ -111,7 +111,7 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_result_UiApp__RemoveFrame_const_Tizen__Ui__Controls__Frame__frame_,
 				  "p", voidp_to_uint64(&frame));
-		PACK_COMMON_END('p', 0, 0, 0);
+		PACK_COMMON_END('x', ret, 0, 0);
 		PACK_UICONTROL(parent);
 		PACK_UICONTROL(&frame);
 	}
@@ -174,7 +174,7 @@ void Control::SetName(const Tizen::Base::String &name)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_void_Control__SetName_const_Tizen__Base__String__name_,
 				  "p", voidp_to_uint64(&name));
-		PACK_COMMON_END('p', 0, 0, 0);
+		PACK_COMMON_END('v', 0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(parent);
 		FLUSH_LOCAL_BUF();
@@ -229,7 +229,7 @@ result Container::AddControl(const Control &control)
 			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 					  API_ID_result_Container__AddControl_const_Control__control_,
 					  "p", voidp_to_uint64(&control));
-			PACK_COMMON_END('p', ret, 0, 0);
+			PACK_COMMON_END('x', ret, 0, 0);
 			PACK_UICONTROL(this);
 			PACK_UICONTROL(&control);
 			FLUSH_LOCAL_BUF();
@@ -287,7 +287,7 @@ result Container::AddControl(Control* control)
 			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 					  API_ID_result_Container__AddControl_Control__control_,
 					  "p", voidp_to_uint64(control));
-			PACK_COMMON_END('p', ret, 0, 0);
+			PACK_COMMON_END('x', ret, 0, 0);
 			PACK_UICONTROL(this);
 			PACK_UICONTROL(control);
 			FLUSH_LOCAL_BUF();
@@ -303,7 +303,7 @@ result Container::RemoveControl(const Control &control)
 	typedef result (Container::*methodType)(const Control &control);
 	static methodType container_removecontrolp;
 	probeInfo_t	probeInfo;
-	result ret;
+	result ret = 0;
 	bool bOption;
 
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui9Container13RemoveControlERKNS0_7ControlE, LIBOSP_UIFW, container_removecontrolp);
@@ -321,7 +321,7 @@ result Container::RemoveControl(const Control &control)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_result_Container__RemoveControl_const_Control__control_,
 				  "p", voidp_to_uint64(&control));
-		PACK_COMMON_END('p', 0, 0, 0);
+		PACK_COMMON_END('x', ret, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(&control);
 	}
@@ -348,7 +348,7 @@ result Container::RemoveControl(Control* control)
 	typedef result (Container::*methodType)(Control* control);
 	static methodType container_removecontrolp;
 	probeInfo_t	probeInfo;
-	result ret;
+	result ret = 0;
 	bool bOption;
 
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui9Container13RemoveControlEPNS0_7ControlE, LIBOSP_UIFW, container_removecontrolp);
@@ -366,7 +366,7 @@ result Container::RemoveControl(Control* control)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_result_Container__RemoveControl_Control__control_,
 				  "p", voidp_to_uint64(control));
-		PACK_COMMON_END('p', 0, 0, 0);
+		PACK_COMMON_END('x', ret, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(control);
 	}
@@ -393,7 +393,7 @@ result Container::RemoveControl(int index)
 	typedef result (Container::*methodType)(int index);
 	static methodType container_removecontrolip;
 	probeInfo_t	probeInfo;
-	result ret;
+	result ret = 0;
 	bool bOption;
 
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui9Container13RemoveControlEi, LIBOSP_UIFW, container_removecontrolip);
@@ -412,7 +412,7 @@ result Container::RemoveControl(int index)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_result_Container__RemoveControl_int_index_,
 				  "d", index);
-		PACK_COMMON_END('p', 0, 0, 0);
+		PACK_COMMON_END('x', ret, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(pcontrol);
 	}
@@ -452,7 +452,7 @@ void Container::RemoveAllControls(void)
 		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
 				  API_ID_void_Container__RemoveAllControls_void_,
 				  "", 0);
-		PACK_COMMON_END('p', 0, 0, 0);
+		PACK_COMMON_END('v', 0, 0, 0);
 		PACK_UICONTROL(this);
 		PACK_UICONTROL(pcontrol);
 		FLUSH_LOCAL_BUF();
