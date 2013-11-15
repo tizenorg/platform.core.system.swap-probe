@@ -38,6 +38,7 @@ WARN_CFLAGS = 				\
 		-Wlogical-op		\
 		-Wpacked		\
 		-Winline		\
+		-Wno-psabi		\
 		-isystem /usr/include/osp
 
 ## Since linking unneeded libraries bloats output of ldd(1), this variable
