@@ -198,7 +198,7 @@ typedef struct
 	int					stateTouch;
 	int					init_complete;
 	int					custom_chart_callback_count;
-	unsigned long		optionflag;
+	uint64_t		optionflag;
 } __traceInfo;
 
 extern __traceInfo gTraceInfo;
