@@ -49,40 +49,43 @@ extern IFrameAnimatorEventListener& GetFrameAnimatorEventListener();
 
 bool IsRegisteredFrameAnimatorEventListener = false;
 
+static enum DaOptions _sopt = OPT_UI;
+
+#define BEFORE_ORIGINAL_TIZEN_UI(FUNCNAME, FUNCTIONPOINTER)				\
+		DECLARE_VARIABLE_STANDARD_NORET; 					\
+		GET_REAL_FUNC_TIZEN(FUNCNAME, LIBOSP_UIFW, FUNCTIONPOINTER)
+
 namespace Tizen { namespace App {
 
 result UiApp::AddFrame(const Tizen::Ui::Controls::Frame& frame)
 {
 	typedef result (UiApp::*methodType)(const Tizen::Ui::Controls::Frame& frame);
 	static methodType uiapp_addframep;
-	probeInfo_t	probeInfo;
 	result ret;
 
-	GET_REAL_FUNC_TIZEN(_ZN5Tizen3App5UiApp8AddFrameERKNS_2Ui8Controls5FrameE, LIBOSP_UIFW, uiapp_addframep);
+	BEFORE_ORIGINAL_TIZEN_UI(_ZN5Tizen3App5UiApp8AddFrameERKNS_2Ui8Controls5FrameE, uiapp_addframep);
+	PRE_PROBEBLOCK();
 
 	ret = (this->*uiapp_addframep)(frame);
 
-	probeBlockStart();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	if(ret == E_SUCCESS)
 	{
 		frame.IsInTouchMode();
 
-		if(isOptionEnabled(OPT_UI))
-		{
-			Control* parent = NULL;
-			setProbePoint(&probeInfo);
+		Control* parent = NULL;
+		setProbePoint(&probeInfo);
 
-			PREPARE_LOCAL_BUF();
-			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-					  API_ID_result_UiApp__AddFrame_const_Tizen__Ui__Controls__Frame__frame_,
-					  "p", voidp_to_uint64(&frame));
-			PACK_COMMON_END('x', ret, 0, 0);
-			PACK_UICONTROL(parent);
-			PACK_UICONTROL(&frame);
-			FLUSH_LOCAL_BUF();
-		}
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  API_ID_result_UiApp__AddFrame_const_Tizen__Ui__Controls__Frame__frame_,
+				  "p", voidp_to_uint64(&frame));
+		PACK_COMMON_END('x', ret, 0, 0);
+		PACK_UICONTROL(parent);
+		PACK_UICONTROL(&frame);
+		FLUSH_LOCAL_BUF();
 	}
-	probeBlockEnd();
+	POST_PACK_PROBEBLOCK_END();
 
 	return ret;
 }
@@ -91,44 +94,32 @@ result UiApp::RemoveFrame(const Tizen::Ui::Controls::Frame &frame)
 {
 	typedef result (UiApp::*methodType)(const Tizen::Ui::Controls::Frame& frame);
 	static methodType uiapp_removeframep;
-	probeInfo_t	probeInfo;
 	result ret = 0;
-	bool bOption;
 
-	GET_REAL_FUNC_TIZEN(_ZN5Tizen3App5UiApp11RemoveFrameERKNS_2Ui8Controls5FrameE, LIBOSP_UIFW, uiapp_removeframep);
-
-	probeBlockStart();
+	BEFORE_ORIGINAL_TIZEN_UI(_ZN5Tizen3App5UiApp11RemoveFrameERKNS_2Ui8Controls5FrameE, uiapp_removeframep);
 
 	PREPARE_LOCAL_BUF();
 
+	PRE_PROBEBLOCK_BEGIN();
+	Control *parent = NULL;
+
+	PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+			  API_ID_result_UiApp__RemoveFrame_const_Tizen__Ui__Controls__Frame__frame_,
+			  "p", voidp_to_uint64(&frame));
+	PACK_COMMON_END('x', ret, 0, 0);
+	PACK_UICONTROL(parent);
+	PACK_UICONTROL(&frame);
+	PRE_PROBEBLOCK_END();
+
 	frame.IsInTouchMode();
-
-	if((bOption = isOptionEnabled(OPT_UI)))
-	{
-		Control* parent = NULL;
-		setProbePoint(&probeInfo);
-
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-				  API_ID_result_UiApp__RemoveFrame_const_Tizen__Ui__Controls__Frame__frame_,
-				  "p", voidp_to_uint64(&frame));
-		PACK_COMMON_END('x', ret, 0, 0);
-		PACK_UICONTROL(parent);
-		PACK_UICONTROL(&frame);
-	}
-	probeBlockEnd();
 
 	ret = (this->*uiapp_removeframep)(frame);
 
-	probeBlockStart();
-
-	if(bOption)
-	{
-		PACK_RETURN_END('p', ret);
-	}
-
+	POST_PACK_PROBEBLOCK_BEGIN();
+	PACK_RETURN_END('x', ret);
 	FLUSH_LOCAL_BUF();
+	POST_PACK_PROBEBLOCK_END();
 
-	probeBlockEnd();
 
 	return ret;
 }
@@ -156,42 +147,39 @@ void Control::SetName(const Tizen::Base::String &name)
 {
 	typedef void (Control::*methodType)(const Tizen::Base::String &name);
 	static methodType control_setnamep;
-	probeInfo_t	probeInfo;
 
-	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui7Control7SetNameERKNS_4Base6StringE, LIBOSP_UIFW, control_setnamep);
+	BEFORE_ORIGINAL_TIZEN_UI(_ZN5Tizen2Ui7Control7SetNameERKNS_4Base6StringE, control_setnamep);
+	PRE_PROBEBLOCK();
 
 	(this->*control_setnamep)(name);
 
-	probeBlockStart();
+	POST_PACK_PROBEBLOCK_BEGIN();
+
 	IsInTouchMode();
+	Control* parent = NULL;
 
-	if(isOptionEnabled(OPT_UI))
-	{
-		Control* parent = NULL;
-		setProbePoint(&probeInfo);
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+			  API_ID_void_Control__SetName_const_Tizen__Base__String__name_,
+			  "p", voidp_to_uint64(&name));
+	PACK_COMMON_END('v', 0, 0, 0);
+	PACK_UICONTROL(this);
+	PACK_UICONTROL(parent);
+	FLUSH_LOCAL_BUF();
 
-		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-				  API_ID_void_Control__SetName_const_Tizen__Base__String__name_,
-				  "p", voidp_to_uint64(&name));
-		PACK_COMMON_END('v', 0, 0, 0);
-		PACK_UICONTROL(this);
-		PACK_UICONTROL(parent);
-		FLUSH_LOCAL_BUF();
-	}
-	probeBlockEnd();
+	POST_PACK_PROBEBLOCK_END();
 }
 
 result Container::AddControl(const Control &control)
 {
 	typedef result (Container::*methodType)(const Control &control);
 	static methodType container_addcontrolp;
-	probeInfo_t	probeInfo;
 	result ret;
 
-	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui9Container10AddControlERKNS0_7ControlE, LIBOSP_UIFW, container_addcontrolp);
+	BEFORE_ORIGINAL_TIZEN_UI(_ZN5Tizen2Ui9Container10AddControlERKNS0_7ControlE, container_addcontrolp);
+	bfiltering = false;
 
-	probeBlockStart();
+	PRE_PROBEBLOCK_BEGIN();
 	if(unlikely(IsRegisteredFrameAnimatorEventListener == false))
 	{
 		char *type = NULL, *classname = NULL;
@@ -211,31 +199,26 @@ result Container::AddControl(const Control &control)
 			}
 		}
 	}
-	probeBlockEnd();
+	PRE_PROBEBLOCK_END();
 
 	ret = (this->*container_addcontrolp)(control);
 
-	probeBlockStart();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	if(ret == E_SUCCESS)
 	{
 		IsInTouchMode();
 		control.IsInTouchMode();
 
-		if(isOptionEnabled(OPT_UI))
-		{
-			setProbePoint(&probeInfo);
-
-			PREPARE_LOCAL_BUF();
-			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-					  API_ID_result_Container__AddControl_const_Control__control_,
-					  "p", voidp_to_uint64(&control));
-			PACK_COMMON_END('x', ret, 0, 0);
-			PACK_UICONTROL(this);
-			PACK_UICONTROL(&control);
-			FLUSH_LOCAL_BUF();
-		}
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  API_ID_result_Container__AddControl_const_Control__control_,
+				  "p", voidp_to_uint64(&control));
+		PACK_COMMON_END('x', ret, 0, 0);
+		PACK_UICONTROL(this);
+		PACK_UICONTROL(&control);
+		FLUSH_LOCAL_BUF();
 	}
-	probeBlockEnd();
+	POST_PACK_PROBEBLOCK_END();
 
 	return ret;
 }
@@ -244,12 +227,12 @@ result Container::AddControl(Control* control)
 {
 	typedef result (Container::*methodType)(Control* control);
 	static methodType container_addcontrolp;
-	probeInfo_t	probeInfo;
 	result ret;
 
-	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui9Container10AddControlEPNS0_7ControlE, LIBOSP_UIFW, container_addcontrolp);
+	BEFORE_ORIGINAL_TIZEN_UI(_ZN5Tizen2Ui9Container10AddControlEPNS0_7ControlE, container_addcontrolp);
+	bfiltering = false;
 
-	probeBlockStart();
+	PRE_PROBEBLOCK_BEGIN();
 	if(unlikely(IsRegisteredFrameAnimatorEventListener == false))
 	{
 		char *type = NULL, *classname = NULL;
@@ -269,31 +252,26 @@ result Container::AddControl(Control* control)
 			}
 		}
 	}
-	probeBlockEnd();
+	PRE_PROBEBLOCK_END();
 
 	ret = (this->*container_addcontrolp)(control);
 
-	probeBlockStart();
+	POST_PACK_PROBEBLOCK_BEGIN();
 	if(ret == E_SUCCESS)
 	{
 		IsInTouchMode();
 		control->IsInTouchMode();
 
-		if(isOptionEnabled(OPT_UI))
-		{
-			setProbePoint(&probeInfo);
-
-			PREPARE_LOCAL_BUF();
-			PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-					  API_ID_result_Container__AddControl_Control__control_,
-					  "p", voidp_to_uint64(control));
-			PACK_COMMON_END('x', ret, 0, 0);
-			PACK_UICONTROL(this);
-			PACK_UICONTROL(control);
-			FLUSH_LOCAL_BUF();
-		}
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+				  API_ID_result_Container__AddControl_Control__control_,
+				  "p", voidp_to_uint64(control));
+		PACK_COMMON_END('x', ret, 0, 0);
+		PACK_UICONTROL(this);
+		PACK_UICONTROL(control);
+		FLUSH_LOCAL_BUF();
 	}
-	probeBlockEnd();
+	POST_PACK_PROBEBLOCK_END();
 
 	return ret;
 }
@@ -302,43 +280,30 @@ result Container::RemoveControl(const Control &control)
 {
 	typedef result (Container::*methodType)(const Control &control);
 	static methodType container_removecontrolp;
-	probeInfo_t	probeInfo;
 	result ret = 0;
-	bool bOption;
 
-	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui9Container13RemoveControlERKNS0_7ControlE, LIBOSP_UIFW, container_removecontrolp);
-
-	probeBlockStart();
+	BEFORE_ORIGINAL_TIZEN_UI(_ZN5Tizen2Ui9Container13RemoveControlERKNS0_7ControlE, container_removecontrolp);
+	bfiltering = false;
 
 	PREPARE_LOCAL_BUF();
 
 	control.IsInTouchMode();
 
-	if((bOption = isOptionEnabled(OPT_UI)))
-	{
-		setProbePoint(&probeInfo);
-
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-				  API_ID_result_Container__RemoveControl_const_Control__control_,
-				  "p", voidp_to_uint64(&control));
-		PACK_COMMON_END('x', ret, 0, 0);
-		PACK_UICONTROL(this);
-		PACK_UICONTROL(&control);
-	}
-	probeBlockEnd();
+	PRE_PROBEBLOCK_BEGIN();
+	PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+			  API_ID_result_Container__RemoveControl_const_Control__control_,
+			  "p", voidp_to_uint64(&control));
+	PACK_COMMON_END('x', ret, 0, 0);
+	PACK_UICONTROL(this);
+	PACK_UICONTROL(&control);
+	PRE_PROBEBLOCK_END();
 
 	ret = (this->*container_removecontrolp)(control);
 
-	probeBlockStart();
-
-	if(bOption)
-	{
-		PACK_RETURN_END('p', ret);
-	}
-
+	POST_PACK_PROBEBLOCK_BEGIN();
+	PACK_RETURN_END('x', ret);
 	FLUSH_LOCAL_BUF();
-
-	probeBlockEnd();
+	POST_PACK_PROBEBLOCK_END();
 
 	return ret;
 }
@@ -347,43 +312,32 @@ result Container::RemoveControl(Control* control)
 {
 	typedef result (Container::*methodType)(Control* control);
 	static methodType container_removecontrolp;
-	probeInfo_t	probeInfo;
 	result ret = 0;
-	bool bOption;
 
-	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui9Container13RemoveControlEPNS0_7ControlE, LIBOSP_UIFW, container_removecontrolp);
-
-	probeBlockStart();
+	BEFORE_ORIGINAL_TIZEN_UI(_ZN5Tizen2Ui9Container13RemoveControlEPNS0_7ControlE, container_removecontrolp);
+	bfiltering = false;
 
 	PREPARE_LOCAL_BUF();
 
+	PRE_PROBEBLOCK_BEGIN();
+
 	control->IsInTouchMode();
 
-	if((bOption = isOptionEnabled(OPT_UI)))
-	{
-		setProbePoint(&probeInfo);
+	PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+			  API_ID_result_Container__RemoveControl_Control__control_,
+			  "p", voidp_to_uint64(control));
+	PACK_COMMON_END('x', ret, 0, 0);
+	PACK_UICONTROL(this);
+	PACK_UICONTROL(control);
 
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-				  API_ID_result_Container__RemoveControl_Control__control_,
-				  "p", voidp_to_uint64(control));
-		PACK_COMMON_END('x', ret, 0, 0);
-		PACK_UICONTROL(this);
-		PACK_UICONTROL(control);
-	}
-	probeBlockEnd();
+	PRE_PROBEBLOCK_END();
 
 	ret = (this->*container_removecontrolp)(control);
 
-	probeBlockStart();
-
-	if(bOption)
-	{
-		PACK_RETURN_END('p', ret);
-	}
-
+	POST_PACK_PROBEBLOCK_BEGIN();
+	PACK_RETURN_END('x', ret);
 	FLUSH_LOCAL_BUF();
-
-	probeBlockEnd();
+	POST_PACK_PROBEBLOCK_END();
 
 	return ret;
 }
@@ -392,44 +346,33 @@ result Container::RemoveControl(int index)
 {
 	typedef result (Container::*methodType)(int index);
 	static methodType container_removecontrolip;
-	probeInfo_t	probeInfo;
 	result ret = 0;
-	bool bOption;
+	Control *pcontrol = NULL;
 
-	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui9Container13RemoveControlEi, LIBOSP_UIFW, container_removecontrolip);
-
-	probeBlockStart();
+	BEFORE_ORIGINAL_TIZEN_UI(_ZN5Tizen2Ui9Container13RemoveControlEi, container_removecontrolip);
+	bfiltering = false;
 
 	PREPARE_LOCAL_BUF();
 
-	Control* pcontrol = GetControl(index);
+	PRE_PROBEBLOCK_BEGIN();
+
+	pcontrol = GetControl(index);
 	pcontrol->IsInTouchMode();
 
-	if((bOption = isOptionEnabled(OPT_UI)))
-	{
-		setProbePoint(&probeInfo);
-
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-				  API_ID_result_Container__RemoveControl_int_index_,
-				  "d", index);
-		PACK_COMMON_END('x', ret, 0, 0);
-		PACK_UICONTROL(this);
-		PACK_UICONTROL(pcontrol);
-	}
-	probeBlockEnd();
+	PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+			  API_ID_result_Container__RemoveControl_int_index_,
+			  "d", index);
+	PACK_COMMON_END('x', ret, 0, 0);
+	PACK_UICONTROL(this);
+	PACK_UICONTROL(pcontrol);
+	PRE_PROBEBLOCK_END();
 
 	ret = (this->*container_removecontrolip)(index);
 
-	probeBlockStart();
-
-	if(bOption)
-	{
-		PACK_RETURN_END('p', ret);
-	}
-
+	POST_PACK_PROBEBLOCK_BEGIN();
+	PACK_RETURN_END('x', ret);
 	FLUSH_LOCAL_BUF();
-
-	probeBlockEnd();
+	POST_PACK_PROBEBLOCK_END();
 
 	return ret;
 }
@@ -438,28 +381,29 @@ void Container::RemoveAllControls(void)
 {
 	typedef void (Container::*methodType)(void);
 	static methodType container_removeallcontrolp;
-	probeInfo_t	probeInfo;
 
-	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui9Container17RemoveAllControlsEv, LIBOSP_UIFW, container_removeallcontrolp);
+	BEFORE_ORIGINAL_TIZEN_UI(_ZN5Tizen2Ui9Container17RemoveAllControlsEv, container_removeallcontrolp);
+	bfiltering = false;
 
-	probeBlockStart();
-	if(isOptionEnabled(OPT_UI))
-	{
-		Control* pcontrol = NULL;
-		setProbePoint(&probeInfo);
+	PRE_PROBEBLOCK_BEGIN();
 
-		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
-				  API_ID_void_Container__RemoveAllControls_void_,
-				  "", 0);
-		PACK_COMMON_END('v', 0, 0, 0);
-		PACK_UICONTROL(this);
-		PACK_UICONTROL(pcontrol);
-		FLUSH_LOCAL_BUF();
-	}
-	probeBlockEnd();
+	Control* pcontrol = NULL;
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_UICONTROL,
+			  API_ID_void_Container__RemoveAllControls_void_,
+			  "", 0);
+	PACK_COMMON_END('v', 0, 0, 0);
+	PACK_UICONTROL(this);
+	PACK_UICONTROL(pcontrol);
+	FLUSH_LOCAL_BUF();
+	PRE_PROBEBLOCK_END();
 
 	(this->*container_removeallcontrolp)();
+
+	POST_PACK_PROBEBLOCK_BEGIN();
+	POST_PACK_PROBEBLOCK_END();
+
 }
 
 } }	// end of namespace Tizen::Ui
