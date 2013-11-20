@@ -52,8 +52,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp_path[50];
-	char temp_mode[50];
+	char temp_path[PATH_MAX];
+	char temp_mode[PATH_MAX];
 	FileAttributes attr;
 	long long size = 0L;
 
@@ -109,8 +109,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp_path[50];
-	char temp_mode[50];
+	char temp_path[PATH_MAX];
+	char temp_mode[PATH_MAX];
 	FileAttributes attr;
 	long long size = 0L;
 
@@ -169,7 +169,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[PATH_MAX];
 	FileAttributes attr;
 	long long size = 0L;
 
@@ -227,7 +227,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 	probeInfo_t probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[PATH_MAX];
 	FileAttributes attr;
 	long long size = 0L;
 
@@ -280,7 +280,7 @@ result File::Flush(void) {
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[PATH_MAX];
 	FileAttributes attr;
 	long long size = 0L;
 
@@ -331,7 +331,7 @@ Tizen::Base::String File::GetName(void) const{
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[PATH_MAX];
 	FileAttributes attr;
 	long long size = 0L;
 
@@ -383,7 +383,7 @@ result File::Read(Tizen::Base::String& buffer) {
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[PATH_MAX];
 	int nRead = 0;
 	FileAttributes attr;
 	long long size = 0L;
@@ -450,7 +450,7 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[PATH_MAX];
 	int nRead = 0;
 	FileAttributes attr;
 	long long size = 0L;
@@ -517,7 +517,7 @@ int File::Read(void *buffer, int length) {
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[PATH_MAX];
 	int nRead = 0;
 	FileAttributes attr;
 	long long size = 0L;
@@ -585,8 +585,8 @@ result File::Seek(FileSeekPosition position, long offset) {
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[1024];
-	char temp_pos[50];
+	char temp[PATH_MAX];
+	char temp_pos[PATH_MAX];
 	FileAttributes attr;
 	long long size = 0;
 
@@ -650,7 +650,7 @@ int File::Tell(void) const {
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[PATH_MAX];
 	FileAttributes attr;
 	long long size = 0L;
 
@@ -703,7 +703,7 @@ result File::Truncate(int length) {
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[PATH_MAX];
 	FileAttributes attr;
 	long long size = 0L;
 
@@ -754,7 +754,7 @@ result File::Write(const void *buffer, int length) {
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[PATH_MAX];
 	int nWritten = 0;
 	FileAttributes attr;
 	long long size = 0L;
@@ -821,7 +821,7 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp[50];
+	char temp[PATH_MAX];
 	int nWritten = 0;
 	FileAttributes attr;
 	long long size = 0L;
@@ -888,8 +888,8 @@ result File::Write(const Tizen::Base::String& buffer) {
 	probeInfo_t	probeInfo;
 	int blockresult;
 	bool bfiltering = true;
-	char temp_buf[50];
-	char temp_path[50];
+	char temp_buf[PATH_MAX];
+	char temp_path[PATH_MAX];
 	int nWritten = 0;
 	FileAttributes attr;
 	long long size = 0L;
