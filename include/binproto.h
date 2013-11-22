@@ -368,7 +368,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		BUF_PTR = pack_int32(BUF_PTR, api_type);	     \
 	} while (0)
 
-#define LOCAL_BUF_SIZE 1024
+#define LOCAL_BUF_SIZE 2048
 
 #define PREPARE_LOCAL_BUF()			\
 		char msg_buf[LOCAL_BUF_SIZE];\
