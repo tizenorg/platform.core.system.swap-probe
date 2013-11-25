@@ -266,7 +266,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 			BUF_PTR = pack_int64(BUF_PTR, 0);		\
 		} else {						\
 			char *type = NULL, *name = NULL;		\
-			if (find_object_hash((void*)(control),		\
+			if (find_uiobject_hash((void*)(control),	\
 					     &type, &name) == 1) {	\
 				BUF_PTR = pack_string(BUF_PTR, type);	\
 				BUF_PTR = pack_string(BUF_PTR, name);	\
@@ -312,7 +312,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 			BUF_PTR = pack_int64(BUF_PTR, 0);				\
 		} else {								\
 			char *type = NULL, *name = NULL;				\
-			if (find_object_hash((void*)(pform), &type, &name) == 1) {	\
+			if (find_uiobject_hash((void*)(pform), &type, &name) == 1) {	\
 				BUF_PTR = pack_string(BUF_PTR, name);			\
 			} else {							\
 				BUF_PTR = pack_string(BUF_PTR, "");			\
@@ -324,7 +324,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 			BUF_PTR = pack_int64(BUF_PTR, 0);				\
 		} else {								\
 			char *type = NULL, *name = NULL;				\
-			if (find_object_hash((void*)(ppanel), &type, &name) == 1) {	\
+			if (find_uiobject_hash((void*)(ppanel), &type, &name) == 1) {	\
 				BUF_PTR = pack_string(BUF_PTR, name);			\
 			} else {							\
 				BUF_PTR = pack_string(BUF_PTR, "");			\

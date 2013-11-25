@@ -60,36 +60,36 @@ static Tizen::Graphics::Bitmap* sysutil_capture_screen()
 	result r;
 	Bitmap* pBitmap = NULL;
 
-	if(unlikely(utilx_create_screen_shotp == NULL))
+	if (unlikely(utilx_create_screen_shotp == NULL))
 	{
 		void* lib_handle = dlopen(LIBUTILX, RTLD_LAZY);
-		if(lib_handle == NULL) {
+		if (lib_handle == NULL) {
 			SetLastResult(ERR_DLOPEN);
 			return NULL;
 		}
 		utilx_create_screen_shotp = (utilx_create_screen_shot_type)dlsym(lib_handle, "utilx_create_screen_shot");
-		if(utilx_create_screen_shotp == NULL || dlerror() != NULL) {
+		if (utilx_create_screen_shotp == NULL || dlerror() != NULL) {
 			SetLastResult(ERR_DLSYM);
 			return NULL;
 		}
 	}
 
-	if(unlikely(utilx_release_screen_shotp == NULL))
+	if (unlikely(utilx_release_screen_shotp == NULL))
 	{
 		void* lib_handle = dlopen(LIBUTILX, RTLD_LAZY);
-		if(lib_handle == NULL) {
+		if (lib_handle == NULL) {
 			SetLastResult(ERR_DLOPEN);
 			return NULL;
 		}
 		utilx_release_screen_shotp = (utilx_release_screen_shot_type)dlsym(lib_handle, "utilx_release_screen_shot");
-		if(utilx_release_screen_shotp == NULL || dlerror() != NULL) {
+		if (utilx_release_screen_shotp == NULL || dlerror() != NULL) {
 			SetLastResult(ERR_DLSYM);
 			return NULL;
 		}
 	}
 
 	Display* pDpy = XOpenDisplay(NULL);
-	if(pDpy == NULL)
+	if (pDpy == NULL)
 	{
 		SetLastResult(ERR_USER - 1);
 		return NULL;
@@ -99,18 +99,18 @@ static Tizen::Graphics::Bitmap* sysutil_capture_screen()
 	int height = DisplayHeight(pDpy, DefaultScreen(pDpy));
 
 	void* pDump = utilx_create_screen_shotp(pDpy, width, height);
-	if(likely(pDump != NULL))
+	if (likely(pDump != NULL))
 	{
 		ByteBuffer buffer;
 		r = buffer.Construct(static_cast<byte*>(pDump), 0, width*height*4, width*height*4);\
-		if(likely(r == E_SUCCESS))
+		if (likely(r == E_SUCCESS))
 		{
 			Tizen::Graphics::Dimension dim(width, height);
 			Bitmap* pBitmap  = new Bitmap();
-			if(likely(pBitmap != NULL))
+			if (likely(pBitmap != NULL))
 			{
 				r = pBitmap->Construct(buffer, dim, BITMAP_PIXEL_FORMAT_ARGB8888);
-				if(unlikely(r != E_SUCCESS))
+				if (unlikely(r != E_SUCCESS))
 				{
 					SetLastResult(r);
 					delete pBitmap;
@@ -136,14 +136,14 @@ static Bitmap* getBitmapFromBuffer(void* pDump, int width, int height)
 	Bitmap* pBitmap = NULL;
 
 	r = buffer.Construct(static_cast<byte*>(pDump), 0, width*height*4, width*height*4);
-	if(likely(r == E_SUCCESS))
+	if (likely(r == E_SUCCESS))
 	{
 		Tizen::Graphics::Dimension dim(width, height);
 		pBitmap  = new Bitmap();
-		if(likely(pBitmap != NULL))
+		if (likely(pBitmap != NULL))
 		{
 			r = pBitmap->Construct(buffer, dim, BITMAP_PIXEL_FORMAT_ARGB8888);
-			if(unlikely(r != E_SUCCESS))
+			if (unlikely(r != E_SUCCESS))
 			{
 				SetLastResult(r);
 				delete pBitmap;
@@ -172,10 +172,10 @@ int captureScreen()
 	probeBlockStart();
 
 	capbuf = captureScreenShotX(&width, &height);
-	if(capbuf != NULL)
+	if (capbuf != NULL)
 	{
 		bitmap = getBitmapFromBuffer((void*)capbuf, width, height);
-		if(bitmap != NULL)
+		if (bitmap != NULL)
 		{
 			String dstPath;
 			setProbePoint(&probeInfo);
@@ -183,7 +183,7 @@ int captureScreen()
 			dstPath.Format(MAX_PATH_LENGTH, L"/tmp/da/%d.jpg", probeInfo.eventIndex);
 			img.Construct();
 			r = img.EncodeToFile(*bitmap, IMG_FORMAT_JPG, dstPath, true);
-			if(r == E_SUCCESS)
+			if (r == E_SUCCESS)
 			{
 				INIT_LOG;
 				APPEND_LOG_BASIC_NAME(LC_SNAPSHOT, "captureScreen");
@@ -263,9 +263,9 @@ result Control::SetShowState(bool state)
 	probeBlockStart();
 	{
 		char *type, *classname;
-		if(find_object_hash((void*)this, &type, &classname) == 1)
+		if (find_uiobject_hash((void*)this, &type, &classname) == 1)
 		{
-			if(strcmp(type, "Panel") == 0 || strcmp(type, "OverlayPanel") == 0 || strcmp(type, "ScrollPanel") == 0)
+			if (strcmp(type, "Panel") == 0 || strcmp(type, "OverlayPanel") == 0 || strcmp(type, "ScrollPanel") == 0)
 			{
 				SCREENSHOT_SET();
 //				SCREENSHOT_DONE();

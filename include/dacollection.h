@@ -47,6 +47,10 @@ extern "C"{
 #define MEMORYHASH_LOCK		pthread_mutex_lock(&(_hashinfo.memHashMutex))
 #define MEMORYHASH_UNLOCK	pthread_mutex_unlock(&(_hashinfo.memHashMutex))
 
+#define UIOBJECTHASH		_hashinfo.uiobjHash
+#define UIOBJECTHASH_LOCK	pthread_mutex_lock(&(_hashinfo.uiobjHashMutex))
+#define UIOBJECTHASH_UNLOCK	pthread_mutex_unlock(&(_hashinfo.uiobjHashMutex))
+
 #define OBJECTHASH			_hashinfo.objHash
 #define OBJECTHASH_LOCK		pthread_mutex_lock(&(_hashinfo.objHashMutex))
 #define OBJECTHASH_UNLOCK	pthread_mutex_unlock(&(_hashinfo.objHashMutex))
@@ -74,18 +78,23 @@ extern "C"{
 #define MAKE_MEMINFO(caller, type, size)	\
 	(((uint64_t)caller << 48) | ((uint64_t)type << 32) | ((uint64_t)size))
 
+#define OBJECT_INTERNAL	0x01
+#define OBJECT_EXTERNAL	0x02
+
 typedef struct
 {
 	char* type;
 	char* name;
-} _objectinfo;
+} _uiobjectinfo;
 
 // khash table function definition
 KHASH_MAP_INIT_INT(symbol, char*)
 
 KHASH_MAP_INIT_INT(allocmap, uint64_t)
 
-KHASH_MAP_INIT_INT(object, _objectinfo*)
+KHASH_MAP_INIT_INT(uiobject, _uiobjectinfo*)
+
+KHASH_MAP_INIT_INT(object, unsigned short)
 
 KHASH_MAP_INIT_INT(detector, void*)
 
@@ -95,6 +104,8 @@ typedef struct
 	pthread_mutex_t		symHashMutex;
 	khash_t(allocmap)*	memHash;
 	pthread_mutex_t		memHashMutex;
+	khash_t(uiobject)*	uiobjHash;
+	pthread_mutex_t		uiobjHashMutex;
 	khash_t(object)*	objHash;
 	pthread_mutex_t		objHashMutex;
 	khash_t(detector)*	dttHash;
@@ -118,10 +129,14 @@ int add_symbol_hash(void* ptr, const char* str, int strlen);
 int add_memory_hash(void* ptr, size_t size, unsigned short type, unsigned short caller);
 int del_memory_hash(void* ptr, unsigned short type, unsigned short* caller);
 
-int find_object_hash(void* ptr, char** type,  char** classname);
-int add_object_hash_class(void* ptr, const char* classname);
-int add_object_hash_type(void* ptr, const char* type);
-int del_object_hash(void* ptr);
+int find_uiobject_hash(void* ptr, char** type,  char** classname);
+int add_uiobject_hash_class(void* ptr, const char* classname);
+int add_uiobject_hash_type(void* ptr, const char* type);
+int del_uiobject_hash(void* ptr);
+
+int find_object_hash(void* ptr, unsigned short *caller);
+int add_object_hash(void* ptr, unsigned short caller);
+int del_object_hash(void* ptr, unsigned short *caller);
 
 int add_detector_hash(void* ptr, void* listener);
 int del_detector_hash(void* ptr);

@@ -137,7 +137,7 @@ bool Control::IsInTouchMode(void) const
 	GET_REAL_FUNC_TIZEN(_ZNK5Tizen2Ui7Control13IsInTouchModeEv, LIBOSP_UIFW, control_isintouchmodep);
 
 	probeBlockStart();
-	add_object_hash_class((void*)(this), typeid(*this).name());
+	add_uiobject_hash_class((void*)(this), typeid(*this).name());
 	probeBlockEnd();
 
 	return (this->*control_isintouchmodep)();
@@ -183,12 +183,12 @@ result Container::AddControl(const Control &control)
 	if(unlikely(IsRegisteredFrameAnimatorEventListener == false))
 	{
 		char *type = NULL, *classname = NULL;
-		if(likely(find_object_hash((void*)this, &type, &classname) == 1))	// there is entry in object hash
+		if (likely(find_uiobject_hash((void*)this, &type, &classname) == 1))	// there is entry in object hash
 		{
-			if(strcmp(type, "Frame") == 0)
+			if (strcmp(type, "Frame") == 0)
 			{
 				FrameAnimator* fa = ((Frame*)this)->GetFrameAnimator();
-				if(fa != NULL)
+				if (fa != NULL)
 				{
 					fa->AddFrameAnimatorEventListener(GetFrameAnimatorEventListener());
 					IsRegisteredFrameAnimatorEventListener = true;
@@ -236,12 +236,12 @@ result Container::AddControl(Control* control)
 	if(unlikely(IsRegisteredFrameAnimatorEventListener == false))
 	{
 		char *type = NULL, *classname = NULL;
-		if(likely(find_object_hash((void*)this, &type, &classname) == 1))	// there is entry in object hash
+		if (likely(find_uiobject_hash((void*)this, &type, &classname) == 1))	// there is entry in object hash
 		{
-			if(strcmp(type, "Frame") == 0)
+			if (strcmp(type, "Frame") == 0)
 			{
 				FrameAnimator* fa = ((Frame*)this)->GetFrameAnimator();
-				if(fa != NULL)
+				if (fa != NULL)
 				{
 					fa->AddFrameAnimatorEventListener(GetFrameAnimatorEventListener());
 					IsRegisteredFrameAnimatorEventListener = true;
@@ -329,7 +329,6 @@ result Container::RemoveControl(Control* control)
 	PACK_COMMON_END('x', ret, 0, 0);
 	PACK_UICONTROL(this);
 	PACK_UICONTROL(control);
-
 	PRE_PROBEBLOCK_END();
 
 	ret = (this->*container_removecontrolp)(control);

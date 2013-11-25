@@ -35,6 +35,7 @@
 #include "daprobe.h"
 #include "probeinfo.h"
 #include "dahelper.h"
+#include "dacollection.h"
 
 #include "binproto.h"
 
@@ -71,17 +72,22 @@ result File::Construct(const Tizen::Base::String& filePath,
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
 
 	ret = (this->*Constructp)(filePath, openMode, createParentDirectories);
 
-	if(postBlockBegin(blockresult)) {
+	if (gProbeBlockCount == 0 && blockresult)
+	{
+		add_object_hash((void*)this, OBJECT_EXTERNAL);
+	}
+
+	if (postBlockBegin(blockresult)) {
 		char buffer[PATH_MAX];
 
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp_path,filePath.GetPointer());
 		WcharToChar(temp_mode,openMode.GetPointer());
@@ -114,12 +120,12 @@ result File::Construct(const Tizen::Base::String& filePath,
 	FileAttributes attr;
 	long long size = 0L;
 
-	if(!Constructp) {
+	if (!Constructp) {
 		probeBlockStart();
 		void *tmpPtr = dlsym(RTLD_NEXT,
 				"_ZN5Tizen2Io4File9ConstructERKNS_4Base6StringES5_");
 
-		if(tmpPtr == NULL || dlerror() != NULL) {
+		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Io::File::Construct");
 			exit(0);
 		}
@@ -128,14 +134,19 @@ result File::Construct(const Tizen::Base::String& filePath,
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
 
 	ret = (this->*Constructp)(filePath, openMode);
 
-	if(postBlockBegin(blockresult)) {
+	if (gProbeBlockCount == 0 && blockresult)
+	{
+		add_object_hash((void*)this, OBJECT_EXTERNAL);
+	}
+
+	if (postBlockBegin(blockresult)) {
 		char buffer[PATH_MAX];
 
 		WcharToChar(temp_path,filePath.GetPointer());
@@ -143,7 +154,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		// Comment this because of fault during Internet application profiling
 		// (it closes unexpectedly) but for DATizenTestApp it is ok
 		// There is the same problem at File::~File(void)
-		//if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		//if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 		//	size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
@@ -173,12 +184,12 @@ result File::Construct(const Tizen::Base::String& filePath,
 	FileAttributes attr;
 	long long size = 0L;
 
-	if(!Constructp) {
+	if (!Constructp) {
 		probeBlockStart();
 		void *tmpPtr = dlsym(RTLD_NEXT,
 				"_ZN5Tizen2Io4File9ConstructERKNS_4Base6StringEPKc");
 
-		if(tmpPtr == NULL || dlerror() != NULL) {
+		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Io::File::Construct");
 			exit(0);
 		}
@@ -187,18 +198,23 @@ result File::Construct(const Tizen::Base::String& filePath,
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
 
 	ret = (this->*Constructp)(filePath, pOpenMode);
 
-	if(postBlockBegin(blockresult)) {
+	if (gProbeBlockCount == 0 && blockresult)
+	{
+		add_object_hash((void*)this, OBJECT_EXTERNAL);
+	}
+
+	if (postBlockBegin(blockresult)) {
 		char buffer[PATH_MAX];
 
 		WcharToChar(temp,filePath.GetPointer());
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
@@ -231,13 +247,13 @@ result File::Construct(const Tizen::Base::String& filePath,
 	FileAttributes attr;
 	long long size = 0L;
 
-	if(!Constructp) {
+	if (!Constructp) {
 		probeBlockStart();
 
 		void *tmpPtr = dlsym(RTLD_NEXT,
 						"_ZN5Tizen2Io4File9ConstructERKNS_4Base6StringEPKcRKNS2_10ByteBufferE");
 
-		if(tmpPtr == NULL || dlerror() != NULL) {
+		if (tmpPtr == NULL || dlerror() != NULL) {
 			perror("dlsym failed : Tizen::Io::File::Construct");
 			exit(0);
 		}
@@ -246,16 +262,21 @@ result File::Construct(const Tizen::Base::String& filePath,
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
 
 	ret = (this->*Constructp)(filePath, pOpenMode, secretKey);
 
-	if(postBlockBegin(blockresult)) {
+	if (gProbeBlockCount == 0 && blockresult)
+	{
+		add_object_hash((void*)this, OBJECT_EXTERNAL);
+	}
+
+	if (postBlockBegin(blockresult)) {
 		WcharToChar(temp,filePath.GetPointer());
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
@@ -298,16 +319,16 @@ result File::Flush(void) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
 
 	ret = (this->*Flushp)();
 
-	if(postBlockBegin(blockresult)) {
+	if (postBlockBegin(blockresult)) {
 		WcharToChar(temp,this->GetName().GetPointer());
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 
 		PREPARE_LOCAL_BUF();
@@ -349,7 +370,7 @@ Tizen::Base::String File::GetName(void) const{
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -357,7 +378,7 @@ Tizen::Base::String File::GetName(void) const{
 	ret = (this->*GetNamep)();
 	result res = GetLastResult();
 
-	if(postBlockBegin(blockresult)) {
+	if (postBlockBegin(blockresult)) {
 		WcharToChar(temp,ret.GetPointer());
 		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
@@ -403,9 +424,9 @@ result File::Read(Tizen::Base::String& buffer) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp, this->GetName().GetPointer());
 
@@ -422,9 +443,9 @@ result File::Read(Tizen::Base::String& buffer) {
 
 	ret = (this->*Readp)(buffer);
 
-	if(postBlockBegin(blockresult)) {
+	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp, this->GetName().GetPointer());
 		nRead = buffer.GetLength();
@@ -470,9 +491,9 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp, this->GetName().GetPointer());
 
@@ -489,9 +510,9 @@ result File::Read(Tizen::Base::ByteBuffer& buffer) {
 
 	ret = (this->*Readp)(buffer);
 
-	if(postBlockBegin(blockresult)) {
+	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp, this->GetName().GetPointer());
 		buffer.GetInt(nRead);
@@ -536,10 +557,10 @@ int File::Read(void *buffer, int length) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nRead = Tell();
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp, this->GetName().GetPointer());
 
@@ -557,9 +578,9 @@ int File::Read(void *buffer, int length) {
 	ret = (this->*Readp)(buffer, length);
 	result res = GetLastResult();
 
-	if(postBlockBegin(blockresult)) {
+	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp, this->GetName().GetPointer());
 		nRead = Tell() - nRead;
@@ -606,26 +627,26 @@ result File::Seek(FileSeekPosition position, long offset) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
 
 	ret = (this->*Seekp)(position, offset);
 
-	if(postBlockBegin(blockresult)) {
+	if (postBlockBegin(blockresult)) {
 
-		 if(FILESEEKPOSITION_BEGIN == position)
+		 if (FILESEEKPOSITION_BEGIN == position)
 			 strcpy(temp_pos, "FILESEEKPOSITION_BEGIN");
-		 else if(FILESEEKPOSITION_CURRENT == position)
+		 else if (FILESEEKPOSITION_CURRENT == position)
 			 strcpy(temp_pos, "FILESEEKPOSITION_CURRENT");
-		 else if(FILESEEKPOSITION_END == position)
+		 else if (FILESEEKPOSITION_END == position)
 			 strcpy(temp_pos, "FILESEEKPOSITION_END");
 		 else
 
 		sprintf(temp_pos, "%d", position);
 
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp, this->GetName().GetPointer());
 
@@ -669,7 +690,7 @@ int File::Tell(void) const {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
@@ -677,8 +698,8 @@ int File::Tell(void) const {
 	ret = (this->*Tellp)();
 	result res = GetLastResult();
 
-	if(postBlockBegin(blockresult)) {
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+	if (postBlockBegin(blockresult)) {
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp,this->GetName().GetPointer());
 
@@ -721,15 +742,15 @@ result File::Truncate(int length) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		preBlockEnd();
 	}
 
 	ret = (this->*Truncatep)(length);
 
-	if(postBlockBegin(blockresult)) {
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+	if (postBlockBegin(blockresult)) {
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp,this->GetName().GetPointer());
 
@@ -773,10 +794,10 @@ result File::Write(const void *buffer, int length) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nWritten = Tell();
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp, this->GetName().GetPointer());
 
@@ -793,9 +814,9 @@ result File::Write(const void *buffer, int length) {
 
 	ret = (this->*Writep)(buffer, length);
 
-	if(postBlockBegin(blockresult)) {
+	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp, this->GetName().GetPointer());
 		nWritten = Tell() - nWritten;
@@ -840,10 +861,10 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nWritten = Tell();
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp,this->GetName().GetPointer());
 
@@ -860,9 +881,9 @@ result File::Write(const Tizen::Base::ByteBuffer& buffer) {
 
 	ret = (this->*Writep)(buffer);
 
-	if(postBlockBegin(blockresult)) {
+	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp,this->GetName().GetPointer());
 		nWritten = Tell() - nWritten;
@@ -908,11 +929,11 @@ result File::Write(const Tizen::Base::String& buffer) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 		nWritten = Tell();
 		WcharToChar(temp_buf, buffer.GetPointer());
-		if(E_SUCCESS == File::GetAttributes(this->GetName(), attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(), attr))
 			size = attr.GetFileSize();
 		WcharToChar(temp_path, this->GetName().GetPointer());
 
@@ -929,12 +950,12 @@ result File::Write(const Tizen::Base::String& buffer) {
 
 	ret = (this->*Writep)(buffer);
 
-	if(postBlockBegin(blockresult)) {
+	if (postBlockBegin(blockresult)) {
 		setProbePoint(&probeInfo);
 		WcharToChar(temp_buf,buffer.GetPointer());
 		WcharToChar(temp_path,this->GetName().GetPointer());
 		nWritten = Tell() - nWritten;
-		if(E_SUCCESS == File::GetAttributes(this->GetName(),attr))
+		if (E_SUCCESS == File::GetAttributes(this->GetName(),attr))
 			size = attr.GetFileSize();
 		nWritten = Tell() - nWritten;
 
@@ -960,6 +981,8 @@ File::~File(void) {
 	void *tmpPtr;
 	// FileAttributes attr;
 	long long size = 0L;
+	unsigned short caller;
+	int ret;
 
 	if (!FileDp) {
 		probeBlockStart();
@@ -975,7 +998,7 @@ File::~File(void) {
 		probeBlockEnd();
 	}
 
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
+	if ((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {
 		setProbePoint(&probeInfo);
 // error occur if File class was failed to contruct
 		// if (ret == E_SUCCESS &&
@@ -984,9 +1007,22 @@ File::~File(void) {
 		preBlockEnd();
 	}
 
+	if (gProbeBlockCount == 0)
+	{
+		probeBlockStart();
+		ret = del_object_hash((void*)this, &caller);
+		if (blockresult == 0 && ret == 0 && caller == OBJECT_EXTERNAL)
+		{
+			setProbePoint(&probeInfo);
+			blockresult = 2;
+			probingStart();
+		}
+		probeBlockEnd();
+	}
+
 	(this->*FileDp)();
 
-	if(postBlockBegin(blockresult)) {
+	if (postBlockBegin(blockresult)) {
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,

@@ -35,7 +35,7 @@
 #include <FUi.h>
 
 #include "daprobe.h"
-#include "dacollection.h"	// for find_object_hash
+#include "dacollection.h"	// for find_uiobject_hash
 #include "dahelper.h"		// for captureScreen
 #include "tizen_probe.h"
 
@@ -66,9 +66,9 @@ void SceneManagerEventListener::OnSceneTransitionCompleted(const SceneId &previo
 	{
 		SceneManager* scenemanager = SceneManager::GetInstance();
 
-		if(scenemanager->GetCurrentSceneId() == currentSceneId)
+		if (scenemanager->GetCurrentSceneId() == currentSceneId)
 		{
-			if(isOptionEnabled(OPT_UI))
+			if (isOptionEnabled(OPT_UI))
 			{
 				probeInfo_t	probeInfo;
 				Scene* scene;
@@ -145,9 +145,9 @@ SceneManager* SceneManager::GetInstance(void)
 	ret = scenemanager_getinstancep();
 
 	probeBlockStart();
-	if(unlikely(initialized == 0))
+	if (unlikely(initialized == 0))
 	{
-		if(likely(ret != NULL))
+		if (likely(ret != NULL))
 		{
 			ret->AddSceneManagerEventListener(SceneManagerEventListener::GetInstance());
 			initialized = 1;

@@ -64,7 +64,7 @@ Control::Control(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui7ControlC2Ev, LIBOSP_UIFW, control_controlp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Control");
+	add_uiobject_hash_type((void*)this, "Control");
 	probeBlockEnd();
 
 	(this->*control_controlp)();
@@ -78,7 +78,7 @@ Control::~Control(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui7ControlD2Ev, LIBOSP_UIFW, control__controlvoidp);
 
 	probeBlockStart();
-	del_object_hash(static_cast<void*>(this));
+	del_uiobject_hash(static_cast<void*>(this));
 	probeBlockEnd();
 
 	(this->*control__controlvoidp)();
@@ -92,7 +92,7 @@ CustomControlBase::CustomControlBase(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui17CustomControlBaseC2Ev, LIBOSP_UIFW, customcontrolbase_customcontrolbasep);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "CustomControlBase");
+	add_uiobject_hash_type((void*)this, "CustomControlBase");
 	probeBlockEnd();
 
 	(this->*customcontrolbase_customcontrolbasep)();
@@ -106,7 +106,7 @@ Container::Container(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui9ContainerC2Ev, LIBOSP_UIFW, container_containerp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Container");
+	add_uiobject_hash_type((void*)this, "Container");
 	probeBlockEnd();
 
 	(this->*container_containerp)();
@@ -120,7 +120,7 @@ Window::Window(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui6WindowC2Ev, LIBOSP_UIFW, window_windowp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Window");
+	add_uiobject_hash_type((void*)this, "Window");
 	probeBlockEnd();
 
 	(this->*window_windowp)();
@@ -401,7 +401,7 @@ Animation::Animation(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls9AnimationC2Ev, LIBOSP_UIFW, animation_animationp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Animation");
+	add_uiobject_hash_type((void*)this, "Animation");
 	probeBlockEnd();
 
 	(this->*animation_animationp)();
@@ -415,7 +415,7 @@ Button::Button(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6ButtonC2Ev, LIBOSP_UIFW, button_buttonp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Button");
+	add_uiobject_hash_type((void*)this, "Button");
 	probeBlockEnd();
 
 	(this->*button_buttonp)();
@@ -429,7 +429,7 @@ CheckButton::CheckButton(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls11CheckButtonC2Ev, LIBOSP_UIFW, checkbutton_checkbuttonp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "CheckButton");
+	add_uiobject_hash_type((void*)this, "CheckButton");
 	probeBlockEnd();
 
 	(this->*checkbutton_checkbuttonp)();
@@ -443,7 +443,7 @@ ColorPicker::ColorPicker(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls11ColorPickerC2Ev, LIBOSP_UIFW, colorpicker_colorpickerp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "ColorPicker");
+	add_uiobject_hash_type((void*)this, "ColorPicker");
 	probeBlockEnd();
 
 	(this->*colorpicker_colorpickerp)();
@@ -457,7 +457,7 @@ CustomList::CustomList(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10CustomListC2Ev, LIBOSP_UIFW, customlist_customlistp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "CustomList");
+	add_uiobject_hash_type((void*)this, "CustomList");
 	probeBlockEnd();
 
 	(this->*customlist_customlistp)();
@@ -471,7 +471,7 @@ EditArea::EditArea(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8EditAreaC2Ev, LIBOSP_UIFW, editarea_editareap);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "EditArea");
+	add_uiobject_hash_type((void*)this, "EditArea");
 	probeBlockEnd();
 
 	(this->*editarea_editareap)();
@@ -485,7 +485,7 @@ EditDate::EditDate(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8EditDateC2Ev, LIBOSP_UIFW, editdate_editdatep);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "EditDate");
+	add_uiobject_hash_type((void*)this, "EditDate");
 	probeBlockEnd();
 
 	(this->*editdate_editdatep)();
@@ -499,7 +499,7 @@ EditField::EditField(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls9EditFieldC2Ev, LIBOSP_UIFW, editfield_editfieldp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "EditField");
+	add_uiobject_hash_type((void*)this, "EditField");
 	probeBlockEnd();
 
 	(this->*editfield_editfieldp)();
@@ -513,7 +513,7 @@ EditTime::EditTime(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8EditTimeC2Ev, LIBOSP_UIFW, edittime_edittimep);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "EditTime");
+	add_uiobject_hash_type((void*)this, "EditTime");
 	probeBlockEnd();
 
 	(this->*edittime_edittimep)();
@@ -527,7 +527,7 @@ ExpandableEditArea::ExpandableEditArea(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls18ExpandableEditAreaC2Ev, LIBOSP_UIFW, expandableeditarea_expandableeditareap);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "ExpandableEditArea");
+	add_uiobject_hash_type((void*)this, "ExpandableEditArea");
 	probeBlockEnd();
 
 	(this->*expandableeditarea_expandableeditareap)();
@@ -541,7 +541,7 @@ ExpandableList::ExpandableList(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls14ExpandableListC2Ev, LIBOSP_UIFW, expandablelist_expandablelistp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "ExpandableList");
+	add_uiobject_hash_type((void*)this, "ExpandableList");
 	probeBlockEnd();
 
 	(this->*expandablelist_expandablelistp)();
@@ -555,7 +555,7 @@ Footer::Footer(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6FooterC2Ev, LIBOSP_UIFW, footer_footerp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Footer");
+	add_uiobject_hash_type((void*)this, "Footer");
 	probeBlockEnd();
 
 	(this->*footer_footerp)();
@@ -569,7 +569,7 @@ Gallery::Gallery(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls7GalleryC2Ev, LIBOSP_UIFW, gallery_galleryp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Gallery");
+	add_uiobject_hash_type((void*)this, "Gallery");
 	probeBlockEnd();
 
 	(this->*gallery_galleryp)();
@@ -583,7 +583,7 @@ GroupedList::GroupedList(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls11GroupedListC2Ev, LIBOSP_UIFW, groupedlist_groupedlistp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "GroupedList");
+	add_uiobject_hash_type((void*)this, "GroupedList");
 	probeBlockEnd();
 
 	(this->*groupedlist_groupedlistp)();
@@ -597,7 +597,7 @@ GroupedListView::GroupedListView(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls15GroupedListViewC2Ev, LIBOSP_UIFW, groupedlistview_groupedlistviewp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "GroupedListView");
+	add_uiobject_hash_type((void*)this, "GroupedListView");
 	probeBlockEnd();
 
 	(this->*groupedlistview_groupedlistviewp)();
@@ -611,7 +611,7 @@ Header::Header(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6HeaderC2Ev, LIBOSP_UIFW, header_headerp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Header");
+	add_uiobject_hash_type((void*)this, "Header");
 	probeBlockEnd();
 
 	(this->*header_headerp)();
@@ -625,7 +625,7 @@ IconList::IconList(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8IconListC2Ev, LIBOSP_UIFW, iconlist_iconlistp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "IconList");
+	add_uiobject_hash_type((void*)this, "IconList");
 	probeBlockEnd();
 
 	(this->*iconlist_iconlistp)();
@@ -639,7 +639,7 @@ IconListView::IconListView(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls12IconListViewC2Ev, LIBOSP_UIFW, iconlistview_iconlistviewp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "IconListView");
+	add_uiobject_hash_type((void*)this, "IconListView");
 	probeBlockEnd();
 
 	(this->*iconlistview_iconlistviewp)();
@@ -653,7 +653,7 @@ Label::Label(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls5LabelC2Ev, LIBOSP_UIFW, label_labelp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Label");
+	add_uiobject_hash_type((void*)this, "Label");
 	probeBlockEnd();
 
 	(this->*label_labelp)();
@@ -667,7 +667,7 @@ List::List(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls4ListC2Ev, LIBOSP_UIFW, list_listp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "List");
+	add_uiobject_hash_type((void*)this, "List");
 	probeBlockEnd();
 
 	(this->*list_listp)();
@@ -681,7 +681,7 @@ ListView::ListView(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8ListViewC2Ev, LIBOSP_UIFW, listview_listviewp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "ListView");
+	add_uiobject_hash_type((void*)this, "ListView");
 	probeBlockEnd();
 
 	(this->*listview_listviewp)();
@@ -695,7 +695,7 @@ Progress::Progress(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls8ProgressC2Ev, LIBOSP_UIFW, progress_progressp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Progress");
+	add_uiobject_hash_type((void*)this, "Progress");
 	probeBlockEnd();
 
 	(this->*progress_progressp)();
@@ -709,7 +709,7 @@ RadioGroup::RadioGroup(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10RadioGroupC2Ev, LIBOSP_UIFW, radiogroup_radiogroupp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "RadioGroup");
+	add_uiobject_hash_type((void*)this, "RadioGroup");
 	probeBlockEnd();
 
 	(this->*radiogroup_radiogroupp)();
@@ -723,7 +723,7 @@ SearchBar::SearchBar(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls9SearchBarC2Ev, LIBOSP_UIFW, searchbar_searchbarp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "SearchBar");
+	add_uiobject_hash_type((void*)this, "SearchBar");
 	probeBlockEnd();
 
 	(this->*searchbar_searchbarp)();
@@ -737,7 +737,7 @@ SlidableGroupedList::SlidableGroupedList(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls19SlidableGroupedListC2Ev, LIBOSP_UIFW, slidablegroupedlist_slidablegroupedlistp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "SlidableGroupedList");
+	add_uiobject_hash_type((void*)this, "SlidableGroupedList");
 	probeBlockEnd();
 
 	(this->*slidablegroupedlist_slidablegroupedlistp)();
@@ -751,7 +751,7 @@ SlidableList::SlidableList(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls12SlidableListC2Ev, LIBOSP_UIFW, slidablelist_slidablelistp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "SlidableList");
+	add_uiobject_hash_type((void*)this, "SlidableList");
 	probeBlockEnd();
 
 	(this->*slidablelist_slidablelistp)();
@@ -765,7 +765,7 @@ Slider::Slider(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6SliderC2Ev, LIBOSP_UIFW, slider_sliderp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Slider");
+	add_uiobject_hash_type((void*)this, "Slider");
 	probeBlockEnd();
 
 	(this->*slider_sliderp)();
@@ -779,7 +779,7 @@ SplitPanel::SplitPanel(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10SplitPanelC2Ev, LIBOSP_UIFW, splitpanel_splitpanelp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "SplitPanel");
+	add_uiobject_hash_type((void*)this, "SplitPanel");
 	probeBlockEnd();
 
 	(this->*splitpanel_splitpanelp)();
@@ -793,7 +793,7 @@ Tab::Tab(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls3TabC2Ev, LIBOSP_UIFW, tab_tabp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Tab");
+	add_uiobject_hash_type((void*)this, "Tab");
 	probeBlockEnd();
 
 	(this->*tab_tabp)();
@@ -807,7 +807,7 @@ TabBar::TabBar(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6TabBarC2Ev, LIBOSP_UIFW, tabbar_tabbarp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "TabBar");
+	add_uiobject_hash_type((void*)this, "TabBar");
 	probeBlockEnd();
 
 	(this->*tabbar_tabbarp)();
@@ -821,7 +821,7 @@ TextBox::TextBox(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls7TextBoxC2Ev, LIBOSP_UIFW, textbox_textboxp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "TextBox");
+	add_uiobject_hash_type((void*)this, "TextBox");
 	probeBlockEnd();
 
 	(this->*textbox_textboxp)();
@@ -835,7 +835,7 @@ Form::Form(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls4FormC2Ev, LIBOSP_UIFW, form_formp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Form");
+	add_uiobject_hash_type((void*)this, "Form");
 	probeBlockEnd();
 
 	(this->*form_formp)();
@@ -849,7 +849,7 @@ GroupedTableView::GroupedTableView(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls16GroupedTableViewC2Ev, LIBOSP_UIFW, groupedtableview_groupedtableviewp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "GroupedTableView");
+	add_uiobject_hash_type((void*)this, "GroupedTableView");
 	probeBlockEnd();
 
 	(this->*groupedtableview_groupedtableviewp)();
@@ -863,7 +863,7 @@ Panel::Panel(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls5PanelC2Ev, LIBOSP_UIFW, panel_panelp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Panel");
+	add_uiobject_hash_type((void*)this, "Panel");
 	probeBlockEnd();
 
 	(this->*panel_panelp)();
@@ -877,7 +877,7 @@ OverlayPanel::OverlayPanel(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls12OverlayPanelC2Ev, LIBOSP_UIFW, overlaypanel_overlaypanelp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "OverlayPanel");
+	add_uiobject_hash_type((void*)this, "OverlayPanel");
 	probeBlockEnd();
 
 	(this->*overlaypanel_overlaypanelp)();
@@ -891,7 +891,7 @@ ScrollPanel::ScrollPanel(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls11ScrollPanelC2Ev, LIBOSP_UIFW, scrollpanel_scrollpanelp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "ScrollPanel");
+	add_uiobject_hash_type((void*)this, "ScrollPanel");
 	probeBlockEnd();
 
 	(this->*scrollpanel_scrollpanelp)();
@@ -905,7 +905,7 @@ SectionTableView::SectionTableView(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls16SectionTableViewC2Ev, LIBOSP_UIFW, sectiontableview_sectiontableviewp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "SectionTableView");
+	add_uiobject_hash_type((void*)this, "SectionTableView");
 	probeBlockEnd();
 
 	(this->*sectiontableview_sectiontableviewp)();
@@ -919,7 +919,7 @@ TableView::TableView(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls9TableViewC2Ev, LIBOSP_UIFW, tableview_tableviewp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "TableView");
+	add_uiobject_hash_type((void*)this, "TableView");
 	probeBlockEnd();
 
 	(this->*tableview_tableviewp)();
@@ -933,7 +933,7 @@ TableViewItemBase::TableViewItemBase(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls17TableViewItemBaseC2Ev, LIBOSP_UIFW, tableviewitembase_tableviewitembasep);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "TableViewItemBase");
+	add_uiobject_hash_type((void*)this, "TableViewItemBase");
 	probeBlockEnd();
 
 	(this->*tableviewitembase_tableviewitembasep)();
@@ -947,7 +947,7 @@ TableViewContextItem::TableViewContextItem(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls20TableViewContextItemC2Ev, LIBOSP_UIFW, tableviewcontextitem_tableviewcontextitemp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "TableViewContextItem");
+	add_uiobject_hash_type((void*)this, "TableViewContextItem");
 	probeBlockEnd();
 
 	(this->*tableviewcontextitem_tableviewcontextitemp)();
@@ -961,7 +961,7 @@ TableViewGroupItem::TableViewGroupItem(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls18TableViewGroupItemC2Ev, LIBOSP_UIFW, tableviewgroupitem_tableviewgroupitemp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "TableViewGroupItem");
+	add_uiobject_hash_type((void*)this, "TableViewGroupItem");
 	probeBlockEnd();
 
 	(this->*tableviewgroupitem_tableviewgroupitemp)();
@@ -975,7 +975,7 @@ TableViewItem::TableViewItem(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls13TableViewItemC2Ev, LIBOSP_UIFW, tableviewitem_tableviewitemp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "TableViewItem");
+	add_uiobject_hash_type((void*)this, "TableViewItem");
 	probeBlockEnd();
 
 	(this->*tableviewitem_tableviewitemp)();
@@ -989,7 +989,7 @@ TableViewSimpleGroupItem::TableViewSimpleGroupItem(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls24TableViewSimpleGroupItemC2Ev, LIBOSP_UIFW, tableviewsimplegroupitem_tableviewsimplegroupitemp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "TableViewSimpleGroupItem");
+	add_uiobject_hash_type((void*)this, "TableViewSimpleGroupItem");
 	probeBlockEnd();
 
 	(this->*tableviewsimplegroupitem_tableviewsimplegroupitemp)();
@@ -1003,7 +1003,7 @@ TableViewSimpleItem::TableViewSimpleItem(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls19TableViewSimpleItemC2Ev, LIBOSP_UIFW, tableviewsimpleitem_tableviewsimpleitemp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "TableViewSimpleItem");
+	add_uiobject_hash_type((void*)this, "TableViewSimpleItem");
 	probeBlockEnd();
 
 	(this->*tableviewsimpleitem_tableviewsimpleitemp)();
@@ -1017,7 +1017,7 @@ ContextMenu::ContextMenu(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls11ContextMenuC2Ev, LIBOSP_UIFW, contextmenu_contextmenup);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "ContextMenu");
+	add_uiobject_hash_type((void*)this, "ContextMenu");
 	probeBlockEnd();
 
 	(this->*contextmenu_contextmenup)();
@@ -1031,7 +1031,7 @@ DatePicker::DatePicker(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10DatePickerC2Ev, LIBOSP_UIFW, datepicker_datepickerp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "DatePicker");
+	add_uiobject_hash_type((void*)this, "DatePicker");
 	probeBlockEnd();
 
 	(this->*datepicker_datepickerp)();
@@ -1045,7 +1045,7 @@ DateTimePicker::DateTimePicker(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls14DateTimePickerC2Ev, LIBOSP_UIFW, datetimepicker_datetimepickerp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "DateTimePicker");
+	add_uiobject_hash_type((void*)this, "DateTimePicker");
 	probeBlockEnd();
 
 	(this->*datetimepicker_datetimepickerp)();
@@ -1059,7 +1059,7 @@ Frame::Frame(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls5FrameC2Ev, LIBOSP_UIFW, frame_framep);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Frame");
+	add_uiobject_hash_type((void*)this, "Frame");
 	probeBlockEnd();
 
 	(this->*frame_framep)();
@@ -1073,7 +1073,7 @@ Keypad::Keypad(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls6KeypadC2Ev, LIBOSP_UIFW, keypad_keypadp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Keypad");
+	add_uiobject_hash_type((void*)this, "Keypad");
 	probeBlockEnd();
 
 	(this->*keypad_keypadp)();
@@ -1087,7 +1087,7 @@ MessageBox::MessageBox(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10MessageBoxC2Ev, LIBOSP_UIFW, messagebox_messageboxp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "MessageBox");
+	add_uiobject_hash_type((void*)this, "MessageBox");
 	probeBlockEnd();
 
 	(this->*messagebox_messageboxp)();
@@ -1101,7 +1101,7 @@ OptionMenu::OptionMenu(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10OptionMenuC2Ev, LIBOSP_UIFW, optionmenu_optionmenup);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "OptionMenu");
+	add_uiobject_hash_type((void*)this, "OptionMenu");
 	probeBlockEnd();
 
 	(this->*optionmenu_optionmenup)();
@@ -1115,7 +1115,7 @@ Popup::Popup(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls5PopupC2Ev, LIBOSP_UIFW, popup_popupp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Popup");
+	add_uiobject_hash_type((void*)this, "Popup");
 	probeBlockEnd();
 
 	(this->*popup_popupp)();
@@ -1129,7 +1129,7 @@ TimePicker::TimePicker(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen2Ui8Controls10TimePickerC2Ev, LIBOSP_UIFW, timepicker_timepickerp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "TimePicker");
+	add_uiobject_hash_type((void*)this, "TimePicker");
 	probeBlockEnd();
 
 	(this->*timepicker_timepickerp)();
@@ -1155,7 +1155,7 @@ Web::Web(void)
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen3Web8Controls3WebC2Ev, LIBOSP_WEB, web_webp);
 
 	probeBlockStart();
-	add_object_hash_type((void*)this, "Web");
+	add_uiobject_hash_type((void*)this, "Web");
 	probeBlockEnd();
 
 	(this->*web_webp)();
