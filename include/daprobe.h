@@ -138,6 +138,7 @@ int getBacktraceString(log_t* log, int bufsize);
 
 // ========================= print log =====================================
 #define PRINTMSG(msg)	printLogStr(msg, MSG_MSG)
+#define PRINTERR(msg)	printLogStr(msg, MSG_ERROR)
 
 #define INIT_INFO						\
 		info.host_ip = 0;				\
