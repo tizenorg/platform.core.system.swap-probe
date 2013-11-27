@@ -550,19 +550,21 @@ int getBacktraceString(log_t* log, int bufsize)
 /*************************************************************************
  * probe block control functions
  *************************************************************************/
-static bool update_filtering(enum DaOptions option)
+static inline bool isNoFiltOptionEnabled(enum DaOptions option)
 {
-	bool filter = true;
-
-	if (((option == OPT_ALLOC) && isOptionEnabled(OPT_ALLOC_ALWAYS))
-	 || ((option == OPT_FILE) && isOptionEnabled(OPT_FILE_ALWAYS))
-	 || ((option == OPT_THREAD) && isOptionEnabled(OPT_THREAD_ALWAYS))
-	 || ((option == OPT_UI) && isOptionEnabled(OPT_UI_ALWAYS))
-	 || ((option == OPT_NETWORK) && isOptionEnabled(OPT_NETWORK_ALWAYS))
-	 || ((option == OPT_GLES) && isOptionEnabled(OPT_GLES_ALWAYS)))
-		filter = false;
-
-	return filter;
+	return
+		((option == OPT_ALLOC)
+		 && isOptionEnabled(OPT_ALLOC_ALWAYS))
+		|| ((option == OPT_FILE)
+		    && isOptionEnabled(OPT_FILE_ALWAYS))
+		|| ((option == OPT_THREAD)
+		    && isOptionEnabled(OPT_THREAD_ALWAYS))
+		|| ((option == OPT_UI)
+		    && isOptionEnabled(OPT_UI_ALWAYS))
+		|| ((option == OPT_NETWORK)
+		    && isOptionEnabled(OPT_NETWORK_ALWAYS))
+		|| ((option == OPT_GLES)
+		    && isOptionEnabled(OPT_GLES_ALWAYS));
 }
 
 int preBlockBegin(void* caller, bool bFiltering, enum DaOptions option)
@@ -570,6 +572,7 @@ int preBlockBegin(void* caller, bool bFiltering, enum DaOptions option)
 	bool user = false;
 	void* tarray[1];
 	char** strings;
+	bool opt_nofilt;
 
 	if(gProbeBlockCount != 0 || gProbeDepth != 0)
 		return 0;
@@ -577,11 +580,17 @@ int preBlockBegin(void* caller, bool bFiltering, enum DaOptions option)
 	if(gTraceInfo.init_complete <= 0)
 		return 0;
 
-	if (bFiltering)
-		bFiltering = update_filtering(option);
+	opt_nofilt = isNoFiltOptionEnabled(option);
 
-	if (bFiltering && !isOptionEnabled(option))
+	/* Actually we are considering 3 conditions here:
+	    - regular option is enabled
+	    - non-filtering (always) option is enabled
+	    - per-probe filtering
+	*/
+	if (!isOptionEnabled(option) && !opt_nofilt)
 		return 0;
+	else if (opt_nofilt)
+		bFiltering = false;
 
 	probeBlockStart();
 
