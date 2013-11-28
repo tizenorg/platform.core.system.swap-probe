@@ -102,7 +102,7 @@ extern __thread int	gProbeDepth;
  * helper apis
  ***************************************************************************/
 
-int preBlockBegin(void* caller, bool bFiltering, enum DaOptions);
+int preBlockBegin(const void *caller, bool bFiltering, enum DaOptions);
 void preBlockEnd();
 
 int postBlockBegin(int preresult);

@@ -567,11 +567,29 @@ static inline bool isNoFiltOptionEnabled(enum DaOptions option)
 		    && isOptionEnabled(OPT_GLES_ALWAYS));
 }
 
-int preBlockBegin(void* caller, bool bFiltering, enum DaOptions option)
+static inline bool is_user_call(const void *caller)
 {
 	bool user = false;
-	void* tarray[1];
-	char** strings;
+	char **strings;
+
+	if (gTraceInfo.exec_map.map_start != NULL) {
+		if (caller >= gTraceInfo.exec_map.map_start &&
+		    caller <= gTraceInfo.exec_map.map_end)
+			user = true;
+	} else {
+		strings = BACKTRACE_SYMBOLS((void * const *)caller, 1);
+		if (strings != NULL) {
+			if (determineCaller(strings[0]) == 0)
+				user = true;
+			free(strings);
+		}
+	}
+
+	return user;
+}
+
+int preBlockBegin(const void *caller, bool bFiltering, enum DaOptions option)
+{
 	bool opt_nofilt;
 
 	if(gProbeBlockCount != 0 || gProbeDepth != 0)
@@ -582,7 +600,7 @@ int preBlockBegin(void* caller, bool bFiltering, enum DaOptions option)
 
 	opt_nofilt = isNoFiltOptionEnabled(option);
 
-	/* Actually we are considering 3 conditions here:
+	/* Actually we are considering 3 variables here:
 	    - regular option is enabled
 	    - non-filtering (always) option is enabled
 	    - per-probe filtering
@@ -594,52 +612,16 @@ int preBlockBegin(void* caller, bool bFiltering, enum DaOptions option)
 
 	probeBlockStart();
 
-	if(gTraceInfo.exec_map.map_start != NULL)
-	{
-		// address comparison
-		if(caller >= gTraceInfo.exec_map.map_start &&
-				caller <= gTraceInfo.exec_map.map_end)
-		{
-			user = true;
-		}
-		else
-		{
-			// nothing to do
-		}
-	}
-	else
-	{
-		// backtrace for filtering
-		tarray[0] = caller;
-		strings = BACKTRACE_SYMBOLS(tarray, 1);
-		if(strings != NULL)
-		{
-			if((determineCaller(strings[0]) == 0))
-				user = true;
-			free(strings);
-		}
-		else
-		{
-			// nothing to do
-		}
-	}
-
-	if(user)
-	{
+	if (is_user_call(caller)) {
 		probingStart();
-		return 2;	// user call
-	}
-	else
-	{
-		if(bFiltering)
-		{
+		return 2; /* user call */
+	} else {
+		if (bFiltering) {
 			probeBlockEnd();
-			return 0;	// not probing
-		}
-		else
-		{
+			return 0; /* not probing */
+		} else {
 			probingStart();
-			return 1;	// internal call
+			return 1; /* internal call */
 		}
 	}
 }
