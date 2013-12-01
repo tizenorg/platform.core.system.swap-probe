@@ -88,7 +88,7 @@ void SceneManagerEventListener::OnSceneTransitionCompleted(const SceneId &previo
 
 				transition = (probeInfo.currentTime - startTime);
 
-				char scene_name[50];
+				char scene_name[PATH_MAX];
 				WcharToChar(scene_name, sceneid.GetPointer());
 
 				PREPARE_LOCAL_BUF();
