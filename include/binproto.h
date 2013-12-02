@@ -90,9 +90,14 @@ static inline char *pack_int64(char *to, uint64_t val)
 
 static char __attribute__((used)) *pack_string(char *to, const char *str)
 {
-	size_t len = strlen(str) + 1;
-	strncpy(to, str, len);
-	return to + len;
+	if (!str) {
+		*to = '\0';
+		return to + 1;
+	} else {
+		size_t len = strlen(str) + 1;
+		strncpy(to, str, len);
+		return to + len;
+	}
 }
 
 static char __attribute__((used)) *pack_bin(char *to, const char *from,
