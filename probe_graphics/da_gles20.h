@@ -46,7 +46,7 @@
 #define APITYPE_NO_CONTEXT 2
 
 #define PACK_GL_ADD(GL_api_type, GL_elapsed_time, GL_context_value)		\
-	do {							\
+	do {	/* PACK_GL_ADD */						\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)GL_api_type);	\
 		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)GL_elapsed_time); \
 		BUF_PTR = pack_string(BUF_PTR, GL_context_value);	\

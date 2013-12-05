@@ -231,7 +231,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	BUF_PTR = pack_string(BUF_PTR, str);
 
 #define PACK_COMMON_BEGIN(msg_id, api_id, fmt, ...)		\
-	do {							\
+	do {	/* PACK_COMMON_BEGIN*/				\
 		BUF_PTR = pack_int32(BUF_PTR, msg_id);		\
 		BUF_PTR = pack_int32(BUF_PTR, 0);		\
 		BUF_PTR = pack_timestamp(BUF_PTR);		\
@@ -244,7 +244,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	} while (0)
 
 #define PACK_COMMON_END(ret_type, ret, errn, intern_call)			\
-	do {									\
+	do {	/* PACK_COMMON_END */						\
 		BUF_PTR = pack_ret(BUF_PTR, ret_type, (uintptr_t)ret);		\
 		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);			\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);		\
@@ -257,7 +257,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		RET_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret);
 
 #define PACK_MEMORY(size, memory_api_type, addr)		\
-	do {							\
+	do {	/* PACK_MEMORY */					\
 		BUF_PTR = pack_int64(BUF_PTR, size);			\
 		BUF_PTR = pack_int32(BUF_PTR, memory_api_type);	\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)addr);	\
@@ -284,7 +284,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	} while(0)
 
 #define PACK_UIEVENT(event_type, detail_type, x, y, info1, info2)	\
-	do {								\
+	do {	/* PACK_UIEVENT */					\
 		BUF_PTR = pack_int32(BUF_PTR, event_type);		\
 		BUF_PTR = pack_int32(BUF_PTR, detail_type);		\
 		BUF_PTR = pack_int32(BUF_PTR, x);			\
@@ -295,7 +295,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 #define PACK_RESOURCE(size, fd_value, fd_api_type, file_size,	\
 		      file_path)					\
-	do {								\
+	do {	/* PACK_RESOURCE */					\
 		BUF_PTR = pack_int64(BUF_PTR, size);			\
 		BUF_PTR = pack_int64(BUF_PTR, fd_value);		\
 		BUF_PTR = pack_int32(BUF_PTR, fd_api_type);		\
@@ -304,7 +304,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	} while (0)
 
 #define PACK_SCREENSHOT(image_file_path, orientation)				\
-		do {								\
+		do {	/* PACK_SCREENSHOT */					\
 			  BUF_PTR = pack_string(BUF_PTR, image_file_path); 	\
 			  BUF_PTR = pack_int32(BUF_PTR, orientation);		\
 		} while (0)
