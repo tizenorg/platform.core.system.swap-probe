@@ -45,8 +45,6 @@
 #define APITYPE_CONTEXT 1
 #define APITYPE_NO_CONTEXT 2
 
-char contextValue[256];
-
 #define PACK_GL_ADD(GL_api_type, GL_elapsed_time, GL_context_value)		\
 	do {							\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)GL_api_type);	\
@@ -99,33 +97,37 @@ char contextValue[256];
 	}								\
 	PRE_PROBEBLOCK()
 
+#define INIT_LIB_ID_STR(LIB_ID, LIB_STR, KEYS)							\
+		if (lib_handle[LIB_ID] == ((void *) 0)) {		\
+			lib_handle[LIB_ID] = dlopen(LIB_STR, RTLD_LAZY | RTLD_GLOBAL); \
+			if (lib_handle[LIB_ID] == ((void *) 0)) {       \
+				char perror_msg[128];			\
+				sprintf(perror_msg, "dlopen failed : [%s],%s", \
+					__FUNCTION__, LIB_STR);			\
+				perror(perror_msg);				\
+				exit(0);				\
+			}						\
+		}
+
+#define INIT_LIB(LIB_ID, KEYS)						\
+	INIT_LIB_ID_STR(LIB_ID, lib_string[LIB_ID], KEYS)
+
 #define BEFORE_EGL(FUNCNAME)					\
-	DECLARE_VARIABLE_STANDARD_NORET;			\
-	GLenum error = GL_NO_ERROR;				\
-	static methodType FUNCNAME ## p = 0;			\
-	void* tmpPtr = 0;					\
-	int32_t vAPI_ID = API_ID_ ## FUNCNAME;			\
+	DECLARE_VARIABLE_STANDARD_NORET;				\
+	GLenum error = GL_NO_ERROR;					\
+	static methodType FUNCNAME ## p = 0;				\
+	void* tmpPtr = 0;						\
+	int32_t vAPI_ID = API_ID_ ## FUNCNAME;				\
 	uint64_t start_nsec = get_current_nsec();			\
 	if(!FUNCNAME##p) {						\
 		probeBlockStart();					\
-		if (lib_handle[LIBEGL] == ((void *) 0)) {		\
-			lib_handle[LIBEGL] = dlopen(lib_string[LIBEGL], RTLD_LAZY | RTLD_GLOBAL); \
-			if (lib_handle[LIBEGL] == ((void *) 0)) {       \
-				char perror_msg[128];			\
-				sprintf(perror_msg, "dlopen failed : %s", \
-					lib_string[LIBEGL]);		\
-				perror(perror_msg);			\
-				exit(0);				\
-			}						\
-		}							\
-									\
-		tmpPtr = dlsym(lib_handle[LIBEGL], #FUNCNAME);     \
+		INIT_LIB(LIBEGL, RTLD_LAZY | RTLD_GLOBAL);		\
+		tmpPtr = dlsym(lib_handle[LIBEGL], #FUNCNAME);		\
 		if (tmpPtr == NULL || dlerror() != NULL) {		\
-			perror("dlsym failed : " #FUNCNAME);       \
+			perror("dlsym failed : " #FUNCNAME);		\
 			exit(0);					\
 		}							\
-									\
-		memcpy(&FUNCNAME##p, &tmpPtr, sizeof(tmpPtr));     \
+		memcpy(&FUNCNAME##p, &tmpPtr, sizeof(tmpPtr));		\
 		probeBlockEnd();					\
 	}								\
 	PRE_PROBEBLOCK()
@@ -139,24 +141,13 @@ char contextValue[256];
 	uint64_t start_nsec = get_current_nsec();				\
 	if(!FUNCNAME##p) {						\
 		probeBlockStart();					\
-		if (lib_handle[LIBOSP_UIFW] == ((void *) 0)) {		\
-			lib_handle[LIBOSP_UIFW] = dlopen(lib_string[LIBOSP_UIFW], RTLD_LAZY); \
-			if (lib_handle[LIBOSP_UIFW] == ((void *) 0)) {       \
-				char perror_msg[128];			\
-				sprintf(perror_msg, "dlopen failed : %s", \
-					lib_string[LIBOSP_UIFW]);		\
-				perror(perror_msg);			\
-				exit(0);				\
-			}						\
-		}							\
-									\
+		INIT_LIB(LIBOSP_UIFW, RTLD_LAZY);			\
 		tmpPtr = dlsym(lib_handle[LIBOSP_UIFW], #FUNCNAME);     \
 		if (tmpPtr == NULL || dlerror() != NULL) {		\
-			perror("dlsym failed : " #FUNCNAME);       \
+			perror("dlsym failed : " #FUNCNAME);		\
 			exit(0);					\
 		}							\
-									\
-		memcpy(&FUNCNAME##p, &tmpPtr, sizeof(tmpPtr));     \
+		memcpy(&FUNCNAME##p, &tmpPtr, sizeof(tmpPtr));		\
 		probeBlockEnd();					\
 	}								\
 	PRE_PROBEBLOCK()

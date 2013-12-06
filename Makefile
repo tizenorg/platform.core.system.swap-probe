@@ -109,7 +109,8 @@ TIZEN_SRCS =	$(COMMON_SRCS)				\
 		./probe_ui/tizen_scenemanager.cpp	\
 		./probe_ui/tizen_frameani.cpp		\
 		./probe_ui/tizen_display.cpp		\
-		./probe_graphics/da_gles20.cpp
+		./probe_graphics/da_gles20_tizen.cpp		\
+		./probe_graphics/da_gles20_native.cpp
 
 ## Totally brain-dead.
 ## FIXME: Rewrite this normally with eval.
@@ -122,7 +123,7 @@ CAPI_TARGET = da_probe_capi.so
 TIZEN_TARGET = da_probe_tizen.so
 DUMMY_TARGET = libdaprobe.so
 
-CPPFLAGS = $(INCLUDE_CPPFLAGS) -D_GNU_SOURCE
+CPPFLAGS = $(INCLUDE_CPPFLAGS) -D_GNU_SOURCE -DSELF_LIB_NAME="\"/$(INSTALLDIR)/$(TIZEN_TARGET)\""
 CFLAGS = $(WARN_CFLAGS) -fPIC
 CXXFLAGS = $(WARN_CFLAGS) -fPIC
 

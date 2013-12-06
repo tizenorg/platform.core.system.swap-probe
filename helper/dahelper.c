@@ -36,18 +36,19 @@
 #include "dahelper.h"
 
 const char *lib_string[NUM_ORIGINAL_LIBRARY] = {
-	"libc.so.6",
-	"libpthread.so.0",
-	"libelementary.so",
-	"libosp-uifw.so",
-	"libosp-appfw.so",
-	"libosp-web.so",
-	"libecore_input_evas.so.1",
-	"libdaemon.so.0",
-	"libcapi-appfw-application.so.0",
-	"libGLESv2.so",
-	"libEGL.so",
-	"libosp-net.so"
+	"libc.so.6",				//0
+	"libpthread.so.0",			//1
+	"libelementary.so",			//2
+	"libosp-uifw.so",			//3
+	"libosp-appfw.so",			//4
+	"libosp-web.so",			//5
+	"libecore_input_evas.so.1",		//6
+	"libdaemon.so.0",			//7
+	"libcapi-appfw-application.so.0",	//8
+	"libGLESv2.so",				//9
+	"libEGL.so",				//10
+	"libosp-net.so",			//11
+	SELF_LIB_NAME				//12
 };
 void *lib_handle[NUM_ORIGINAL_LIBRARY];
 

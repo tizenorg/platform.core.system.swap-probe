@@ -539,6 +539,7 @@ glIsTexture
 
 _SglSwapBuffers
 eglSwapBuffers
+eglGetProcAddress
 
 _ZN5Tizen3Net7Sockets6Socket10SetSockOptENS1_17NetSocketOptLevelENS1_16NetSocketOptNameEi###Socket::SetSockOpt
 _ZN5Tizen3Net7Sockets6Socket10SetSockOptENS1_17NetSocketOptLevelENS1_16NetSocketOptNameERKNS1_12LingerOptionE###Socket::SetSockOpt

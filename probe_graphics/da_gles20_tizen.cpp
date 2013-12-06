@@ -25,11 +25,15 @@
  *
  * Contributors:
  * - S-Core Co., Ltd
+ * - Samsung RnD Institute Russia
  *
  */
+
 #include "da_gles20.h"
+#include "daprobe.h"
 #include "binproto.h"
 
+static char contextValue[256];
 static enum DaOptions _sopt = OPT_GLES;
 
 // ==================================================================
@@ -478,28 +482,6 @@ void glEnableVertexAttribArray(GLuint index) {
 	glEnableVertexAttribArrayp(index);
 	error = glGetError();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", index);
-}
-
-#undef eglSwapBuffers
-extern "C" EGLBoolean eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
-	typedef EGLBoolean (*methodType)(EGLDisplay, EGLSurface);
-	BEFORE_EGL(eglSwapBuffers);
-	EGLBoolean ret = eglSwapBuffersp(dpy, surface);
-	error = eglGetError();
-	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
-
-	return ret;
-}
-#define eglSwapBuffers _SglSwapBuffers
-
-EGLBoolean _SglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
-	typedef EGLBoolean (*methodType)(EGLDisplay, EGLSurface);
-	BEFORE_OSP_UIFW(_SglSwapBuffers);
-	EGLBoolean ret = _SglSwapBuffersp(dpy, surface);
-	error = eglGetError();
-	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
-
-	return ret;
 }
 
 // ==================================================================
