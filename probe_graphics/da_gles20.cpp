@@ -691,12 +691,15 @@ void glGetAttachedShaders(GLuint program, GLsizei maxCount, GLsizei *count,
 }
 
 //lsh_get
-void glGetAttribLocation(GLenum pname, GLint * params) {
-	typedef void (*methodType)(GLenum, GLint *);
+int glGetAttribLocation(GLuint program, const char* name)
+{
+	typedef int (*methodType)(GLuint , const char*);
 	BEFORE(glGetAttribLocation);
-	glGetAttribLocationp(pname, params);
+	int ret = glGetAttribLocationp(program, name);
 	error = glGetError();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(pname));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xs",
+	      (uint64_t)(program), name);
+	return ret;
 }
 
 //lsh_get
@@ -1212,9 +1215,10 @@ void glStencilOpSeparate(GLenum face, GLenum sfail, GLenum dpfail,
 // T 6
 // ==================================================================
 
-void glTexImage2D(GLenum target, GLint level, GLint internalformat,
+void glTexImage2D(GLenum target, GLint level, GLenum internalformat,
 		GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type,
-		const GLvoid * data) {
+		const GLvoid *data)
+{
 	typedef void (*methodType)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint,
 			GLenum, GLenum, const GLvoid *);
 	BEFORE(glTexImage2D);
@@ -1288,8 +1292,8 @@ void glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
 		const GLvoid * data) {
 	typedef void (*methodType)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei,
 			GLenum, GLenum, const GLvoid *);
-	BEFORE(glTexImage2D);
-	glTexImage2Dp(target, level, xoffset, yoffset, width, height, format, type,
+	BEFORE(glTexSubImage2D);
+	glTexSubImage2Dp(target, level, xoffset, yoffset, width, height, format, type,
 			data);
 	error = glGetError();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
