@@ -141,7 +141,11 @@ headers: $(GENERATED_HEADERS)
 include/api_id_mapping.h: ./scripts/gen_api_id_mapping_header.awk
 include/api_id_list.h: ./scripts/gen_api_id_mapping_header_list.awk
 include/id_list: ./scripts/gen_api_id_mapping_list.awk
+
+da_api_map: $(GENERATED_HEADERS)
+
 $(GENERATED_HEADERS): APINAMES=scripts/api_names.txt
+$(GENERATED_HEADERS): ./scripts/api_names.txt
 $(GENERATED_HEADERS):
 	awk -f $< < $(APINAMES) > $@
 
@@ -162,6 +166,6 @@ install:
 	install -m 644 include/id_list $(DESTDIR)/$(INSTALLDIR)/da_api_map
 
 clean:
-	rm -f *.so *.o
+	rm -f *.so *.o $(GENERATED_HEADERS)
 
 .PHONY: all capi tizen dummy clean install headers
