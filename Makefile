@@ -160,7 +160,7 @@ $(TIZEN_TARGET): $(TIZEN_OBJS)
 $(DUMMY_TARGET): $(DUMMY_OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
-install:
+install: all
 	[ -d "$(DESTDIR)/$(INSTALLDIR)" ] || mkdir -p $(DESTDIR)/$(INSTALLDIR)
 	install $(TIZEN_TARGET) $(DUMMY_TARGET) $(DESTDIR)/$(INSTALLDIR)/
 	install -m 644 include/id_list $(DESTDIR)/$(INSTALLDIR)/da_api_map
