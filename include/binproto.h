@@ -52,6 +52,7 @@
 #include <sys/socket.h>
 #include "dahelper.h"
 #include "api_id_mapping.h"
+#include "da_sync.h"
 
 #define MSG_PROBE_MEMORY 0x0101
 #define MSG_PROBE_UICONTROL 0x0102
@@ -384,7 +385,9 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 #define MSG_HDR_LEN 20
 #define FLUSH_LOCAL_BUF()						\
 		*(uint32_t *)(msg_buf + MSG_LEN_OFFSET) = (p - msg_buf) - MSG_HDR_LEN; \
-		send(gTraceInfo.socket.daemonSock, msg_buf, (p - msg_buf), 0)
+		real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));	\
+		send(gTraceInfo.socket.daemonSock, msg_buf, (p - msg_buf), 0);	\
+		real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex))
 
 // =========================== post block macro ===========================
 
