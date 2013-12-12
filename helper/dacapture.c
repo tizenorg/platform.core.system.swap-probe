@@ -29,6 +29,11 @@
  * - Samsung RnD Institute Russia
  *
  */
+/*
+ * We refer to the Evas example source code with BSD
+ * (Evas/src/examples/evas-buffer-simple.c)
+ *
+ */
 
 #include <stdlib.h>		// for system
 #include <sys/types.h>		// for stat, getpid

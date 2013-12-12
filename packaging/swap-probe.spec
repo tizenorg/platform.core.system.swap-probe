@@ -28,9 +28,13 @@ make -j
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
+mkdir -p %{buildroot}/usr/share/license
+cp LICENSE %{buildroot}/usr/share/license/%{name}
 %make_install
 
 %files
+/usr/share/license/%{name}
+
 %manifest swap-probe.manifest
 %defattr(-,root,root,-)
 %{_prefix}/lib/da_probe_tizen.so
