@@ -292,15 +292,16 @@ Tizen::Base::String* HttpHeader::GetRawHeaderN(void) const
 			GetRawHeaderNp);
 
 	retVal = (this->*GetRawHeaderNp)();
-	if (retVal == NULL)
-		newerrno = 1;
 
-	int bufferSize = retVal->GetLength();
-	Tizen::Base::String strData;
-	strData.SetCapacity(bufferSize);
-	strData.Append(*retVal);
-	char* out = new char[bufferSize];
-	WcharToChar(out, strData.GetPointer());
+	char *out = NULL;
+	int bufferSize = 0;
+	if (retVal == NULL) {
+		newerrno = 1;
+	} else {
+		bufferSize = retVal->GetLength();
+		out = new char[bufferSize + sizeof(char)];
+		WcharToChar(out, retVal->GetPointer());
+	}
 
 	info.msg_buf = out;
 	info.msg_pack_size = bufferSize > SOCKET_SEND_SIZE ? SOCKET_SEND_SIZE : bufferSize;
@@ -309,7 +310,10 @@ Tizen::Base::String* HttpHeader::GetRawHeaderN(void) const
 	AFTER_ORIGINAL_TIZEN_SOCK("HttpHeader::GetRawHeaderN", VT_NULL, NULL,
 				  (unsigned int)this, (unsigned int)this,
 				  HTTP_API_RESPONSE, info, "s", "void");
-	delete [] out;
+
+	if (out)
+		delete [] out;
+
 	return retVal;
 }
 
@@ -1741,7 +1745,7 @@ result HttpResponse::WriteBody(const Tizen::Base::ByteBuffer& body)
 	Tizen::Base::String strData;
 	strData.SetCapacity(bufferSize);
 	strData.Append(pBuffer);
-	char* out = new char[bufferSize];
+	char* out = new char[bufferSize + sizeof(char)];
 	WcharToChar(out, strData.GetPointer());
 
 	info.msg_buf = out;
