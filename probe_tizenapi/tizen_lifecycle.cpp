@@ -41,11 +41,6 @@
 #include "tizen_probe.h"
 
 #include "binproto.h"
-extern "C"
-{
-Ecore_Event_Handler* register_orientation_event_listener();
-void unregister_orientation_event_listener(Ecore_Event_Handler* handler);
-}
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
@@ -85,13 +80,11 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 	static methodType uiapp_executep;
 	probeInfo_t	probeInfo;
 	unsigned long __attribute__((unused)) ret;
-	Ecore_Event_Handler* handler;
 
 	GET_REAL_FUNC_TIZEN(_ZN5Tizen3App5UiApp7ExecuteEPFPS1_vEPKNS_4Base10Collection5IListE,
 		LIBOSP_UIFW, uiapp_executep);
 
 	probeBlockStart();
-	handler = register_orientation_event_listener();
 	if(gTraceInfo.exec_map.map_start == NULL)
 	{
 		get_map_address(CALLER_ADDRESS, &(gTraceInfo.exec_map.map_start),
@@ -112,7 +105,6 @@ result UiApp::Execute(UiAppInstanceFactory pUiAppFactory,
 	PACK_COMMON_END('x', ret, 0, 0);
 	FLUSH_LOCAL_BUF();
 
-	unregister_orientation_event_listener(handler);
 	probeBlockEnd();
 
 	return ret;

@@ -78,41 +78,30 @@ static int convert_angle(int angle)
 void on_orientation_changed(int angle, bool capi)
 {
 	probeInfo_t	probeInfo;
-	bool autoRotation = true;
 
 	probeBlockStart();
 
 	internal_angle = angle;
-	if(runtime_info_get_value_bool(
-			RUNTIME_INFO_KEY_AUTO_ROTATION_ENABLED, &autoRotation) < 0)
+	external_angle = internal_angle;
+
+	if(isOptionEnabled(OPT_EVENT))
 	{
-		PRINTMSG("ERROR: could not get auto rotation value!\n");
+		setProbePoint(&probeInfo);
+
+		PREPARE_LOCAL_BUF();
+		PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT,
+				  API_ID_on_orientation_changed,
+				  "dd", angle, (uint32_t)capi);
+		PACK_COMMON_END('v', 0, 0, 0);
+		PACK_UIEVENT(_EVENT_ORIENTATION, 0, 0, 0, "", convert_angle(external_angle));
+		FLUSH_LOCAL_BUF();
 	}
 
-	if(autoRotation)	// rotation is not locked
-	{
-		external_angle = internal_angle;
-
-		if(isOptionEnabled(OPT_EVENT))
-		{
-			setProbePoint(&probeInfo);
-
-			PREPARE_LOCAL_BUF();
-			PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT,
-					  API_ID_on_orientation_changed,
-					  "dd", angle, (uint32_t)capi);
-			PACK_COMMON_END('v', 0, 0, 0);
-			PACK_UIEVENT(_EVENT_ORIENTATION, 0, 0, 0, "", convert_angle(external_angle));
-			FLUSH_LOCAL_BUF();
-		}
-
-		SCREENSHOT_SET();
-//		if(!capi)
-//		{
-//			SCREENSHOT_DONE();
-//		}
-	}
-	else { }	// do nothing
+	SCREENSHOT_SET();
+//	if(!capi)
+//	{
+//		SCREENSHOT_DONE();
+//	}
 
 	probeBlockEnd();
 }
