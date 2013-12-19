@@ -34,19 +34,67 @@
 #include "daprobe.h"
 #include "dahelper.h"
 
-Eina_Bool _da_onclientmessagereceived(void __unused * pData, int __unused type,
+static int init_orient = 0;
+
+Ecore_Event_Handler *register_orientation_event_listener();
+void unregister_orientation_event_listener(Ecore_Event_Handler **handler);
+
+Ecore_Event_Handler *handler = NULL;
+
+EAPI int ecore_x_init(const char *name)
+{
+	static int (*ecore_x_initp)(const char *name);
+	int res;
+
+	probeBlockStart();
+	GET_REAL_FUNC(ecore_x_init, LIBOSP_UIFW);
+
+	probeBlockEnd();
+	res = ecore_x_initp(name);
+
+	if ((init_orient == 0) && (res == 1)) {
+		handler = register_orientation_event_listener();
+		init_orient = 1;
+	}
+	return res;
+}
+
+EAPI int ecore_x_shutdown(void)
+{
+	static int (*ecore_x_shutdownp)(void);
+	int res;
+
+	probeBlockStart();
+	GET_REAL_FUNC(ecore_x_shutdown, LIBOSP_UIFW);
+
+	probeBlockEnd();
+	res = ecore_x_shutdownp();
+
+	if ((init_orient == 1) && (res == 0)) {
+		unregister_orientation_event_listener(&handler);
+		init_orient = 0;
+	}
+
+	return res;
+}
+
+Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
 				      void *pEvent)
 {
-	Ecore_X_Event_Client_Message* pClientEvent;
+	Ecore_X_Event_Client_Message *pClientEvent;
 
 	probeBlockStart();
 	pClientEvent = (Ecore_X_Event_Client_Message*)pEvent;
 
-	if(pClientEvent != NULL)
-	{
-		if(pClientEvent->message_type == ECORE_X_ATOM_E_WINDOW_ROTATION_CHANGE_REQUEST)
-		{
-			int orientation = pClientEvent->data.l[1];
+	//This code from ecore_x
+	//So I don't know what 32 does mean
+	if (pClientEvent->format != 32)
+		return ECORE_CALLBACK_PASS_ON;
+
+	if (pClientEvent != NULL) {
+		if (pClientEvent->message_type ==
+		    ECORE_X_ATOM_E_WINDOW_ROTATION_CHANGE_PREPARE) {
+			int orientation = (int)pClientEvent->data.l[1];
 			on_orientation_changed(orientation, false);
 		}
 	}
@@ -55,25 +103,25 @@ Eina_Bool _da_onclientmessagereceived(void __unused * pData, int __unused type,
 	return ECORE_CALLBACK_RENEW;
 }
 
-Ecore_Event_Handler* register_orientation_event_listener()
+Ecore_Event_Handler *register_orientation_event_listener()
 {
-	Ecore_Event_Handler* handler;
-
+	Ecore_Event_Handler *handler;
 	probeBlockStart();
-	ecore_init();
-	ecore_x_init(NULL);
-	handler = ecore_event_handler_add(ECORE_X_EVENT_CLIENT_MESSAGE, _da_onclientmessagereceived, NULL);
+
+	handler = ecore_event_handler_add(ECORE_X_EVENT_CLIENT_MESSAGE,
+					  _da_onclientmessagereceived, NULL);
+
 	probeBlockEnd();
 
 	return handler;
 }
 
-void unregister_orientation_event_listener(Ecore_Event_Handler* handler)
+void unregister_orientation_event_listener(Ecore_Event_Handler **handler)
 {
 	probeBlockStart();
-	if(handler)
-	{
-		ecore_event_handler_del(handler);
+	if (*handler) {
+		ecore_event_handler_del(*handler);
+		*handler = NULL;
 	}
 	probeBlockEnd();
 }
