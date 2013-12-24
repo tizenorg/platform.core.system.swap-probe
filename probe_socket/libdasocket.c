@@ -36,6 +36,7 @@
 #include <stdbool.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/un.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <ifaddrs.h>
@@ -55,23 +56,35 @@
 #define OBJ_DUMMY 0
 
 static enum DaOptions _sopt = OPT_NETWORK;
-char g_address[128];
-char* getAddress(const struct sockaddr *sa) {
+void getAddress(const struct sockaddr *sa, char *address) {
 	char buff[INET6_ADDRSTRLEN];
+	char *path;
+
 	switch (sa->sa_family) {
 	case AF_INET:
-		sprintf(g_address, "%s:%d",
-				inet_ntoa(((struct sockaddr_in*) sa)->sin_addr),
-				(int) ntohs(((struct sockaddr_in*) sa)->sin_port));
+		snprintf(address, MAX_PATH_LENGTH, "%s:%d",
+			 inet_ntoa(((struct sockaddr_in*) sa)->sin_addr),
+			 (int) ntohs(((struct sockaddr_in*) sa)->sin_port));
 		break;
 	case AF_INET6:
-		sprintf(g_address, "%s:%d",
-				inet_ntop(AF_INET6, &(((struct sockaddr_in6 *) sa)->sin6_addr),
-						buff, sizeof(buff)),
+		snprintf(address, MAX_PATH_LENGTH, "%s:%d",
+			 inet_ntop(AF_INET6, &(((struct sockaddr_in6 *) sa)->sin6_addr),
+			 buff, sizeof(buff)),
 				ntohs(((struct sockaddr_in6*) sa)->sin6_port));
 		break;
+	case AF_UNIX:
+		path = ((struct sockaddr_un*)sa)->sun_path;
+		if (path[0] == '\0')
+			snprintf(address, MAX_PATH_LENGTH, "%s", path + 1);
+		else
+			snprintf(address, MAX_PATH_LENGTH, "%s", path);
+		break;
+	default:
+		snprintf(address, MAX_PATH_LENGTH, "<unknown socket type #%d>",
+			 sa->sa_family);
+		break;
 	}
-	return g_address;
+
 }
 
 //FD
@@ -93,7 +106,9 @@ int accept(int socket, struct sockaddr *address, socklen_t *address_len) {
 
 	BEFORE_ORIGINAL_SOCK(accept, LIBC);
 
-	char* callAddress = getAddress(address);
+	char callAddress[MAX_PATH_LENGTH];
+	getAddress(address, callAddress);
+
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, socket,
 						 SOCKET_API_ACCEPT_START, info,
 						 "dsp", socket, callAddress,
@@ -101,6 +116,8 @@ int accept(int socket, struct sockaddr *address, socklen_t *address_len) {
 
 	ret = acceptp(socket, address, address_len);
 	info.sock = (struct sockaddr *)address;
+
+	getAddress(address, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, socket,
 					       SOCKET_API_ACCEPT_END, info,
@@ -115,7 +132,9 @@ int accept4(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags) {
 			socklen_t *addrlen, int flags);
 
 	BEFORE_ORIGINAL_SOCK(accept4, LIBC);
-	char* callAddress = getAddress(addr);
+
+	char callAddress[MAX_PATH_LENGTH];
+	getAddress(addr, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, sockfd,
 						 SOCKET_API_ACCEPT_START, info,
@@ -125,6 +144,8 @@ int accept4(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags) {
 
 	ret = accept4p(sockfd, addr, addrlen, flags);
 	info.sock = (struct sockaddr *)addr;
+
+	getAddress(addr, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, sockfd,
 					       SOCKET_API_ACCEPT_END, info,
@@ -143,9 +164,12 @@ int connect(int socket, const struct sockaddr *address, socklen_t address_len) {
 	ret = connectp(socket, address, address_len);
 	info.sock = (struct sockaddr *)address;
 
+	char callAddress[MAX_PATH_LENGTH];
+	getAddress(address, callAddress);
+
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_CONNECT,
 			info, "dsd",
-			socket, getAddress(address), address_len);
+			socket, callAddress, address_len);
 
 	return ret;
 }
@@ -172,8 +196,11 @@ int bind(int socket, const struct sockaddr *address, socklen_t address_len) {
 	ret = bindp(socket, address, address_len);
 	info.sock = (struct sockaddr *)address;
 
+	char callAddress[MAX_PATH_LENGTH];
+	getAddress(address, callAddress);
+
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_BIND,
-			info, "dsd", socket, getAddress(address), address_len);
+			info, "dsd", socket, callAddress, address_len);
 
 	return ret;
 }
@@ -450,8 +477,11 @@ int getpeername(int fd, struct sockaddr *addr, socklen_t *len) {
 	ret = getpeernamep(fd, addr, len);
 	info.sock = (struct sockaddr *)addr;
 
+	char callAddress[MAX_PATH_LENGTH];
+	getAddress(addr, callAddress);
+
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, fd, SOCKET_API_OTHER,
-				 info, "dsp", fd, getAddress(addr),
+				 info, "dsp", fd, callAddress,
 				 voidp_to_uint64(len));
 	return ret;
 }
@@ -465,8 +495,11 @@ int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
 	ret = getsocknamep(sockfd, addr, addrlen);
 	info.sock = (struct sockaddr *)addr;
 
+	char callAddress[MAX_PATH_LENGTH];
+	getAddress(addr, callAddress);
+
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, sockfd, SOCKET_API_OTHER,
-				 info, "dsp", sockfd, getAddress(addr),
+				 info, "dsp", sockfd, callAddress,
 				 voidp_to_uint64(addrlen));
 
 	return ret;
