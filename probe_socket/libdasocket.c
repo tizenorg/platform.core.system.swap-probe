@@ -53,25 +53,45 @@
 #include "binproto.h"
 
 #define OBJ_DUMMY 0
+#define MAX_FILENAME 128
 
 static enum DaOptions _sopt = OPT_NETWORK;
-char g_address[128];
-char* getAddress(const struct sockaddr *sa) {
+void getAddress(const struct sockaddr *sa, char *g_address) {
 	char buff[INET6_ADDRSTRLEN];
+	int len = 0;
+	buff[0] = '\0';
+
 	switch (sa->sa_family) {
 	case AF_INET:
-		sprintf(g_address, "%s:%d",
-				inet_ntoa(((struct sockaddr_in*) sa)->sin_addr),
-				(int) ntohs(((struct sockaddr_in*) sa)->sin_port));
+		len = snprintf(g_address, MAX_FILENAME, "%s:%d",
+			 inet_ntoa(((struct sockaddr_in*) sa)->sin_addr),
+			 (int) ntohs(((struct sockaddr_in*) sa)->sin_port));
 		break;
 	case AF_INET6:
-		sprintf(g_address, "%s:%d",
-				inet_ntop(AF_INET6, &(((struct sockaddr_in6 *) sa)->sin6_addr),
-						buff, sizeof(buff)),
+		len = snprintf(g_address, MAX_FILENAME, "%s:%d",
+			 inet_ntop(AF_INET6, &(((struct sockaddr_in6 *) sa)->sin6_addr),
+			 buff, sizeof(buff)),
 				ntohs(((struct sockaddr_in6*) sa)->sin6_port));
 		break;
+	case AF_UNIX:
+		len = snprintf(g_address, MAX_FILENAME, "%s",
+			       ((struct sockaddr_un*)sa)->sun_path);
+		break;
+	default:
+		len = snprintf(g_address, MAX_FILENAME, "<unknown socket type>");
+		break;
 	}
-	return g_address;
+	char buf[1280];
+	sprintf(buf, "->%d] %s", sa->sa_family, g_address);
+	PRINTMSG(buf);
+
+	if (len >= MAX_FILENAME) {
+		char *p = g_address + MAX_FILENAME - 4;
+		*p = '.'; p++;
+		*p = '.'; p++;
+		*p = '.'; p++;
+		*p = '\0'; p++;
+	}
 }
 
 //FD
@@ -93,7 +113,9 @@ int accept(int socket, struct sockaddr *address, socklen_t *address_len) {
 
 	BEFORE_ORIGINAL_SOCK(accept, LIBC);
 
-	char* callAddress = getAddress(address);
+	char callAddress[MAX_FILENAME];
+	getAddress(address, callAddress);
+
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, socket,
 						 SOCKET_API_ACCEPT_START, info,
 						 "dsp", socket, callAddress,
@@ -101,6 +123,8 @@ int accept(int socket, struct sockaddr *address, socklen_t *address_len) {
 
 	ret = acceptp(socket, address, address_len);
 	info.sock = (struct sockaddr *)address;
+
+	getAddress(address, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, socket,
 					       SOCKET_API_ACCEPT_END, info,
@@ -115,7 +139,9 @@ int accept4(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags) {
 			socklen_t *addrlen, int flags);
 
 	BEFORE_ORIGINAL_SOCK(accept4, LIBC);
-	char* callAddress = getAddress(addr);
+
+	char callAddress[MAX_FILENAME];
+	getAddress(addr, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, sockfd,
 						 SOCKET_API_ACCEPT_START, info,
@@ -125,6 +151,8 @@ int accept4(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags) {
 
 	ret = accept4p(sockfd, addr, addrlen, flags);
 	info.sock = (struct sockaddr *)addr;
+
+	getAddress(addr, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, sockfd,
 					       SOCKET_API_ACCEPT_END, info,
@@ -143,9 +171,12 @@ int connect(int socket, const struct sockaddr *address, socklen_t address_len) {
 	ret = connectp(socket, address, address_len);
 	info.sock = (struct sockaddr *)address;
 
+	char callAddress[MAX_FILENAME];
+	getAddress(address, callAddress);
+
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_CONNECT,
 			info, "dsd",
-			socket, getAddress(address), address_len);
+			socket, callAddress, address_len);
 
 	return ret;
 }
@@ -172,8 +203,11 @@ int bind(int socket, const struct sockaddr *address, socklen_t address_len) {
 	ret = bindp(socket, address, address_len);
 	info.sock = (struct sockaddr *)address;
 
+	char callAddress[MAX_FILENAME];
+	getAddress(address, callAddress);
+
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_BIND,
-			info, "dsd", socket, getAddress(address), address_len);
+			info, "dsd", socket, callAddress, address_len);
 
 	return ret;
 }
@@ -450,8 +484,11 @@ int getpeername(int fd, struct sockaddr *addr, socklen_t *len) {
 	ret = getpeernamep(fd, addr, len);
 	info.sock = (struct sockaddr *)addr;
 
+	char callAddress[MAX_FILENAME];
+	getAddress(addr, callAddress);
+
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, fd, SOCKET_API_OTHER,
-				 info, "dsp", fd, getAddress(addr),
+				 info, "dsp", fd, callAddress,
 				 voidp_to_uint64(len));
 	return ret;
 }
@@ -465,8 +502,11 @@ int getsockname(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
 	ret = getsocknamep(sockfd, addr, addrlen);
 	info.sock = (struct sockaddr *)addr;
 
+	char callAddress[MAX_FILENAME];
+	getAddress(addr, callAddress);
+
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, sockfd, SOCKET_API_OTHER,
-				 info, "dsp", sockfd, getAddress(addr),
+				 info, "dsp", sockfd, callAddress,
 				 voidp_to_uint64(addrlen));
 
 	return ret;
