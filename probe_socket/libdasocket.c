@@ -55,7 +55,7 @@
 #define OBJ_DUMMY 0
 
 static enum DaOptions _sopt = OPT_NETWORK;
-char g_address[128];
+char g_address[MAX_FILENAME];
 char* getAddress(const struct sockaddr *sa) {
 	char buff[INET6_ADDRSTRLEN];
 	switch (sa->sa_family) {
@@ -69,6 +69,12 @@ char* getAddress(const struct sockaddr *sa) {
 				inet_ntop(AF_INET6, &(((struct sockaddr_in6 *) sa)->sin6_addr),
 						buff, sizeof(buff)),
 				ntohs(((struct sockaddr_in6*) sa)->sin6_port));
+		break;
+	case AF_UNIX:
+		sprintf(g_address, "%s", ((struct sockaddr_un*)sa)->sun_path);
+		break;
+	default:
+		sprintf(g_address, "<unknown socket type>");
 		break;
 	}
 	return g_address;
