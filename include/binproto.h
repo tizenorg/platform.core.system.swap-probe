@@ -94,8 +94,10 @@ static char __attribute__((used)) *pack_string(char *to, const char *str)
 		*to = '\0';
 		return to + 1;
 	} else {
-		size_t len = strlen(str) + 1;
+		enum { max_str_len = 255 };
+		size_t len = strnlen(str, max_str_len) + 1;
 		strncpy(to, str, len);
+		*(to + len - 1) = '\0';
 		return to + len;
 	}
 }
@@ -133,7 +135,6 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va
 	float f;
 	double w;
 	char *s;
-	int n;
 
 	*to++ = t;
 
@@ -172,9 +173,7 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va
 		break;
 	case 's':
 		s = va_arg(*args, char *);
-		n = strlen(s) + 1;
-		strncpy(to, s, n);
-		to += n;
+		to = pack_string(to, s);
 		break;
 	case 'v':
 	case 'n':
