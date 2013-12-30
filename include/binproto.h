@@ -90,14 +90,14 @@ static inline char *pack_int64(char *to, uint64_t val)
 
 static char __attribute__((used)) *pack_string(char *to, const char *str)
 {
-	if (!str) {
-		*to = '\0';
-		return to + 1;
-	} else {
-		size_t len = strlen(str) + 1;
-		strncpy(to, str, len);
-		return to + len;
+	if (str) {
+		enum { max_str_len = 255 };
+		size_t len = strnlen(str, max_str_len);
+		memcpy(to, str, len);
+		to += len;
 	}
+	*to = '\0';
+	return to + 1;
 }
 
 static char __attribute__((used)) *pack_bin(char *to, const char *from,
@@ -133,7 +133,6 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va
 	float f;
 	double w;
 	char *s;
-	int n;
 
 	*to++ = t;
 
@@ -172,9 +171,7 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va
 		break;
 	case 's':
 		s = va_arg(*args, char *);
-		n = strlen(s) + 1;
-		strncpy(to, s, n);
-		to += n;
+		to = pack_string(to, s);
 		break;
 	case 'v':
 	case 'n':
