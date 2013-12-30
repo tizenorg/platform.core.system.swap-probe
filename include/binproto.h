@@ -66,6 +66,8 @@
 #define MSG_PROBE_NETWORK 0x0111
 #define MSG_PROBE_GL 0x0112
 
+#define SCREENSHOT_DIRECTORY	"/tmp/da"
+
 // TODO: remove this copy-paste
 #define CALLER_ADDRESS							\
 	((void*) __builtin_extract_return_addr(__builtin_return_address(0)))
@@ -373,11 +375,15 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		BUF_PTR = pack_int32(BUF_PTR, api_type);	     \
 	} while (0)
 
-#define LOCAL_BUF_SIZE 2048
+
+#define MAX_SHADER_LEN (4 * 1024)
+#define ADD_LOCAL_BUF_SIZE (1024)
+#define MAX_LOCAL_BUF_SIZE (MAX_SHADER_LEN + ADD_LOCAL_BUF_SIZE)
+#define LOCAL_BUF msg_buf
 
 #define PREPARE_LOCAL_BUF()			\
-		char msg_buf[LOCAL_BUF_SIZE];\
-		char *BUF_PTR = msg_buf;			\
+		char LOCAL_BUF[MAX_LOCAL_BUF_SIZE];		\
+		char *BUF_PTR = LOCAL_BUF;			\
 		char *RET_PTR = NULL
 
 #define MSG_LEN_OFFSET 16
