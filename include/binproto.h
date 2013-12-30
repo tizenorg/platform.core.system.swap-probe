@@ -70,6 +70,8 @@
 #define CALLER_ADDRESS							\
 	((void*) __builtin_extract_return_addr(__builtin_return_address(0)))
 
+enum { MAX_STR_LEN = 256 };
+
 static inline uint64_t voidp_to_uint64(const void *p)
 {
 	return (uint64_t)(uintptr_t)p;
@@ -95,7 +97,13 @@ static char __attribute__((used)) *pack_string(char *to, const char *str)
 		return to + 1;
 	} else {
 		size_t len = strlen(str) + 1;
-		strncpy(to, str, len);
+		if (len > MAX_STR_LEN) {
+			len = MAX_STR_LEN;
+			strncpy(to, str, len);
+			*(to + len - 1) = '\0';
+		} else {
+			strncpy(to, str, len);
+		}
 		return to + len;
 	}
 }
@@ -133,7 +141,6 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va
 	float f;
 	double w;
 	char *s;
-	int n;
 
 	*to++ = t;
 
@@ -172,9 +179,7 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va
 		break;
 	case 's':
 		s = va_arg(*args, char *);
-		n = strlen(s) + 1;
-		strncpy(to, s, n);
-		to += n;
+		to = pack_string(to, s);
 		break;
 	case 'v':
 	case 'n':
