@@ -45,6 +45,8 @@
 #define APITYPE_CONTEXT 1
 #define APITYPE_NO_CONTEXT 2
 
+#define MAX_SHADER_LEN (4*1024)
+
 #define PACK_GL_ADD(GL_api_type, GL_elapsed_time, GL_context_value)		\
 	do {	/* PACK_GL_ADD */						\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)GL_api_type);	\
@@ -52,6 +54,30 @@
 		BUF_PTR = pack_string(BUF_PTR, GL_context_value);	\
 	} while (0)
 
+#define PACK_GL_SHADER(GL_api_type, GL_elapsed_time, GL_shader, GL_shader_size)	\
+	do {	/* PACK_GL_SHADER */						\
+		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)GL_api_type);		\
+		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)GL_elapsed_time);	\
+		if ( (GL_shader_size <= MAX_SHADER_LEN)	&&			\
+		     (GL_shader_size <= (sizeof(LOCAL_BUF) - (BUF_PTR - LOCAL_BUF)))) {\
+			/* pack shaders to buffer */				\
+			BUF_PTR = pack_string(BUF_PTR, GL_shader);		\
+		} else {							\
+			/* pack shaders to file */				\
+			char dst_path[128];					\
+			FILE *file;						\
+			sprintf(dst_path, SCREENSHOT_DIRECTORY "/%d_%d.shd",	\
+				getpid(), probeInfo.eventIndex);		\
+			file = fopen(dst_path, "w");				\
+			if (file != NULL) {					\
+				fwrite(GL_shader, GL_shader_size, 1, file);	\
+				fclose(file);					\
+			}							\
+			BUF_PTR = pack_string(BUF_PTR, "FILE:");		\
+			BUF_PTR--;						\
+			BUF_PTR = pack_string(BUF_PTR, dst_path);		\
+		}								\
+	} while (0)
 
 #define BEFORE(FUNCNAME)						\
 	DECLARE_VARIABLE_STANDARD_NORET;				\
@@ -163,6 +189,15 @@
 
 #define AFTER_NO_PARAM(RET_TYPE, RETVAL, APITYPE, CONTEXTVALUE) \
 		AFTER(RET_TYPE, RETVAL, APITYPE, CONTEXTVALUE, "", 0)
+
+#define AFTER_SHADER(RET_TYPE, RET_VAL, APITYPE, CONTEXT_VAL, CONTEXT_SIZE, INPUTFORMAT, ...)	\
+	POST_PACK_PROBEBLOCK_BEGIN();						\
+	PREPARE_LOCAL_BUF_SIZE(MAX_SHADER_LEN + 1024);				\
+	PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, INPUTFORMAT, __VA_ARGS__);	\
+	PACK_COMMON_END(RET_TYPE, RET_VAL, error, blockresult);			\
+	PACK_GL_SHADER(APITYPE, get_current_nsec() - start_nsec, CONTEXT_VAL, CONTEXT_SIZE);	\
+	FLUSH_LOCAL_BUF();							\
+	POST_PACK_PROBEBLOCK_END()
 
 #endif /* DA_GLES20_H_ */
 
