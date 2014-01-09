@@ -35,6 +35,7 @@
 
 static char contextValue[256];
 static enum DaOptions _sopt = OPT_GLES;
+static __thread GLenum gl_error_external = GL_NO_ERROR;
 
 // ==================================================================
 // A 2
@@ -698,7 +699,16 @@ GLenum glGetError(void) {
 	typedef GLenum (*methodType)(void);
 	BEFORE(glGetError);
 	GLenum ret = glGetErrorp();
-//	error = glGetError();
+
+	if (gl_error_external == GL_NO_ERROR)
+		gl_error_external = ret;
+
+	if (blockresult) {
+		//external call
+		ret = gl_error_external;
+		gl_error_external = GL_NO_ERROR;
+	}
+
 	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
 
 	return ret;
