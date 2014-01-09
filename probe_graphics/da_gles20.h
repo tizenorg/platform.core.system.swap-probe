@@ -164,5 +164,10 @@
 #define AFTER_NO_PARAM(RET_TYPE, RETVAL, APITYPE, CONTEXTVALUE) \
 		AFTER(RET_TYPE, RETVAL, APITYPE, CONTEXTVALUE, "", 0)
 
+#define GL_GET_ERROR()							\
+	if (blockresult != 0) {						\
+		error = glGetError();					\
+	}
+
 #endif /* DA_GLES20_H_ */
 
