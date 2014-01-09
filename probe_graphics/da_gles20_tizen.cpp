@@ -35,6 +35,8 @@
 
 static char contextValue[256];
 static enum DaOptions _sopt = OPT_GLES;
+static __thread GLenum gl_error_internal = GL_NO_ERROR;
+static __thread GLenum gl_error_external = GL_NO_ERROR;
 
 // ==================================================================
 // A 2
@@ -697,8 +699,21 @@ void glGetBufferParameteriv(GLenum target, GLenum value, GLint * data) {
 GLenum glGetError(void) {
 	typedef GLenum (*methodType)(void);
 	BEFORE(glGetError);
-	GLenum ret = glGetErrorp();
-//	error = glGetError();
+	GLenum ret;
+
+	gl_error_internal = glGetErrorp();
+	if (gl_error_external == GL_NO_ERROR)
+		gl_error_external = gl_error_internal;
+
+	if (blockresult) {
+		//extermal call
+		ret = gl_error_external;
+		gl_error_external = GL_NO_ERROR;
+	} else {
+		//internal call
+		ret = gl_error_internal;
+	}
+
 	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
 
 	return ret;
