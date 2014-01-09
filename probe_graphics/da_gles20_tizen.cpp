@@ -697,8 +697,16 @@ void glGetBufferParameteriv(GLenum target, GLenum value, GLint * data) {
 GLenum glGetError(void) {
 	typedef GLenum (*methodType)(void);
 	BEFORE(glGetError);
-	GLenum ret = glGetErrorp();
-//	error = glGetError();
+	GLenum ret;
+
+	if (gl_error == GL_NO_ERROR)
+		gl_error = glGetErrorp();
+	ret = gl_error;
+
+	//reset error if it is external call
+	if(blockresult)
+		gl_error = GL_NO_ERROR;
+
 	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
 
 	return ret;
