@@ -59,7 +59,10 @@
 	static methodType FUNCNAME ## p = 0;				\
 	void* tmpPtr = 0;						\
 	int32_t vAPI_ID = API_ID_ ## FUNCNAME;				\
-	uint64_t start_nsec = get_current_nsec();			\
+	uint64_t start_nsec = 0;					\
+	PRE_PROBEBLOCK();						\
+	if(blockresult != 0)						\
+		start_nsec = get_current_nsec();			\
 	if(!FUNCNAME##p) {						\
 		probeBlockStart();					\
 		if (lib_handle[LIBGLES20] == ((void *) 0)) {		\
@@ -73,17 +76,19 @@
 			}						\
 			probeInfo_t tempProbeInfo;			\
 			setProbePoint(&tempProbeInfo);			\
-			/* get max value */				\
-			char maxValString[64];				\
-			GLint maxVal[2];				\
-			glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVal[0]); 		\
-			glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxVal[1]);	\
-			sprintf(maxValString, "%d,%d", maxVal[0], maxVal[1]);		\
-			PREPARE_LOCAL_BUF();						\
-			PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, "", 0);		\
-			PACK_COMMON_END('p', 1, 0, 0);					\
-			PACK_GL_ADD(APITYPE_INIT, 0, maxValString);			\
-			FLUSH_LOCAL_BUF();						\
+			if(blockresult != 0) {				\
+				/* get max value */				\
+				char maxValString[64];				\
+				GLint maxVal[2];				\
+				glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVal[0]); 		\
+				glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxVal[1]);	\
+				sprintf(maxValString, "%d,%d", maxVal[0], maxVal[1]);		\
+				PREPARE_LOCAL_BUF();			\
+				PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, "", 0);\
+				PACK_COMMON_END('p', 1, 0, 0);		\
+				PACK_GL_ADD(APITYPE_INIT, 0, maxValString);	\
+				FLUSH_LOCAL_BUF();			\
+			}						\
 		}							\
 									\
 		tmpPtr = dlsym(lib_handle[LIBGLES20], #FUNCNAME);	\
@@ -94,8 +99,7 @@
 									\
 		memcpy(&FUNCNAME##p, &tmpPtr, sizeof(tmpPtr));		\
 		probeBlockEnd();					\
-	}								\
-	PRE_PROBEBLOCK()
+	}
 
 #define INIT_LIB_ID_STR(LIB_ID, LIB_STR, KEYS)							\
 		if (lib_handle[LIB_ID] == ((void *) 0)) {		\
@@ -118,7 +122,10 @@
 	static methodType FUNCNAME ## p = 0;				\
 	void* tmpPtr = 0;						\
 	int32_t vAPI_ID = API_ID_ ## FUNCNAME;				\
-	uint64_t start_nsec = get_current_nsec();			\
+	uint64_t start_nsec = 0;					\
+	PRE_PROBEBLOCK();						\
+	if(blockresult != 0)						\
+		start_nsec = get_current_nsec();			\
 	if(!FUNCNAME##p) {						\
 		probeBlockStart();					\
 		INIT_LIB(LIBEGL, RTLD_LAZY | RTLD_GLOBAL);		\
@@ -129,8 +136,7 @@
 		}							\
 		memcpy(&FUNCNAME##p, &tmpPtr, sizeof(tmpPtr));		\
 		probeBlockEnd();					\
-	}								\
-	PRE_PROBEBLOCK()
+	}
 
 #define BEFORE_OSP_UIFW(FUNCNAME)					\
 	DECLARE_VARIABLE_STANDARD_NORET;			\
@@ -138,7 +144,10 @@
 	static methodType FUNCNAME ## p = 0;			\
 	void* tmpPtr = 0;					\
 	int32_t vAPI_ID = API_ID_ ## FUNCNAME;			\
-	uint64_t start_nsec = get_current_nsec();				\
+	uint64_t start_nsec = 0;					\
+	PRE_PROBEBLOCK();						\
+	if(blockresult != 0)						\
+		start_nsec = get_current_nsec();			\
 	if(!FUNCNAME##p) {						\
 		probeBlockStart();					\
 		INIT_LIB(LIBOSP_UIFW, RTLD_LAZY);			\
@@ -149,8 +158,7 @@
 		}							\
 		memcpy(&FUNCNAME##p, &tmpPtr, sizeof(tmpPtr));		\
 		probeBlockEnd();					\
-	}								\
-	PRE_PROBEBLOCK()
+	}
 
 #define AFTER(RET_TYPE, RET_VAL, APITYPE, CONTEXT_VAL, INPUTFORMAT, ...)	\
 	POST_PACK_PROBEBLOCK_BEGIN();						\
