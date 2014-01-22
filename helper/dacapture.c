@@ -55,8 +55,6 @@
 
 #include "binproto.h"
 
-#define SCREENSHOT_DIRECTORY	"/tmp/da"
-
 #define MAX_HEIGHT	720
 #define CAPTURE_TIMEOUT		2.0
 
