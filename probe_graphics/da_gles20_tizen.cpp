@@ -1137,9 +1137,9 @@ void glShaderSource(GLuint shader, GLsizei count, const char** string,
 		glGetShaderiv(shader, GL_SHADER_SOURCE_LENGTH, length);
 		char buf[length[0]];
 		glGetShaderSource(shader, length[0], NULL, buf);
-		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf,
-		      "ddpp", shader, count,
-		      voidp_to_uint64(string), voidp_to_uint64(length));
+		AFTER_SHADER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf,
+			     length[0], "ddpp", shader, count,
+			     voidp_to_uint64(string), voidp_to_uint64(length));
 	} else {
 		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
 		      "ddpp", shader, count,
