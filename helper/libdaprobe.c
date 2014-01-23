@@ -58,6 +58,7 @@
 #include "daprobe.h"
 
 #include "binproto.h"
+#include "daforkexec.h"
 
 #define APP_INSTALL_PATH		"/opt/apps"
 #define TISEN_APP_POSTFIX			".exe"
@@ -113,6 +114,11 @@ static int createSocket(void)
 			    (struct sockaddr *)&clientAddr, clientLen) >= 0)
 		{
 			char buf[64];
+			/* send pid */
+			sprintf(buf, "%d|%llu", getpid(),
+				gTraceInfo.app.startTime);
+			printLogStr(buf, MSG_PID);
+
 			/* recv initial configuration value */
 			recvlen = recv(gTraceInfo.socket.daemonSock, &log,
 				       sizeof(log.type) + sizeof(log.length),
@@ -144,9 +150,6 @@ static int createSocket(void)
 				/* closed by other peer */
 			}
 
-			sprintf(buf, "%d|%llu", getpid(),
-				gTraceInfo.app.startTime);
-			printLogStr(buf, MSG_PID);
 			PRINTMSG("createSocket connect() success\n");
 		} else {
 			close(gTraceInfo.socket.daemonSock);
@@ -361,10 +364,12 @@ static int create_recv_thread()
 	return err;
 }
 
-void __attribute__((constructor)) _init_probe()
+void _init_(void)
 {
+	char msg[DA_LOG_MAX];
 	probeBlockStart();
 
+	init_exec_fork();
 	initialize_hash_table();
 
 	initialize_screencapture();
@@ -383,19 +388,33 @@ void __attribute__((constructor)) _init_probe()
 	}
 
 
-	PRINTMSG("dynamic analyzer probe helper so loading...\n");
+	sprintf(msg, "dynamic analyzer probe helper so loading... pid[%d]\n",
+		getpid());
+	PRINTMSG(msg);
 
 	gTraceInfo.init_complete = 1;
 	probeBlockEnd();
+
 }
 
-void __attribute__((destructor)) _fini_probe()
+void __attribute__((constructor)) _init_probe()
+{
+	_init_();
+	char msg[DA_LOG_MAX];
+	sprintf(msg, "<-lib construnctor");
+	PRINTMSG(msg);
+}
+
+void _uninit_(void)
 {
 	int i;
+	char msg[DA_LOG_MAX];
 	probeBlockStart();
 
 	gTraceInfo.init_complete = -1;
-	PRINTMSG("dynamic analyzer probe helper so unloading...\n");
+	sprintf(msg, "dynamic analyzer probe helper so unloading... pid[%d]\n",
+		getpid());
+	PRINTMSG(msg);
 
 	remove_all_glist();
 
@@ -426,6 +445,14 @@ void __attribute__((destructor)) _fini_probe()
 	}
 
 	probeBlockEnd();
+}
+
+void __attribute__((destructor)) _fini_probe()
+{
+	char msg[DA_LOG_MAX];
+	sprintf(msg, "->lib destructor. pid[%d]\n", getpid());
+	PRINTMSG(msg);
+	_uninit_();
 }
 
 
