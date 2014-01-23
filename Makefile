@@ -58,6 +58,8 @@ LDFLAGS = -shared -L/usr/lib/osp  	\
 	-lpthread			\
 	-lrt
 
+ASMFLAG = -O0 -g
+
 ## FIXME: Ideally, UTILITY_SRCS is sources for probe infrastructure and
 ## PROBE_SRCS is sources for actual replacement functions.  Unfortunatelly,
 ## it is not so easy and UTILITY_SRCS do not link alone.
@@ -69,6 +71,7 @@ UTILITY_SRCS =				\
 	./helper/btsym.c		\
 	./helper/dacollection.c		\
 	./helper/dacapture.c		\
+	./helper/daforkexec.c		\
 	./custom_chart/da_chart.c	\
 
 PROBE_SRCS =	   				\
@@ -112,10 +115,13 @@ TIZEN_SRCS =	$(COMMON_SRCS)				\
 		./probe_graphics/da_gles20_tizen.cpp		\
 		./probe_graphics/da_gles20_native.cpp
 
+ASM_SRC = ./helper/da_call_original.S
+
 ## Totally brain-dead.
 ## FIXME: Rewrite this normally with eval.
-CAPI_OBJS = $(patsubst %.c,%.o, $(CAPI_SRCS))
-TIZEN_OBJS = $(patsubst %.cpp,%.o, $(patsubst %.c,%.o, $(TIZEN_SRCS)))
+ASM_OBJ = $(patsubst %.S,%.o, $(ASM_SRC))
+CAPI_OBJS = $(patsubst %.c,%.o, $(CAPI_SRCS)) $(ASM_OBJ)
+TIZEN_OBJS = $(patsubst %.cpp,%.o, $(patsubst %.c,%.o, $(TIZEN_SRCS))) $(ASM_OBJ)
 DUMMY_OBJS = $(patsubst %.c,%.o, $(DUMMY_SRCS))
 
 
@@ -134,6 +140,9 @@ all:	capi tizen dummy
 capi:	headers $(CAPI_TARGET)
 tizen:	headers $(TIZEN_TARGET)
 dummy:	headers $(DUMMY_TARGET)
+
+$(ASM_OBJ): $(ASM_SRC)
+	$(CC) $(ASMFLAG) -c $^ -o $@
 
 GENERATED_HEADERS = include/api_id_mapping.h include/api_id_list.h include/id_list
 headers: $(GENERATED_HEADERS)
