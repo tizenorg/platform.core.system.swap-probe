@@ -209,6 +209,61 @@
 	PACK_GL_SHADER(APITYPE, get_current_nsec() - start_nsec, CONTEXT_VAL, CONTEXT_SIZE);	\
 	FLUSH_LOCAL_BUF();							\
 	POST_PACK_PROBEBLOCK_END()
+// --------------------------------- REDESIGN ---------------------------------
+#define BEFORE1(FUNCNAME)						\
+	/* ------------------- BEFOR BLOCK BEGIN  ------------------- */\
+	DECLARE_VARIABLE_STANDARD_NORET;				\
+	GLenum error = GL_NO_ERROR;					\
+	static methodType FUNCNAME ## p = 0;				\
+	int32_t vAPI_ID = API_ID_ ## FUNCNAME;				\
+	uint64_t start_nsec = 0;					\
+	PRE_PROBEBLOCK();						\
+	if(blockresult != 0)						\
+		start_nsec = get_current_nsec();			\
+	if(!FUNCNAME##p) {						\
+		probeBlockStart();					\
+		if (lib_handle[LIBGLES20] == ((void *) 0)) {		\
+			__init_lib__terminate_on_fail(LIBGLES20, RTLD_LAZY);	\
+			if(blockresult != 0)				\
+				__lib_first_init_pack(vAPI_ID);		\
+		}							\
+									\
+		FUNCNAME##p = (methodType)__get_real__terminate_on_fail(LIBGLES20, #FUNCNAME);		\
+									\
+		probeBlockEnd();					\
+	};								\
+	/* -------------------- BEFOR BLOCK END --------------------- */
+
+#define AFTER1(RET_TYPE, RET_VAL, APITYPE, CONTEXT_VAL, ...)			\
+	/* ------------------- AFTER BLOCK BEGIN  ------------------- */	\
+	POST_PACK_PROBEBLOCK_BEGIN();						\
+	PREPARE_LOCAL_BUF();							\
+	PACK_COMMON_BEGIN1(MSG_PROBE_GL, vAPI_ID, __VA_ARGS__);			\
+	PACK_COMMON_END(RET_TYPE, RET_VAL, error, blockresult);			\
+	PACK_GL_ADD(APITYPE, get_current_nsec() - start_nsec, CONTEXT_VAL);	\
+	FLUSH_LOCAL_BUF();							\
+	POST_PACK_PROBEBLOCK_END()						\
+	/* -------------------- AFTER BLOCK END  -------------------- */
+
+#define AFTER_SHADER1(RET_TYPE, RET_VAL, APITYPE, CONTEXT_VAL, CONTEXT_SIZE,  ...)	\
+	POST_PACK_PROBEBLOCK_BEGIN();						\
+	PREPARE_LOCAL_BUF();							\
+	PACK_COMMON_BEGIN1(MSG_PROBE_GL, vAPI_ID, __VA_ARGS__);			\
+	PACK_COMMON_END1(RET_TYPE, RET_VAL, error, blockresult);			\
+	PACK_GL_SHADER1(APITYPE, get_current_nsec() - start_nsec, CONTEXT_VAL, CONTEXT_SIZE);	\
+	FLUSH_LOCAL_BUF();							\
+	POST_PACK_PROBEBLOCK_END()
+
+#define PACK_GL_SHADER1(GL_api_type, GL_elapsed_time, GL_shader, GL_shader_size)	\
+	do {	/* PACK_GL_SHADER */						\
+		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)GL_api_type);		\
+		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)GL_elapsed_time);	\
+		const struct shader_info_t shader = {GL_shader_size, GL_shader,	\
+		    probeInfo.eventIndex, (sizeof(LOCAL_BUF) - (BUF_PTR - LOCAL_BUF))	\
+		};								\
+		BUF_PTR = __pack_by_type(BUF_PTR, A_SHADER, (void *)&shader);			\
+	} while (0)
+
 
 #endif /* DA_GLES20_H_ */
 
