@@ -66,6 +66,7 @@ COMMON_SRCS = $(UTILITY_SRCS) $(PROBE_SRCS)
 UTILITY_SRCS =				\
 	./helper/libdaprobe.c		\
 	./helper/dahelper.c		\
+	./helper/pack_args.c		\
 	./helper/btsym.c		\
 	./helper/dacollection.c		\
 	./helper/dacapture.c		\

@@ -40,6 +40,49 @@ static __thread GLenum gl_error_external = GL_NO_ERROR;
 // ==================================================================
 // A 2
 // ==================================================================
+static void __init_lib__terminate_on_fail(ORIGINAL_LIBRARY lib_id, int flags)
+{
+	lib_handle[lib_id] = dlopen(lib_string[lib_id], flags);
+	if (lib_handle[lib_id] == ((void *) 0)) {
+		char perror_msg[128];
+		sprintf(perror_msg, "dlopen failed : lib <%s>",
+			lib_string[lib_id]);
+		perror(perror_msg);
+		exit(0);
+	}
+
+}
+
+static void __lib_first_init_pack(int32_t func_id)
+{
+	probeInfo_t tempProbeInfo;
+	setProbePoint(&tempProbeInfo);
+	/* get max value */
+	char maxValString[64];
+	GLint maxVal[2];
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVal[0]);
+	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxVal[1]);
+	sprintf(maxValString, "%d,%d", maxVal[0], maxVal[1]);
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_GL, func_id, "", 0);
+	PACK_COMMON_END('p', 1, 0, 0);
+	PACK_GL_ADD(APITYPE_INIT, 0, maxValString);
+	FLUSH_LOCAL_BUF();
+}
+
+static void *__get_real__terminate_on_fail(ORIGINAL_LIBRARY lib_id, const char *func)
+{
+	void *real_func;
+	real_func = dlsym(lib_handle[lib_id], func);
+	if (real_func == NULL || dlerror() != NULL) {
+		char msg[128];
+		sprintf(msg, "dlsym failed [%s]: func <%s>\n", lib_string[lib_id], func);
+		perror(msg);
+		exit(0);
+	}
+
+	return real_func;
+}
 
 void glActiveTexture(GLenum texture) {
 	typedef void (*methodType)(GLenum);
@@ -1129,7 +1172,7 @@ void glShaderBinary(GLsizei n, const GLuint *shaders, GLenum binaryformat,
 void glShaderSource(GLuint shader, GLsizei count, const char** string,
 		const GLint* length) {
 	typedef void (*methodType)(GLuint, GLsizei, const char**, const GLint*);
-	BEFORE(glShaderSource);
+	BEFORE1(glShaderSource);
 	glShaderSourcep(shader, count, string, length);
 	GL_GET_ERROR();
 	if (error == GL_NO_ERROR) {
@@ -1137,13 +1180,23 @@ void glShaderSource(GLuint shader, GLsizei count, const char** string,
 		glGetShaderiv(shader, GL_SHADER_SOURCE_LENGTH, length);
 		char buf[length[0]];
 		glGetShaderSource(shader, length[0], NULL, buf);
-		AFTER_SHADER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf,
-			     length[0], "ddpp", shader, count,
-			     voidp_to_uint64(string), voidp_to_uint64(length));
+
+		AFTER_SHADER1(A_VOID, NO_RETURN_VALUE, APITYPE_CONTEXT, buf,
+			      length[0],
+			      {
+				{A_INT32,   (void *)shader},
+				{A_INT32,   (void *)count},
+				{A_VOIDP64, (void *)string},
+				{A_VOIDP64, (void *)length}
+			     });
 	} else {
-		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
-		      "ddpp", shader, count,
-		      voidp_to_uint64(string), voidp_to_uint64(length));
+		AFTER1('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
+			      {
+				{A_INT32,   (void *)shader},
+				{A_INT32,   (void *)count},
+				{A_VOIDP64, (void *)string},
+				{A_VOIDP64, (void *)length}
+			     });
 	}
 }
 

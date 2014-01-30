@@ -67,6 +67,7 @@
 #define MSG_PROBE_GL 0x0112
 
 #define SCREENSHOT_DIRECTORY	"/tmp/da"
+#define MAX_FILENAME_LEN_TO_PACK 256
 
 // TODO: remove this copy-paste
 #define CALLER_ADDRESS							\
@@ -222,6 +223,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 	return to;
 }
+
 
 #define BUF_PTR p
 #define RET_PTR ret_p
@@ -423,5 +425,160 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 /* 	return 0; */
 /* } */
+
+// --------------------------- REDESIGN ----------------------------------
+
+#include "pack_args.h"
+#include "daprobe.h"
+
+static char __attribute__((used)) *pack_by_type(char *to, const struct packable_t pack)
+{
+	if (pack.h < A_TAIL)
+		to = (char *)pack_handler[pack.h](to, (void *)pack.arg);
+	else
+		PRINTERR("wrong function id");
+
+	return to;
+}
+
+static char __attribute__((used)) *__pack_by_type(char *to, const enum handler h,
+						void *arg)
+{
+	if (h < A_TAIL)
+		to = (char *)pack_handler[h](to, arg);
+	else
+		PRINTERR("wrong function id");
+
+	return to;
+}
+
+
+static char __attribute__((used)) *pack_args1(char *to, const struct packable_t packable[], uint32_t len)
+{
+	uint32_t i;
+	struct packable_t *pack;
+	memcpy(to, &len, sizeof(len));
+	to += sizeof(len);
+
+	pack = (struct packable_t *)packable;
+	for (i = 0; i < len; i++) {
+		*to = pack_type_char[pack->h];
+		to++;
+		if (pack->h < A_TAIL) {
+			to = (char *)pack_handler[pack->h](to, (void *)pack->arg);
+		} else {
+			PRINTERR("wrong function id");
+		}
+		pack++;
+	}
+
+	return to;
+}
+
+static char __attribute__((used)) *pack_ret1(char *to, const struct packable_t pack)
+{
+	if (pack.h < A_TAIL) {
+		*to = pack_type_char[pack.h];
+		to++;
+		to = (char *)pack_handler[pack.h](to, (void *)pack.arg);
+	} else {
+		PRINTERR("wrong function id");
+	}
+
+	return to;
+}
+
+static inline char *pack_p64(char *to, void *val)
+{
+	*(uint64_t *)to = voidp_to_uint64(val);
+	return to + sizeof(uint64_t);
+}
+
+static inline char *pack_void(char *to, void __attribute__((unused))*val)
+{
+	return to;
+}
+
+
+static char __attribute__((used)) *pack_filepath(char *to, char *path)
+{
+	int len;
+
+	if (path == NULL)
+		path = (char *)"<NULL>";
+
+	len = strlen(path);
+
+	if (len > MAX_FILENAME_LEN_TO_PACK) {
+		char buf[MAX_FILENAME_LEN_TO_PACK];
+		memcpy(buf, path, MAX_FILENAME_LEN_TO_PACK);
+		buf[MAX_FILENAME_LEN_TO_PACK-1] = '\0';
+		buf[MAX_FILENAME_LEN_TO_PACK-2] = '.';
+		buf[MAX_FILENAME_LEN_TO_PACK-3] = '.';
+		buf[MAX_FILENAME_LEN_TO_PACK-4] = '.';
+		to = pack_string(to, buf);
+	} else {
+		to = pack_string(to, path);
+	}
+
+	return to;
+}
+
+struct shader_info_t {
+	uint32_t GL_shader_size;
+	char *GL_shader;
+	int index;
+	uint32_t elapsed_size;
+};
+
+static char __attribute__((used)) *pack_shader(char *to, const struct shader_info_t *info)
+{
+	if ( (info->GL_shader_size <= MAX_SHADER_LEN) &&
+	     (info->GL_shader_size <= info->elapsed_size)) {
+		/* pack shaders to buffer */
+		to = pack_string(to, info->GL_shader);
+	} else {
+		/* pack shaders to file */
+		char dst_path[MAX_PATH_LENGTH];
+		char dst_path_pack[MAX_PATH_LENGTH];
+		FILE *file;
+		sprintf(dst_path, SCREENSHOT_DIRECTORY "/%d_%d.shd",
+			getpid(), info->index);
+		file = fopen(dst_path, "w");
+		if (file != NULL) {
+			fwrite(info->GL_shader, info->GL_shader_size, 1, file);
+			fclose(file);
+		}
+		sprintf(dst_path_pack, "FILE:%s", dst_path);
+		to = pack_string(to, dst_path_pack);
+	}
+	return to;
+}
+
+#define PACK_COMMON_BEGIN1(msg_id, api_id, ...)		\
+	do {	/* PACK_COMMON_BEGIN1 */				\
+		BUF_PTR = pack_int32(BUF_PTR, msg_id);		\
+		BUF_PTR = pack_int32(BUF_PTR, 0);		\
+		BUF_PTR = pack_timestamp(BUF_PTR);		\
+		BUF_PTR = pack_int32(BUF_PTR, 0);		\
+		BUF_PTR = pack_int32(BUF_PTR, api_id);		\
+		BUF_PTR = pack_int32(BUF_PTR, getpid());		\
+		BUF_PTR = pack_int32(BUF_PTR, syscall(__NR_gettid));	\
+		const struct packable_t args[] = __VA_ARGS__;		\
+		BUF_PTR = pack_args1(BUF_PTR, args, sizeof(args)/sizeof(args[0]));	\
+		RET_PTR = BUF_PTR;		\
+	} while (0)
+
+#define PACK_COMMON_END1(ret_type, ret, errn, intern_call)			\
+	do {	/* PACK_COMMON_END1 */						\
+		const struct packable_t result_ret = {ret_type, (void *)ret};	\
+		BUF_PTR = pack_ret1(BUF_PTR, result_ret);			\
+		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);			\
+		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);		\
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); 	\
+		BUF_PTR = pack_int32(BUF_PTR, 0);				\
+		BUF_PTR = pack_int32(BUF_PTR, 0);				\
+	} while (0)
+
 
 #endif /* __BIN_PROTO_H__ */

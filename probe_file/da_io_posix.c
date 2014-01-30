@@ -51,6 +51,7 @@
 #include <errno.h>
 
 #include "binproto.h"
+#include "pack_args.h"
 
 static enum DaOptions _sopt = OPT_FILE;
 
@@ -73,8 +74,12 @@ int open(const char* path, int oflag, ...)
 
 	ret = openp(path, oflag, mode);
 
-	AFTER_PACK_ORIGINAL_FD(API_ID_open, 'd', ret, 0, ret, FD_API_OPEN, "sdd",
-			       absolutize_filepath(buffer, path), oflag, mode);
+	AFTER_PACK_ORIGINAL_FD1(API_ID_open, A_INT32, ret, 0, ret, FD_API_OPEN,
+		{
+			{A_FILEPATH, (void *)absolutize_filepath(buffer, path)},
+			{A_INT32, (void *)oflag},
+			{A_INT32, (void *)mode}
+		});
 
 	return ret;
 }

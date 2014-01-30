@@ -264,6 +264,19 @@ static inline int checked_fileno(FILE *fp)
 	       "and as such fatal error.\n");
 	return fileno(fp);
 }
+// --------------------------- redesign ------------------------------
+
+#define AFTER_PACK_ORIGINAL_FD1(API_ID, RTYPE, RVAL, SIZE, FD, APITYPE,  ...)	\
+	POST_PACK_PROBEBLOCK_BEGIN();								\
+	_fstatret = fstat(FD, &_statbuf);							\
+	if (stat_regular_or_socket_p(&_statbuf)) {						\
+		PREPARE_LOCAL_BUF();								\
+		PACK_COMMON_BEGIN1(MSG_PROBE_RESOURCE, API_ID, __VA_ARGS__);			\
+		PACK_COMMON_END1(RTYPE, RVAL, newerrno, blockresult);				\
+		POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE);				\
+	}											\
+	POST_PACK_PROBEBLOCK_END()
+
 
 
 #endif	// __DA_IO_H__
