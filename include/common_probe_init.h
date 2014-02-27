@@ -1,7 +1,7 @@
 /*
  *  DA probe
  *
- * Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
+ * Copyright (c) 2000 - 2014 Samsung Electronics Co., Ltd. All rights reserved.
  *
  * Contact:
  *
@@ -22,25 +22,23 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  * Contributors:
- * - Samsung RnD Institute Russia
+ * - S-Core Co., Ltd
  *
  */
+#ifndef __COMMON_PROBE_INIT_H__
+#define __COMMON_PROBE_INIT_H__
 
-//disable tizen redefines
-#define _GL2_MACRO_H_
-#define _GL_MACRO_H_
+#include "dahelper.h"
 
-#include "common_probe_init.h"
-extern "C" {
-/*
- * this include to make C native open gl functions
- * probe prototypes
- *
- */
+////////////////////////////////////////////////////////////////////////////
+//egl init probe function
+//  params:
+//    func_name    - original function name for dlsym search
+//    func_pointer - original function pointer (return)
+//
+//  info
+//    search original function by name
+//    function have no return becouse on error it terminates main application
+void init_probe_egl(const char *func_name, void **func_pointer, ORIGINAL_LIBRARY id);
 
-#include "da_gles20_tizen.cpp"
-
-} /* extern C */
-
-#undef _GL2_MACRO_H_
-#undef _GL_MACRO_H_
+#endif /* __COMMON_PROBE_INIT_H__ */

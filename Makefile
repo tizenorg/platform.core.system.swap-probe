@@ -98,6 +98,7 @@ CAPI_SRCS = 	$(COMMON_SRCS)			\
 TIZEN_SRCS =	$(COMMON_SRCS)				\
 		./helper/appfw-tizen.cpp		\
 		./helper/addr-tizen.c			\
+		./helper/common_probe_init.cpp		\
 		./probe_memory/libdanew.cpp		\
 		./probe_tizenapi/tizen_file.cpp		\
 		./probe_tizenapi/tizen_socket.cpp	\
@@ -113,7 +114,9 @@ TIZEN_SRCS =	$(COMMON_SRCS)				\
 		./probe_ui/tizen_frameani.cpp		\
 		./probe_ui/tizen_display.cpp		\
 		./probe_graphics/da_gles20_tizen.cpp		\
-		./probe_graphics/da_gles20_native.cpp
+		./probe_graphics/da_gles20_native.cpp		\
+		./probe_graphics/da_egl_tizen.cpp			\
+		./probe_graphics/da_egl_native.cpp
 
 ASM_SRC = ./helper/da_call_original.S
 
