@@ -1,7 +1,7 @@
 /*
  *  DA probe
  *
- * Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
+ * Copyright (c) 2000 - 2014 Samsung Electronics Co., Ltd. All rights reserved.
  *
  * Contact:
  *
@@ -27,20 +27,20 @@
  */
 
 //disable tizen redefines
-#define _GL2_MACRO_H_
-#define _GL_MACRO_H_
+#define _EGL_MACRO_H_
 
-#include "common_probe_init.h"
-extern "C" {
+//define search real function in library
+#define BEFORE_EGL BEFORE_EGL_NATIVE
+
+//extern "C" {
 /*
- * this include to make C native open gl functions
+ * this include to make C native open egl functions
  * probe prototypes
  *
  */
 
-#include "da_gles20_tizen.cpp"
+#include "da_egl_tizen.cpp"
 
-} /* extern C */
+//} /* extern C */
 
-#undef _GL2_MACRO_H_
-#undef _GL_MACRO_H_
+#undef _EGL_MACRO_H_
