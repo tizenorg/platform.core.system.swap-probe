@@ -37,6 +37,21 @@ void dummy()
 {
 	return;
 }
+
+void probe_terminate_with_err(const char *msg, const char *func_name,
+			      ORIGINAL_LIBRARY id)
+{
+	char error_msg[1024];
+
+	sprintf(error_msg, "%s : [%s], %s", msg, func_name, lib_string[id]);
+	perror(error_msg);
+	PRINTERR(error_msg);
+	//wait for flush
+	sleep(1);
+	exit(0);
+
+}
+
 ////////////////////////////////////////////////////////////////////////////
 //egl init probe function
 //  params:
@@ -57,7 +72,6 @@ void init_probe_egl(__attribute__ ((unused))const char *func_name, void **func_p
 void init_probe_egl(const char *func_name, void **func_pointer,
 		    ORIGINAL_LIBRARY id)
 {
-	char error_msg[1024];
 	void *faddr = 0;
 
 	(gProbeBlockCount++);
@@ -65,26 +79,12 @@ void init_probe_egl(const char *func_name, void **func_pointer,
 		lib_handle[id] = dlopen(lib_string[id],
 					RTLD_LAZY | RTLD_GLOBAL);
 
-		if (lib_handle[id] == ((void *)0)) {
-			sprintf(error_msg, "dlopen failed : [%s],%s",
-				func_name, lib_string[id]);
-			perror(error_msg);
-			PRINTERR(error_msg);
-			//wait for flush
-			sleep(1);
-			exit(0);
-		}
+		if (lib_handle[id] == ((void *)0))
+			probe_terminate_with_err("dlopen failed", func_name, id);
 	};
 	faddr = dlsym(lib_handle[id], func_name);
-	if (faddr == __null || dlerror() != __null) {
-		sprintf(error_msg, "dlsym failed : [%s],%s",
-			func_name, lib_string[id]);
-		perror(error_msg);
-		PRINTERR(error_msg);
-		//wait for flush
-		sleep(1);
-		exit(0);
-	}
+	if (faddr == __null || dlerror() != __null)
+		probe_terminate_with_err("dlsym failed", func_name, id);
 	memcpy(func_pointer, &faddr, sizeof(faddr));
 	(gProbeBlockCount--);
 }

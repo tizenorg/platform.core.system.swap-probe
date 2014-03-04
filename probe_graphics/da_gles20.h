@@ -45,6 +45,10 @@
 #define APITYPE_CONTEXT 1
 #define APITYPE_NO_CONTEXT 2
 
+#define FUNC(FUNCNAME) FUNCNAME
+#define FUNCSTR(FUNCNAME) #FUNCNAME
+#define FUNCID(FUNCNAME) API_ID_##FUNCNAME
+
 #define PACK_GL_ADD_COMMON(GL_api_type, GL_elapsed_time)			\
 	do {	/* PACK_GL_ADD_COMMON */					\
 		BUF_PTR = pack_int64(BUF_PTR, voidp_to_uint64((void *)eglGetCurrentContext()));\
@@ -86,48 +90,14 @@
 	DECLARE_VARIABLE_STANDARD_NORET;				\
 	GLenum error = GL_NO_ERROR;					\
 	static methodType FUNCNAME ## p = 0;				\
-	void* tmpPtr = 0;						\
 	int32_t vAPI_ID = API_ID_ ## FUNCNAME;				\
 	uint64_t start_nsec = 0;					\
 	PRE_PROBEBLOCK();						\
 	if(blockresult != 0)						\
 		start_nsec = get_current_nsec();			\
 	if(!FUNCNAME##p) {						\
-		probeBlockStart();					\
-		if (lib_handle[LIBGLES20] == ((void *) 0)) {		\
-			lib_handle[LIBGLES20] = dlopen(lib_string[LIBGLES20], RTLD_LAZY); \
-			if (lib_handle[LIBGLES20] == ((void *) 0)) {    \
-				char perror_msg[128];			\
-				sprintf(perror_msg, "dlopen failed : %s", \
-					lib_string[LIBGLES20]);		\
-				perror(perror_msg);			\
-				exit(0);				\
-			}						\
-			probeInfo_t tempProbeInfo;			\
-			setProbePoint(&tempProbeInfo);			\
-			if(blockresult != 0) {				\
-				/* get max value */				\
-				char maxValString[64];				\
-				GLint maxVal[2];				\
-				glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVal[0]); 		\
-				glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxVal[1]);	\
-				sprintf(maxValString, "%d,%d", maxVal[0], maxVal[1]);		\
-				PREPARE_LOCAL_BUF();			\
-				PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, "", 0);\
-				PACK_COMMON_END('p', 1, 0, 0);		\
-				PACK_GL_ADD(APITYPE_INIT, 0, maxValString);	\
-				FLUSH_LOCAL_BUF();			\
-			}						\
-		}							\
-									\
-		tmpPtr = dlsym(lib_handle[LIBGLES20], #FUNCNAME);	\
-		if (tmpPtr == NULL || dlerror() != NULL) {		\
-			perror("dlsym failed : " #FUNCNAME);		\
-			exit(0);					\
-		}							\
-									\
-		memcpy(&FUNCNAME##p, &tmpPtr, sizeof(tmpPtr));		\
-		probeBlockEnd();					\
+		init_probe_gl(#FUNCNAME, (void **)&FUNCNAME##p,		\
+			      LIBGLES20, blockresult, vAPI_ID);		\
 	}
 
 #define INIT_LIB_ID_STR(LIB_ID, LIB_STR, KEYS)							\
@@ -157,10 +127,6 @@
 		start_nsec = get_current_nsec();			\
 	if(!FUNCNAME##p) 						\
 		init_probe_egl(#FUNCNAME, (void **)&FUNCNAME##p, LIBEGL)
-
-#define FUNC(FUNCNAME) FUNCNAME
-#define FUNCSTR(FUNCNAME) #FUNCNAME
-#define FUNCID(FUNCNAME) API_ID_##FUNCNAME
 
 #define BEFORE_EGL_TIZEN(FUNCNAME)					\
 	DECLARE_VARIABLE_STANDARD_NORET;				\

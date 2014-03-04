@@ -41,4 +41,6 @@
 //    function have no return becouse on error it terminates main application
 void init_probe_egl(const char *func_name, void **func_pointer, ORIGINAL_LIBRARY id);
 
+void probe_terminate_with_err(const char *msg, const char *func_name,
+			      ORIGINAL_LIBRARY id);
 #endif /* __COMMON_PROBE_INIT_H__ */
