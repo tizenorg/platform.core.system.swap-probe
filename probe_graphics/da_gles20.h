@@ -45,17 +45,22 @@
 #define APITYPE_CONTEXT 1
 #define APITYPE_NO_CONTEXT 2
 
-#define PACK_GL_ADD(GL_api_type, GL_elapsed_time, GL_context_value)		\
-	do {	/* PACK_GL_ADD */						\
+#define PACK_GL_ADD_COMMON(GL_api_type, GL_elapsed_time)			\
+	do {	/* PACK_GL_ADD_COMMON */					\
+		BUF_PTR = pack_int64(BUF_PTR, voidp_to_uint64((void *)eglGetCurrentContext()));\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)GL_api_type);	\
 		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)GL_elapsed_time); \
+	} while (0)
+
+#define PACK_GL_ADD(GL_api_type, GL_elapsed_time, GL_context_value)		\
+	do {	/* PACK_GL_ADD */						\
+		PACK_GL_ADD_COMMON(GL_api_type, GL_elapsed_time);		\
 		BUF_PTR = pack_string(BUF_PTR, GL_context_value);	\
 	} while (0)
 
 #define PACK_GL_SHADER(GL_api_type, GL_elapsed_time, GL_shader, GL_shader_size)	\
 	do {	/* PACK_GL_SHADER */						\
-		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)GL_api_type);		\
-		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)GL_elapsed_time);	\
+		PACK_GL_ADD_COMMON(GL_api_type, GL_elapsed_time);		\
 		if ( (GL_shader_size <= MAX_SHADER_LEN) &&			\
 		     (GL_shader_size <= (sizeof(LOCAL_BUF) - (BUF_PTR - LOCAL_BUF)))) {\
 			/* pack shaders to buffer */				\
