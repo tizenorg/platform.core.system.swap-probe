@@ -126,6 +126,42 @@ static inline char *pack_timestamp(char *to)
 	return to;
 }
 
+///////////////////////////////////////////////////////////////////
+// function: pack_array
+///////////////////////////////////////////////////////////////////
+// info:
+//  Pack array param to buffer
+// params:
+//  char *to              - destination buffer
+//  va_list *args         - array size and array (pointer)
+//  uint32_t element_size - size of array element
+// return:
+//  char *                - destination pointer end after pack
+static char *pack_array(char *to, va_list *args, uint32_t element_size)
+{
+	uint32_t d;
+	uint64_t p;
+
+	// get array elements count
+	d = va_arg(*args, uint32_t);
+	// get array pointer
+	p = (unsigned long)(uintptr_t)va_arg(*args, uint64_t);
+
+	// pack original pointer
+	memcpy(to, &p, sizeof(p));
+	to += sizeof(p);
+	// pack array elements count
+	memcpy(to, &d, sizeof(d));
+	to += sizeof(d);
+
+	// pack array elements
+	element_size *= d;
+	memcpy(to, (void *)(long)p, element_size);
+	to += element_size;
+
+	return to;
+}
+
 static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va_list *args)
 {
 	uint8_t c;
@@ -180,6 +216,19 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va
 		break;
 	case 'v':
 	case 'n':
+		break;
+	/* pack arrays params */
+	case 'D':
+		/* array of 'd' uint32_t */
+		to = pack_array(to, args, sizeof(d));
+		break;
+	case 'F':
+		/* array of 'f' float */
+		to = pack_array(to, args, sizeof(f));
+		break;
+	case 'W':
+		/* array of 'w' double */
+		to = pack_array(to, args, sizeof(w));
 		break;
 	default:
 		to--;
@@ -378,6 +427,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 #define MAX_SHADER_LEN (4 * 1024)
 #define ADD_LOCAL_BUF_SIZE (1024)
+#define MAX_GL_CONTEXT_VALUE_SIZE (1024)
 #define MAX_LOCAL_BUF_SIZE (MAX_SHADER_LEN + ADD_LOCAL_BUF_SIZE)
 #define LOCAL_BUF msg_buf
 
