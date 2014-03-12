@@ -33,7 +33,7 @@
 #include "daprobe.h"
 #include "binproto.h"
 
-static char contextValue[256];
+static char contextValue[MAX_GL_CONTEXT_VALUE_SIZE];
 static enum DaOptions _sopt = OPT_GLES;
 static __thread GLenum gl_error_external = GL_NO_ERROR;
 
@@ -1340,8 +1340,8 @@ void glUniform1fv(GLint location, GLsizei count, const GLfloat *value) {
 	BEFORE(glUniform1fv);
 	glUniform1fvp(location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
-	      location, count, voidp_to_uint64(value));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddF",
+	      location, count, count * 1, voidp_to_uint64(value));
 }
 
 void glUniform2fv(GLint location, GLsizei count, const GLfloat *value) {
@@ -1349,8 +1349,8 @@ void glUniform2fv(GLint location, GLsizei count, const GLfloat *value) {
 	BEFORE(glUniform2fv);
 	glUniform2fvp(location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
-	      location, count, voidp_to_uint64(value));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddF",
+	      location, count, count * 2, voidp_to_uint64(value));
 }
 
 void glUniform3fv(GLint location, GLsizei count, const GLfloat *value) {
@@ -1358,8 +1358,8 @@ void glUniform3fv(GLint location, GLsizei count, const GLfloat *value) {
 	BEFORE(glUniform3fv);
 	glUniform3fvp(location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
-	      location, count, voidp_to_uint64(value));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddF",
+	      location, count, count * 3, voidp_to_uint64(value));
 }
 
 void glUniform4fv(GLint location, GLsizei count, const GLfloat *value) {
@@ -1367,8 +1367,8 @@ void glUniform4fv(GLint location, GLsizei count, const GLfloat *value) {
 	BEFORE(glUniform4fv);
 	glUniform4fvp(location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
-	      location, count, voidp_to_uint64(value));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddF",
+	      location, count, count * 4, voidp_to_uint64(value));
 }
 
 void glUniform1i(GLint location, GLint v0) {
@@ -1412,8 +1412,8 @@ void glUniform1iv(GLint location, GLsizei count, const GLint *value) {
 	BEFORE(glUniform1iv);
 	glUniform1ivp(location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
-	      location, count, voidp_to_uint64(value));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddD",
+	      location, count, count * 1, voidp_to_uint64(value));
 }
 
 void glUniform2iv(GLint location, GLsizei count, const GLint *value) {
@@ -1421,8 +1421,8 @@ void glUniform2iv(GLint location, GLsizei count, const GLint *value) {
 	BEFORE(glUniform2iv);
 	glUniform2ivp(location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
-	      location, count, voidp_to_uint64(value));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddD",
+	      location, count, count * 2, voidp_to_uint64(value));
 }
 
 void glUniform3iv(GLint location, GLsizei count, const GLint *value) {
@@ -1430,8 +1430,17 @@ void glUniform3iv(GLint location, GLsizei count, const GLint *value) {
 	BEFORE(glUniform3iv);
 	glUniform3ivp(location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
-	      location, count, voidp_to_uint64(value));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddD",
+	      location, count, count * 3, voidp_to_uint64(value));
+}
+
+void glUniform4iv(GLint location, GLsizei count, const GLint *value) {
+	typedef void (*methodType)(GLint, GLsizei, const GLint *);
+	BEFORE(glUniform4iv);
+	glUniform4ivp(location, count, value);
+	GL_GET_ERROR();
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddD",
+	      location, count, count * 4, voidp_to_uint64(value));
 }
 
 void glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose,
@@ -1440,8 +1449,8 @@ void glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose,
 	BEFORE(glUniformMatrix2fv);
 	glUniformMatrix2fvp(location, count, transpose, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxp",
-	      location, count, (uint64_t)(transpose), voidp_to_uint64(value));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxF",
+	      location, count, (uint64_t)(transpose), count * 2 * 2, voidp_to_uint64(value));
 }
 
 void glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose,
@@ -1450,8 +1459,8 @@ void glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose,
 	BEFORE(glUniformMatrix3fv);
 	glUniformMatrix3fvp(location, count, transpose, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxp",
-	      location, count, (uint64_t)(transpose), voidp_to_uint64(value));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxF",
+	      location, count, (uint64_t)(transpose), count * 3 * 3, voidp_to_uint64(value));
 }
 
 void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose,
@@ -1459,19 +1468,16 @@ void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose,
 	typedef void (*methodType)(GLint, GLsizei, GLboolean, const GLfloat *);
 	BEFORE(glUniformMatrix4fv);
 	glUniformMatrix4fvp(location, count, transpose, value);
+	char buf[2048];
+	char *p = buf;
+	p += sprintf(p, "%f", *value);
+	PRINTMSG(buf);
+
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxp",
-	      location, count, (uint64_t)(transpose), voidp_to_uint64(value));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxF",
+	      location, count, (uint64_t)(transpose), count * 4 * 4, voidp_to_uint64(value));
 }
 
-void glUniform4iv(GLint location, GLsizei count, const GLint *value) {
-	typedef void (*methodType)(GLint, GLsizei, const GLint *);
-	BEFORE(glUniform4iv);
-	glUniform4ivp(location, count, value);
-	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddp",
-	      location, count, voidp_to_uint64(value));
-}
 
 void glUseProgram(GLuint program) {
 	typedef void (*methodType)(GLuint);
