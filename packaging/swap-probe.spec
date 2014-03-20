@@ -24,6 +24,8 @@ This library will be installed in target.
 %setup -q -n %{name}_%{version}
 
 %build
+make rmheaders
+make headers
 make -j
 
 %install
