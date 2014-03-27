@@ -66,7 +66,7 @@ void _da_cleanup_handler(void *data)
 			  API_ID__da_cleanup_handler,
 			  "p", voidp_to_uint64(data));
 	PACK_COMMON_END('v', 0, 0, 1);
-	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP);
+	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
 
 	PRE_UNCONDITIONAL_BLOCK_END();
@@ -97,7 +97,7 @@ void *_da_ThreadProc(void *params)
 			  API_ID__da_ThreadProc,
 			  "p", voidp_to_uint64(params));
 	PACK_COMMON_END('p', 0, 0, 1);
-	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_START);
+	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_START, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
 
 	PRE_UNCONDITIONAL_BLOCK_END();
@@ -122,7 +122,7 @@ void *_da_ThreadProc(void *params)
 			  API_ID__da_ThreadProc,
 			  "p", voidp_to_uint64(params));
 	PACK_COMMON_END('p', ret, 0, 1);
-	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP);
+	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
 
 	PRE_UNCONDITIONAL_BLOCK_END();
@@ -180,7 +180,7 @@ int pthread_join(pthread_t thread, void **retval)
 			  API_ID_pthread_join,
 			  "xp", (uint64_t)(thread), voidp_to_uint64(retval));
 	PACK_COMMON_END('d', 0, 0, blockresult);
-	PACK_THREAD(thread, THREAD_PTHREAD, THREAD_API_WAIT_START);
+	PACK_THREAD(thread, THREAD_PTHREAD, THREAD_API_WAIT_START, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
 
 	PRE_PROBEBLOCK_END();
@@ -199,7 +199,7 @@ int pthread_join(pthread_t thread, void **retval)
 				  (uint64_t)(thread),
 				  voidp_to_uint64(retval));
 		PACK_COMMON_END('d', ret, errno, blockresult);
-		PACK_THREAD(thread, THREAD_PTHREAD, THREAD_API_WAIT_END);
+		PACK_THREAD(thread, THREAD_PTHREAD, THREAD_API_WAIT_END, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -225,7 +225,7 @@ void pthread_exit(void *retval)
 			  API_ID_pthread_exit,
 			  "p", voidp_to_uint64(retval));
 	PACK_COMMON_END('v', 0, 0, blockresult);
-	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_EXIT);
+	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_EXIT, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
 
 	PRE_PROBEBLOCK_END();

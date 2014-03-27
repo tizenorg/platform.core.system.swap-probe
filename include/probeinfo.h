@@ -134,6 +134,8 @@ extern "C"{
 #define		THREAD_TIZENTHREAD_WORKER		1
 #define		THREAD_TIZENTHREAD_EVENTDRIVEN	2
 
+#define THREAD_CLASS_BLANK ""
+
 #define		THREAD_API_NEW				0
 #define		THREAD_API_START			1
 #define		THREAD_API_STOP				2

@@ -342,7 +342,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		BUF_PTR = pack_int64(BUF_PTR, user);					\
 	} while(0)
 
- #define PACK_THREAD(thread_id, thread_type, api_type)			\
+#define PACK_THREAD(thread_id, thread_type, api_type, class_name)	\
 	 do {								\
 	if(thread_type == THREAD_PTHREAD) {	                        \
 	    BUF_PTR = pack_int64(BUF_PTR, thread_id);			\
@@ -357,6 +357,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	}				                                \
 	BUF_PTR = pack_int32(BUF_PTR, thread_type);	                \
 	BUF_PTR = pack_int32(BUF_PTR, api_type);		        \
+	BUF_PTR = pack_string(BUF_PTR, class_name);			\
 	} while (0)
 
 #define PACK_CUSTOM(handle, type, name, color, value)		\
