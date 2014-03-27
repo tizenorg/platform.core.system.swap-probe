@@ -31,6 +31,8 @@
  *
  */
 
+#include <typeinfo>
+#include <cxxabi.h>
 #include <FBase.h>
 #include "daprobe.h"
 #include "probeinfo.h"
@@ -165,7 +167,7 @@ _ThreadImpl::ThreadProc(void* params) {
 				  API_ID_void___ThreadImpl__ThreadProc_void__params_,
 				  "p", voidp_to_uint64(params));
 		PACK_COMMON_END('p', 0, 0, blockresult);
-		PACK_THREAD((unsigned int)pThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_INTERNAL_START);
+		PACK_THREAD((unsigned int)pThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_INTERNAL_START, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -189,7 +191,7 @@ _ThreadImpl::ThreadProc(void* params) {
 				  API_ID_void___ThreadImpl__ThreadProc_void__params_,
 				  "p", voidp_to_uint64(params));
 		PACK_COMMON_END('p', ret, 0, blockresult);
-		PACK_THREAD((unsigned int)pThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_INTERNAL_STOP);
+		PACK_THREAD((unsigned int)pThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_INTERNAL_STOP, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -472,7 +474,7 @@ result Thread::Sleep(long milliSeconds) {
 				  API_ID_result_Thread__Sleep_long_milliSeconds_,
 				  "x", (uint64_t)(milliSeconds));
 		PACK_COMMON_END('x', 0, 0, blockresult);
-		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_START);
+		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_START, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -491,7 +493,7 @@ result Thread::Sleep(long milliSeconds) {
 				  API_ID_result_Thread__Yield_void_,
 				  "x", (uint64_t)(milliSeconds));
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_END);
+		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_END, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -545,7 +547,7 @@ Thread* Thread::GetCurrentThread(void) {
 				  "", 0);
 		PACK_COMMON_END('p', voidp_to_uint64(currentThread),
 				res, blockresult);
-		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER);
+		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -599,7 +601,7 @@ result Thread::Yield(void) {
 				  API_ID_result_Thread__Yield_void_,
 				  "", 0);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER);
+		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -648,7 +650,7 @@ result Thread::Exit(int exitCode) {
 				  API_ID_result_Thread__Exit_int_exitCode_,
 				  "d", exitCode);
 		PACK_COMMON_END('n', 0, 0, blockresult);
-		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_EXIT);
+		PACK_THREAD((unsigned int)currentThread, THREAD_TIZENTHREAD_WORKER, THREAD_API_EXIT, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -709,7 +711,7 @@ result Thread::Construct(ThreadType threadType, long stackSize,
 				  "dxd", threadType, (uint64_t)(stackSize),
 				  priority);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -760,7 +762,7 @@ result Thread::Construct(long stackSize, ThreadPriority priority) {
 				  API_ID_result_Thread__Construct_long_stackSize__ThreadPriority_priority_,
 				  "xd", (uint64_t)(stackSize), priority);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -817,7 +819,7 @@ result Thread::Construct(const Tizen::Base::String &name, long stackSize,
 				  API_ID_result_Thread__Construct_const_Tizen__Base__String__name__long_stackSize__ThreadPriority_priority_,
 				  "sxd", temp, (uint64_t)(stackSize), priority);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -877,7 +879,7 @@ result Thread::Construct(const Tizen::Base::String &name, ThreadType threadType,
 				  "sdxd", temp, threadType,
 				  (uint64_t)(stackSize), priority);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -934,7 +936,7 @@ result Thread::Construct(IRunnable &target, long stackSize,
 				  "xxd", (uint64_t)(&target),
 				  (uint64_t)(stackSize), priority);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -994,7 +996,7 @@ result Thread::Construct(const Tizen::Base::String &name, IRunnable &target,
 				  "sxxd", temp, (uint64_t)(&target),
 				  (uint64_t)(stackSize), priority);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_NEW, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1048,7 +1050,7 @@ result Thread::GetExitCode(int &exitCode) const {
 				  API_ID_result_Thread__GetExitCode_int__exitCode__const,
 				  "d", exitCode);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1103,7 +1105,7 @@ const Tizen::Base::String & Thread::GetName(void) const {
 				  API_ID_const_Tizen__Base__String___Thread__GetName_void__const,
 				  "", 0);
 		PACK_COMMON_END('p', ret.GetPointer(), res, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_OTHER, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1149,7 +1151,7 @@ result Thread::Join(void) {
 				  API_ID_result_Thread__Join_void_,
 				  "", 0);
 		PACK_COMMON_END('x', 0, 0, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_START);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_START, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		preBlockEnd();
@@ -1165,7 +1167,7 @@ result Thread::Join(void) {
 				  API_ID_result_Thread__Join_void_,
 				  "", 0);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_END);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_WAIT_END, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1288,15 +1290,16 @@ result Thread::Start(void) {
 	ret = (this->*Startp)();
 	//
 	if (postBlockBegin(blockresult)) {
-
+		int status;
+		char *class_name = abi::__cxa_demangle(typeid(*this).name(),0,0,&status);
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
 				  API_ID_result_Thread__Start_void_,
 				  "", 0);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_START);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_START, class_name);
 		FLUSH_LOCAL_BUF();
-
+		free(class_name);
 		postBlockEnd();
 	}
 	return ret;
@@ -1344,7 +1347,7 @@ result Thread::Stop(void) {
 				  API_ID_result_Thread__Stop_void_,
 				  "", 0);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_STOP);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_WORKER, THREAD_API_STOP, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1396,7 +1399,7 @@ result EventDrivenThread::Construct(long stackSize, ThreadPriority priority) {
 				  API_ID_result_EventDrivenThread__Construct_long_stackSize__ThreadPriority_priority_,
 				  "xd", (uint64_t)(stackSize), priority);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_EVENTDRIVEN, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_EVENTDRIVEN, THREAD_API_NEW, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1456,7 +1459,7 @@ result EventDrivenThread::Construct(const Tizen::Base::String &name, long stackS
 				  API_ID_result_EventDrivenThread__Construct_const_Tizen__Base__String__name__long_stackSize__ThreadPriority_priority_,
 				  "sx", temp, (uint64_t)(stackSize));
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_EVENTDRIVEN, THREAD_API_NEW);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_EVENTDRIVEN, THREAD_API_NEW, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
@@ -1508,7 +1511,7 @@ result EventDrivenThread::Quit() {
 				  API_ID_result_EventDrivenThread__Quit__,
 				  "", 0);
 		PACK_COMMON_END('x', ret, ret, blockresult);
-		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_EVENTDRIVEN, THREAD_API_STOP);
+		PACK_THREAD((unsigned int) this, THREAD_TIZENTHREAD_EVENTDRIVEN, THREAD_API_STOP, THREAD_CLASS_BLANK);
 		FLUSH_LOCAL_BUF();
 
 		postBlockEnd();
