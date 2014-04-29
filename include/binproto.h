@@ -68,6 +68,13 @@
 
 #define SCREENSHOT_DIRECTORY	"/tmp/da"
 
+#define MAX_PACK_FILENAME_LEN (4 * 1024)
+#define MAX_SHADER_LEN (4 * 1024)
+#define ADD_LOCAL_BUF_SIZE (1024)
+#define MAX_GL_CONTEXT_VALUE_SIZE (1024)
+#define MAX_LOCAL_BUF_SIZE (MAX_SHADER_LEN + ADD_LOCAL_BUF_SIZE)
+#define LOCAL_BUF msg_buf
+
 // TODO: remove this copy-paste
 #define CALLER_ADDRESS							\
 	((void*) __builtin_extract_return_addr(__builtin_return_address(0)))
@@ -162,9 +169,34 @@ static char *pack_array(char *to, va_list *args, uint32_t element_size)
 	return to;
 }
 
-static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va_list *args)
+static char __attribute__((used)) *pack_string_to_file(char *to, const char *st,
+						       uint32_t data_len,
+						       uint32_t max_len)
+{
+	if (data_len < max_len) {
+		/* pack string to buffer */
+		to = pack_string(to, st);
+	} else {
+		/* pack string to file */
+		char template_name[] = SCREENSHOT_DIRECTORY "/swap_XXXXXX";
+		char dst_path_pack[MAX_PATH_LENGTH];
+		FILE *file;
+		mktemp(template_name);
+		file = fopen(template_name, "w");
+		if (file != NULL) {
+			fwrite(st, data_len, 1, file);
+			fclose(file);
+		}
+		sprintf(dst_path_pack, "FILE:%s", template_name);
+		to = pack_string(to, dst_path_pack);
+	}
+	return to;
+}
+
+static char __attribute__((used)) *pack_value_by_type(char *to, const char **t, va_list *args)
 {
 	uint8_t c;
+	uint8_t cs;
 	uint32_t d;
 	uint64_t x;
 	uint64_t p;
@@ -173,9 +205,9 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va
 	char *s;
 	int n;
 
-	*to++ = t;
+	*to++ = **t;
 
-	switch (t) {
+	switch (**t) {
 	case 'c':
 		c = (uint8_t)va_arg(*args, uint32_t);
 		memcpy(to, &c, sizeof(c));
@@ -209,10 +241,31 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va
 		to += sizeof(w);
 		break;
 	case 's':
+		cs = *((*t)+1);
 		s = va_arg(*args, char *);
-		n = strlen(s) + 1;
-		strncpy(to, s, n);
-		to += n;
+
+		switch (cs) {
+			case '4': //"s4" - pack 4K or to file
+				(*t)++;
+				to = pack_string_to_file(to, s, strlen(s),
+							 MAX_PACK_FILENAME_LEN);
+				break;
+			case '0': //"s0" - pack 256 bytes
+				(*t)++;
+				n = strlen(s) + 1;
+				if (n >= 255)
+					n = 255;
+				strncpy(to, s, n);
+				to[n-1] = '\0';
+				to += n;
+				break;
+			default: //"s" - pack all string
+				n = strlen(s) + 1;
+				strncpy(to, s, n);
+				to += n;
+				break;
+		}
+
 		break;
 	case 'v':
 	case 'n':
@@ -230,31 +283,39 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char t, va
 		/* array of 'w' double */
 		to = pack_array(to, args, sizeof(w));
 		break;
-	default:
+	default: {
+		char buf[128];
+		sprintf(buf, "ERROR PACK #%d '%c'!!!", **t, **t);
+		PRINTERR(buf);
 		to--;
 		break;
+		}
 	}
 
+	(*t)++;
 	return to;
 }
 
 static char __attribute__((used)) *pack_args(char *to, const char *fmt, ...)
 {
 	va_list args;
-	uint32_t num = strlen(fmt);
+	uint32_t num = 0;
 	const char *t = fmt;
+	char *size_p = to;
 
-	if(*t == '\0') {
-		num = 0;
-	}
-
+	//put dummy num value
 	memcpy(to, &num, sizeof(num));
 	to += sizeof(num);
 
 	va_start(args, fmt);
 
-	for (t = fmt; *t != '\0'; t++)
-		to = pack_value_by_type(to, *t, &args);
+	for (t = fmt; *t != '\0';) {
+		to = pack_value_by_type(to, &t, &args);
+		num++;
+	}
+
+	//set real num value
+	memcpy(size_p, &num, sizeof(num));
 
 	va_end(args);
 
@@ -264,9 +325,11 @@ static char __attribute__((used)) *pack_args(char *to, const char *fmt, ...)
 static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 {
 	va_list args;
+	char fmt[] = {ret_type, 0};
+	const char *fmtp = (const char *)fmt;
 
 	va_start(args, ret_type);
-	to = pack_value_by_type(to, ret_type, &args);
+	to = pack_value_by_type(to, &fmtp, &args);
 	va_end(args);
 
 	return to;
@@ -351,7 +414,9 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		BUF_PTR = pack_int64(BUF_PTR, fd_value);		\
 		BUF_PTR = pack_int32(BUF_PTR, fd_api_type);		\
 		BUF_PTR = pack_int64(BUF_PTR, file_size);		\
-		BUF_PTR = pack_string(BUF_PTR, file_path);		\
+		BUF_PTR = pack_string_to_file(BUF_PTR, file_path,	\
+					      strlen(file_path),	\
+					      MAX_PACK_FILENAME_LEN);	\
 	} while (0)
 
 #define PACK_SCREENSHOT(image_file_path, orientation)				\
@@ -424,13 +489,6 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		BUF_PTR = pack_int32(BUF_PTR, sync_type);	     \
 		BUF_PTR = pack_int32(BUF_PTR, api_type);	     \
 	} while (0)
-
-
-#define MAX_SHADER_LEN (4 * 1024)
-#define ADD_LOCAL_BUF_SIZE (1024)
-#define MAX_GL_CONTEXT_VALUE_SIZE (1024)
-#define MAX_LOCAL_BUF_SIZE (MAX_SHADER_LEN + ADD_LOCAL_BUF_SIZE)
-#define LOCAL_BUF msg_buf
 
 #define PREPARE_LOCAL_BUF()			\
 		char LOCAL_BUF[MAX_LOCAL_BUF_SIZE];		\

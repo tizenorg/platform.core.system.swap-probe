@@ -124,7 +124,8 @@
 		BUF_PTR = pack_int32(BUF_PTR, TOTAL_INFO.host_ip);		\
 		BUF_PTR = pack_int32(BUF_PTR, TOTAL_INFO.host_port);		\
 		BUF_PTR = pack_int64(BUF_PTR, TOTAL_INFO.msg_total_size);	\
-		BUF_PTR = pack_bin(BUF_PTR, TOTAL_INFO.msg_buf, TOTAL_INFO.msg_pack_size);			\
+		BUF_PTR = pack_bin(BUF_PTR, TOTAL_INFO.msg_buf,			\
+				   TOTAL_INFO.msg_pack_size);			\
 	} while (0)
 
 

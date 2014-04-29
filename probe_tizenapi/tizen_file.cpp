@@ -94,7 +94,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_Tizen__Base__String__openMode__bool_createParentDirectories_,
-				  "ssd", absolutize_filepath(buffer,temp_path),
+				  "s4sd", absolutize_filepath(buffer,temp_path),
 				  temp_mode, createParentDirectories);
 		PACK_COMMON_END('x', ret, ret, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp_path);
@@ -160,7 +160,8 @@ result File::Construct(const Tizen::Base::String& filePath,
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_Tizen__Base__String__openMode_,
-				  "ss", absolutize_filepath(buffer, temp_path), temp_mode);
+				  "s4s", absolutize_filepath(buffer, temp_path),
+				  temp_mode);
 		PACK_COMMON_END('x', ret, ret, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp_path);
 		FLUSH_LOCAL_BUF();
@@ -220,7 +221,7 @@ result File::Construct(const Tizen::Base::String& filePath,
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 				  API_ID_result_File__Construct_const_Tizen__Base__String__filePath__const_char__pOpenMode_,
-				  "sp", absolutize_filepath(buffer, temp),
+				  "s4p", absolutize_filepath(buffer, temp),
 				  voidp_to_uint64(pOpenMode));
 		PACK_COMMON_END('x', ret, ret, blockresult);
 		PACK_RESOURCE(0, (unsigned long)this, FD_API_OPEN, size, temp);

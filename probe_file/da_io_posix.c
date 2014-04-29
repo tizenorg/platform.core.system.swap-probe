@@ -73,8 +73,9 @@ int open(const char* path, int oflag, ...)
 
 	ret = openp(path, oflag, mode);
 
-	AFTER_PACK_ORIGINAL_FD(API_ID_open, 'd', ret, 0, ret, FD_API_OPEN, "sdd",
-			       absolutize_filepath(buffer, path), oflag, mode);
+	AFTER_PACK_ORIGINAL_FD(API_ID_open, 'd', ret, 0, ret, FD_API_OPEN,
+			       "s4dd", absolutize_filepath(buffer, path), oflag,
+			       mode);
 
 	return ret;
 }
@@ -99,7 +100,7 @@ int openat(int fd, const char* path, int oflag, ...)
 	ret = openatp(fd, path, oflag, mode);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_openat, 'd', ret, 0, ret, FD_API_OPEN,
-			       "dsdd", fd, absolutize_filepath(buffer, path),
+			       "ds4dd", fd, absolutize_filepath(buffer, path),
 			       oflag, mode);
 
 	return ret;
@@ -115,8 +116,8 @@ int creat(const char* path, mode_t mode)
 
 	ret = creatp(path, mode);
 
-	AFTER_PACK_ORIGINAL_FD(API_ID_creat, 'd', ret, 0, ret, FD_API_OPEN, "sd",
-			       absolutize_filepath(buffer, path), mode);
+	AFTER_PACK_ORIGINAL_FD(API_ID_creat, 'd', ret, 0, ret, FD_API_OPEN,
+			       "s4d", absolutize_filepath(buffer, path), mode);
 
 	return ret;
 }

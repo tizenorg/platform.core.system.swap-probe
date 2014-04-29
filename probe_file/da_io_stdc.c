@@ -58,7 +58,7 @@ FILE* fopen(const char* filename, const char* mode)
 	fret = fopenp(filename, mode);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fopen,
-				  'p', fret, 0, fret, FD_API_OPEN, "ss",
+				  'p', fret, 0, fret, FD_API_OPEN, "s4s",
 				  absolutize_filepath(buffer, filename), mode);
 
 	return fret;
@@ -77,7 +77,7 @@ FILE* freopen(const char * filename, const char * mode, FILE * stream)
 	fret = freopenp(filename, mode, stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_freopen, 'p', fret, 0, fret, FD_API_OPEN,
-				  "ssp", absolutize_filepath(buffer, filename),
+				  "s4sp", absolutize_filepath(buffer, filename),
 				  mode, voidp_to_uint64(stream));
 
 	return fret;

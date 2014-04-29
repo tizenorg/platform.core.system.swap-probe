@@ -65,25 +65,11 @@
 #define PACK_GL_SHADER(GL_api_type, GL_elapsed_time, GL_shader, GL_shader_size)	\
 	do {	/* PACK_GL_SHADER */						\
 		PACK_GL_ADD_COMMON(GL_api_type, GL_elapsed_time);		\
-		if ( (GL_shader_size <= MAX_SHADER_LEN) &&			\
-		     (GL_shader_size <= (sizeof(LOCAL_BUF) - (BUF_PTR - LOCAL_BUF)))) {\
-			/* pack shaders to buffer */				\
-			BUF_PTR = pack_string(BUF_PTR, GL_shader);		\
-		} else {							\
-			/* pack shaders to file */				\
-			char dst_path[MAX_PATH_LENGTH];				\
-			char dst_path_pack[MAX_PATH_LENGTH];			\
-			FILE *file;						\
-			sprintf(dst_path, SCREENSHOT_DIRECTORY "/%d_%d.shd",	\
-				getpid(), probeInfo.eventIndex);		\
-			file = fopen(dst_path, "w");				\
-			if (file != NULL) {					\
-				fwrite(GL_shader, GL_shader_size, 1, file);	\
-				fclose(file);					\
-			}							\
-			sprintf(dst_path_pack, "FILE:%s", dst_path);		\
-			BUF_PTR = pack_string(BUF_PTR, dst_path_pack);		\
-		}								\
+		uint32_t min = (sizeof(LOCAL_BUF) - (BUF_PTR - LOCAL_BUF));	\
+		if (min > MAX_SHADER_LEN)					\
+			min = MAX_SHADER_LEN;					\
+		BUF_PTR = pack_string_to_file(BUF_PTR, GL_shader,		\
+					      GL_shader_size, min);		\
 	} while (0)
 
 #define BEFORE(FUNCNAME)						\
