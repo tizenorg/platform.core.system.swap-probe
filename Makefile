@@ -150,7 +150,7 @@ $(ASM_OBJ): $(ASM_SRC)
 GENERATED_HEADERS = include/api_id_mapping.h include/api_id_list.h include/id_list
 headers: $(GENERATED_HEADERS)
 rmheaders:
-	rm $(GENERATED_HEADERS)
+	rm -f $(GENERATED_HEADERS)
 
 include/api_id_mapping.h: ./scripts/gen_api_id_mapping_header.awk
 include/api_id_list.h: ./scripts/gen_api_id_mapping_header_list.awk
