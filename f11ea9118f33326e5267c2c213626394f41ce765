@@ -1,0 +1,8 @@
+Code-Review+1: Vasiliy Ulyanov <v.ulyanov@samsung.com>
+Code-Review+2: Dmitry Kovalenko <d.kovalenko@samsung.com>
+Verified+1: Dmitry Kovalenko <d.kovalenko@samsung.com>
+Submitted-by: Dmitry Kovalenko <d.kovalenko@samsung.com>
+Submitted-at: Wed, 30 Apr 2014 06:09:01 -0700
+Reviewed-on: https://review.tizen.org/gerrit/20256
+Project: platform/core/system/swap-probe
+Branch: refs/heads/master
