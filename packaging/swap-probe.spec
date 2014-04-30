@@ -14,6 +14,7 @@ BuildRequires:  capi-system-runtime-info-devel
 BuildRequires:  libXext-devel
 #BuildRequires:  libX11-devel
 #BuildRequires:  evas-devel
+Provides:  swap-probe
 
 
 %description
