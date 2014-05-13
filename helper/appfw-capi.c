@@ -29,9 +29,11 @@
  */
 
 #include <app.h>
+#include "dahelper.h"
 
 void application_exit()
 {
+	PRINTMSG("EXIT appfw-capi");
 	app_efl_exit();
 }
 

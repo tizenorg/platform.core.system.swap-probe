@@ -35,6 +35,8 @@
 #include <assert.h>
 #include "dahelper.h"
 
+int app_efl_main_flg = 0;
+
 const char *lib_string[NUM_ORIGINAL_LIBRARY] = {
 	"libc.so.6",				//0
 	"libpthread.so.0",			//1

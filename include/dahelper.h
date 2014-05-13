@@ -42,6 +42,8 @@
 extern "C"{
 #endif
 
+extern int app_efl_main_flg;
+
 #define MAX_PATH_LENGTH		256
 #define MAX_STACK_DEPTH		128
 #define TRIM_STACK_DEPTH	2

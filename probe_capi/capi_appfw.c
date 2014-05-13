@@ -140,6 +140,9 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 	Ecore_Event_Handler* handler;
 	int ret;
 
+	//set app_efl flag to determinate termination way for app
+	app_efl_main_flg = 1;
+
 	GET_REAL_FUNC(app_efl_main, LIBCAPI_APPFW_APPLICATION);
 
 	probeBlockStart();

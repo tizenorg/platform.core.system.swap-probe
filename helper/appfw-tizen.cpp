@@ -30,6 +30,7 @@
 
 #include <app.h>
 #include <FApp.h>
+#include "dahelper.h"
 using namespace Tizen::App;
 
 #define UNKNOWN_USER_EVENT     5873
@@ -43,6 +44,7 @@ void application_exit()
 	App* self = App::GetInstance();
 	if(self != NULL)
 	{
+		PRINTMSG("EXIT self");
 		self->Terminate();
 		// send unknown user event to main thread
 		// because this cause that main thread execute terminating routine without block
@@ -50,7 +52,15 @@ void application_exit()
 	}
 	else
 	{
+		PRINTMSG("EXIT self - efl_exit >");
 		app_efl_exit();
+		if (app_efl_main_flg == 0) {
+			PRINTMSG("no app_efl_main detected, terminate by exit(0)");
+			//sleep for flush message to manager
+			sleep(1);
+			exit(0);
+		}
+		PRINTMSG("EXIT self - efl_exit <");
 	}
 }
 
