@@ -226,12 +226,24 @@ int fchown(int fd, uid_t owner, gid_t group)
 int lockf(int fd, int function, off_t size)
 {
 	static int (*lockfp)(int fd, int function, off_t size);
+	int api_type = FD_API_PERMISSION;
 
 	BEFORE_ORIGINAL_FILE(lockf, LIBC);
 	ret = lockfp(fd, function, size);
+
+	switch (function) {
+	case F_LOCK:
+	case F_TLOCK:
+		api_type = FD_API_LOCK_START;
+		break;
+	case F_ULOCK:
+		api_type = FD_API_LOCK_END;
+		break;
+	}
+
 	AFTER_PACK_ORIGINAL_FD(API_ID_lockf,
-				   'd', ret, (unsigned int)size, fd, FD_API_PERMISSION,
-				   "ddx", fd, function, (uint64_t)(size));
+			       'd', ret, (unsigned int)size, fd, api_type,
+			       "ddx", fd, function, (uint64_t)(size));
 	return ret;
 }
 
@@ -380,7 +392,7 @@ ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 int fcntl(int fd, int cmd, ...)
 {
 	static int (*fcntlp)(int fd, int cmd, ...);
-	int arg = 0;
+	int arg = 0, api_type = FD_API_OTHER;
 
 	BEFORE_ORIGINAL_FILE(fcntl, LIBC);
 
@@ -391,8 +403,32 @@ int fcntl(int fd, int cmd, ...)
 
 	ret = fcntlp(fd, cmd, arg);
 
-	AFTER_PACK_ORIGINAL_FD(API_ID_fcntl,
-				   'd', ret, 0, fd, FD_API_OTHER, "ddd", fd, cmd, arg);
+	if (cmd == F_SETLK || cmd == F_SETLKW) {
+		struct flock *flock = (struct flock *)arg;
+		int type = flock->l_type;
+		int whence = flock->l_whence;
+		int64_t /*off_t*/ start = flock->l_start;
+		int64_t /*off_t*/ len = flock->l_len;
+
+		switch (type) {
+		case F_RDLCK:
+		case F_WRLCK:
+			api_type = FD_API_LOCK_START;
+			break;
+		case F_UNLCK:
+			api_type = FD_API_LOCK_END;
+			break;
+		}
+
+		AFTER_PACK_ORIGINAL_FD(API_ID_fcntl,
+				       'd', ret, 0, fd, api_type,
+				       "ddddxx", fd, cmd, type,
+				       whence, start, len);
+	} else {
+		AFTER_PACK_ORIGINAL_FD(API_ID_fcntl,
+				       'd', ret, 0, fd, api_type,
+				       "ddd", fd, cmd, arg);
+	}
 
 	return ret;
 }
