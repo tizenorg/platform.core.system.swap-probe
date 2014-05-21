@@ -116,6 +116,7 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 
 		postBlockEnd();
 	}
+        errno = (newerrno != 0) ? newerrno : olderrno;
 
 	return ret;
 }
@@ -159,6 +160,8 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 
 		postBlockEnd();
 	}
+
+    errno = (newerrno != 0) ? newerrno : olderrno;
 
 	return ret;
 }
@@ -450,6 +453,7 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 
 		postBlockEnd();
 	}
+    errno = (newerrno != 0) ? newerrno : olderrno;
 
 	return ret;
 }
@@ -498,6 +502,8 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 
 		postBlockEnd();
 	}
+
+    errno = (newerrno != 0) ? newerrno : olderrno;
 
 	return ret;
 }

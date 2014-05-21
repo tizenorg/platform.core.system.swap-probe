@@ -205,6 +205,8 @@ int pthread_join(pthread_t thread, void **retval)
 		postBlockEnd();
 	}
 
+    errno = (newerrno != 0) ? newerrno : olderrno;
+
 	return ret;
 }
 
@@ -230,7 +232,10 @@ void pthread_exit(void *retval)
 
 	PRE_PROBEBLOCK_END();
 
+    errno = (newerrno != 0) ? newerrno : olderrno;
+
 	pthread_exitp(retval);
+
 }
 
 int pthread_cancel(pthread_t thread)

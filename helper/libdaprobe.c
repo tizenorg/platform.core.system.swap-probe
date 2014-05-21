@@ -465,7 +465,7 @@ void __attribute__((destructor)) _fini_probe()
  ************************************************************************/
 bool printLog(log_t *log, int msgType)
 {
-	int res;
+	ssize_t res, len;
 	if(unlikely(gTraceInfo.socket.daemonSock == -1))
 		return false;
 
@@ -474,17 +474,19 @@ bool printLog(log_t *log, int msgType)
 
 	probeBlockStart();
 	log->type = msgType;
+	len = sizeof(log->type) + sizeof(log->length) + log->length;
+
 	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
-	res = send(gTraceInfo.socket.daemonSock, log, sizeof(log->type) + sizeof(log->length) + log->length, 0);
+	res = send(gTraceInfo.socket.daemonSock, log, len, 0);
 	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 	probeBlockEnd();
 
-	return true;
+	return (res == len);
 }
 
 bool printLogStr(const char* str, int msgType)
 {
-	int res;
+	ssize_t res, len;
 	log_t log;
 
 	if(unlikely(gTraceInfo.socket.daemonSock == -1))
@@ -503,13 +505,15 @@ bool printLogStr(const char* str, int msgType)
 		log.length = 0;
 	}
 
+	len = sizeof(log.type) + sizeof(log.length) + log.length;
+
 	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
-	res = send(gTraceInfo.socket.daemonSock, &log, sizeof(log.type) + sizeof(log.length) + log.length, MSG_DONTWAIT);
+	res = send(gTraceInfo.socket.daemonSock, &log, len, MSG_DONTWAIT);
 	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 
 	probeBlockEnd();
 
-	return true;
+	return (res == len);
 }
 
 // get backtrace string
@@ -730,14 +734,13 @@ bool setProbePoint(probeInfo_t* iProbe)
 // return 1 if size is updated into global variable
 int update_heap_memory_size(bool isAdd, size_t size)
 {
-	long tmp;
 	if(isAdd)
 	{
-		tmp = __sync_add_and_fetch(&g_total_alloc_size, (long)size);
+		__sync_add_and_fetch(&g_total_alloc_size, (long)size);
 	}
 	else
 	{
-		tmp = __sync_sub_and_fetch(&g_total_alloc_size, (long)size);
+		__sync_sub_and_fetch(&g_total_alloc_size, (long)size);
 	}
 
 	return 0;
