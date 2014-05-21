@@ -86,6 +86,8 @@ extern "C"{
 #define		FD_API_RECEIVE			10
 #define		FD_API_OPTION			11
 #define		FD_API_MANAGE			12
+#define		FD_API_LOCK_START		14
+#define		FD_API_LOCK_END			15
 
 
 #define		SOCKET_API_FD_OPEN		0
