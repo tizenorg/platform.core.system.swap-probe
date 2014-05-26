@@ -346,35 +346,35 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 #define PACK_COMMON_BEGIN(msg_id, api_id, fmt, ...)		\
 	do {	/* PACK_COMMON_BEGIN*/				\
-		BUF_PTR = pack_int32(BUF_PTR, msg_id);		\
-		BUF_PTR = pack_int32(BUF_PTR, 0);		\
-		BUF_PTR = pack_timestamp(BUF_PTR);		\
-		BUF_PTR = pack_int32(BUF_PTR, 0);		\
-		BUF_PTR = pack_int32(BUF_PTR, api_id);		\
-		BUF_PTR = pack_int32(BUF_PTR, getpid());		\
-		BUF_PTR = pack_int32(BUF_PTR, syscall(__NR_gettid));	\
-		BUF_PTR = pack_args(BUF_PTR, fmt, __VA_ARGS__);	\
+		BUF_PTR = pack_int32(BUF_PTR, msg_id);		/* msg id */	\
+		BUF_PTR = pack_int32(BUF_PTR, 0);		/* sequence */	\
+		BUF_PTR = pack_timestamp(BUF_PTR);		/* timestamp */	\
+		BUF_PTR = pack_int32(BUF_PTR, 0);		/* length */	\
+		BUF_PTR = pack_int32(BUF_PTR, api_id);		/* API id */	\
+		BUF_PTR = pack_int32(BUF_PTR, getpid());	/* PID */	\
+		BUF_PTR = pack_int32(BUF_PTR, syscall(__NR_gettid));	/* call pc*/\
+		BUF_PTR = pack_args(BUF_PTR, fmt, __VA_ARGS__);	/* args */	\
 		RET_PTR = BUF_PTR;		\
 	} while (0)
 
 #define PACK_COMMON_END(ret_type, ret, errn, intern_call)			\
 	do {	/* PACK_COMMON_END */						\
 		PACK_RETURN_END(ret_type, ret)					\
-		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);			\
-		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);		\
-		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); 	\
-		BUF_PTR = pack_int32(BUF_PTR, 0);				\
-		BUF_PTR = pack_int32(BUF_PTR, 0);				\
+		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);	/* errno */	\
+		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);	/* internal call*/	\
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); /*caller addr*/\
+		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
+		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
 	} while (0)
 
 #define PACK_RETURN_END(ret_type, ret)						\
-		RET_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret);
+		RET_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret); /* return val */
 
-#define PACK_MEMORY(size, memory_api_type, addr)		\
-	do {	/* PACK_MEMORY */					\
-		BUF_PTR = pack_int64(BUF_PTR, size);			\
-		BUF_PTR = pack_int32(BUF_PTR, memory_api_type);	\
-		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)addr);	\
+#define PACK_MEMORY(size, memory_api_type, addr)				\
+	do {	/* PACK_MEMORY */						\
+		BUF_PTR = pack_int64(BUF_PTR, size);	/* alloc size */	\
+		BUF_PTR = pack_int32(BUF_PTR, memory_api_type);	/* alloc type */\
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)addr);	/* alloc addr */\
 	} while (0)
 
 #define PACK_UICONTROL(control)						\
