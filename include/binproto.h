@@ -359,7 +359,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 #define PACK_COMMON_END(ret_type, ret, errn, intern_call)			\
 	do {	/* PACK_COMMON_END */						\
-		PACK_RETURN_END(ret_type, ret)					\
+		BUF_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret); /* return val */ \
 		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);	/* errno */	\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);	/* internal call*/	\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); /*caller addr*/\
