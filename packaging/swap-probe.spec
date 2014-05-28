@@ -5,8 +5,8 @@ Release:    1
 Group:      System/Libraries
 License:	GNU Lesser General Public License, Version 2.1
 Source:    %{name}_%{version}.tar.gz
-BuildRequires:  osp-appfw-devel
-BuildRequires:  osp-uifw-devel
+#BuildRequires:  osp-appfw-devel
+#BuildRequires:  osp-uifw-devel
 BuildRequires:  ecore-input-evas
 BuildRequires:  elementary-devel
 BuildRequires:  capi-appfw-application-devel

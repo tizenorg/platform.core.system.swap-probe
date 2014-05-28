@@ -96,8 +96,8 @@ CAPI_SRCS = 	$(COMMON_SRCS)			\
 		./probe_ui/capi_capture.c
 
 TIZEN_SRCS =	$(COMMON_SRCS)				\
-		./helper/appfw-tizen.cpp		\
 		./helper/addr-tizen.c			\
+#		./helper/appfw-tizen.cpp		\
 		./helper/common_probe_init.cpp		\
 		./probe_memory/libdanew.cpp		\
 		./probe_tizenapi/tizen_file.cpp		\
@@ -137,7 +137,7 @@ CFLAGS = $(WARN_CFLAGS) -fPIC
 CXXFLAGS = $(WARN_CFLAGS) -fPIC
 
 TIZEN_CPPFLAGS = -DTIZENAPP
-TIZEN_LDFLAGS = -lstdc++ -losp-uifw -losp-appfw
+TIZEN_LDFLAGS = -lstdc++
 
 all:	capi tizen dummy
 capi:	headers $(CAPI_TARGET)
