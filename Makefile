@@ -96,27 +96,7 @@ CAPI_SRCS = 	$(COMMON_SRCS)			\
 		./probe_ui/capi_capture.c
 
 TIZEN_SRCS =	$(COMMON_SRCS)				\
-		./helper/appfw-tizen.cpp		\
 		./helper/addr-tizen.c			\
-		./helper/common_probe_init.cpp		\
-		./probe_memory/libdanew.cpp		\
-		./probe_tizenapi/tizen_file.cpp		\
-		./probe_tizenapi/tizen_socket.cpp	\
-		./probe_tizenapi/tizen_http.cpp		\
-		./probe_tizenapi/tizen_thread.cpp	\
-		./probe_tizenapi/tizen_lifecycle.cpp	\
-		./probe_tizenapi/tizen_sync.cpp		\
-		./probe_tizenapi/tizen_controls.cpp	\
-		./probe_tizenapi/tizen_constructor.cpp	\
-		./probe_event/gesture.cpp		\
-		./probe_ui/tizen_capture.cpp		\
-		./probe_ui/tizen_scenemanager.cpp	\
-		./probe_ui/tizen_frameani.cpp		\
-		./probe_ui/tizen_display.cpp		\
-		./probe_graphics/da_gles20_tizen.cpp		\
-		./probe_graphics/da_gles20_native.cpp		\
-		./probe_graphics/da_egl_tizen.cpp			\
-		./probe_graphics/da_egl_native.cpp
 
 ASM_SRC = ./helper/da_call_original.S
 
@@ -137,7 +117,7 @@ CFLAGS = $(WARN_CFLAGS) -fPIC
 CXXFLAGS = $(WARN_CFLAGS) -fPIC
 
 TIZEN_CPPFLAGS = -DTIZENAPP
-TIZEN_LDFLAGS = -lstdc++ -losp-uifw -losp-appfw
+TIZEN_LDFLAGS = -lstdc++
 
 all:	capi tizen dummy
 capi:	headers $(CAPI_TARGET)
