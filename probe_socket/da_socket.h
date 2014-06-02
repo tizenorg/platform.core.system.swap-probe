@@ -102,20 +102,6 @@
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
 		PACK_COMMON_END(RTYPE, RETVALUE, errno, blockresult)
 
-#define BEFORE_ORIGINAL_TIZEN_NET(FUNCNAME, FUNCTIONPOINTER)	\
-		DECLARE_VARIABLE_STANDARD_OSP_NET(FUNCNAME); 								\
-		GET_REAL_FUNC_TIZEN(FUNCNAME, LIBOSP_NET,FUNCTIONPOINTER); \
-		PRE_PROBEBLOCK()
-
-#define DECLARE_VARIABLE_STANDARD_OSP_NET(FUNCNAME)		\
-		probeInfo_t probeInfo;				\
-		info_t info;					\
-		int blockresult;				\
-		bool bfiltering = true;				\
-		int olderrno = 0, newerrno = 0;			\
-		int32_t __attribute__((unused)) vAPI_ID = API_ID_ ## FUNCNAME /* FUNCID FIXME bad way*/; \
-		INIT_INFO
-
 #define POST_PROBEBLOCK_MIDDLE_TIZEN_SOCK(OBJECTPTR, FDVALUE, APITYPE, TOTAL_INFO )				\
 	do {									\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)OBJECTPTR);		\
@@ -128,10 +114,6 @@
 				   TOTAL_INFO.msg_pack_size);			\
 	} while (0)
 
-
-//TIZEN
-#define CALL_ORIGINAL_TIZEN_NET(FUNCNAME, FUNCTIONPOINTER)	\
-		GET_REAL_FUNC_TIZEN(FUNCNAME, LIBOSP_NET,FUNCTIONPOINTER)
 
 
 //Tizen Common Function
