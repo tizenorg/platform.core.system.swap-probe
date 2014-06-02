@@ -114,43 +114,9 @@
 	if(!FUNCNAME##p) 						\
 		init_probe_egl(#FUNCNAME, (void **)&FUNCNAME##p, LIBEGL)
 
-#define BEFORE_EGL_TIZEN(FUNCNAME)					\
-	DECLARE_VARIABLE_STANDARD_NORET;				\
-	GLenum error = EGL_SUCCESS;					\
-	static methodType FUNCNAME##p = 0;				\
-	int32_t vAPI_ID = FUNCID(FUNCNAME);				\
-	uint64_t start_nsec = 0;					\
-	PRE_PROBEBLOCK();						\
-	if(blockresult != 0)						\
-		start_nsec = get_current_nsec();			\
-	if(!FUNCNAME##p) 						\
-		init_probe_egl(FUNCSTR(FUNCNAME), (void **)&FUNCNAME##p, LIBOSP_UIFW)
-
 #define EGL_GET_ERROR()							\
 	if (blockresult != 0) {						\
 		error = eglGetError();					\
-	}
-
-#define BEFORE_OSP_UIFW(FUNCNAME)					\
-	DECLARE_VARIABLE_STANDARD_NORET;			\
-	GLenum error = GL_NO_ERROR;				\
-	static methodType FUNCNAME ## p = 0;			\
-	void* tmpPtr = 0;					\
-	int32_t vAPI_ID = API_ID_ ## FUNCNAME;			\
-	uint64_t start_nsec = 0;					\
-	PRE_PROBEBLOCK();						\
-	if(blockresult != 0)						\
-		start_nsec = get_current_nsec();			\
-	if(!FUNCNAME##p) {						\
-		probeBlockStart();					\
-		INIT_LIB(LIBOSP_UIFW, RTLD_LAZY);			\
-		tmpPtr = dlsym(lib_handle[LIBOSP_UIFW], #FUNCNAME);     \
-		if (tmpPtr == NULL || dlerror() != NULL) {		\
-			perror("dlsym failed : " #FUNCNAME);		\
-			exit(0);					\
-		}							\
-		memcpy(&FUNCNAME##p, &tmpPtr, sizeof(tmpPtr));		\
-		probeBlockEnd();					\
 	}
 
 #define AFTER(RET_TYPE, RET_VAL, APITYPE, CONTEXT_VAL, INPUTFORMAT, ...)	\

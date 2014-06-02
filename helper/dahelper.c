@@ -41,16 +41,12 @@ const char *lib_string[NUM_ORIGINAL_LIBRARY] = {
 	"libc.so.6",				//0
 	"libpthread.so.0",			//1
 	"libelementary.so",			//2
-	"libosp-uifw.so",			//3
-	"libosp-appfw.so",			//4
-	"libosp-web.so",			//5
-	"libecore_input_evas.so.1",		//6
-	"libdaemon.so.0",			//7
-	"libcapi-appfw-application.so.0",	//8
-	"libGLESv2.so",				//9
-	"libEGL.so",				//10
-	"libosp-net.so",			//11
-	SELF_LIB_NAME				//12
+	"libecore_input_evas.so.1",		//3
+	"libdaemon.so.0",			//4
+	"libcapi-appfw-application.so.0",	//5
+	"libGLESv2.so",				//6
+	"libEGL.so",				//7
+	SELF_LIB_NAME				//8
 };
 void *lib_handle[NUM_ORIGINAL_LIBRARY];
 

@@ -34,49 +34,12 @@
 #include "daprobe.h"
 #include "dahelper.h"
 
-static int init_orient = 0;
 
 Ecore_Event_Handler *register_orientation_event_listener();
 void unregister_orientation_event_listener(Ecore_Event_Handler **handler);
 
 Ecore_Event_Handler *handler = NULL;
 
-EAPI int ecore_x_init(const char *name)
-{
-	static int (*ecore_x_initp)(const char *name);
-	int res;
-
-	probeBlockStart();
-	GET_REAL_FUNC(ecore_x_init, LIBOSP_UIFW);
-
-	probeBlockEnd();
-	res = ecore_x_initp(name);
-
-	if ((init_orient == 0) && (res == 1)) {
-		handler = register_orientation_event_listener();
-		init_orient = 1;
-	}
-	return res;
-}
-
-EAPI int ecore_x_shutdown(void)
-{
-	static int (*ecore_x_shutdownp)(void);
-	int res;
-
-	probeBlockStart();
-	GET_REAL_FUNC(ecore_x_shutdown, LIBOSP_UIFW);
-
-	probeBlockEnd();
-	res = ecore_x_shutdownp();
-
-	if ((init_orient == 1) && (res == 0)) {
-		unregister_orientation_event_listener(&handler);
-		init_orient = 0;
-	}
-
-	return res;
-}
 
 Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
 				      void *pEvent)
