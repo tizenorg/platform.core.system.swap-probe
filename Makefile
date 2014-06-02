@@ -19,7 +19,6 @@ INCLUDE_CPPFLAGS =				\
 		-I/usr/include/elementary-1	\
 		-I/usr/include/ethumb-1		\
 		-I/usr/include/evas-1		\
-		-I/usr/include/osp		\
 		-I/usr/include/pixman-1		\
 		-I/usr/include/system		\
 		-I/usr/include/vconf		\
@@ -39,12 +38,11 @@ WARN_CFLAGS = 				\
 		-Wpacked		\
 		-Winline		\
 		-Wno-psabi		\
-		-isystem /usr/include/osp
 
 ## Since linking unneeded libraries bloats output of ldd(1), this variable
 ## holds search paths and common libraries.
 
-LDFLAGS = -shared -L/usr/lib/osp  	\
+LDFLAGS = -shared   	\
 	-lX11				\
 	-lXext				\
 	-lcapi-appfw-application	\
@@ -97,6 +95,13 @@ CAPI_SRCS = 	$(COMMON_SRCS)			\
 
 TIZEN_SRCS =	$(COMMON_SRCS)				\
 		./helper/addr-tizen.c			\
+		./helper/common_probe_init.cpp  \
+#		./probe_memory/libdanew.cpp	 \
+		./probe_event/gesture.cpp	   \
+		./probe_graphics/da_gles20_tizen.cpp \
+		./probe_graphics/da_gles20_native.cpp \
+		./probe_graphics/da_egl_tizen.cpp \
+		./probe_graphics/da_egl_native.cpp
 
 ASM_SRC = ./helper/da_call_original.S
 

@@ -609,17 +609,3 @@ EGLAPI __eglGetProcAddress_t eglGetProcAddress(const char *procname)
 	return ret;
 }
 
-EGLBoolean eglUpdateBufferOSP(EGLDisplay dpy, EGLSurface surface)
-{
-	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface);
-	/* probe prepare */
-	BEFORE_EGL(eglUpdateBufferOSP);
-	/* call original function */
-	EGLBoolean ret = eglUpdateBufferOSPp(dpy, surface);
-	/* get error code */
-	EGL_GET_ERROR();
-	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
-	      "pp", voidp_to_uint64(dpy), voidp_to_uint64(surface));
-	return ret;
-}
