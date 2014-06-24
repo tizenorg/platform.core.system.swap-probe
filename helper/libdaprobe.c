@@ -117,7 +117,7 @@ static int createSocket(void)
 			/* send pid */
 			sprintf(buf, "%d|%llu", getpid(),
 				gTraceInfo.app.startTime);
-			printLogStr(buf, MSG_PID);
+			printLogStr(MSG_PID, buf);
 
 			/* recv initial configuration value */
 			recvlen = recv(gTraceInfo.socket.daemonSock, &log,
@@ -425,7 +425,7 @@ void _uninit_(void)
 	// close socket
 	if(gTraceInfo.socket.daemonSock != -1)
 	{
-		printLogStr(NULL, MSG_TERMINATE);
+		printLogStr(MSG_TERMINATE, NULL);
 		close(gTraceInfo.socket.daemonSock);
 		gTraceInfo.socket.daemonSock = -1;
 	}
@@ -484,10 +484,38 @@ bool printLog(log_t *log, int msgType)
 	return (res == len);
 }
 
-bool printLogStr(const char* str, int msgType)
+bool printLogStr(int msgType, char *st)
+{
+	log_t log;
+	ssize_t res, len;
+
+	if(unlikely(gTraceInfo.socket.daemonSock == -1))
+		return false;
+
+	probeBlockStart();
+	log.type = msgType;
+	if (st != NULL)
+		log.length = snprintf(log.data, sizeof(log.data), st);
+	else
+		log.length = 0;
+
+	len = sizeof(log.type) + sizeof(log.length) + log.length;
+
+	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
+	res = send(gTraceInfo.socket.daemonSock, &log, len, 0);
+	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
+	probeBlockEnd();
+
+	return (res == len);
+}
+
+bool printLogFmt(int msgType, const char *func_name, int line, ...)
 {
 	ssize_t res, len;
+	char *fmt, *p;
+	int n;
 	log_t log;
+	va_list ap;
 
 	if(unlikely(gTraceInfo.socket.daemonSock == -1))
 		return false;
@@ -495,13 +523,26 @@ bool printLogStr(const char* str, int msgType)
 	probeBlockStart();
 
 	log.type = msgType;
-	if(str)
-	{
-		sprintf(log.data, "%s", str);
-		log.length = strlen(str);
+
+	p = log.data;
+	n = snprintf(p, sizeof(log), "%s:%d)", func_name, line);
+	p += n;
+
+	va_start(ap, line);
+	fmt = va_arg(ap, char *);
+	if (fmt != NULL) {
+		if (strchr(fmt, '%') == NULL)
+			n += snprintf(p, sizeof(log.data) - n, "%s", fmt);
+		else
+			n += vsnprintf(p, sizeof(log.data) - n, fmt, ap);
 	}
-	else
-	{
+
+	va_end(ap);
+
+	if (n > -1 && n < (int)sizeof(log.data)) {
+		log.length = n;
+	} else {
+		fprintf(stderr, "Log pack error\n");
 		log.length = 0;
 	}
 
