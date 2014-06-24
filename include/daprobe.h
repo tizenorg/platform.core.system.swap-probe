@@ -114,8 +114,10 @@ uint64_t get_current_nsec(void);
 bool setProbePoint(probeInfo_t * iProbe);
 int update_heap_memory_size(bool isAdd, size_t size);
 
-bool printLogStr(const char* str, int msgType);
+bool print_log_fmt(int msgType, const char *func_name, int line, ...);
+bool print_log_str(int msgType, char *st);
 bool printLog(log_t* log, int msgType);
+
 int __appendTypeLog(log_t* log, int nInput, char* token, ...);
 int getBacktraceString(log_t* log, int bufsize);
 
@@ -137,8 +139,8 @@ int getBacktraceString(log_t* log, int bufsize);
  ***************************************************************************/
 
 // ========================= print log =====================================
-#define PRINTMSG(msg)	printLogStr(msg, MSG_MSG)
-#define PRINTERR(msg)	printLogStr(msg, MSG_ERROR)
+#define PRINTMSG(...)	print_log_fmt(MSG_MSG, __FUNCTION__, __LINE__, __VA_ARGS__)
+#define PRINTERR(...)	print_log_fmt(MSG_ERROR, __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define INIT_INFO						\
 		info.host_ip = 0;				\
