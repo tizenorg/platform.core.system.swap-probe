@@ -117,7 +117,7 @@ static int createSocket(void)
 			/* send pid */
 			sprintf(buf, "%d|%llu", getpid(),
 				gTraceInfo.app.startTime);
-			printLogStr(buf, MSG_PID);
+			print_log_str(MSG_PID, buf);
 
 			/* recv initial configuration value */
 			recvlen = recv(gTraceInfo.socket.daemonSock, &log,
@@ -425,7 +425,7 @@ void _uninit_(void)
 	// close socket
 	if(gTraceInfo.socket.daemonSock != -1)
 	{
-		printLogStr(NULL, MSG_TERMINATE);
+		print_log_str(MSG_TERMINATE, NULL);
 		close(gTraceInfo.socket.daemonSock);
 		gTraceInfo.socket.daemonSock = -1;
 	}
@@ -484,35 +484,102 @@ bool printLog(log_t *log, int msgType)
 	return (res == len);
 }
 
-bool printLogStr(const char* str, int msgType)
-{
-	ssize_t res, len;
-	log_t log;
+/*
+ * Debug function for ld preloaded library
+ * msgType - message type (MSG_TERMINATE, MSG_PID)
+ * str     - string send to host. may be NULL
+ * return  - true on success. false on fail.
+ */
 
+bool print_log_str(int msgType, char *str)
+{
+	log_t log;
+	ssize_t res, len;
+
+	/* Check connection status */
 	if(unlikely(gTraceInfo.socket.daemonSock == -1))
 		return false;
 
 	probeBlockStart();
 
+	/* fill message */
 	log.type = msgType;
-	if(str)
-	{
-		sprintf(log.data, "%s", str);
-		log.length = strlen(str);
-	}
+	if (str != NULL)
+		log.length = snprintf(log.data, sizeof(log.data), str);
 	else
-	{
+		log.length = 0;
+
+	/* calculate message length */
+	len = sizeof(log.type) + sizeof(log.length) + log.length;
+
+	/* lock socket and send */
+	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
+	res = send(gTraceInfo.socket.daemonSock, &log, len, 0);
+	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
+	probeBlockEnd();
+
+	return (res == len);
+}
+
+/*
+ * Additional debug function for ld preloaded library can be used in defines
+ * msgType   - message type (MSG_TERMINATE, MSG_PID)
+ * func_name - call function name
+ * line      - call line number
+ * ...       - format and arguments like for sprintf function
+ * return    - true on success. false on fail.
+ */
+bool print_log_fmt(int msgType, const char *func_name, int line, ...)
+{
+	ssize_t res, len;
+	char *fmt, *p;
+	int n;
+	log_t log;
+	va_list ap;
+
+	/* Check connection status */
+	if(unlikely(gTraceInfo.socket.daemonSock == -1))
+		return false;
+
+	probeBlockStart();
+
+	/* fill message */
+	log.type = msgType;
+
+	p = log.data;
+	n = snprintf(p, sizeof(log), "%s:%d)", func_name, line);
+	p += n;
+
+	/* extract params */
+	va_start(ap, line);
+	fmt = va_arg(ap, char *);
+	if (fmt != NULL) {
+		if (strchr(fmt, '%') == NULL)
+			n += snprintf(p, sizeof(log.data) - n, "%s", fmt);
+		else
+			n += vsnprintf(p, sizeof(log.data) - n, fmt, ap);
+	}
+	va_end(ap);
+
+	/* check printed symbols count */
+	if (n > -1 && n < (int)sizeof(log.data)) {
+		log.length = n;
+	} else {
+		fprintf(stderr, "Log pack error\n");
 		log.length = 0;
 	}
 
+	/* calculate message length */
 	len = sizeof(log.type) + sizeof(log.length) + log.length;
 
+	/* lock socket and send */
 	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
 	res = send(gTraceInfo.socket.daemonSock, &log, len, MSG_DONTWAIT);
 	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 
 	probeBlockEnd();
 
+	/* return result */
 	return (res == len);
 }
 
