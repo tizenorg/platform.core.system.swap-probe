@@ -490,8 +490,10 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		BUF_PTR = pack_int32(BUF_PTR, api_type);	     \
 	} while (0)
 
+/* TODO maloc/free for each event turns out expensive: think of buffer
+ * allocator implementation */
 #define PREPARE_LOCAL_BUF()			\
-		char LOCAL_BUF[MAX_LOCAL_BUF_SIZE];		\
+		char *LOCAL_BUF = (char *)malloc(MAX_LOCAL_BUF_SIZE);	\
 		char *BUF_PTR = LOCAL_BUF;			\
 		char *RET_PTR = NULL
 
@@ -499,7 +501,9 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 #define MSG_HDR_LEN 20
 #define FLUSH_LOCAL_BUF()						\
 		*(uint32_t *)(msg_buf + MSG_LEN_OFFSET) = (p - msg_buf) - MSG_HDR_LEN; \
-		send(gTraceInfo.socket.daemonSock, msg_buf, (p - msg_buf), 0)
+		send(gTraceInfo.socket.daemonSock, msg_buf, (p - msg_buf), 0); \
+		free(LOCAL_BUF); \
+		LOCAL_BUF = NULL
 
 // =========================== post block macro ===========================
 
