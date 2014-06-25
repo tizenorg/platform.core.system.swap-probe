@@ -38,20 +38,18 @@ int get_map_address(void* sym, void** start, void** end);
 
 int getExecutableMappingAddress()
 {
-	int ret = 0;
-	void* main_symbol;
+	int ret = 0, i = 0;
+	void *main_symbol;
+	static const char *funcs[] = {"OspMain", "main"};
 
 	probeBlockStart();
-	main_symbol = dlsym(RTLD_NEXT, "OspMain");
-	if(main_symbol != NULL)
-	{
-		ret = get_map_address(main_symbol, &(gTraceInfo.exec_map.map_start),
-						&(gTraceInfo.exec_map.map_end));
-	}
-	else
-	{
-		// failed to get address of OspMain
-		ret = 0;
+	for (i = 0; i < (int)(sizeof(funcs)/sizeof(funcs[0])); i++){
+		main_symbol = dlsym(RTLD_NEXT, funcs[i]);
+		if(main_symbol != NULL) {
+			ret = get_map_address(main_symbol, &(gTraceInfo.exec_map.map_start),
+							&(gTraceInfo.exec_map.map_end));
+			break;
+		}
 	}
 	probeBlockEnd();
 
