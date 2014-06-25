@@ -204,6 +204,12 @@ static pid_t _gettid()
 	return gTid;
 }
 
+void application_exit()
+{
+	PRINTMSG("EXIT appfw-capi");
+	app_efl_exit();
+}
+
 static void *recvThread(void __unused * data)
 {
 	fd_set readfds, workfds;
@@ -283,7 +289,9 @@ static void *recvThread(void __unused * data)
 				}
 				else if(log.type == MSG_STOP)
 				{
+					PRINTMSG("MSG_STOP");
 					application_exit();
+					break;
 				}
 				else
 				{
