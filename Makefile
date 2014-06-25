@@ -88,8 +88,6 @@ PROBE_SRCS =	   				\
 
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
 CAPI_SRCS = 	$(COMMON_SRCS)			\
-		./helper/appfw-capi.c		\
-		./helper/addr-capi.c		\
 		./probe_capi/capi_appfw.c	\
 		./probe_ui/capi_capture.c
 
