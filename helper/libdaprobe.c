@@ -49,7 +49,6 @@
 #include <sys/un.h>			// for sockaddr_un
 #include <sys/timerfd.h>	// for timerfd
 
-#include <app.h>
 #include "probeinfo.h"
 #include "dautil.h"
 #include "dahelper.h"
@@ -206,8 +205,9 @@ static pid_t _gettid()
 
 void application_exit()
 {
-	PRINTMSG("EXIT appfw-capi");
-	app_efl_exit();
+	PRINTMSG("App termination: EXIT(0)");
+	/* TODO think of another way for correct app termination */
+	exit(0);
 }
 
 static void *recvThread(void __unused * data)
