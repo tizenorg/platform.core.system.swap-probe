@@ -59,12 +59,11 @@ static enum DaOptions _sopt = OPT_ALWAYSON;
 
 static bool _dalc_app_create(void* user_data)
 {
-	bool bret;
+	bool bret = false;
 	DECLARE_VARIABLE_STANDARD;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();
-
 	bret = gAppCallback.create(user_data);
 
 	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_create, 'b', bret, "p",
@@ -140,10 +139,7 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 	Ecore_Event_Handler* handler;
 	int ret;
 
-	//set app_efl flag to determinate termination way for app
-	app_efl_main_flg = 1;
-
-	GET_REAL_FUNC(app_efl_main, LIBCAPI_APPFW_APPLICATION);
+	GET_REAL_FUNCP_RTLD_NEXT(app_efl_main, app_efl_mainp);
 
 	probeBlockStart();
 	handler = register_orientation_event_listener();

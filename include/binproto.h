@@ -208,6 +208,7 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char **t, 
 	*to++ = **t;
 
 	switch (**t) {
+	case 'b':
 	case 'c':
 		c = (uint8_t)va_arg(*args, uint32_t);
 		memcpy(to, &c, sizeof(c));
