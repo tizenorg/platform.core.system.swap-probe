@@ -37,27 +37,27 @@
 #include "probeinfo.h"
 #include "binproto.h"
 
-Ecore_Event_Handler* register_orientation_event_listener();
-void unregister_orientation_event_listener(Ecore_Event_Handler* handler);
+Ecore_Event_Handler *register_orientation_event_listener();
+void unregister_orientation_event_listener(Ecore_Event_Handler *handler);
 
 app_event_callback_s gAppCallback;
 
 #define PACK_ORIGINAL_APPFWCYCLE(API_ID, RTYPE, RVAL, INPUTFORMAT, ...)		\
-	newerrno = errno;																		\
-	do {																					\
-		if(postBlockBegin(blockresult)) {													\
-			PREPARE_LOCAL_BUF();															\
+	newerrno = errno;							\
+	do {									\
+		if(postBlockBegin(blockresult)) {				\
+			PREPARE_LOCAL_BUF();					\
 			PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-			PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);									\
-			FLUSH_LOCAL_BUF();																\
-			postBlockEnd();																	\
-		}																					\
-	} while(0);																				\
+			PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);	\
+			FLUSH_LOCAL_BUF();					\
+			postBlockEnd();						\
+		}								\
+	} while(0);								\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
 static enum DaOptions _sopt = OPT_ALWAYSON;
 
-static bool _dalc_app_create(void* user_data)
+static bool _dalc_app_create(void *user_data)
 {
 	bool bret;
 	DECLARE_VARIABLE_STANDARD;
@@ -73,7 +73,7 @@ static bool _dalc_app_create(void* user_data)
 	return bret;
 }
 
-static void _dalc_app_terminate(void* user_data)
+static void _dalc_app_terminate(void *user_data)
 {
 	DECLARE_VARIABLE_STANDARD;
 
@@ -86,7 +86,7 @@ static void _dalc_app_terminate(void* user_data)
 				 voidp_to_uint64(user_data));
 }
 
-static void _dalc_app_pause(void* user_data)
+static void _dalc_app_pause(void *user_data)
 {
 	DECLARE_VARIABLE_STANDARD;
 
@@ -99,7 +99,7 @@ static void _dalc_app_pause(void* user_data)
 				 voidp_to_uint64(user_data));
 }
 
-static void _dalc_app_resume(void* user_data)
+static void _dalc_app_resume(void *user_data)
 {
 	DECLARE_VARIABLE_STANDARD;
 
@@ -112,7 +112,7 @@ static void _dalc_app_resume(void* user_data)
 				 voidp_to_uint64(user_data));
 }
 
-static void _dalc_app_service(service_h service, void* user_data)
+static void _dalc_app_service(service_h service, void *user_data)
 {
 	DECLARE_VARIABLE_STANDARD;
 
@@ -126,17 +126,17 @@ static void _dalc_app_service(service_h service, void* user_data)
 				 voidp_to_uint64(user_data));
 }
 
-static void _dalc_app_deviceorientationchanged(app_device_orientation_e orientation, void* user_data)
+static void _dalc_app_deviceorientationchanged(app_device_orientation_e orientation, void *user_data)
 {
 	on_orientation_changed((int)orientation, true);
 
-	if(gAppCallback.device_orientation)
+	if (gAppCallback.device_orientation)
 		gAppCallback.device_orientation(orientation, user_data);
 }
 
 int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *user_data)
 {
-	static int (*app_efl_mainp)(int* argc, char*** argv, app_event_callback_s* callback, void* user_data);
+	static int (*app_efl_mainp)(int *argc, char ***argv, app_event_callback_s *callback, void *user_data);
 	Ecore_Event_Handler* handler;
 	int ret;
 
@@ -154,15 +154,15 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 	gAppCallback.service = callback->service;
 	gAppCallback.device_orientation = callback->device_orientation;
 
-	if(callback->create)
+	if (callback->create)
 		callback->create = _dalc_app_create;
-	if(callback->terminate)
+	if (callback->terminate)
 		callback->terminate = _dalc_app_terminate;
-	if(callback->pause)
+	if (callback->pause)
 		callback->pause = _dalc_app_pause;
-	if(callback->resume)
+	if (callback->resume)
 		callback->resume = _dalc_app_resume;
-	if(callback->service)
+	if (callback->service)
 		callback->service = _dalc_app_service;
 	callback->device_orientation = _dalc_app_deviceorientationchanged;
 	probeBlockEnd();
@@ -181,4 +181,3 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 
 	return ret;
 }
-
