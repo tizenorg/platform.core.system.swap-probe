@@ -89,10 +89,10 @@ PROBE_SRCS =	   				\
 
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
 CAPI_SRCS = 	$(COMMON_SRCS)			\
-		./probe_capi/capi_appfw.c	\
-		./probe_ui/capi_capture.c
+		./probe_capi/capi_appfw.c
+#		./probe_ui/capi_capture.c
 
-TIZEN_SRCS =	$(COMMON_SRCS)				\
+TIZEN_SRCS =	$(COMMON_SRCS) $(CAPI_SRCS)\
 		./helper/addr-tizen.c			\
 		./helper/common_probe_init.cpp  \
 		./probe_memory/libdanew.cpp
@@ -107,7 +107,6 @@ TIZEN_OBJS = $(patsubst %.cpp,%.o, $(patsubst %.c,%.o, $(TIZEN_SRCS))) $(ASM_OBJ
 DUMMY_OBJS = $(patsubst %.c,%.o, $(DUMMY_SRCS))
 
 
-CAPI_TARGET = da_probe_capi.so
 TIZEN_TARGET = da_probe_tizen.so
 DUMMY_TARGET = libdaprobe.so
 
@@ -119,7 +118,6 @@ TIZEN_CPPFLAGS = -DTIZENAPP
 TIZEN_LDFLAGS = -lstdc++
 
 all:	capi tizen dummy
-capi:	headers $(CAPI_TARGET)
 tizen:	headers $(TIZEN_TARGET)
 dummy:	headers $(DUMMY_TARGET)
 
@@ -141,9 +139,6 @@ $(GENERATED_HEADERS): APINAMES=scripts/api_names.txt
 $(GENERATED_HEADERS): ./scripts/api_names.txt
 $(GENERATED_HEADERS):
 	awk -f $< < $(APINAMES) > $@
-
-$(CAPI_TARGET): $(CAPI_OBJS)
-	$(CC) $(LDFLAGS) $^ -o $@
 
 $(TIZEN_TARGET): LDFLAGS+=$(TIZEN_LDFLAGS)
 $(TIZEN_TARGET): CPPFLAGS+=$(TIZEN_CPPFLAGS)
