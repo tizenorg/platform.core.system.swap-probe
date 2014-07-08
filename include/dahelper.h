@@ -211,7 +211,10 @@ int __profil(int mode);
 
 //wchar_t* -> char*
 void WcharToChar(char* pstrDest, const wchar_t* pwstrSrc);
-char *absolutize_filepath(char buf[PATH_MAX], const char *fname);
+char *absolutize_filepath(const char *fname, char *buf, size_t bufsiz);
+
+/* returns the real absolute file path (resolves symlinks) */
+char *real_abs_path(int fd, char *buffer, size_t bufsiz);
 
 // screen capture functions
 int initialize_screencapture();
