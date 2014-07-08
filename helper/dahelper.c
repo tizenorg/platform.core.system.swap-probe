@@ -121,15 +121,33 @@ static int absolute_filepath_p(const char *fname)
 	return fname[0] == '/';
 }
 
-/* Return pointer to static buffer */
-char *absolutize_filepath(char buffer[PATH_MAX], const char *fname)
+char *absolutize_filepath(const char *fname, char *buffer, size_t bufsiz)
 {
 	char cwd[PATH_MAX];
 
 	assert(fname && "Filename, passed to stdc function is NULL.");
 	if (absolute_filepath_p(fname) || getcwd(cwd, sizeof(cwd)) == NULL)
-		snprintf(buffer, PATH_MAX, "%s", fname);
+		snprintf(buffer, bufsiz, "%s", fname);
 	else
-		snprintf(buffer, PATH_MAX, "%s/%s", cwd, fname);
+		snprintf(buffer, bufsiz, "%s/%s", cwd, fname);
+	return buffer;
+}
+
+char *real_abs_path(int fd, char *buffer, size_t bufsiz)
+{
+	static const char *PROC_FD = "/proc/self/fd/%d";
+	char proc_path[sizeof(PROC_FD) + 16]; /* PATH_MAX not needed here */
+	ssize_t ret = 0;
+
+	if (fd < 0)
+		return NULL;
+
+	sprintf(proc_path, PROC_FD, fd);
+
+	ret = readlink(proc_path, buffer, bufsiz);
+	if (ret < 0) /* some error occured */
+		return NULL;
+	buffer[ret] = '\0';
+
 	return buffer;
 }

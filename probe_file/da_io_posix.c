@@ -54,6 +54,17 @@
 
 static enum DaOptions _sopt = OPT_FILE;
 
+static inline char *get_abs_path(int fd, const char *fname,
+				 char *buf, size_t bufsiz)
+{
+	char *path = real_abs_path(fd, buf, bufsiz);
+
+	if (!path)
+		path = absolutize_filepath(fname, buf, bufsiz);
+
+	return path;
+}
+
 int open(const char* path, int oflag, ...)
 {
 	static int (*openp)(const char* path, int oflag, ...);
@@ -61,7 +72,6 @@ int open(const char* path, int oflag, ...)
 	int mode = 0;
 
 	BEFORE_ORIGINAL_FILE_NOFILTER(open, LIBC);
-	_filepath = (char*)path;
 
 	if(oflag & O_CREAT)
 	{
@@ -73,9 +83,10 @@ int open(const char* path, int oflag, ...)
 
 	ret = openp(path, oflag, mode);
 
+	_filepath = get_abs_path(ret, path, buffer, PATH_MAX);
+
 	AFTER_PACK_ORIGINAL_FD(API_ID_open, 'd', ret, 0, ret, FD_API_OPEN,
-			       "s4dd", absolutize_filepath(buffer, path), oflag,
-			       mode);
+			       "s4dd", path, oflag, mode);
 
 	return ret;
 }
@@ -87,7 +98,6 @@ int openat(int fd, const char* path, int oflag, ...)
 	int mode = 0;
 
 	BEFORE_ORIGINAL_FILE_NOFILTER(openat, LIBC);
-	_filepath = (char*)path;
 
 	if(oflag & O_CREAT)
 	{
@@ -99,9 +109,10 @@ int openat(int fd, const char* path, int oflag, ...)
 
 	ret = openatp(fd, path, oflag, mode);
 
+	_filepath = get_abs_path(ret, path, buffer, PATH_MAX);
+
 	AFTER_PACK_ORIGINAL_FD(API_ID_openat, 'd', ret, 0, ret, FD_API_OPEN,
-			       "ds4dd", fd, absolutize_filepath(buffer, path),
-			       oflag, mode);
+			       "ds4dd", fd, path, oflag, mode);
 
 	return ret;
 }
@@ -112,12 +123,13 @@ int creat(const char* path, mode_t mode)
 	char buffer[PATH_MAX];
 
 	BEFORE_ORIGINAL_FILE_NOFILTER(creat, LIBC);
-	_filepath = (char*)path;
 
 	ret = creatp(path, mode);
 
+	_filepath = get_abs_path(ret, path, buffer, PATH_MAX);
+
 	AFTER_PACK_ORIGINAL_FD(API_ID_creat, 'd', ret, 0, ret, FD_API_OPEN,
-			       "s4d", absolutize_filepath(buffer, path), mode);
+			       "s4d", path, mode);
 
 	return ret;
 }

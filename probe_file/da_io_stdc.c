@@ -46,6 +46,17 @@
 
 static enum DaOptions _sopt = OPT_FILE;
 
+static inline char *get_abs_path(FILE *file, const char *fname,
+				 char *buf, size_t bufsiz)
+{
+	char *path = file ? real_abs_path(fileno(file), buf, bufsiz): NULL;
+
+	if (!path)
+		path = absolutize_filepath(fname, buf, bufsiz);
+
+	return path;
+}
+
 FILE* fopen(const char* filename, const char* mode)
 {
 	static FILE* (*fopenp)(const char* filename, const char* mode);
@@ -53,13 +64,14 @@ FILE* fopen(const char* filename, const char* mode)
 	FILE* fret;
 
 	BEFORE_ORIGINAL_FILE_NOFILTER(fopen, LIBC);
-	_filepath = (char*)filename;
 
 	fret = fopenp(filename, mode);
 
+	_filepath = get_abs_path(fret, filename, buffer, PATH_MAX);
+
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fopen,
 				  'p', fret, 0, fret, FD_API_OPEN, "s4s",
-				  absolutize_filepath(buffer, filename), mode);
+				  filename, mode);
 
 	return fret;
 }
@@ -72,13 +84,14 @@ FILE* freopen(const char * filename, const char * mode, FILE * stream)
  	FILE* fret;
 
 	BEFORE_ORIGINAL_FILE_NOFILTER(freopen, LIBC);
-	_filepath = (char*)filename;
 
 	fret = freopenp(filename, mode, stream);
 
+	_filepath = get_abs_path(fret, filename, buffer, PATH_MAX);
+
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_freopen, 'p', fret, 0, fret, FD_API_OPEN,
-				  "s4sp", absolutize_filepath(buffer, filename),
-				  mode, voidp_to_uint64(stream));
+				  "s4sp", filename, mode,
+				  voidp_to_uint64(stream));
 
 	return fret;
 }
