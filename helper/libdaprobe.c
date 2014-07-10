@@ -194,7 +194,7 @@ void reset_pid_tid()
 }
 
 // return current process id
-static pid_t _getpid()
+pid_t _getpid()
 {
 	if (gPid == -1)
 		gPid = getpid();
@@ -202,7 +202,7 @@ static pid_t _getpid()
 }
 
 // return current thread id
-static pid_t _gettid()
+pid_t _gettid()
 {
 	if(gTid == -1)
 		gTid = syscall(__NR_gettid);	// syscall is very expensive

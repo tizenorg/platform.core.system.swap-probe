@@ -42,11 +42,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-// getpid/gettid
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/syscall.h>
-
 #include <sys/time.h>
 
 #include <sys/socket.h>
@@ -351,8 +346,8 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		BUF_PTR = pack_timestamp(BUF_PTR);		/* timestamp */	\
 		BUF_PTR = pack_int32(BUF_PTR, 0);		/* length */	\
 		BUF_PTR = pack_int32(BUF_PTR, api_id);		/* API id */	\
-		BUF_PTR = pack_int32(BUF_PTR, getpid());	/* PID */	\
-		BUF_PTR = pack_int32(BUF_PTR, syscall(__NR_gettid));	/* call pc*/\
+		BUF_PTR = pack_int32(BUF_PTR, _getpid());	/* PID */	\
+		BUF_PTR = pack_int32(BUF_PTR, _gettid());	/* call pc*/\
 		BUF_PTR = pack_args(BUF_PTR, fmt, __VA_ARGS__);	/* args */	\
 		RET_PTR = BUF_PTR;		\
 	} while (0)

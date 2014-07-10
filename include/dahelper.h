@@ -206,6 +206,11 @@ int get_map_address(void* symbol, void** map_start, void** map_end);
 char** da_backtrace_symbols (void* const* array, int size);
 char** cached_backtrace_symbols (void* const* array, int size);
 
+/* pid/tid values */
+pid_t _getpid();
+pid_t _gettid();
+extern void reset_pid_tid();
+
 // profil turned on
 int __profil(int mode);
 
