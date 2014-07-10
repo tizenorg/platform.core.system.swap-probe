@@ -567,7 +567,7 @@ bool print_log_fmt(int msgType, const char *func_name, int line, ...)
 	log.type = msgType;
 
 	p = log.data;
-	n = snprintf(p, sizeof(log), "%s:%d)", func_name, line);
+	n = snprintf(p, sizeof(log), "[%05d:%05d]%s:%d)", _getpid(), _gettid(),  func_name, line);
 	p += n;
 
 	/* extract params */
