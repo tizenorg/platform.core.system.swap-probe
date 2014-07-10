@@ -140,6 +140,7 @@ int getBacktraceString(log_t* log, int bufsize);
 
 // ========================= print log =====================================
 #define PRINTMSG(...)	print_log_fmt(MSG_MSG, __FUNCTION__, __LINE__, __VA_ARGS__)
+#define PRINTWRN(...)	print_log_fmt(MSG_WARNING, __FUNCTION__, __LINE__, __VA_ARGS__)
 #define PRINTERR(...)	print_log_fmt(MSG_ERROR, __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define INIT_INFO						\
