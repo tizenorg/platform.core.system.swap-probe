@@ -78,6 +78,9 @@ int log_fd = 0;
 int getExecutableMappingAddress();
 
 bool printLog(log_t* log, int msgType);
+
+void *(*real_malloc)(size_t) = NULL;
+
 /******************************************************************************
  * internal functions
    (this means that these functions do not need to set enter/exit flag)
@@ -381,6 +384,9 @@ static int create_recv_thread()
 void _init_(void)
 {
 	char msg[DA_LOG_MAX];
+
+	rtdl_next_set_once(real_malloc, "malloc");
+
 	probeBlockStart();
 
 	init_exec_fork();
@@ -825,4 +831,22 @@ int update_heap_memory_size(bool isAdd, size_t size)
 	}
 
 	return 0;
+}
+
+/* rtdl_next */
+void *rtdl_next(const char *symname)
+{
+	void *symbol;
+
+	probeBlockStart();
+
+	symbol = dlsym(RTLD_NEXT, symname);
+	if (symbol == NULL || dlerror() != NULL) {
+		fprintf(stderr, "dlsym failed <%s>\n", symname);
+		exit(41);
+	}
+
+	probeBlockEnd();
+
+	return symbol;
 }

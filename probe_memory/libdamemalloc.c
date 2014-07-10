@@ -48,39 +48,13 @@
 
 static enum DaOptions _sopt = OPT_ALLOC;
 
-static void *rtdl_next(const char *symname)
-{
-	void *symbol;
-
-	probeBlockStart();
-
-	symbol = dlsym(RTLD_NEXT, symname);
-	if (symbol == NULL || dlerror() != NULL) {
-		fprintf(stderr, "dlsym failed <%s>\n", symname);
-		exit(41);
-	}
-
-	probeBlockEnd();
-
-	return symbol;
-}
-
-static void rtdl_next_set_once(void **symbol, const char *symname)
-{
-	if (*symbol)
-		return;
-	*symbol = rtdl_next(symname);
-}
-#define rtdl_next_current_set_once(symbol) \
-	rtdl_next_set_once((void **)(symbol), __func__)
-
 void *malloc(size_t size)
 {
 	static void* (*mallocp)(size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	rtdl_next_current_set_once(&mallocp);
+	rtdl_next_current_set_once(mallocp);
 
 	PRE_PROBEBLOCK();
 
@@ -110,7 +84,7 @@ void free(void *ptr)
 	static void (*freep)(void *);
 	DECLARE_VARIABLE_STANDARD;
 
-	rtdl_next_current_set_once(&freep);
+	rtdl_next_current_set_once(freep);
 
 	PRE_PROBEBLOCK();
 
@@ -137,7 +111,7 @@ void *realloc(void *memblock, size_t size)
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	rtdl_next_current_set_once(&reallocp);
+	rtdl_next_current_set_once(reallocp);
 	PRE_PROBEBLOCK();
 
 	if(memblock != NULL && gProbeBlockCount == 0)

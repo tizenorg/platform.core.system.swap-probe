@@ -121,6 +121,8 @@ bool printLog(log_t* log, int msgType);
 int __appendTypeLog(log_t* log, int nInput, char* token, ...);
 int getBacktraceString(log_t* log, int bufsize);
 
+void *rtdl_next(const char *symname);
+
 //char* captureScreenShotX(int* width, int* height);
 //void releaseScreenShotX();
 
@@ -137,6 +139,17 @@ int getBacktraceString(log_t* log, int bufsize);
 /***************************************************************************
  * helper macros
  ***************************************************************************/
+
+// ============================ rtdl ===============================
+
+#define rtdl_next_set_once(symbol, sname)	\
+	do {					\
+	if (symbol == NULL)			\
+		symbol = rtdl_next(sname);	\
+	} while (0)
+
+#define rtdl_next_current_set_once(symbol)	\
+	rtdl_next_set_once(symbol, __func__)
 
 // ========================= print log =====================================
 #define PRINTMSG(...)	print_log_fmt(MSG_MSG, __FUNCTION__, __LINE__, __VA_ARGS__)

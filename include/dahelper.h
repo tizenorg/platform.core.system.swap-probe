@@ -206,6 +206,9 @@ int get_map_address(void* symbol, void** map_start, void** map_end);
 char** da_backtrace_symbols (void* const* array, int size);
 char** cached_backtrace_symbols (void* const* array, int size);
 
+/* real malloc function pointer */
+extern void *(*real_malloc)(size_t);
+
 /* pid/tid values */
 pid_t _getpid();
 pid_t _gettid();
