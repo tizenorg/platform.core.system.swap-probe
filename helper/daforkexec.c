@@ -98,36 +98,28 @@ int _da_call_original(void *funcp, char *args[], int args_count);
 int execl(const char *path, const char *arg, ...)
 {
 	int res;
-	char buf[DA_LOG_MAX];
-
-	sprintf(buf, "execl [%d] ", getpid());
-	PRINTMSG(buf);
+	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
 
 	_uninit_();
 	prepare_params(execl, path, arg);
 	res = _da_call_original(&execl_p, arg_arr, args_count);
 	_init_();
 
-	sprintf(buf,  "%s return %d [%d]", __FUNCTION__, res, getpid());
-	PRINTMSG(buf);
+	PRINTWRN("%s(%s, ...) return %d", __FUNCTION__, res, path);
 	return res;
 }
 
 int execlp(const char *file, const char *arg, ...)
 {
 	int res;
-	char buf[DA_LOG_MAX];
-
-	sprintf(buf, "execlp [%d] ", getpid());
-	PRINTMSG(buf);
+	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
 
 	_uninit_();
 	prepare_params(execlp, file, arg);
 	res = _da_call_original(&execlp_p, arg_arr, args_count);
 	_init_();
 
-	sprintf(buf,  "%s return %d [%d]", __FUNCTION__, res, getpid());
-	PRINTMSG(buf);
+	PRINTWRN("%s(%s, ...) return %d", __FUNCTION__, file, res);
 	return res;
 }
 
@@ -140,102 +132,80 @@ int execle(const char *path, const char *arg, ...
 	)
 {
 	int res;
-	char buf[DA_LOG_MAX];
-
-	sprintf(buf, "execle [%d] ", getpid());
-	PRINTMSG(buf);
+	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
 
 	_uninit_();
 	prepare_params(execle, path, arg);
 	res = _da_call_original(&execle_p, arg_arr, args_count);
 	_init_();
 
-	sprintf(buf,  "%s return %d [%d]", __FUNCTION__, res, getpid());
-	PRINTMSG(buf);
+	PRINTWRN("%s(%s, ...) return %d", __FUNCTION__, path, res);
 	return res;
 }
 
 int execv(const char *path, char *const argv[])
 {
 	int res;
-	char buf[DA_LOG_MAX];
-
-	sprintf(buf, "execv [%d] ", getpid());
-	PRINTMSG(buf);
+	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
 
 	_uninit_();
 	res = execv_p(path, argv);
 	_init_();
 
-	sprintf(buf,  "%s return %d [%d]", __FUNCTION__, res, getpid());
-	PRINTMSG(buf);
+	PRINTWRN("%s(%s, ...) return %d", __FUNCTION__, path, res);
 	return res;
 }
 
 int execvp(const char *file, char *const argv[])
 {
 	int res;
-	char buf[DA_LOG_MAX];
-
-	sprintf(buf, "execvp [%d] ", getpid());
-	PRINTMSG(buf);
+	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
 
 	_uninit_();
 	res = execvp_p(file, argv);
 	_init_();
 
-	sprintf(buf,  "%s return %d [%d]", __FUNCTION__, res, getpid());
-	PRINTMSG(buf);
+	PRINTWRN("%s(%s, ...) return %d", __FUNCTION__, file, res);
 	return res;
 }
 
 int execve(const char *filename, char *const argv[],char *const envp[])
 {
 	int res;
-	char buf[DA_LOG_MAX];
-
-	sprintf(buf, "execve [%d] ", getpid());
-	PRINTMSG(buf);
+	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
 
 	_uninit_();
 	res =  execve_p(filename, argv, envp);
 	_init_();
 
-	sprintf(buf,  "%s return %d [%d]", __FUNCTION__, res, getpid());
-	PRINTMSG(buf);
+	PRINTWRN("%s(%s, ...) return %d", __FUNCTION__, filename, res);
 	return res;
 }
 
 int execvpe(const char *file, char *const argv[],char *const envp[])
 {
 	int res;
-	char buf[DA_LOG_MAX];
-
-	sprintf(buf, "execvpe [%d] ", getpid());
-	PRINTMSG(buf);
+	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
 
 	_uninit_();
 	res =  execvpe_p(file, argv, envp);
 	_init_();
 
-	sprintf(buf,  "%s return %d [%d]", __FUNCTION__, res, getpid());
-	PRINTMSG(buf);
+	PRINTWRN("%s(%s, ...) return %d", __FUNCTION__, file, res);
 	return res;
 }
 
 pid_t fork(void)
 {
-	char msg[DA_LOG_MAX];
 	pid_t res = fork_p();
 
-	sprintf(msg, "<fork = %d>", res);
+	PRINTMSG("<fork = %d>", res);
 	if (res == 0) {
 		if (gTraceInfo.socket.daemonSock >= 0) {
 			close(gTraceInfo.socket.daemonSock);
 			_init_();
 		}
 	}
-	PRINTMSG(msg);
 
 	return res;
 }
