@@ -226,7 +226,7 @@ int add_symbol_hash(void* ptr, const char* str, int strlen)
 	k = kh_put(symbol, SYMBOLHASH, (uint32_t)ptr, &rethash);
 	if (likely(rethash != 0))	// succeed to add in hash table
 	{
-		char* tlast = (char*)malloc(strlen);
+		char* tlast = (char*)real_malloc(strlen);
 		if (likely(tlast != NULL))
 		{
 			memcpy(tlast, str, strlen);
@@ -409,7 +409,7 @@ int add_uiobject_hash_class(void* ptr, const char* classname)
 		{
 			if (kh_value(UIOBJECTHASH, k)->name == NULL)
 			{
-				char* tlast = (char*)malloc(str_len);
+				char* tlast = (char*)real_malloc(str_len);
 				if (likely(tlast != NULL))
 				{
 					memcpy(tlast, classname, str_len);
@@ -469,7 +469,7 @@ int add_uiobject_hash_type(void* ptr, const char* type)
 		{
 			kh_value(UIOBJECTHASH, k) = newentry;
 
-			tlast = (char*)malloc(str_len);
+			tlast = (char*)real_malloc(str_len);
 			if (likely(tlast != NULL))
 			{
 				memcpy(tlast, type, str_len);
@@ -748,11 +748,11 @@ int add_to_glist(char* key, void* data)
 	elm = find_element(key);
 	if (elm == NULL)
 	{
-		elm = (element_t*)malloc(sizeof(element_t));
+		elm = (element_t*)real_malloc(sizeof(element_t));
 		if (likely(elm != NULL))
 		{
 			elm->keylen = strlen(key);
-			elm->keystr = (char*)malloc(elm->keylen + 1);
+			elm->keystr = (char*)real_malloc(elm->keylen + 1);
 			if (likely(elm->keystr != NULL))
 			{
 				strcpy(elm->keystr, key);

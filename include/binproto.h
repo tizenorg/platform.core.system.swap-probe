@@ -488,7 +488,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 /* TODO maloc/free for each event turns out expensive: think of buffer
  * allocator implementation */
 #define PREPARE_LOCAL_BUF()			\
-		char *LOCAL_BUF = (char *)malloc(MAX_LOCAL_BUF_SIZE);	\
+		char *LOCAL_BUF = (char *)(*real_malloc)(MAX_LOCAL_BUF_SIZE);	\
 		char *BUF_PTR = LOCAL_BUF;			\
 		char *RET_PTR = NULL
 
