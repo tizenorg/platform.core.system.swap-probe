@@ -201,6 +201,7 @@ pid_t fork(void)
 
 	PRINTMSG("<fork = %d>", res);
 	if (res == 0) {
+		reset_pid_tid(); /* important reset pid values */
 		if (gTraceInfo.socket.daemonSock >= 0) {
 			close(gTraceInfo.socket.daemonSock);
 			_init_();

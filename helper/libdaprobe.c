@@ -187,6 +187,12 @@ static int determineCaller(char* tracestring)
 	}
 }
 
+void reset_pid_tid()
+{
+	gPid = -1;
+	gTid = -1;
+}
+
 // return current process id
 static pid_t _getpid()
 {
