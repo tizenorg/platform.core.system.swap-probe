@@ -304,8 +304,7 @@ static void *recvThread(void __unused * data)
 				}
 				else
 				{
-					char buf[64];
-					sprintf(buf, "recv unknown message(%d)\n", log.type);
+					PRINTERR("recv unknown message(%d)", log.type);
 					continue;
 				}
 			}
@@ -317,8 +316,7 @@ static void *recvThread(void __unused * data)
 			}
 			else	// recv error
 			{
-				char buf[64];
-				sprintf(buf, "recv failed in recv thread with error(%d)\n", recvlen);
+				PRINTERR("recv failed in recv thread with error(%d)", recvlen);
 				continue;
 			}
 		}
