@@ -58,6 +58,7 @@
 
 #include "binproto.h"
 #include "daforkexec.h"
+#include "damaps.h"
 
 #define APP_INSTALL_PATH		"/opt/apps"
 #define TISEN_APP_POSTFIX			".exe"
@@ -224,8 +225,10 @@ static void *recvThread(void __unused * data)
 	fd_set readfds, workfds;
 	int maxfd = 0, rc;
 	uint64_t xtime;
+	uint32_t tmp;
 	ssize_t recvlen;
 	log_t log;
+	char *data_buf = NULL;
 	sigset_t profsigmask;
 
 	if(gTraceInfo.socket.daemonSock == -1)
@@ -277,19 +280,36 @@ static void *recvThread(void __unused * data)
 
 			if(recvlen > 0)	// recv succeed
 			{
-				if(log.length > 0)
-				{
-					if(log.length >= DA_LOG_MAX)
-						log.length = DA_LOG_MAX - 1;
-					recvlen = recv(gTraceInfo.socket.daemonSock, log.data,
-						log.length, MSG_WAITALL);
-				}
-				else
-				{
-					log.length = 0;
-				}
 
-				log.data[log.length] = '\0';
+				if (log.type == MSG_MAPS_INST_LIST) {
+					if (data_buf)
+						free(data_buf);
+
+					data_buf = malloc(log.length);
+					if (data_buf == NULL) {
+						PRINTERR("cannot allocate buf to recv msg");
+						break;
+					}
+					recvlen = recv(gTraceInfo.socket.daemonSock, data_buf,
+						log.length, MSG_WAITALL);
+
+				} else {
+
+					if(log.length > 0)
+					{
+						if(log.length >= DA_LOG_MAX)
+							log.length = DA_LOG_MAX-1;
+
+						recvlen = recv(gTraceInfo.socket.daemonSock, log.data,
+							log.length, MSG_WAITALL);
+					}
+					else
+					{
+						log.length = 0;
+					}
+
+					log.data[log.length] = '\0';
+				}
 
 				if (log.type == MSG_CAPTURE_SCREEN) {
 					captureScreen();
@@ -301,6 +321,13 @@ static void *recvThread(void __unused * data)
 					PRINTMSG("MSG_STOP");
 					application_exit();
 					break;
+				}
+				else if(log.type == MSG_MAPS_INST_LIST)
+				{
+					tmp = *((uint32_t *)data_buf);
+					PRINTMSG("MSG_MAPS_INST_LIST <%u>", tmp);
+					set_map_inst_list(&data_buf, tmp);
+					continue;
 				}
 				else
 				{
@@ -325,6 +352,10 @@ static void *recvThread(void __unused * data)
 			continue;
 		}
 	}
+
+	/* release buffer */
+	if (data_buf)
+		free(data_buf);
 
 	probeBlockEnd();
 	return NULL;
@@ -383,8 +414,6 @@ void _init_(void)
 {
 	char msg[DA_LOG_MAX];
 
-	rtdl_next_set_once(real_malloc, "malloc");
-
 	probeBlockStart();
 
 	init_exec_fork();
@@ -411,13 +440,25 @@ void _init_(void)
 	PRINTMSG(msg);
 
 	gTraceInfo.init_complete = 1;
+	maps_make();
 	probeBlockEnd();
 
 }
 
 void __attribute__((constructor)) _init_probe()
 {
+
+	rtdl_next_set_once(real_malloc, "malloc");
+
+	 /* init maps */
+	if (maps_init()!=0){
+		perror("cannot init readers semaphores\n");
+		exit(0);
+	};
+
+	/* init library */
 	_init_();
+
 	char msg[DA_LOG_MAX];
 	sprintf(msg, "<-lib construnctor");
 	PRINTMSG(msg);
@@ -728,7 +769,7 @@ int preBlockBegin(const void *caller, bool bFiltering, enum DaOptions option)
 
 	probeBlockStart();
 
-	if (is_user_call(caller)) {
+	if (maps_is_instrument_section_by_addr(caller)) {
 		probingStart();
 		return 2; /* user call */
 	} else {
