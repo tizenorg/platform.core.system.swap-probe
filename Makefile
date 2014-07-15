@@ -70,6 +70,7 @@ UTILITY_SRCS =				\
 	./helper/dacollection.c		\
 	./helper/dacapture.c		\
 	./helper/daforkexec.c		\
+	./helper/damaps.c			\
 	./custom_chart/da_chart.c	\
 
 PROBE_SRCS =	   				\
