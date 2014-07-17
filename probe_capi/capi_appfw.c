@@ -111,17 +111,25 @@ static void _dalc_app_resume(void *user_data)
 				 voidp_to_uint64(user_data));
 }
 
-static void _dalc_app_service(service_h service, void *user_data)
+#ifdef PRIVATE_CAPI_APPFW
+static void _dalc_app_control(app_control_h handle, void *user_data)
+#else /* !PRIVATE_CAPI_APPFW */
+static void _dalc_app_service(service_h handle, void *user_data)
+#endif /* PRIVATE_CAPI_APPFW */
 {
 	DECLARE_VARIABLE_STANDARD;
 
 	bfiltering = false;
 	PRE_PROBEBLOCK();
 
-	gAppCallback.service(service, user_data);
+#ifdef PRIVATE_CAPI_APPFW
+	gAppCallback.app_control(handle, user_data);
+#else /* !PRIVATE_CAPI_APPFW */
+	gAppCallback.service(handle, user_data);
+#endif /* PRIVATE_CAPI_APPFW */
 
 	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_service, 'v', 0, "dp",
-				 (unsigned int)service,
+				 (unsigned int)handle,
 				 voidp_to_uint64(user_data));
 }
 
@@ -147,7 +155,11 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 	gAppCallback.terminate = callback->terminate;
 	gAppCallback.pause = callback->pause;
 	gAppCallback.resume = callback->resume;
+#ifdef PRIVATE_CAPI_APPFW
+	gAppCallback.app_control = callback->app_control;
+#else /* !PRIVATE_CAPI_APPFW */
 	gAppCallback.service = callback->service;
+#endif /* PRIVATE_CAPI_APPFW */
 	gAppCallback.device_orientation = callback->device_orientation;
 
 	if (callback->create)
@@ -158,8 +170,13 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 		callback->pause = _dalc_app_pause;
 	if (callback->resume)
 		callback->resume = _dalc_app_resume;
+#ifdef PRIVATE_CAPI_APPFW
+	if (callback->app_control)
+		callback->app_control = _dalc_app_control;
+#else /* !PRIVATE_CAPI_APPFW */
 	if (callback->service)
 		callback->service = _dalc_app_service;
+#endif /* PRIVATE_CAPI_APPFW */
 	callback->device_orientation = _dalc_app_deviceorientationchanged;
 	probeBlockEnd();
 
@@ -171,7 +188,11 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 	callback->terminate = gAppCallback.terminate;
 	callback->pause = gAppCallback.pause;
 	callback->resume = gAppCallback.resume;
+#ifdef PRIVATE_CAPI_APPFW
+	callback->app_control = gAppCallback.app_control;
+#else /* !PRIVATE_CAPI_APPFW */
 	callback->service = gAppCallback.service;
+#endif /* PRIVATE_CAPI_APPFW */
 	callback->device_orientation = gAppCallback.device_orientation;
 	probeBlockEnd();
 
