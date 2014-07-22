@@ -31,13 +31,23 @@
 #ifndef DA_GLES20_H_
 #define DA_GLES20_H_
 
+/*
 #include <egl.h>
 #include <eglext.h>
 #include <gl2.h>
 #include <gl2ext.h>
+*/
+
+#include <Evas_GL.h>
+#include <Evas.h>
+
 #include <errno.h>
 #include "daprobe.h"
 #include "dahelper.h"
+
+/* TODO add egl header for next */
+#define EGLContext void *
+extern EGLContext eglGetCurrentContext(void);
 
 #define NO_RETURN_FORMAT "%s"
 #define NO_RETURN_VALUE 0

@@ -38,6 +38,9 @@ static char contextValue[MAX_GL_CONTEXT_VALUE_SIZE];
 static enum DaOptions _sopt = OPT_GLES;
 static __thread GLenum gl_error_external = GL_NO_ERROR;
 
+GLenum glGetError(void);
+void glGetIntegerv(GLenum pname, GLint * params);
+
 static void init_probe_gl(const char *func_name, void **func_pointer,
 		   ORIGINAL_LIBRARY id, int blockresult, int32_t vAPI_ID)
 {
