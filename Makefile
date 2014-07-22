@@ -95,7 +95,12 @@ CAPI_SRCS = 	$(COMMON_SRCS)			\
 TIZEN_SRCS =	$(COMMON_SRCS) $(CAPI_SRCS)\
 		./helper/addr-tizen.c			\
 		./helper/common_probe_init.cpp  \
-		./probe_memory/libdanew.cpp
+		./probe_memory/libdanew.cpp		\
+		./probe_graphics/da_gles20_tizen.cpp            \
+		./probe_graphics/da_gles20_native.cpp           \
+#		./probe_graphics/da_egl_tizen.cpp               \
+#		./probe_graphics/da_egl_native.cpp
+
 
 ASM_SRC = ./helper/da_call_original.S
 
