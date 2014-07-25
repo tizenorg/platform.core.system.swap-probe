@@ -38,44 +38,6 @@ static char contextValue[MAX_GL_CONTEXT_VALUE_SIZE];
 static enum DaOptions _sopt = OPT_GLES;
 static __thread GLenum gl_error_external = GL_NO_ERROR;
 
-GLenum glGetError(void);
-void glGetIntegerv(GLenum pname, GLint * params);
-
-static void init_probe_gl(const char *func_name, void **func_pointer,
-		   ORIGINAL_LIBRARY id, int blockresult, int32_t vAPI_ID)
-{
-	void *faddr;
-
-	probeBlockStart();
-	if (lib_handle[id] == ((void *)0)) {
-		lib_handle[id] = dlopen(lib_string[id], RTLD_LAZY);
-		if (lib_handle[id] == ((void *)0))
-			probe_terminate_with_err("dlopen failed", func_name, id);
-
-		probeInfo_t tempProbeInfo;
-		setProbePoint(&tempProbeInfo);
-		if (blockresult != 0) {
-			/* get max value */
-			char maxValString[64];
-			GLint maxVal[2];
-			glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVal[0]);
-			glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxVal[1]);
-			sprintf(maxValString, "%d,%d", maxVal[0], maxVal[1]);
-			PREPARE_LOCAL_BUF();
-			PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, "", 0);
-			PACK_COMMON_END('p', 1, 0, 0);
-			PACK_GL_ADD(APITYPE_INIT, 0, maxValString);
-			FLUSH_LOCAL_BUF();
-		}
-	}
-
-	faddr = dlsym(lib_handle[id], func_name);
-	if (faddr == NULL || dlerror() != NULL)
-		probe_terminate_with_err("dlopen failed", func_name, id);
-
-	memcpy(func_pointer, &faddr, sizeof(faddr));
-	probeBlockEnd();
-}
 // ==================================================================
 // A 2
 // ==================================================================

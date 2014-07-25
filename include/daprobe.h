@@ -178,14 +178,16 @@ typedef struct {
 // =========================== declare variables ===========================
 // local variable is faster than heap allocated variable
 // array variable initialization with declare is expensive than memset
+#define DECLARE_ERRNO_VARS		\
+	int olderrno = 0;		\
+	int newerrno = 0;
 
 // declare variable for standard api (not tizen related api)
 #define DECLARE_VARIABLE_STANDARD	\
 	probeInfo_t probeInfo;		\
 	int blockresult = 0;		\
 	bool bfiltering = true;		\
-	int olderrno = 0;		\
-	int newerrno = 0;		\
+	DECLARE_ERRNO_VARS;		\
 	int __attribute__((unused)) ret
 
 // declare variable for standard api (not tizen related api) without ret
@@ -230,10 +232,8 @@ typedef struct {
 			if(!FUNCTIONPOINTER) {									\
 				probeBlockStart(); 									\
 				FUNCTIONPOINTER = dlsym(RTLD_NEXT, #FUNCNAME);		\
-				if(FUNCTIONPOINTER == NULL || dlerror() != NULL) {	\
-					fprintf(stderr, "dlsym failed <%s>\n", #FUNCNAME);							\
-					exit(0);										\
-				}													\
+				if(FUNCTIONPOINTER == NULL || dlerror() != NULL)	\
+					probe_terminate_with_err("function not found", #FUNCNAME, -1);		\
 				probeBlockEnd(); 									\
 			}														\
 		} while(0)
