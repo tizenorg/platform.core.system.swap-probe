@@ -285,6 +285,20 @@ ecore_event_evas_mouse_button_down
 ecore_event_evas_mouse_button_up
 ecore_event_evas_mouse_move
 
+evas_gl_free
+evas_gl_config_free
+evas_gl_surface_destroy
+evas_gl_context_destroy
+evas_gl_new
+evas_gl_config_new
+evas_gl_surface_create
+evas_gl_context_create
+evas_gl_make_current
+evas_gl_string_query
+evas_gl_proc_address_get
+evas_gl_native_surface_get
+evas_gl_api_get
+
 accept
 accept4
 bind

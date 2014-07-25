@@ -62,7 +62,8 @@ extern EGLContext eglGetCurrentContext(void);
 
 #define PACK_GL_ADD_COMMON(GL_api_type, GL_elapsed_time)			\
 	do {	/* PACK_GL_ADD_COMMON */					\
-		BUF_PTR = pack_int64(BUF_PTR, voidp_to_uint64((void *)eglGetCurrentContext()));\
+		/*BUF_PTR = pack_int64(BUF_PTR, voidp_to_uint64((void *)eglGetCurrentContext()));*/\
+		BUF_PTR = pack_int64(BUF_PTR, voidp_to_uint64((void *)0));\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)GL_api_type);	\
 		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)GL_elapsed_time); \
 	} while (0)
@@ -155,6 +156,20 @@ extern EGLContext eglGetCurrentContext(void);
 	PACK_GL_SHADER(APITYPE, get_current_nsec() - start_nsec, CONTEXT_VAL, CONTEXT_SIZE);	\
 	FLUSH_LOCAL_BUF();							\
 	POST_PACK_PROBEBLOCK_END()
+
+#define BEFORE_EVAS_GL(FUNCNAME)					\
+	DECLARE_VARIABLE_STANDARD_NORET;				\
+	GLenum error = GL_NO_ERROR;					\
+	static methodType FUNCNAME ## p = 0;				\
+	int32_t vAPI_ID = API_ID_ ## FUNCNAME;				\
+	uint64_t start_nsec = 0;					\
+	PRE_PROBEBLOCK();						\
+	if(blockresult != 0)						\
+		start_nsec = get_current_nsec();			\
+	GET_REAL_FUNC_RTLD_NEXT(FUNCNAME)
+
+GLenum glGetError(void);
+void glGetIntegerv(GLenum pname, GLint * params);
 
 #endif /* DA_GLES20_H_ */
 
