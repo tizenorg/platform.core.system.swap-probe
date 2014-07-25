@@ -42,6 +42,7 @@
 #include "dautil.h"
 #include "da_memory.h"
 #include "binproto.h"
+#include "common_probe_init.h"
 
 static enum DaOptions _sopt = OPT_ALLOC;
 

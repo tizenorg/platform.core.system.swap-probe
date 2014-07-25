@@ -28,8 +28,11 @@
 #ifndef __COMMON_PROBE_INIT_H__
 #define __COMMON_PROBE_INIT_H__
 
-#include "dahelper.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+#include "dahelper.h"
 ////////////////////////////////////////////////////////////////////////////
 //egl init probe function
 //  params:
@@ -39,8 +42,17 @@
 //  info
 //    search original function by name
 //    function have no return becouse on error it terminates main application
-void init_probe_egl(const char *func_name, void **func_pointer, ORIGINAL_LIBRARY id);
+extern void init_probe_egl(const char *func_name, void **func_pointer,
+			   ORIGINAL_LIBRARY id);
 
-void probe_terminate_with_err(const char *msg, const char *func_name,
-			      ORIGINAL_LIBRARY id);
+extern void init_probe_gl(const char *func_name, void **func_pointer,
+			  ORIGINAL_LIBRARY id, int blockresult, int32_t vAPI_ID);
+
+extern void probe_terminate_with_err(const char *msg, const char *func_name,
+				     ORIGINAL_LIBRARY id);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+
 #endif /* __COMMON_PROBE_INIT_H__ */
