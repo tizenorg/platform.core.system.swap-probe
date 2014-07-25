@@ -32,10 +32,12 @@
 
 #include <app.h>
 #include <Ecore.h>
+#include "damaps.h"
 #include "daprobe.h"
 #include "dahelper.h"
 #include "probeinfo.h"
 #include "binproto.h"
+#include "common_probe_init.h"
 
 Ecore_Event_Handler *register_orientation_event_listener();
 void unregister_orientation_event_listener(Ecore_Event_Handler *handler);
@@ -45,25 +47,19 @@ app_event_callback_s gAppCallback;
 #define PACK_ORIGINAL_APPFWCYCLE(API_ID, RTYPE, RVAL, INPUTFORMAT, ...)		\
 	newerrno = errno;							\
 	do {									\
-		if(postBlockBegin(blockresult)) {				\
-			PREPARE_LOCAL_BUF();					\
-			PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-			PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);	\
-			FLUSH_LOCAL_BUF();					\
-			postBlockEnd();						\
-		}								\
+		PREPARE_LOCAL_BUF();					\
+		PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
+		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);	\
+		FLUSH_LOCAL_BUF();					\
 	} while(0);								\
 	errno = (newerrno != 0) ? newerrno : olderrno
-
-static enum DaOptions _sopt = OPT_ALWAYSON;
 
 static bool _dalc_app_create(void *user_data)
 {
 	bool bret = false;
-	DECLARE_VARIABLE_STANDARD;
+	DECLARE_ERRNO_VARS;
+	int blockresult = 1;
 
-	bfiltering = false;
-	PRE_PROBEBLOCK();
 	bret = gAppCallback.create(user_data);
 
 	PACK_ORIGINAL_APPFWCYCLE(API_ID__dalc_app_create, 'b', bret, "p",
@@ -74,10 +70,8 @@ static bool _dalc_app_create(void *user_data)
 
 static void _dalc_app_terminate(void *user_data)
 {
-	DECLARE_VARIABLE_STANDARD;
-
-	bfiltering = false;
-	PRE_PROBEBLOCK();
+	DECLARE_ERRNO_VARS;
+	int blockresult = 1;
 
 	gAppCallback.terminate(user_data);
 
@@ -87,10 +81,8 @@ static void _dalc_app_terminate(void *user_data)
 
 static void _dalc_app_pause(void *user_data)
 {
-	DECLARE_VARIABLE_STANDARD;
-
-	bfiltering = false;
-	PRE_PROBEBLOCK();
+	DECLARE_ERRNO_VARS;
+	int blockresult = 1;
 
 	gAppCallback.pause(user_data);
 
@@ -100,10 +92,8 @@ static void _dalc_app_pause(void *user_data)
 
 static void _dalc_app_resume(void *user_data)
 {
-	DECLARE_VARIABLE_STANDARD;
-
-	bfiltering = false;
-	PRE_PROBEBLOCK();
+	DECLARE_ERRNO_VARS;
+	int blockresult = 1;
 
 	gAppCallback.resume(user_data);
 
@@ -117,10 +107,8 @@ static void _dalc_app_control(app_control_h handle, void *user_data)
 static void _dalc_app_service(service_h handle, void *user_data)
 #endif /* PRIVATE_CAPI_APPFW */
 {
-	DECLARE_VARIABLE_STANDARD;
-
-	bfiltering = false;
-	PRE_PROBEBLOCK();
+	DECLARE_ERRNO_VARS;
+	int blockresult = 1;
 
 #ifdef PRIVATE_CAPI_APPFW
 	gAppCallback.app_control(handle, user_data);
