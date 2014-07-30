@@ -33,6 +33,7 @@ extern "C" {
 #endif
 
 #include "dahelper.h"
+#include "da_gles20.h"
 ////////////////////////////////////////////////////////////////////////////
 //egl init probe function
 //  params:
@@ -50,6 +51,24 @@ extern void init_probe_gl(const char *func_name, void **func_pointer,
 
 extern void probe_terminate_with_err(const char *msg, const char *func_name,
 				     ORIGINAL_LIBRARY id);
+
+void __init_gl_api__ (void);
+int __init_gl_functions__(void);
+
+/* links to real functions to call in probes */
+extern void (*real_glGetVertexAttribfv)(GLuint index, GLenum pname,
+					GLfloat *params);
+extern void (*real_glGetIntegerv)(GLenum pname, GLint * params);
+extern void (*real_glGetProgramiv)(GLuint program, GLenum pname, GLint *params);
+extern void (*real_glGetShaderiv)(GLuint shader, GLenum pname, GLint *params);
+extern void (*real_glGetActiveAttrib)(GLuint program, GLuint index,
+				      GLsizei bufSize, GLsizei *length,
+				      GLint *size, GLenum *type, char *name);
+extern void (*real_glGetActiveUniform)(GLuint program, GLuint index,
+				       GLsizei bufSize, GLsizei *length,
+				       GLint *size, GLenum *type, char *name);
+extern void (*real_glGetShaderSource)(GLuint shader, GLsizei bufSize,
+				      GLsizei *length, char *source);
 
 #ifdef __cplusplus
 } /* extern "C" */

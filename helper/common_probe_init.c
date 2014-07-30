@@ -32,6 +32,59 @@
 #include "common_probe_init.h"
 
 //#define EGL_TEST
+Evas_GL_API *__gl_api;
+void (*real_glGetVertexAttribfv)(GLuint index, GLenum pname, GLfloat *params);
+void (*real_glGetIntegerv)(GLenum pname, GLint * params);
+void (*real_glGetProgramiv)(GLuint program, GLenum pname, GLint *params);
+void (*real_glGetShaderiv)(GLuint shader, GLenum pname, GLint *params);
+void (*real_glGetActiveAttrib)(GLuint program, GLuint index, GLsizei bufSize,
+			       GLsizei *length, GLint *size, GLenum *type,
+			       char *name);
+void (*real_glGetActiveUniform)(GLuint program, GLuint index, GLsizei bufSize,
+				GLsizei *length, GLint *size, GLenum *type,
+				char *name);
+void (*real_glGetShaderSource)(GLuint shader, GLsizei bufSize, GLsizei *length,
+			       char *source);
+
+void set_real_func(const char *func_name, void **func_pointer,
+		   ORIGINAL_LIBRARY id)
+{
+	void *faddr;
+	void *_id;
+
+	_id = dlopen(lib_string[id], RTLD_LAZY);
+	if (_id == ((void *)0))
+		probe_terminate_with_err("dlopen failed", func_name, id);
+
+	faddr = dlsym(_id, func_name);
+	if (faddr == NULL || dlerror() != NULL)
+		probe_terminate_with_err("function not found in lib", func_name,
+					 id);
+
+	memcpy(func_pointer, &faddr, sizeof(faddr));
+}
+
+#define INIT_REAL_GL(func)\
+	do {									\
+		 set_real_func(#func, (void **)&real##_##func, LIBGLES20);	\
+	} while (0)
+
+int __init_gl_functions__(void)
+{
+	/* init gl API */
+	__init_gl_api__();
+
+	/* init real call functions */
+	INIT_REAL_GL(glGetVertexAttribfv);
+	INIT_REAL_GL(glGetProgramiv);
+	INIT_REAL_GL(glGetShaderiv);
+	INIT_REAL_GL(glGetActiveAttrib);
+	INIT_REAL_GL(glGetActiveUniform);
+	INIT_REAL_GL(glGetShaderSource);
+	INIT_REAL_GL(glGetIntegerv);
+
+	return 0;
+}
 
 void probe_terminate_with_err(const char *msg, const char *func_name,
 			      ORIGINAL_LIBRARY id)
@@ -39,7 +92,7 @@ void probe_terminate_with_err(const char *msg, const char *func_name,
 	char error_msg[1024];
 	const char *lib_name = "unknown";
 
-	if (id < NUM_ORIGINAL_LIBRARY)
+	if (id != LIB_NO && id < NUM_ORIGINAL_LIBRARY)
 		lib_name = lib_string[id];
 	sprintf(error_msg, "%s : [%s], %s", msg, func_name, lib_name);
 	perror(error_msg);
@@ -47,7 +100,6 @@ void probe_terminate_with_err(const char *msg, const char *func_name,
 	//wait for flush
 	sleep(1);
 	exit(0);
-
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -94,7 +146,6 @@ void init_probe_egl(const char *func_name, void **func_pointer,
 }
 #endif
 
-
 void init_probe_gl(const char *func_name, void **func_pointer,
 		   ORIGINAL_LIBRARY id, int blockresult, int32_t vAPI_ID)
 {
@@ -105,15 +156,17 @@ void init_probe_gl(const char *func_name, void **func_pointer,
 	if (lib_handle[id] == ((void *)0)) {
 		lib_handle[id] = dlopen(lib_string[id], RTLD_LAZY);
 		if (lib_handle[id] == ((void *)0))
-			probe_terminate_with_err("dlopen failed", func_name, id);
+			probe_terminate_with_err("dlopen failed", func_name,
+						 id);
 
 		setProbePoint(&tempProbeInfo);
 		if (blockresult != 0) {
 			/* get max value */
 			char maxValString[64];
 			GLint maxVal[2];
-			glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVal[0]);
-			glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxVal[1]);
+			real_glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVal[0]);
+			real_glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
+					   &maxVal[1]);
 			sprintf(maxValString, "%d,%d", maxVal[0], maxVal[1]);
 			PREPARE_LOCAL_BUF();
 			PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, "", 0);
