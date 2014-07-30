@@ -142,6 +142,7 @@ extern int app_efl_main_flg;
 
 typedef enum
 {
+	LIB_NO = -1,
 	LIBC = 0,
 	LIBPTHREAD = 1,
 	LIBELEMENTARY = 2,
