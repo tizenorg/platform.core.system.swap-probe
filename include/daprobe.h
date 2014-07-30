@@ -233,7 +233,7 @@ typedef struct {
 				probeBlockStart(); 									\
 				FUNCTIONPOINTER = dlsym(RTLD_NEXT, #FUNCNAME);		\
 				if(FUNCTIONPOINTER == NULL || dlerror() != NULL)	\
-					probe_terminate_with_err("function not found", #FUNCNAME, -1);		\
+					probe_terminate_with_err("function not found", #FUNCNAME, LIB_NO);		\
 				probeBlockEnd(); 									\
 			}														\
 		} while(0)
