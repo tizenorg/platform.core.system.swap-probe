@@ -85,7 +85,7 @@ extern EGLContext eglGetCurrentContext(void);
 					      GL_shader_size, min);		\
 	} while (0)
 
-#define BEFORE(FUNCNAME)						\
+#define BEFORE_GL_ORIG(FUNCNAME)					\
 	DECLARE_VARIABLE_STANDARD_NORET;				\
 	GLenum error = GL_NO_ERROR;					\
 	static methodType FUNCNAME ## p = 0;				\
@@ -97,6 +97,19 @@ extern EGLContext eglGetCurrentContext(void);
 	if(!FUNCNAME##p) {						\
 		init_probe_gl(#FUNCNAME, (void **)&FUNCNAME##p,		\
 			      LIBGLES20, blockresult, vAPI_ID);		\
+	}
+
+#define BEFORE_GL_API(FUNCNAME)						\
+	DECLARE_VARIABLE_STANDARD_NORET;				\
+	GLenum error = GL_NO_ERROR;					\
+	int32_t vAPI_ID = API_ID_ ## FUNCNAME;				\
+	uint64_t start_nsec = 0;					\
+	PRE_PROBEBLOCK();						\
+	if(blockresult != 0)						\
+		start_nsec = get_current_nsec();			\
+	if(!__gl_api->FUNCNAME) {						\
+		probe_terminate_with_err("api not initialized",		\
+					 #FUNCNAME, LIBGLES20);		\
 	}
 
 #define INIT_LIB_ID_STR(LIB_ID, LIB_STR, KEYS)							\
@@ -171,6 +184,9 @@ extern EGLContext eglGetCurrentContext(void);
 
 GLenum glGetError(void);
 void glGetIntegerv(GLenum pname, GLint * params);
+extern Evas_GL_API *__gl_api;
+extern void save_orig_gl_api_list(Evas_GL_API *api);
+extern void change_gl_api_list(Evas_GL_API *api);
 
 #endif /* DA_GLES20_H_ */
 

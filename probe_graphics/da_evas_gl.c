@@ -75,7 +75,6 @@ void evas_gl_context_destroy(Evas_GL *evas_gl, Evas_GL_Context *ctx)
 	      evas_gl, ctx);
 }
 
-
 Evas_GL *evas_gl_new(Evas *e)
 {
 	typedef Evas_GL *(*methodType)(Evas *e);
@@ -114,7 +113,8 @@ Evas_GL_Surface *evas_gl_surface_create(Evas_GL *evas_gl, Evas_GL_Config *cfg,
 Evas_GL_Context *evas_gl_context_create(Evas_GL *evas_gl,
 					Evas_GL_Context *share_ctx)
 {
-	typedef Evas_GL_Context *(*methodType)(Evas_GL *evas_gl, Evas_GL_Context *share_ctx);
+	typedef Evas_GL_Context *(*methodType)(Evas_GL *evas_gl,
+					       Evas_GL_Context *share_ctx);
 	BEFORE_EVAS_GL(evas_gl_context_create);
 	Evas_GL_Context *res = evas_gl_context_createp(evas_gl, share_ctx);
 	GL_GET_ERROR();
@@ -177,9 +177,12 @@ Evas_GL_API *evas_gl_api_get(Evas_GL *evas_gl)
 	BEFORE_EVAS_GL(evas_gl_api_get);
 	Evas_GL_API *res = evas_gl_api_getp(evas_gl);
 
+	/* save original api functions and rewrite it by probes */
+	save_orig_gl_api_list(res);
+	res = change_gl_api_list(res);
+
 	GL_GET_ERROR();
 	AFTER('p', res, APITYPE_CONTEXT, "", "p",
 	      evas_gl);
 	return res;
 }
-
