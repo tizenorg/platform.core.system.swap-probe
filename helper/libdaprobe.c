@@ -59,6 +59,7 @@
 #include "binproto.h"
 #include "daforkexec.h"
 #include "damaps.h"
+#include "common_probe_init.h"
 
 #define APP_INSTALL_PATH		"/opt/apps"
 #define TISEN_APP_POSTFIX			".exe"
@@ -458,6 +459,9 @@ void __attribute__((constructor)) _init_probe()
 
 	/* init library */
 	_init_();
+
+	/* init gl functions */
+	__init_gl_functions__();
 
 	char msg[DA_LOG_MAX];
 	sprintf(msg, "<-lib construnctor");
