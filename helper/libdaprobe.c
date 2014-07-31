@@ -98,6 +98,8 @@ static void _configure(char* configstr)
 }
 
 // create socket to daemon and connect
+#define MSG_CONFIG_RECV 0x01
+#define MSG_MAPS_INST_LIST_RECV 0x02
 static int createSocket(void)
 {
 	ssize_t recvlen;
@@ -117,40 +119,58 @@ static int createSocket(void)
 			    (struct sockaddr *)&clientAddr, clientLen) >= 0)
 		{
 			char buf[64];
+			int recved = 0;
 			/* send pid */
 			sprintf(buf, "%d|%llu", getpid(),
 				gTraceInfo.app.startTime);
 			print_log_str(MSG_PID, buf);
 
-			/* recv initial configuration value */
-			recvlen = recv(gTraceInfo.socket.daemonSock, &log,
-				       sizeof(log.type) + sizeof(log.length),
-				       MSG_WAITALL);
+			/* we need recv this messages right now! */
+			while (((recved & MSG_CONFIG_RECV) == 0) &&
+			       ((recved & MSG_MAPS_INST_LIST_RECV) == 0))
+			{
+				PRINTMSG("wait incoming message");
+				/* recv header */
+				recvlen = recv(gTraceInfo.socket.daemonSock, &log,
+					       sizeof(log.type) + sizeof(log.length),
+					       MSG_WAITALL);
 
-			if (recvlen > 0) {/* recv succeed */
-				if (log.length > 0) {
-					if(log.length >= DA_LOG_MAX)
-						log.length = DA_LOG_MAX - 1;
-					recvlen = recv(gTraceInfo.socket.daemonSock, log.data,
+				if (recvlen > 0) {/* recv succeed */
+					char *data_buf = NULL;
+
+					data_buf = real_malloc(log.length);
+
+					if (data_buf == NULL) {
+						PRINTERR("cannot allocate buf to recv msg");
+						break;
+					}
+
+					recvlen = recv(gTraceInfo.socket.daemonSock, data_buf,
 						       log.length, MSG_WAITALL);
+
+					if (log.type == MSG_CONFIG) {
+						PRINTMSG("MSG_CONFIG");
+						_configure(data_buf);
+						recved |= MSG_CONFIG_RECV;
+					} else if(log.type ==  MSG_MAPS_INST_LIST) {
+						PRINTMSG("MSG_MAPS_INST_LIST <%u>", *((uint32_t *)data_buf));
+						set_map_inst_list(&data_buf, *((uint32_t *)data_buf));
+						recved |= MSG_MAPS_INST_LIST;
+					} else {
+						// unexpected case
+						PRINTERR("unknown message! %d", log.type);
+					}
+
+					if (data_buf != NULL)
+						free(data_buf);
+
+				} else if (recvlen < 0) {
+					sprintf(buf, "recv failed in socket creation with error(%d)\n", recvlen);
 				} else {
-					log.length = 0;
+					/* closed by other peer */
+					ret = -1;
 				}
 
-				log.data[log.length] = '\0';
-
-				if(log.type == MSG_CONFIG)
-				{
-					_configure(log.data);
-				}
-				else
-				{
-					// unexpected case
-				}
-			} else if (recvlen < 0) {
-				sprintf(buf, "recv failed in socket creation with error(%d)\n", recvlen);
-			} else {
-				/* closed by other peer */
 			}
 
 			PRINTMSG("createSocket connect() success\n");
@@ -163,6 +183,7 @@ static int createSocket(void)
 		ret = -1;
 	}
 
+	PRINTMSG("socket create done with result = %d", ret);
 	return ret;
 }
 
@@ -281,11 +302,8 @@ static void *recvThread(void __unused * data)
 			if(recvlen > 0)	// recv succeed
 			{
 
-				if (log.type == MSG_MAPS_INST_LIST) {
-					if (data_buf)
-						free(data_buf);
-
-					data_buf = malloc(log.length);
+				if(log.length > 0) {
+					data_buf = real_malloc(log.length);
 					if (data_buf == NULL) {
 						PRINTERR("cannot allocate buf to recv msg");
 						break;
@@ -293,47 +311,38 @@ static void *recvThread(void __unused * data)
 					recvlen = recv(gTraceInfo.socket.daemonSock, data_buf,
 						log.length, MSG_WAITALL);
 
-				} else {
-
-					if(log.length > 0)
-					{
-						if(log.length >= DA_LOG_MAX)
-							log.length = DA_LOG_MAX-1;
-
-						recvlen = recv(gTraceInfo.socket.daemonSock, log.data,
-							log.length, MSG_WAITALL);
-					}
-					else
-					{
-						log.length = 0;
-					}
-
-					log.data[log.length] = '\0';
 				}
 
 				if (log.type == MSG_CAPTURE_SCREEN) {
 					captureScreen();
 				} else if (log.type == MSG_CONFIG) {
-					_configure(log.data);
-				}
-				else if(log.type == MSG_STOP)
-				{
+					_configure(data_buf);
+				} else if(log.type == MSG_STOP) {
 					PRINTMSG("MSG_STOP");
+					if (data_buf) {
+						free(data_buf);
+						data_buf = NULL;
+					}
 					application_exit();
 					break;
+				} else if(log.type == MSG_MAPS_INST_LIST) {
+					if(log.length > 0) {
+						tmp = *((uint32_t *)data_buf);
+						PRINTMSG("MSG_MAPS_INST_LIST <%u>", tmp);
+						set_map_inst_list(&data_buf, tmp);
+						continue;
+					} else {
+						PRINTERR("WRONG MSG_MAPS_INST_LIST");
+					}
+				} else {
+					PRINTERR("recv unknown message. id = (%d)", log.type);
 				}
-				else if(log.type == MSG_MAPS_INST_LIST)
-				{
-					tmp = *((uint32_t *)data_buf);
-					PRINTMSG("MSG_MAPS_INST_LIST <%u>", tmp);
-					set_map_inst_list(&data_buf, tmp);
-					continue;
+
+				if (data_buf) {
+					free(data_buf);
+					data_buf = NULL;
 				}
-				else
-				{
-					PRINTERR("recv unknown message(%d)", log.type);
-					continue;
-				}
+
 			}
 			else if(recvlen == 0)	// closed by other peer
 			{
