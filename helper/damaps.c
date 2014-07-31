@@ -469,6 +469,8 @@ static inline void maps_writer_unlock()
 	pthread_mutex_unlock(&maps_lock);
 }
 
+// WARNING! this function use maps_set and set it to NULL
+// so first param must be malloced and do not free maps_set after call
 int set_map_inst_list(char **maps_set, uint32_t maps_count)
 {
 	int res = 0;
@@ -490,11 +492,11 @@ int set_map_inst_list(char **maps_set, uint32_t maps_count)
 
 	map_inst_list = real_malloc(sizeof(*map_inst_list) * maps_count);
 	if (maps_set != NULL && *maps_set != NULL)
-		map_inst_list_set = *maps_set + sizeof(maps_count);
+		map_inst_list_set = *maps_set;
 	map_inst_count = maps_count;
 
 	/* add library mapping names */
-	p = map_inst_list_set;
+	p = map_inst_list_set + sizeof(maps_count);
 	for (i = 0; i < maps_count; i++) {
 		map_inst_list[i] = p;
 		p += strlen(p) + 1;
