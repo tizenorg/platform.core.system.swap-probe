@@ -71,7 +71,8 @@ int open(const char* path, int oflag, ...)
 	char buffer[PATH_MAX];
 	int mode = 0;
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(open, LIBC);
+	BEFORE_ORIGINAL_FILE(open, LIBC);
+	_filepath = (char*)path;
 
 	if(oflag & O_CREAT)
 	{
@@ -97,7 +98,8 @@ int openat(int fd, const char* path, int oflag, ...)
 	char buffer[PATH_MAX];
 	int mode = 0;
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(openat, LIBC);
+	BEFORE_ORIGINAL_FILE(openat, LIBC);
+	_filepath = (char*)path;
 
 	if(oflag & O_CREAT)
 	{
@@ -122,7 +124,8 @@ int creat(const char* path, mode_t mode)
 	static int (*creatp)(const char* path, mode_t mode);
 	char buffer[PATH_MAX];
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(creat, LIBC);
+	BEFORE_ORIGINAL_FILE(creat, LIBC);
+	_filepath = (char*)path;
 
 	ret = creatp(path, mode);
 
@@ -449,7 +452,7 @@ int dup(int fd)
 {
 	static int (*dupp)(int fd);
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(dup, LIBC);
+	BEFORE_ORIGINAL_FILE(dup, LIBC);
 
 	ret = dupp(fd);
 
@@ -463,7 +466,7 @@ int dup2(int fd, int fd2)
 {
 	static int (*dup2p)(int fd, int fd2);
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(dup2, LIBC);
+	BEFORE_ORIGINAL_FILE(dup2, LIBC);
 
 	ret = dup2p(fd, fd2);
 
