@@ -381,7 +381,8 @@ static int update_is_instrument_lib_attr_nolock()
 	for (i = 0; i < map_inst_count; i++) {
 		map = get_map_by_filename(map_inst_list[i]);
 		if (map) {
-			PRINTMSG("set 1!!! = %s", map->filename);
+			PRINTMSG("set 1!!! = %s [%p:%p]", map->filename,
+				  map->addr, map->endaddr);
 			map->is_instrument = 1;
 		}
 	}
@@ -596,7 +597,8 @@ int maps_is_instrument_section_by_addr(const void *addr)
 	if (ret == -1) {
 		PRINTMSG("========> hz addr %p. remap", addr);
 		maps_make();
-		if (maps_is_instrument_section_by_addr_no_remap(addr) == -1) {
+		ret = maps_is_instrument_section_by_addr_no_remap(addr);
+		if (ret == -1) {
 			print_list();
 			PRINTERR("!!!!unknown addr %p", addr);
 			get_map_by_addr((void *)addr);
