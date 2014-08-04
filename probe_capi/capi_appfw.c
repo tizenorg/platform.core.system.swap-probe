@@ -36,15 +36,7 @@
 #include "dahelper.h"
 #include "probeinfo.h"
 #include "binproto.h"
-
-/* FIXME think of a better solution for conditional build. */
-#ifndef PRIVATE_CAPI_APPFW
-
-#if !defined(service_h)
-#define PRIVATE_CAPI_APPFW
-#endif /* !service_h */
-
-#endif /* !PRIVATE_CAPI_APPFW */
+#include "api_config.h"
 
 Ecore_Event_Handler *register_orientation_event_listener();
 void unregister_orientation_event_listener(Ecore_Event_Handler *handler);
