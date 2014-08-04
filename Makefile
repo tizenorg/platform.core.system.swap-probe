@@ -128,10 +128,14 @@ dummy:	headers $(DUMMY_TARGET)
 $(ASM_OBJ): $(ASM_SRC)
 	$(CC) $(ASMFLAG) -c $^ -o $@
 
+GENERATED_CONFIG = include/api_config.h
 GENERATED_HEADERS = include/api_id_mapping.h include/api_id_list.h include/id_list
-headers: $(GENERATED_HEADERS)
+headers: $(GENERATED_CONFIG) $(GENERATED_HEADERS)
 rmheaders:
-	rm -f $(GENERATED_HEADERS)
+	rm -f $(GENERATED_CONFIG) $(GENERATED_HEADERS)
+
+$(GENERATED_CONFIG): ./scripts/gen_api_config.sh
+	sh $< > $@
 
 include/api_id_mapping.h: ./scripts/gen_api_id_mapping_header.awk
 include/api_id_list.h: ./scripts/gen_api_id_mapping_header_list.awk
