@@ -789,7 +789,7 @@ int preBlockBegin(const void *caller, bool bFiltering, enum DaOptions option)
 
 	probeBlockStart();
 
-	if (maps_is_instrument_section_by_addr(caller)) {
+	if (maps_is_instrument_section_by_addr(caller) == 1) {
 		probingStart();
 		return 2; /* user call */
 	} else {
