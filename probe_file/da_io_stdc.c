@@ -63,7 +63,7 @@ FILE* fopen(const char* filename, const char* mode)
 	char buffer[PATH_MAX];
 	FILE* fret;
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(fopen, LIBC);
+	BEFORE_ORIGINAL_FILE(fopen, LIBC);
 
 	fret = fopenp(filename, mode);
 
@@ -83,7 +83,7 @@ FILE* freopen(const char * filename, const char * mode, FILE * stream)
 	char buffer[PATH_MAX];
  	FILE* fret;
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(freopen, LIBC);
+	BEFORE_ORIGINAL_FILE(freopen, LIBC);
 
 	fret = freopenp(filename, mode, stream);
 
@@ -101,7 +101,7 @@ FILE* fdopen(int fildes, const char *mode)
 	static FILE* (*fdopenp)(int fildes, const char *mode);
  	FILE* fret;
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(fdopen, LIBC);
+	BEFORE_ORIGINAL_FILE(fdopen, LIBC);
 
 	fret = fdopenp(fildes, mode);
 
@@ -130,7 +130,6 @@ int fclose(FILE* stream)
 
 	GET_REAL_FUNC(fclose, LIBC);
 
-	bfiltering = false;
 	PRE_PROBEBLOCK_BEGIN();
 	GET_FD_FROM_FILEP(stream);
 	if(_fd != -1) {
@@ -157,7 +156,7 @@ FILE * tmpfile ( void )
 	static FILE* (*tmpfilep) ( void );
 	FILE* fret;
 
-	BEFORE_ORIGINAL_FILE_NOFILTER(tmpfile, LIBC);
+	BEFORE_ORIGINAL_FILE(tmpfile, LIBC);
 	_filepath = "<temp file>";
 	fret = tmpfilep();
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_tmpfile,
