@@ -1,0 +1,7 @@
+#filename capi_capture.c
+#lib "libelementary.so.1"
+#feature ---
+elm_win_add
+elm_controlbar_add
+elm_naviframe_add
+elm_pager_add

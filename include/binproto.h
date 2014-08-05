@@ -70,10 +70,6 @@
 #define MAX_LOCAL_BUF_SIZE (MAX_SHADER_LEN + ADD_LOCAL_BUF_SIZE)
 #define LOCAL_BUF msg_buf
 
-// TODO: remove this copy-paste
-#define CALLER_ADDRESS							\
-	((void*) __builtin_extract_return_addr(__builtin_return_address(0)))
-
 static inline uint64_t voidp_to_uint64(const void *p)
 {
 	return (uint64_t)(uintptr_t)p;
@@ -355,7 +351,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	do {	/* PACK_COMMON_END */						\
 		BUF_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret); /* return val */ \
 		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);	/* errno */	\
-		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);	/* internal call*/	\
+		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)CALL_TYPE);	/* internal call*/	\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); /*caller addr*/\
 		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
 		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
@@ -515,16 +511,15 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 #define POST_PACK_PROBEBLOCK_BEGIN()					\
 	newerrno = errno;						\
-	if(postBlockBegin(blockresult)) {
+	do {
 
 #define POST_PACK_PROBEBLOCK_END() 					\
 		postBlockEnd();						\
-	}								\
+	} while (0);							\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
 #define POST_PACK_PROBEBLOCK_ADD_END()					\
-		preBlockEnd();						\
-	}								\
+	} while(0);								\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
 
@@ -549,7 +544,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 /* 	return 0; */
 /* } */
 
-extern int _init_(void);
+extern void _init_(void);
 extern void _uninit_(void);
 
 #endif /* __BIN_PROTO_H__ */

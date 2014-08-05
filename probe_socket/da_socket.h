@@ -78,11 +78,11 @@
 	POST_PROBEBLOCK_FUNC_START_BEGIN(LC_SOCKET, RTYPE, RVAL, INPUTFORMAT, __VA_ARGS__);				\
 	POST_PROBEBLOCK_MIDDLE_LIBC_SOCK(OBJECTPTR, FDVALUE, APITYPE, TOTAL_INFO );					\
 	FLUSH_LOCAL_BUF();												\
-	PRE_PROBEBLOCK_END()
+	POST_PROBEBLOCK_FUNC_START_END()
 
 #define POST_PROBEBLOCK_FUNC_START_BEGIN(LCTYPE, RTYPE, RETVALUE, INPUTFORMAT, ...)	\
 		newerrno = errno;														\
-			if(postBlockBegin(blockresult)) {										\
+			do { \
 				PREPARE_LOCAL_BUF(); \
 				PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
 				PACK_COMMON_END(RTYPE, RETVALUE, errno, blockresult)
@@ -96,7 +96,7 @@
 
 #define POST_PROBEBLOCK_FUNC_END_BEGIN(LCTYPE, RTYPE, RETVALUE, INPUTFORMAT, ...)	\
 	newerrno = errno;														\
-	if(postBlockBegin(blockresult)) {										\
+	do {														\
 		setProbePoint(&probeInfo);										\
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
@@ -136,7 +136,7 @@
 	POST_PROBEBLOCK_END()
 
 #define POST_PROBEBLOCK_TIZEN_BEGIN(APINAME, LCTYPE, RTYPE, RETVALUE, INPUTFORMAT, ...)	\
-	if(postBlockBegin(blockresult)) {										\
+	do { \
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
 		PACK_COMMON_END(RTYPE, RETVALUE, errno, blockresult)
@@ -147,13 +147,13 @@
 			probeInfo.currentTime, probeInfo.pID, probeInfo.tID)
 
 #define POST_PROBEBLOCK_TIZEN_FUNC_START_BEGIN(APINAME, LCTYPE, RTYPE, RETVALUE, INPUTFORMAT, ...)	\
-			if(postBlockBegin(blockresult)) {										\
+			do { \
 				PREPARE_LOCAL_BUF(); \
 				PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
 				PACK_COMMON_END(RTYPE, RETVALUE, errno, blockresult)
 
 #define POST_PROBEBLOCK_TIZEN_FUNC_END_BEGIN(APINAME, LCTYPE, RTYPE, RETVALUE, INPUTFORMAT, ...)	\
-	if(postBlockBegin(blockresult)) {										\
+	do { \
 		setProbePoint(&probeInfo);										\
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\

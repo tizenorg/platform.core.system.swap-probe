@@ -28,6 +28,5 @@
 
 
 extern int maps_init();
-extern int maps_make();
-extern int maps_is_instrument_section_by_addr(const void *addr);
+extern void maps_make();
 extern int set_map_inst_list(char **maps_set, uint32_t maps_count);
