@@ -1,0 +1,13 @@
+#filename  daforkexec.c
+#lib "???"
+execl
+execlp
+execle
+execv
+execvp
+execve
+execvpe
+
+#filename  dacapture.c
+#lib "---"
+captureScreen

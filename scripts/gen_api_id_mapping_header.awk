@@ -4,21 +4,23 @@ BEGIN {
 	print "/*"
 	print " * this file genereted by <swap-probe> project with cmd <make headers>"
 	print " */"
-	print
+	print ""
 	print "#ifndef __API_ID_MAP__"
 	print "#define __API_ID_MAP__"
-	print
+	print ""
 	print "#ifdef __cplusplus"
 	print "extern \"C\"{"
 	print "#endif"
-	print
+	print ""
 	api_id = 1
 	macro_prefix = "API_ID_"
 } {
-	if ( $0 == "" ) {
-		print
+	orig = $0
+	if ( orig == "" ) {
+		print ""
+	} else if ( substr(orig,1,1) == "#" ) {
+		printf "/* %s */\n", orig
 	} else {
-		orig = $0
 		def = orig
 		split(def, splited, "###")
 		def = splited[1]
@@ -29,10 +31,10 @@ BEGIN {
 	}
 }
 END {
-	print
+	print ""
 	print "#ifdef __cplusplus"
 	print "}"
 	print "#endif"
-	print
+	print ""
 	print "#endif /* __API_ID_MAP__ */"
 }
