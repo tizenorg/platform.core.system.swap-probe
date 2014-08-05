@@ -9,17 +9,19 @@ BEGIN {
 	print "/*"
 	print " * this file genereted by <swap-probe> project with cmd <make headers>"
 	print " */"
-	print
+	print ""
 	print "#ifdef __cplusplus"
 	print "extern \"C\"{"
 	print "#endif"
-	print
+	print ""
 	print "const char *api_id_list[] = {"
 } {
-	if ( $0 == "" ) {
-		print
+	orig = $0
+	if ( orig == "" ) {
+		print ""
+	} else if ( substr(orig,1,1) == "#" ) {
+		printf "/* %s */\n", orig
 	} else {
-		orig = $0
 		def = orig
 		split(def, splited, "###")
 		if (splited[2] != ""){
@@ -32,10 +34,10 @@ BEGIN {
 }
 
 END {
-	print
+	print ""
 	print "#ifdef __cplusplus"
 	print "}"
 	print "#endif"
-	print
+	print ""
 	print "};"
 }
