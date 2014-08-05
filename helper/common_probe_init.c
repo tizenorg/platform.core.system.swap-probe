@@ -144,7 +144,6 @@ void init_probe_egl(const char *func_name, void **func_pointer,
 {
 	void *faddr = 0;
 
-	(gProbeBlockCount++);
 	if (lib_handle[id] == ((void *)0)) {
 		lib_handle[id] = dlopen(lib_string[id],
 					RTLD_LAZY | RTLD_GLOBAL);
@@ -156,7 +155,6 @@ void init_probe_egl(const char *func_name, void **func_pointer,
 	if (faddr == NULL || dlerror() != NULL)
 		probe_terminate_with_err("dlsym failed", func_name, id);
 	memcpy(func_pointer, &faddr, sizeof(faddr));
-	(gProbeBlockCount--);
 }
 #endif
 
@@ -166,7 +164,6 @@ void init_probe_gl(const char *func_name, void **func_pointer,
 	void *faddr;
 	probeInfo_t tempProbeInfo;
 
-	probeBlockStart();
 	if (lib_handle[id] == ((void *)0)) {
 		lib_handle[id] = dlopen(lib_string[id], RTLD_LAZY);
 		if (lib_handle[id] == ((void *)0))
@@ -196,5 +193,4 @@ void init_probe_gl(const char *func_name, void **func_pointer,
 					 id);
 
 	memcpy(func_pointer, &faddr, sizeof(faddr));
-	probeBlockEnd();
 }

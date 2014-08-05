@@ -1,4 +1,5 @@
 INSTALLDIR = usr/lib
+HEADER_INSTALLDIR = /usr/local/include/
 
 ## Since include directives do not impose additional dependencies, we can make
 ## Makefile more clear, simply putting all includes we ever need in single
@@ -27,7 +28,7 @@ INCLUDE_CPPFLAGS =				\
 		-I/usr/include/vconf		\
 		-I/usr/lib/dbus-1.0/include	\
 
-WARN_CFLAGS = 				\
+WARN_CFLAGS = -g			\
 		-Wall			\
 		-funwind-tables		\
 		-fomit-frame-pointer	\
@@ -126,21 +127,33 @@ CXXFLAGS = $(WARN_CFLAGS) -fPIC
 TIZEN_CPPFLAGS = -DTIZENAPP $(SWAP_PROBE_DEFS)
 TIZEN_LDFLAGS = -lstdc++
 
-all:	capi tizen dummy
-tizen:	headers $(TIZEN_TARGET)
-dummy:	headers $(DUMMY_TARGET)
+all:		capi tizen dummy
+tizen:		headers $(TIZEN_TARGET)
+dummy:		headers $(DUMMY_TARGET)
 
 $(ASM_OBJ): $(ASM_SRC)
 	$(CC) $(ASMFLAG) -c $^ -o $@
 
+API_NAME_LIST = scripts/api_names_all.txt
 GENERATED_CONFIG = include/api_config.h
 GENERATED_HEADERS = include/api_id_mapping.h include/api_id_list.h include/id_list
-headers: $(GENERATED_CONFIG) $(GENERATED_HEADERS)
+SOURCE_HEADERS = include/api_ld_mapping.h
+
+headers: $(API_NAME_LIST) $(GENERATED_CONFIG) $(GENERATED_HEADERS)
 rmheaders:
-	rm -f $(GENERATED_CONFIG) $(GENERATED_HEADERS)
+	rm -f $(API_NAME_LIST) $(GENERATED_CONFIG) $(GENERATED_HEADERS) $(SOURCE_HEADERS)
 
 $(GENERATED_CONFIG): ./scripts/gen_api_config.sh
 	sh $< > $@
+
+$(API_NAME_LIST):
+	if [ -f $@ ]; then rm $@;fi
+	cat */api_names.txt >> $@
+
+$(SOURCE_HEADERS): $(API_NAME_LIST)
+$(SOURCE_HEADERS): ./scripts/gen_maps_header.sh
+	bash $< $(API_NAME_LIST) $(TIZEN_TARGET) $(INSTALLDIR) > $@
+	cat $@
 
 include/api_id_mapping.h: ./scripts/gen_api_id_mapping_header.awk
 include/api_id_list.h: ./scripts/gen_api_id_mapping_header_list.awk
@@ -148,10 +161,8 @@ include/id_list: ./scripts/gen_api_id_mapping_list.awk
 
 da_api_map: $(GENERATED_HEADERS)
 
-$(GENERATED_HEADERS): APINAMES=scripts/api_names.txt
-$(GENERATED_HEADERS): ./scripts/api_names.txt
 $(GENERATED_HEADERS):
-	awk -f $< < $(APINAMES) > $@
+	awk -f $< < $(API_NAME_LIST) > $@
 
 $(TIZEN_TARGET): LDFLAGS+=$(TIZEN_LDFLAGS)
 $(TIZEN_TARGET): CPPFLAGS+=$(TIZEN_CPPFLAGS)
@@ -162,12 +173,24 @@ $(TIZEN_TARGET): $(TIZEN_OBJS)
 $(DUMMY_TARGET): $(DUMMY_OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
-install: all
+ldheader:	$(SOURCE_HEADERS)
+
+install: install_da install_ld
+
+install_da: all
 	[ -d "$(DESTDIR)/$(INSTALLDIR)" ] || mkdir -p $(DESTDIR)/$(INSTALLDIR)
 	install $(TIZEN_TARGET) $(DUMMY_TARGET) $(DESTDIR)/$(INSTALLDIR)/
 	install -m 644 include/id_list $(DESTDIR)/$(INSTALLDIR)/da_api_map
 
-clean:
-	rm -f *.so *.o $(GENERATED_HEADERS)
 
-.PHONY: all capi tizen dummy clean install headers
+install_ld: ldheader # var_addr
+	install -m 644 include/ld_preload_probes.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_probes.h
+	install -m 644 include/ld_preload_types.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_types.h
+	install -m 644 include/ld_preload_probe_lib.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_probe_lib.h
+
+
+
+clean:
+	rm -f *.so *.o $(GENERATED_HEADERS) $(API_NAME_LIST) $(SOURCE_HEADERS)
+
+.PHONY: all capi tizen dummy clean install_ld install_da install headers

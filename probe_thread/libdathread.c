@@ -44,8 +44,6 @@ typedef struct thread_routine_call_t {
 	void *argument;
 } thread_routine_call;
 
-static enum DaOptions _sopt = OPT_THREAD;
-
 // called when pthread_exit, pthread_cancel is called
 void _da_cleanup_handler(void *data)
 {
@@ -141,12 +139,10 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 
 	if(blockresult)
 	{
-		probeBlockStart();
 		thread_routine_call *ptrc =
 			(thread_routine_call *) malloc(sizeof(thread_routine_call));
 		ptrc->thread_routine = start_routine;
 		ptrc->argument = arg;
-		probeBlockEnd();
 
 		ret = pthread_createp(thread, attr, _da_ThreadProc, (void *) ptrc);
 	}
@@ -189,23 +185,21 @@ int pthread_join(pthread_t thread, void **retval)
 
 	// send WAIT_END log
 	newerrno = errno;
-	if(postBlockBegin(blockresult)) {
-		setProbePoint(&probeInfo);
+	setProbePoint(&probeInfo);
 
-		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
-				  API_ID_pthread_join,
-				  "xp",
-				  (uint64_t)(thread),
-				  voidp_to_uint64(retval));
-		PACK_COMMON_END('d', ret, errno, blockresult);
-		PACK_THREAD(thread, THREAD_PTHREAD, THREAD_API_WAIT_END, THREAD_CLASS_BLANK);
-		FLUSH_LOCAL_BUF();
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
+			  API_ID_pthread_join,
+			  "xp",
+			  (uint64_t)(thread),
+			  voidp_to_uint64(retval));
+	PACK_COMMON_END('d', ret, errno, blockresult);
+	PACK_THREAD(thread, THREAD_PTHREAD, THREAD_API_WAIT_END, THREAD_CLASS_BLANK);
+	FLUSH_LOCAL_BUF();
 
-		postBlockEnd();
-	}
+	postBlockEnd();
 
-    errno = (newerrno != 0) ? newerrno : olderrno;
+	errno = (newerrno != 0) ? newerrno : olderrno;
 
 	return ret;
 }

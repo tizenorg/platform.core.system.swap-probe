@@ -60,7 +60,7 @@ static bool _dalc_app_create(void *user_data)
 {
 	bool bret = false;
 	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+//	int blockresult = 1;
 
 	bret = gAppCallback.create(user_data);
 
@@ -73,7 +73,7 @@ static bool _dalc_app_create(void *user_data)
 static void _dalc_app_terminate(void *user_data)
 {
 	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+//	int blockresult = 1;
 
 	gAppCallback.terminate(user_data);
 
@@ -84,7 +84,7 @@ static void _dalc_app_terminate(void *user_data)
 static void _dalc_app_pause(void *user_data)
 {
 	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+//	int blockresult = 1;
 
 	gAppCallback.pause(user_data);
 
@@ -95,7 +95,7 @@ static void _dalc_app_pause(void *user_data)
 static void _dalc_app_resume(void *user_data)
 {
 	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+//	int blockresult = 1;
 
 	gAppCallback.resume(user_data);
 
@@ -110,7 +110,7 @@ static void _dalc_app_service(service_h handle, void *user_data)
 #endif /* PRIVATE_CAPI_APPFW */
 {
 	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+//	int blockresult = 1;
 
 #ifdef PRIVATE_CAPI_APPFW
 	gAppCallback.app_control(handle, user_data);
@@ -139,7 +139,6 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 
 	GET_REAL_FUNCP_RTLD_NEXT(app_efl_main, app_efl_mainp);
 
-	probeBlockStart();
 	handler = register_orientation_event_listener();
 	gAppCallback.create = callback->create;
 	gAppCallback.terminate = callback->terminate;
@@ -168,11 +167,9 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 		callback->service = _dalc_app_service;
 #endif /* PRIVATE_CAPI_APPFW */
 	callback->device_orientation = _dalc_app_deviceorientationchanged;
-	probeBlockEnd();
 
 	ret = app_efl_mainp(argc, argv, callback, user_data);
 
-	probeBlockStart();
 	unregister_orientation_event_listener(handler);
 	callback->create = gAppCallback.create;
 	callback->terminate = gAppCallback.terminate;
@@ -184,7 +181,6 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 	callback->service = gAppCallback.service;
 #endif /* PRIVATE_CAPI_APPFW */
 	callback->device_orientation = gAppCallback.device_orientation;
-	probeBlockEnd();
 
 	return ret;
 }
@@ -195,7 +191,7 @@ static bool _ui_dalc_app_create(void *user_data)
 {
 	bool bret = false;
 	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+//	int blockresult = 1;
 
 	bret = uiAppCallback.create(user_data);
 
@@ -208,7 +204,7 @@ static bool _ui_dalc_app_create(void *user_data)
 static void _ui_dalc_app_terminate(void *user_data)
 {
 	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+//	int blockresult = 1;
 
 	uiAppCallback.terminate(user_data);
 
@@ -219,7 +215,7 @@ static void _ui_dalc_app_terminate(void *user_data)
 static void _ui_dalc_app_pause(void *user_data)
 {
 	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+//	int blockresult = 1;
 
 	uiAppCallback.pause(user_data);
 
@@ -230,7 +226,7 @@ static void _ui_dalc_app_pause(void *user_data)
 static void _ui_dalc_app_resume(void *user_data)
 {
 	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+//	int blockresult = 1;
 
 	uiAppCallback.resume(user_data);
 
@@ -241,7 +237,7 @@ static void _ui_dalc_app_resume(void *user_data)
 static void _ui_dalc_app_control(app_control_h handle, void *user_data)
 {
 	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+//	int blockresult = 1;
 
 	uiAppCallback.app_control(handle, user_data);
 
@@ -258,7 +254,6 @@ int ui_app_main(int argc, char **argv, ui_app_lifecycle_callback_s *callback, vo
 
 	GET_REAL_FUNCP_RTLD_NEXT(ui_app_main, ui_app_mainp);
 
-	probeBlockStart();
 	handler = register_orientation_event_listener();
 	uiAppCallback.create = callback->create;
 	uiAppCallback.terminate = callback->terminate;
@@ -279,11 +274,8 @@ int ui_app_main(int argc, char **argv, ui_app_lifecycle_callback_s *callback, vo
 	if (callback->app_control)
 		callback->app_control = _ui_dalc_app_control;
 
-	probeBlockEnd();
-
 	ret = ui_app_mainp(argc, argv, callback, user_data);
 
-	probeBlockStart();
 	unregister_orientation_event_listener(handler);
 
 	callback->create = uiAppCallback.create;
@@ -291,8 +283,6 @@ int ui_app_main(int argc, char **argv, ui_app_lifecycle_callback_s *callback, vo
 	callback->pause = uiAppCallback.pause;
 	callback->resume = uiAppCallback.resume;
 	callback->app_control = uiAppCallback.app_control;
-
-	probeBlockEnd();
 
 	return ret;
 }

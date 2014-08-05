@@ -55,7 +55,6 @@
 
 #define OBJ_DUMMY 0
 
-static enum DaOptions _sopt = OPT_NETWORK;
 void getAddress(const struct sockaddr *sa, char *address) {
 	char buff[INET6_ADDRSTRLEN];
 	char *path;
