@@ -29,6 +29,7 @@ This library will be installed in target.
 make rmheaders
 make headers
 SWAP_PROBE_DEFS="%{SWAP_PROBE_DEFS}" make -j
+make ldheader
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
