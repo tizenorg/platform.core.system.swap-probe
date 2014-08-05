@@ -1,0 +1,2 @@
+#filename libdauserfunc.c
+#lib "???"
