@@ -44,8 +44,6 @@
 
 #include "binproto.h"
 
-static enum DaOptions _sopt = OPT_FILE;
-
 static inline char *get_abs_path(FILE *file, const char *fname,
 				 char *buf, size_t bufsiz)
 {

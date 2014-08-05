@@ -76,7 +76,6 @@ Eina_Bool ecore_event_evas_key_down(void *data, int type, void *event)
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
-		probeBlockStart();
 		if(event != NULL)
 		{
 			Ecore_Event_Key* pEv = (Ecore_Event_Key*)event;
@@ -87,7 +86,6 @@ Eina_Bool ecore_event_evas_key_down(void *data, int type, void *event)
 					      data, type, event);
 			}
 		}
-		probeBlockEnd();
 	}
 
 	return ecore_event_evas_key_downp(data, type, event);
@@ -102,7 +100,6 @@ Eina_Bool ecore_event_evas_key_up(void *data, int type, void *event)
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
-		probeBlockStart();
 		if(event != NULL)
 		{
 			Ecore_Event_Key* pEv = (Ecore_Event_Key*)event;
@@ -113,7 +110,6 @@ Eina_Bool ecore_event_evas_key_up(void *data, int type, void *event)
 					      data, type, event);
 			}
 		}
-		probeBlockEnd();
 	}
 
 	return ecore_event_evas_key_upp(data, type, event);
@@ -128,7 +124,6 @@ Eina_Bool ecore_event_evas_mouse_button_down(void *data, int type, void *event)
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
-		probeBlockStart();
 		if(event != NULL)
 		{
 			Ecore_Event_Mouse_Button* pEv = (Ecore_Event_Mouse_Button*)event;
@@ -137,7 +132,6 @@ Eina_Bool ecore_event_evas_mouse_button_down(void *data, int type, void *event)
 				      _EVENT_TOUCH, _TOUCH_PRESSED, pEv->root.x, pEv->root.y, "", pEv->multi.device, \
 				      data, type, event);
 		}
-		probeBlockEnd();
 	}
 
 	return ecore_event_evas_mouse_button_downp(data, type, event);
@@ -152,7 +146,6 @@ Eina_Bool ecore_event_evas_mouse_button_up(void *data, int type, void *event)
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
-		probeBlockStart();
 		if(event != NULL)
 		{
 			Ecore_Event_Mouse_Button* pEv = (Ecore_Event_Mouse_Button*)event;
@@ -161,7 +154,6 @@ Eina_Bool ecore_event_evas_mouse_button_up(void *data, int type, void *event)
 				      _EVENT_TOUCH, _TOUCH_RELEASED, pEv->root.x, pEv->root.y, "", pEv->multi.device, \
 				      data, type, event);
 		}
-		probeBlockEnd();
 	}
 
 	return ecore_event_evas_mouse_button_upp(data, type, event);
@@ -176,7 +168,6 @@ Eina_Bool ecore_event_evas_mouse_move(void *data, int type, void *event)
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
-		probeBlockStart();
 		if(touch_pressed)
 		{
 			if(event != NULL)
@@ -187,7 +178,6 @@ Eina_Bool ecore_event_evas_mouse_move(void *data, int type, void *event)
 					      data, type, event);
 			}
 		}
-		probeBlockEnd();
 	}
 
 	return ecore_event_evas_mouse_movep(data, type, event);

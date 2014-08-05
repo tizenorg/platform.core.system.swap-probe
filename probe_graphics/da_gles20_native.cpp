@@ -28,7 +28,6 @@
  * - Samsung RnD Institute Russia
  *
  */
-
 #include "da_gles20.h"
 #include "daprobe.h"
 #include "binproto.h"
@@ -50,8 +49,7 @@
 	#define TYPEDEF(type) typedef type
 #endif
 
-static char contextValue[MAX_GL_CONTEXT_VALUE_SIZE]; /* maybe it should not be gobal static variable */
-static enum DaOptions _sopt = OPT_GLES;
+static char contextValue[MAX_GL_CONTEXT_VALUE_SIZE];
 static __thread GLenum gl_error_external = GL_NO_ERROR;
 
 static void __ui_array_to_str(char *to, GLuint *arr ,int count, size_t bufsize)

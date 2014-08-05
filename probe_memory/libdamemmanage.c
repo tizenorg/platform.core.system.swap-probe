@@ -44,7 +44,6 @@
 #include "binproto.h"
 #include "common_probe_init.h"
 
-static enum DaOptions _sopt = OPT_ALLOC;
 
 void *memset(void *memblock, int c, size_t n)
 {
