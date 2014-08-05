@@ -1,4 +1,4 @@
-Name:       swap-probe
+Name:       swap-probe-total
 Summary:    SWAP probe library
 Version:    3.0
 Release:    1
@@ -22,6 +22,23 @@ Provides:  swap-probe
 SWAP probe is a part of data collection back-end for DA.
 This library will be installed in target.
 
+%package -n swap-probe
+Provides: swap-probe
+Summary:    SWAP probe library
+
+%description  -n swap-probe
+SWAP probe is a part of data collection back-end for DA.
+This library will be installed in target.
+
+
+%package -n swap-probe-devel
+Provides: swap-probe-devel
+Summary:    SWAP probe library
+
+%description  -n swap-probe-devel
+SWAP probe is a part of data collection back-end for DA.
+This library will be installed in target.
+
 %prep
 %setup -q -n %{name}_%{version}
 
@@ -29,15 +46,21 @@ This library will be installed in target.
 make rmheaders
 make headers
 SWAP_PROBE_DEFS="%{SWAP_PROBE_DEFS}" make -j
+make ldheader
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
 mkdir -p %{buildroot}/usr/share/license
 cp LICENSE %{buildroot}/usr/share/license/%{name}
+mkdir -p %{buildroot}/usr/local/include
+
 %make_install
 
-%files
+%files -n swap-probe
 /usr/share/license/%{name}
+
+%files -n swap-probe-devel
+/usr/local/include/ld_preload_*.h
 
 %manifest swap-probe.manifest
 %defattr(-,root,root,-)
