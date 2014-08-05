@@ -3,7 +3,7 @@
 BEGIN {
     api_id = 1
 } {
-	if ( $0 != "" ) {
+	if (( $0 != ""  ) && ( substr($0,1,1) != "#" )) {
 		api_name = $0
 		split(api_name, splited, "###")
 		if (splited[2] != ""){
