@@ -1,0 +1,8 @@
+#filename capi_appfw.c
+#lib "???"
+app_efl_main
+_dalc_app_create
+_dalc_app_terminate
+_dalc_app_pause
+_dalc_app_resume
+_dalc_app_service

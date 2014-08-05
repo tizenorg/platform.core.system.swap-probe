@@ -1,0 +1,3 @@
+#filename libdaemon.c
+#lib "???"
+daemon_close_allv

@@ -28,6 +28,10 @@
  * - Samsung RnD Institute Russia
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #include "da_gles20.h"
 #include "daprobe.h"
@@ -1793,6 +1797,10 @@ void REAL_NAME(glViewport)(GLint x, GLint y, GLsizei width, GLsizei height)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
 	      x, y, width, height);
 }
+
+#ifdef __cplusplus
+} /* extern C */
+#endif
 
 #undef CALL_ORIG
 #undef BEFORE
