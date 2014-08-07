@@ -429,7 +429,7 @@ static struct map_t *get_map_by_addr(void *addr)
 	if (left == right) {
 		d = (struct map_t *)addr_hash_table[left];
 		if ((d->addr <= addr) && (addr <= d->endaddr))
-			res = addr_hash_table[cur];
+			res = addr_hash_table[left];
 	}
 
 find_exit:
