@@ -38,6 +38,7 @@ extern "C" {
 #define REAL_NAME(func) __local_##func
 #define BEFORE BEFORE_GL_API
 #define CALL_ORIG(func, ...) __gl_api->func(__VA_ARGS__)
+#define TYPEDEF(...)
 
 /*
  * this include to make tizen open gl api functions
