@@ -46,6 +46,10 @@
 	#define BEFORE BEFORE_GL_ORIG
 #endif
 
+#ifndef TYPEDEF
+	#define TYPEDEF(type) typedef type
+#endif
+
 static char contextValue[MAX_GL_CONTEXT_VALUE_SIZE];
 static enum DaOptions _sopt = OPT_GLES;
 static __thread GLenum gl_error_external = GL_NO_ERROR;
@@ -65,7 +69,7 @@ static void __ui_array_to_str(char *to, GLuint *arr ,int count)
 
 GLenum REAL_NAME(glGetError)(void)
 {
-	typedef GLenum (*methodType)(void);
+	TYPEDEF(GLenum (*methodType)(void));
 	BEFORE(glGetError);
 	GLenum ret = CALL_ORIG(glGetError,);
 
@@ -89,7 +93,7 @@ GLenum REAL_NAME(glGetError)(void)
 
 void REAL_NAME(glActiveTexture)(GLenum texture)
 {
-	typedef void (*methodType)(GLenum);
+	TYPEDEF(void (*methodType)(GLenum));
 	BEFORE(glActiveTexture);
 	CALL_ORIG(glActiveTexture, texture);
 	GL_GET_ERROR();
@@ -99,7 +103,7 @@ void REAL_NAME(glActiveTexture)(GLenum texture)
 
 void REAL_NAME(glAttachShader)(GLuint program, GLuint shader)
 {
-	typedef void (*methodType)(GLuint, GLuint);
+	TYPEDEF(void (*methodType)(GLuint, GLuint));
 	BEFORE(glAttachShader);
 	CALL_ORIG(glAttachShader, program, shader);
 	GL_GET_ERROR();
@@ -112,7 +116,7 @@ void REAL_NAME(glAttachShader)(GLuint program, GLuint shader)
 
 void REAL_NAME(glBindAttribLocation)(GLuint program, GLuint index, const char *name)
 {
-	typedef void (*methodType)(GLuint, GLuint, const char *);
+	TYPEDEF(void (*methodType)(GLuint, GLuint, const char *));
 	BEFORE(glBindAttribLocation);
 	CALL_ORIG(glBindAttribLocation, program, index, name);
 	GL_GET_ERROR();
@@ -122,7 +126,7 @@ void REAL_NAME(glBindAttribLocation)(GLuint program, GLuint index, const char *n
 
 void REAL_NAME(glBindBuffer)(GLenum target, GLuint buffer)
 {
-	typedef void (*methodType)(GLenum, GLuint);
+	TYPEDEF(void (*methodType)(GLenum, GLuint));
 	BEFORE(glBindBuffer);
 	CALL_ORIG(glBindBuffer, target, buffer);
 	GL_GET_ERROR();
@@ -132,7 +136,7 @@ void REAL_NAME(glBindBuffer)(GLenum target, GLuint buffer)
 
 void REAL_NAME(glBindFramebuffer)(GLenum target, GLuint framebuffer)
 {
-	typedef void (*methodType)(GLenum, GLuint);
+	TYPEDEF(void (*methodType)(GLenum, GLuint));
 	BEFORE(glBindFramebuffer);
 	CALL_ORIG(glBindFramebuffer, target, framebuffer);
 	GL_GET_ERROR();
@@ -142,7 +146,7 @@ void REAL_NAME(glBindFramebuffer)(GLenum target, GLuint framebuffer)
 
 void REAL_NAME(glBindRenderbuffer)(GLenum target, GLuint renderbuffer)
 {
-	typedef void (*methodType)(GLenum, GLuint);
+	TYPEDEF(void (*methodType)(GLenum, GLuint));
 	BEFORE(glBindRenderbuffer);
 	CALL_ORIG(glBindRenderbuffer, target, renderbuffer);
 	GL_GET_ERROR();
@@ -152,7 +156,7 @@ void REAL_NAME(glBindRenderbuffer)(GLenum target, GLuint renderbuffer)
 
 void REAL_NAME(glBindTexture)(GLenum target, GLuint texture)
 {
-	typedef void (*methodType)(GLenum, GLuint);
+	TYPEDEF(void (*methodType)(GLenum, GLuint));
 	BEFORE(glBindTexture);
 	CALL_ORIG(glBindTexture, target, texture);
 	GL_GET_ERROR();
@@ -162,7 +166,7 @@ void REAL_NAME(glBindTexture)(GLenum target, GLuint texture)
 
 void REAL_NAME(glBlendColor)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
 {
-	typedef void (*methodType)(GLclampf, GLclampf, GLclampf, GLclampf);
+	TYPEDEF(void (*methodType)(GLclampf, GLclampf, GLclampf, GLclampf));
 	BEFORE(glBlendColor);
 	CALL_ORIG(glBlendColor, red, green, blue, alpha);
 	GL_GET_ERROR();
@@ -172,7 +176,7 @@ void REAL_NAME(glBlendColor)(GLclampf red, GLclampf green, GLclampf blue, GLclam
 
 void REAL_NAME(glBlendEquation)(GLenum mode)
 {
-	typedef void (*methodType)(GLenum);
+	TYPEDEF(void (*methodType)(GLenum));
 	BEFORE(glBlendEquation);
 	CALL_ORIG(glBlendEquation, mode);
 	GL_GET_ERROR();
@@ -182,7 +186,7 @@ void REAL_NAME(glBlendEquation)(GLenum mode)
 
 void REAL_NAME(glBlendEquationSeparate)(GLenum modeRGB, GLenum modeAlpha)
 {
-	typedef void (*methodType)(GLenum, GLenum);
+	TYPEDEF(void (*methodType)(GLenum, GLenum));
 	BEFORE(glBlendEquationSeparate);
 	CALL_ORIG(glBlendEquationSeparate, modeRGB, modeAlpha);
 	GL_GET_ERROR();
@@ -192,7 +196,7 @@ void REAL_NAME(glBlendEquationSeparate)(GLenum modeRGB, GLenum modeAlpha)
 
 void REAL_NAME(glBlendFunc)(GLenum sfactor, GLenum dfactor)
 {
-	typedef void (*methodType)(GLenum, GLenum);
+	TYPEDEF(void (*methodType)(GLenum, GLenum));
 	BEFORE(glBlendFunc);
 	CALL_ORIG(glBlendFunc, sfactor, dfactor);
 	GL_GET_ERROR();
@@ -203,7 +207,7 @@ void REAL_NAME(glBlendFunc)(GLenum sfactor, GLenum dfactor)
 void REAL_NAME(glBlendFuncSeparate)(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha,
 			 GLenum dstAlpha)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLenum, GLenum);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLenum, GLenum));
 	BEFORE(glBlendFuncSeparate);
 	CALL_ORIG(glBlendFuncSeparate, srcRGB, dstRGB, srcAlpha, dstAlpha);
 	GL_GET_ERROR();
@@ -215,7 +219,7 @@ void REAL_NAME(glBlendFuncSeparate)(GLenum srcRGB, GLenum dstRGB, GLenum srcAlph
 void REAL_NAME(glBufferData)(GLenum target, GLsizeiptr size, const GLvoid * data,
 		  GLenum usage)
 {
-	typedef void (*methodType)(GLenum, GLsizeiptr, const GLvoid *, GLenum);
+	TYPEDEF(void (*methodType)(GLenum, GLsizeiptr, const GLvoid *, GLenum));
 	BEFORE(glBufferData);
 	CALL_ORIG(glBufferData, target, size, data, usage);
 	GL_GET_ERROR();
@@ -227,8 +231,8 @@ void REAL_NAME(glBufferData)(GLenum target, GLsizeiptr size, const GLvoid * data
 void REAL_NAME(glBufferSubData)(GLenum target, GLintptr offset, GLsizeiptr size,
 		     const GLvoid * data)
 {
-	typedef void (*methodType)(GLenum, GLintptr, GLsizeiptr,
-				   const GLvoid *);
+	TYPEDEF(void (*methodType)(GLenum, GLintptr, GLsizeiptr,
+				   const GLvoid *));
 	BEFORE(glBufferSubData);
 	CALL_ORIG(glBufferSubData, target, offset, size, data);
 	GL_GET_ERROR();
@@ -243,7 +247,7 @@ void REAL_NAME(glBufferSubData)(GLenum target, GLintptr offset, GLsizeiptr size,
 
 GLenum REAL_NAME(glCheckFramebufferStatus)(GLenum target)
 {
-	typedef GLenum (*methodType)(GLenum);
+	TYPEDEF(GLenum (*methodType)(GLenum));
 	BEFORE(glCheckFramebufferStatus);
 	GLenum ret = CALL_ORIG(glCheckFramebufferStatus, target);
 	GL_GET_ERROR();
@@ -255,7 +259,7 @@ GLenum REAL_NAME(glCheckFramebufferStatus)(GLenum target)
 
 void REAL_NAME(glClear)(GLbitfield mask)
 {
-	typedef void (*methodType)(GLbitfield);
+	TYPEDEF(void (*methodType)(GLbitfield));
 	BEFORE(glClear);
 	CALL_ORIG(glClear, mask);
 	GL_GET_ERROR();
@@ -265,7 +269,7 @@ void REAL_NAME(glClear)(GLbitfield mask)
 
 void REAL_NAME(glClearColor)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
 {
-	typedef void (*methodType)(GLclampf, GLclampf, GLclampf, GLclampf);
+	TYPEDEF(void (*methodType)(GLclampf, GLclampf, GLclampf, GLclampf));
 	BEFORE(glClearColor);
 	CALL_ORIG(glClearColor, red, green, blue, alpha);
 	GL_GET_ERROR();
@@ -275,7 +279,7 @@ void REAL_NAME(glClearColor)(GLclampf red, GLclampf green, GLclampf blue, GLclam
 
 void REAL_NAME(glClearDepthf)(GLclampf depth)
 {
-	typedef void (*methodType)(GLclampf);
+	TYPEDEF(void (*methodType)(GLclampf));
 	BEFORE(glClearDepthf);
 	CALL_ORIG(glClearDepthf, depth);
 	GL_GET_ERROR();
@@ -284,7 +288,7 @@ void REAL_NAME(glClearDepthf)(GLclampf depth)
 
 void REAL_NAME(glClearStencil)(GLint s)
 {
-	typedef void (*methodType)(GLint);
+	TYPEDEF(void (*methodType)(GLint));
 	BEFORE(glClearStencil);
 	CALL_ORIG(glClearStencil, s);
 	GL_GET_ERROR();
@@ -294,7 +298,7 @@ void REAL_NAME(glClearStencil)(GLint s)
 void REAL_NAME(glColorMask)(GLboolean red, GLboolean green, GLboolean blue,
 		 GLboolean alpha)
 {
-	typedef void (*methodType)(GLboolean, GLboolean, GLboolean, GLboolean);
+	TYPEDEF(void (*methodType)(GLboolean, GLboolean, GLboolean, GLboolean));
 	BEFORE(glColorMask);
 	CALL_ORIG(glColorMask, red, green, blue, alpha);
 	GL_GET_ERROR();
@@ -304,7 +308,7 @@ void REAL_NAME(glColorMask)(GLboolean red, GLboolean green, GLboolean blue,
 
 void REAL_NAME(glCompileShader)(GLuint shader)
 {
-	typedef void (*methodType)(GLuint);
+	TYPEDEF(void (*methodType)(GLuint));
 	BEFORE(glCompileShader);
 	CALL_ORIG(glCompileShader, shader);
 	GL_GET_ERROR();
@@ -316,8 +320,8 @@ void REAL_NAME(glCompressedTexImage2D)(GLenum target, GLint level, GLenum intern
 			    GLsizei width, GLsizei height, GLint border,
 			    GLsizei imageSize, const GLvoid * data)
 {
-	typedef void (*methodType)(GLenum, GLint, GLenum, GLsizei, GLsizei,
-				   GLint, GLsizei, const GLvoid *);
+	TYPEDEF(void (*methodType)(GLenum, GLint, GLenum, GLsizei, GLsizei,
+				   GLint, GLsizei, const GLvoid *));
 	BEFORE(glCompressedTexImage2D);
 	CALL_ORIG(glCompressedTexImage2D, target, level, internalformat, width,
 		  height, border, imageSize, data);
@@ -333,8 +337,8 @@ void REAL_NAME(glCompressedTexSubImage2D)(GLenum target, GLint level, GLint xoff
 			       GLenum format, GLsizei imageSize,
 			       const GLvoid * data)
 {
-	typedef void (*methodType)(GLenum, GLint, GLint, GLint, GLsizei,
-				   GLsizei, GLenum, GLsizei, const GLvoid *);
+	TYPEDEF(void (*methodType)(GLenum, GLint, GLint, GLint, GLsizei,
+				   GLsizei, GLenum, GLsizei, const GLvoid *));
 	BEFORE(glCompressedTexSubImage2D);
 	CALL_ORIG(glCompressedTexSubImage2D, target, level, xoffset, yoffset,
 		  width, height, format, imageSize, data);
@@ -348,8 +352,8 @@ void REAL_NAME(glCopyTexImage2D)(GLenum target, GLint level, GLenum internalform
 		      GLint x, GLint y, GLsizei width, GLsizei height,
 		      GLint border)
 {
-	typedef void (*methodType)(GLenum, GLint, GLenum, GLint, GLint,
-				   GLsizei, GLsizei, GLint);
+	TYPEDEF(void (*methodType)(GLenum, GLint, GLenum, GLint, GLint,
+				   GLsizei, GLsizei, GLint));
 	BEFORE(glCopyTexImage2D);
 	CALL_ORIG(glCopyTexImage2D, target, level, internalformat, x, y, width,
 		  height, border);
@@ -363,8 +367,8 @@ void REAL_NAME(glCopyTexSubImage2D)(GLenum target, GLint level, GLint xoffset,
 			 GLint yoffset, GLint x, GLint y, GLsizei width,
 			 GLsizei height)
 {
-	typedef void (*methodType)(GLenum, GLint, GLint, GLint, GLint, GLint,
-				   GLsizei, GLsizei);
+	TYPEDEF(void (*methodType)(GLenum, GLint, GLint, GLint, GLint, GLint,
+				   GLsizei, GLsizei));
 	BEFORE(glCopyTexSubImage2D);
 	CALL_ORIG(glCopyTexSubImage2D, target, level, xoffset, yoffset, x, y,
 		  width, height);
@@ -376,7 +380,7 @@ void REAL_NAME(glCopyTexSubImage2D)(GLenum target, GLint level, GLint xoffset,
 
 GLuint REAL_NAME(glCreateProgram)(void)
 {
-	typedef GLuint (*methodType)(void);
+	TYPEDEF(GLuint (*methodType)(void));
 	BEFORE(glCreateProgram);
 	GLuint ret = CALL_ORIG(glCreateProgram,);
 	GL_GET_ERROR();
@@ -387,7 +391,7 @@ GLuint REAL_NAME(glCreateProgram)(void)
 
 GLuint REAL_NAME(glCreateShader)(GLenum shaderType)
 {
-	typedef GLuint (*methodType)(GLenum);
+	TYPEDEF(GLuint (*methodType)(GLenum));
 	BEFORE(glCreateShader);
 	GLuint ret = CALL_ORIG(glCreateShader, shaderType);
 	GL_GET_ERROR();
@@ -398,7 +402,7 @@ GLuint REAL_NAME(glCreateShader)(GLenum shaderType)
 
 void REAL_NAME(glCullFace)(GLenum mode)
 {
-	typedef void (*methodType)(GLenum);
+	TYPEDEF(void (*methodType)(GLenum));
 	BEFORE(glCullFace);
 	CALL_ORIG(glCullFace, mode);
 	GL_GET_ERROR();
@@ -412,7 +416,7 @@ void REAL_NAME(glCullFace)(GLenum mode)
 
 void REAL_NAME(glDeleteBuffers)(GLsizei n, const GLuint * buffers)
 {
-	typedef void (*methodType)(GLsizei, const GLuint *);
+	TYPEDEF(void (*methodType)(GLsizei, const GLuint *));
 	BEFORE(glDeleteBuffers);
 	CALL_ORIG(glDeleteBuffers, n, buffers);
 	GL_GET_ERROR();
@@ -422,7 +426,7 @@ void REAL_NAME(glDeleteBuffers)(GLsizei n, const GLuint * buffers)
 
 void REAL_NAME(glDeleteFramebuffers)(GLsizei n, const GLuint * framebuffers)
 {
-	typedef void (*methodType)(GLsizei, const GLuint *);
+	TYPEDEF(void (*methodType)(GLsizei, const GLuint *));
 	BEFORE(glDeleteFramebuffers);
 	CALL_ORIG(glDeleteFramebuffers, n, framebuffers);
 	GL_GET_ERROR();
@@ -432,7 +436,7 @@ void REAL_NAME(glDeleteFramebuffers)(GLsizei n, const GLuint * framebuffers)
 
 void REAL_NAME(glDeleteProgram)(GLuint program)
 {
-	typedef void (*methodType)(GLuint);
+	TYPEDEF(void (*methodType)(GLuint));
 	BEFORE(glDeleteProgram);
 	CALL_ORIG(glDeleteProgram, program);
 	GL_GET_ERROR();
@@ -441,7 +445,7 @@ void REAL_NAME(glDeleteProgram)(GLuint program)
 
 void REAL_NAME(glDeleteRenderbuffers)(GLsizei n, const GLuint * renderbuffers)
 {
-	typedef void (*methodType)(GLsizei, const GLuint *);
+	TYPEDEF(void (*methodType)(GLsizei, const GLuint *));
 	BEFORE(glDeleteRenderbuffers);
 	CALL_ORIG(glDeleteRenderbuffers, n, renderbuffers);
 	GL_GET_ERROR();
@@ -451,7 +455,7 @@ void REAL_NAME(glDeleteRenderbuffers)(GLsizei n, const GLuint * renderbuffers)
 
 void REAL_NAME(glDeleteShader)(GLuint shader)
 {
-	typedef void (*methodType)(GLuint);
+	TYPEDEF(void (*methodType)(GLuint));
 	BEFORE(glDeleteShader);
 	CALL_ORIG(glDeleteShader, shader);
 	GL_GET_ERROR();
@@ -460,7 +464,7 @@ void REAL_NAME(glDeleteShader)(GLuint shader)
 
 void REAL_NAME(glDeleteTextures)(GLsizei n, const GLuint *textures)
 {
-	typedef void (*methodType)(GLsizei, const GLuint *);
+	TYPEDEF(void (*methodType)(GLsizei, const GLuint *));
 	char buf[128] = "";
 
 	BEFORE(glDeleteTextures);
@@ -475,7 +479,7 @@ void REAL_NAME(glDeleteTextures)(GLsizei n, const GLuint *textures)
 
 void REAL_NAME(glDepthFunc)(GLenum func)
 {
-	typedef void (*methodType)(GLenum);
+	TYPEDEF(void (*methodType)(GLenum));
 	BEFORE(glDepthFunc);
 	CALL_ORIG(glDepthFunc, func);
 	GL_GET_ERROR();
@@ -485,7 +489,7 @@ void REAL_NAME(glDepthFunc)(GLenum func)
 
 void REAL_NAME(glDepthMask)(GLboolean flag)
 {
-	typedef void (*methodType)(GLboolean);
+	TYPEDEF(void (*methodType)(GLboolean));
 	BEFORE(glDepthMask);
 	CALL_ORIG(glDepthMask, flag);
 	GL_GET_ERROR();
@@ -495,7 +499,7 @@ void REAL_NAME(glDepthMask)(GLboolean flag)
 
 void REAL_NAME(glDepthRangef)(GLclampf nearVal, GLclampf farVal)
 {
-	typedef void (*methodType)(GLclampf, GLclampf);
+	TYPEDEF(void (*methodType)(GLclampf, GLclampf));
 	BEFORE(glDepthRangef);
 	CALL_ORIG(glDepthRangef, nearVal, farVal);
 	GL_GET_ERROR();
@@ -505,7 +509,7 @@ void REAL_NAME(glDepthRangef)(GLclampf nearVal, GLclampf farVal)
 
 void REAL_NAME(glDetachShader)(GLuint program, GLuint shader)
 {
-	typedef void (*methodType)(GLuint, GLuint);
+	TYPEDEF(void (*methodType)(GLuint, GLuint));
 	BEFORE(glDetachShader);
 	CALL_ORIG(glDetachShader, program, shader);
 	GL_GET_ERROR();
@@ -515,7 +519,7 @@ void REAL_NAME(glDetachShader)(GLuint program, GLuint shader)
 
 void REAL_NAME(glDisable)(GLenum cap)
 {
-	typedef void (*methodType)(GLenum);
+	TYPEDEF(void (*methodType)(GLenum));
 	BEFORE(glDisable);
 	CALL_ORIG(glDisable, cap);
 	GL_GET_ERROR();
@@ -524,7 +528,7 @@ void REAL_NAME(glDisable)(GLenum cap)
 
 void REAL_NAME(glDisableVertexAttribArray)(GLuint index)
 {
-	typedef void (*methodType)(GLuint);
+	TYPEDEF(void (*methodType)(GLuint));
 	BEFORE(glDisableVertexAttribArray);
 	CALL_ORIG(glDisableVertexAttribArray, index);
 	GL_GET_ERROR();
@@ -533,7 +537,7 @@ void REAL_NAME(glDisableVertexAttribArray)(GLuint index)
 
 void REAL_NAME(glDrawArrays)(GLenum mode, GLint first, GLsizei count)
 {
-	typedef void (*methodType)(GLenum, GLint, GLsizei);
+	TYPEDEF(void (*methodType)(GLenum, GLint, GLsizei));
 	BEFORE(glDrawArrays);
 	CALL_ORIG(glDrawArrays, mode, first, count);
 	GL_GET_ERROR();
@@ -544,7 +548,7 @@ void REAL_NAME(glDrawArrays)(GLenum mode, GLint first, GLsizei count)
 void REAL_NAME(glDrawElements)(GLenum mode, GLsizei count, GLenum type,
 		const GLvoid *indices)
 {
-	typedef void (*methodType)(GLenum, GLsizei, GLenum, const GLvoid *);
+	TYPEDEF(void (*methodType)(GLenum, GLsizei, GLenum, const GLvoid *));
 	BEFORE(glDrawElements);
 	CALL_ORIG(glDrawElements, mode, count, type, indices);
 	GL_GET_ERROR();
@@ -558,7 +562,7 @@ void REAL_NAME(glDrawElements)(GLenum mode, GLsizei count, GLenum type,
 
 void REAL_NAME(glEnable)(GLenum cap)
 {
-	typedef void (*methodType)(GLenum);
+	TYPEDEF(void (*methodType)(GLenum));
 	BEFORE(glEnable);
 	CALL_ORIG(glEnable, cap);
 	GL_GET_ERROR();
@@ -567,7 +571,7 @@ void REAL_NAME(glEnable)(GLenum cap)
 
 void REAL_NAME(glEnableVertexAttribArray)(GLuint index)
 {
-	typedef void (*methodType)(GLuint);
+	TYPEDEF(void (*methodType)(GLuint));
 	BEFORE(glEnableVertexAttribArray);
 	CALL_ORIG(glEnableVertexAttribArray, index);
 	GL_GET_ERROR();
@@ -580,7 +584,7 @@ void REAL_NAME(glEnableVertexAttribArray)(GLuint index)
 
 void REAL_NAME(glFinish)(void)
 {
-	typedef void (*methodType)(void);
+	TYPEDEF(void (*methodType)(void));
 	BEFORE(glFinish);
 	CALL_ORIG(glFinish,);
 	GL_GET_ERROR();
@@ -589,7 +593,7 @@ void REAL_NAME(glFinish)(void)
 
 void REAL_NAME(glFlush)(void)
 {
-	typedef void (*methodType)(void);
+	TYPEDEF(void (*methodType)(void));
 	BEFORE(glFlush);
 	CALL_ORIG(glFlush,);
 	GL_GET_ERROR();
@@ -599,7 +603,7 @@ void REAL_NAME(glFlush)(void)
 void REAL_NAME(glFramebufferRenderbuffer)(GLenum target, GLenum attachment,
 			       GLenum renderbuffertarget, GLuint renderbuffer)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLenum, GLuint);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLenum, GLuint));
 	BEFORE(glFramebufferRenderbuffer);
 	CALL_ORIG(glFramebufferRenderbuffer, target, attachment,
 		  renderbuffertarget, renderbuffer);
@@ -612,7 +616,7 @@ void REAL_NAME(glFramebufferRenderbuffer)(GLenum target, GLenum attachment,
 void REAL_NAME(glFramebufferTexture2D)(GLenum target, GLenum attachment, GLenum textarget,
 			    GLuint texture, GLint level)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLenum, GLuint, GLint);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLenum, GLuint, GLint));
 	BEFORE(glFramebufferTexture2D);
 	CALL_ORIG(glFramebufferTexture2D, target, attachment, textarget,
 		  texture, level);
@@ -624,7 +628,7 @@ void REAL_NAME(glFramebufferTexture2D)(GLenum target, GLenum attachment, GLenum 
 
 void REAL_NAME(glFrontFace)(GLenum mode)
 {
-	typedef void (*methodType)(GLenum);
+	TYPEDEF(void (*methodType)(GLenum));
 	BEFORE(glFrontFace);
 	CALL_ORIG(glFrontFace, mode);
 	GL_GET_ERROR();
@@ -638,7 +642,7 @@ void REAL_NAME(glFrontFace)(GLenum mode)
 
 void REAL_NAME(glGenBuffers)(GLsizei n, GLuint * buffers)
 {
-	typedef void (*methodType)(GLsizei, GLuint *);
+	TYPEDEF(void (*methodType)(GLsizei, GLuint *));
 	char buf[128] = "";
 
 	BEFORE(glGenBuffers);
@@ -653,7 +657,7 @@ void REAL_NAME(glGenBuffers)(GLsizei n, GLuint * buffers)
 
 void REAL_NAME(glGenFramebuffers)(GLsizei n, GLuint * framebuffers)
 {
-	typedef void (*methodType)(GLsizei, GLuint *);
+	TYPEDEF(void (*methodType)(GLsizei, GLuint *));
 	BEFORE(glGenFramebuffers);
 	CALL_ORIG(glGenFramebuffers, n, framebuffers);
 	GL_GET_ERROR();
@@ -663,7 +667,7 @@ void REAL_NAME(glGenFramebuffers)(GLsizei n, GLuint * framebuffers)
 
 void REAL_NAME(glGenRenderbuffers)(GLsizei n, GLuint * renderbuffers)
 {
-	typedef void (*methodType)(GLsizei, GLuint *);
+	TYPEDEF(void (*methodType)(GLsizei, GLuint *));
 	BEFORE(glGenRenderbuffers);
 	CALL_ORIG(glGenRenderbuffers, n, renderbuffers);
 	GL_GET_ERROR();
@@ -673,7 +677,7 @@ void REAL_NAME(glGenRenderbuffers)(GLsizei n, GLuint * renderbuffers)
 
 void REAL_NAME(glGenTextures)(GLsizei n, GLuint * textures)
 {
-	typedef void (*methodType)(GLsizei, GLuint *);
+	TYPEDEF(void (*methodType)(GLsizei, GLuint *));
 	char buf[128] = "";
 
 	BEFORE(glGenTextures);
@@ -688,7 +692,7 @@ void REAL_NAME(glGenTextures)(GLsizei n, GLuint * textures)
 
 void REAL_NAME(glGenerateMipmap)(GLenum target)
 {
-	typedef void (*methodType)(GLenum);
+	TYPEDEF(void (*methodType)(GLenum));
 	BEFORE(glGenerateMipmap);
 	CALL_ORIG(glGenerateMipmap, target);
 	GL_GET_ERROR();
@@ -699,7 +703,7 @@ void REAL_NAME(glGenerateMipmap)(GLenum target)
 //lsh_get
 void REAL_NAME(glGetBooleanv)(GLenum pname, GLboolean * params)
 {
-	typedef void (*methodType)(GLenum, GLboolean *);
+	TYPEDEF(void (*methodType)(GLenum, GLboolean *));
 	BEFORE(glGetBooleanv);
 	CALL_ORIG(glGetBooleanv, pname, params);
 	GL_GET_ERROR();
@@ -710,7 +714,7 @@ void REAL_NAME(glGetBooleanv)(GLenum pname, GLboolean * params)
 //lsh_get
 void REAL_NAME(glGetFloatv)(GLenum pname, GLfloat * params)
 {
-	typedef void (*methodType)(GLenum, GLfloat *);
+	TYPEDEF(void (*methodType)(GLenum, GLfloat *));
 	BEFORE(glGetFloatv);
 	CALL_ORIG(glGetFloatv, pname, params);
 	GL_GET_ERROR();
@@ -721,7 +725,7 @@ void REAL_NAME(glGetFloatv)(GLenum pname, GLfloat * params)
 //lsh_get
 void REAL_NAME(glGetIntegerv)(GLenum pname, GLint * params)
 {
-	typedef void (*methodType)(GLenum, GLint *);
+	TYPEDEF(void (*methodType)(GLenum, GLint *));
 	BEFORE(glGetIntegerv);
 	CALL_ORIG(glGetIntegerv, pname, params);
 	GL_GET_ERROR();
@@ -733,8 +737,8 @@ void REAL_NAME(glGetIntegerv)(GLenum pname, GLint * params)
 void REAL_NAME(glGetActiveAttrib)(GLuint program, GLuint index, GLsizei bufSize,
 		       GLsizei *length, GLint *size, GLenum *type, char *name)
 {
-	typedef void (*methodType)(GLuint, GLuint, GLsizei, GLsizei *, GLint *,
-				   GLenum *, char *);
+	TYPEDEF(void (*methodType)(GLuint, GLuint, GLsizei, GLsizei *, GLint *,
+				   GLenum *, char *));
 	BEFORE(glGetActiveAttrib);
 	CALL_ORIG(glGetActiveAttrib, program, index, bufSize, length, size,
 		  type, name);
@@ -747,8 +751,8 @@ void REAL_NAME(glGetActiveAttrib)(GLuint program, GLuint index, GLsizei bufSize,
 void REAL_NAME(glGetActiveUniform)(GLuint program, GLuint index, GLsizei bufSize,
 			GLsizei *length, GLint *size, GLenum *type, char *name)
 {
-	typedef void (*methodType)(GLuint, GLuint, GLsizei, GLsizei *, GLint *,
-				   GLenum *, char *);
+	TYPEDEF(void (*methodType)(GLuint, GLuint, GLsizei, GLsizei *, GLint *,
+				   GLenum *, char *));
 	BEFORE(glGetActiveUniform);
 	CALL_ORIG(glGetActiveUniform, program, index, bufSize, length, size,
 		  type, name);
@@ -761,7 +765,7 @@ void REAL_NAME(glGetActiveUniform)(GLuint program, GLuint index, GLsizei bufSize
 void REAL_NAME(glGetAttachedShaders)(GLuint program, GLsizei maxCount, GLsizei *count,
 			  GLuint *shaders)
 {
-	typedef void (*methodType)(GLuint, GLsizei, GLsizei *, GLuint *);
+	TYPEDEF(void (*methodType)(GLuint, GLsizei, GLsizei *, GLuint *));
 	BEFORE(glGetAttachedShaders);
 	CALL_ORIG(glGetAttachedShaders, program, maxCount, count, shaders);
 	GL_GET_ERROR();
@@ -772,7 +776,7 @@ void REAL_NAME(glGetAttachedShaders)(GLuint program, GLsizei maxCount, GLsizei *
 //lsh_get
 int REAL_NAME(glGetAttribLocation)(GLuint program, const char *name)
 {
-	typedef int (*methodType)(GLuint, const char*);
+	TYPEDEF(int (*methodType)(GLuint, const char*));
 	BEFORE(glGetAttribLocation);
 	int ret = CALL_ORIG(glGetAttribLocation, program, name);
 	GL_GET_ERROR();
@@ -784,7 +788,7 @@ int REAL_NAME(glGetAttribLocation)(GLuint program, const char *name)
 //lsh_get
 void REAL_NAME(glGetBufferParameteriv)(GLenum target, GLenum value, GLint * data)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLint *);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint *));
 	BEFORE(glGetBufferParameteriv);
 	CALL_ORIG(glGetBufferParameteriv, target, value, data);
 	GL_GET_ERROR();
@@ -796,7 +800,7 @@ void REAL_NAME(glGetBufferParameteriv)(GLenum target, GLenum value, GLint * data
 void REAL_NAME(glGetFramebufferAttachmentParameteriv)(GLenum target, GLenum attachment,
 					   GLenum pname, GLint * params)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLenum, GLint *);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLenum, GLint *));
 	BEFORE(glGetFramebufferAttachmentParameteriv);
 	CALL_ORIG(glGetFramebufferAttachmentParameteriv, target, attachment,
 		  pname, params);
@@ -809,7 +813,7 @@ void REAL_NAME(glGetFramebufferAttachmentParameteriv)(GLenum target, GLenum atta
 void REAL_NAME(glGetProgramInfoLog)(GLuint program, GLsizei maxLength, GLsizei *length,
 			 char *infoLog)
 {
-	typedef void (*methodType)(GLuint, GLsizei, GLsizei *, char *);
+	TYPEDEF(void (*methodType)(GLuint, GLsizei, GLsizei *, char *));
 	BEFORE(glGetProgramInfoLog);
 	CALL_ORIG(glGetProgramInfoLog, program, maxLength, length, infoLog);
 	GL_GET_ERROR();
@@ -820,7 +824,7 @@ void REAL_NAME(glGetProgramInfoLog)(GLuint program, GLsizei maxLength, GLsizei *
 //lsh_get
 void REAL_NAME(glGetProgramiv)(GLuint program, GLenum pname, GLint *params)
 {
-	typedef void (*methodType)(GLuint, GLenum, GLint *);
+	TYPEDEF(void (*methodType)(GLuint, GLenum, GLint *));
 	BEFORE(glGetProgramiv);
 	CALL_ORIG(glGetProgramiv, program, pname, params);
 	GL_GET_ERROR();
@@ -831,7 +835,7 @@ void REAL_NAME(glGetProgramiv)(GLuint program, GLenum pname, GLint *params)
 //lsh_get
 void REAL_NAME(glGetRenderbufferParameteriv)(GLenum target, GLenum pname, GLint *params)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLint *);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint *));
 	BEFORE(glGetRenderbufferParameteriv);
 	CALL_ORIG(glGetRenderbufferParameteriv, target, pname, params);
 	GL_GET_ERROR();
@@ -843,7 +847,7 @@ void REAL_NAME(glGetRenderbufferParameteriv)(GLenum target, GLenum pname, GLint 
 void REAL_NAME(glGetShaderInfoLog)(GLuint shader, GLsizei maxLength, GLsizei *length,
 			char *infoLog)
 {
-	typedef void (*methodType)(GLuint, GLsizei, GLsizei *, char *);
+	TYPEDEF(void (*methodType)(GLuint, GLsizei, GLsizei *, char *));
 	BEFORE(glGetShaderInfoLog);
 	CALL_ORIG(glGetShaderInfoLog, shader, maxLength, length, infoLog);
 	GL_GET_ERROR();
@@ -855,7 +859,7 @@ void REAL_NAME(glGetShaderInfoLog)(GLuint shader, GLsizei maxLength, GLsizei *le
 void REAL_NAME(glGetShaderPrecisionFormat)(GLenum shaderType, GLenum precisionType,
 				GLint *range, GLint *precision)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLint *, GLint *);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint *, GLint *));
 	BEFORE(glGetShaderPrecisionFormat);
 	CALL_ORIG(glGetShaderPrecisionFormat, shaderType, precisionType, range,
 		  precision);
@@ -868,7 +872,7 @@ void REAL_NAME(glGetShaderPrecisionFormat)(GLenum shaderType, GLenum precisionTy
 void REAL_NAME(glGetShaderSource)(GLuint shader, GLsizei bufSize, GLsizei *length,
 		       char *source)
 {
-	typedef void (*methodType)(GLuint, GLsizei, GLsizei *, char *);
+	TYPEDEF(void (*methodType)(GLuint, GLsizei, GLsizei *, char *));
 	BEFORE(glGetShaderSource);
 	CALL_ORIG(glGetShaderSource, shader, bufSize, length, source);
 	GL_GET_ERROR();
@@ -879,7 +883,7 @@ void REAL_NAME(glGetShaderSource)(GLuint shader, GLsizei bufSize, GLsizei *lengt
 //lsh_get
 void REAL_NAME(glGetShaderiv)(GLuint shader, GLenum pname, GLint *params)
 {
-	typedef void (*methodType)(GLuint, GLenum, GLint *);
+	TYPEDEF(void (*methodType)(GLuint, GLenum, GLint *));
 	BEFORE(glGetShaderiv);
 	CALL_ORIG(glGetShaderiv, shader, pname, params);
 	GL_GET_ERROR();
@@ -889,7 +893,7 @@ void REAL_NAME(glGetShaderiv)(GLuint shader, GLenum pname, GLint *params)
 
 const GLubyte *REAL_NAME(glGetString)(GLenum name)
 {
-	typedef const GLubyte *(*methodType)(GLenum);
+	TYPEDEF(const GLubyte *(*methodType)(GLenum));
 	BEFORE(glGetString);
 	const GLubyte *ret = CALL_ORIG(glGetString, name);
 	GL_GET_ERROR();
@@ -901,7 +905,7 @@ const GLubyte *REAL_NAME(glGetString)(GLenum name)
 //lsh_get
 void REAL_NAME(glGetTexParameterfv)(GLenum target, GLenum pname, GLfloat * params)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLfloat *);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLfloat *));
 	BEFORE(glGetTexParameterfv);
 	CALL_ORIG(glGetTexParameterfv, target, pname, params);
 	GL_GET_ERROR();
@@ -912,7 +916,7 @@ void REAL_NAME(glGetTexParameterfv)(GLenum target, GLenum pname, GLfloat * param
 //lsh_get
 void REAL_NAME(glGetTexParameteriv)(GLenum target, GLenum pname, GLint * params)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLint *);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint *));
 	BEFORE(glGetTexParameteriv);
 	CALL_ORIG(glGetTexParameteriv, target, pname, params);
 	GL_GET_ERROR();
@@ -923,7 +927,7 @@ void REAL_NAME(glGetTexParameteriv)(GLenum target, GLenum pname, GLint * params)
 //lsh_get
 void REAL_NAME(glGetUniformfv)(GLuint program, GLint location, GLfloat *params)
 {
-	typedef void (*methodType)(GLuint, GLuint, GLfloat *);
+	TYPEDEF(void (*methodType)(GLuint, GLuint, GLfloat *));
 	BEFORE(glGetUniformfv);
 	CALL_ORIG(glGetUniformfv, program, location, params);
 	GL_GET_ERROR();
@@ -934,7 +938,7 @@ void REAL_NAME(glGetUniformfv)(GLuint program, GLint location, GLfloat *params)
 //lsh_get
 void REAL_NAME(glGetUniformiv)(GLuint program, GLint location, GLint *params)
 {
-	typedef void (*methodType)(GLuint, GLuint, GLint *);
+	TYPEDEF(void (*methodType)(GLuint, GLuint, GLint *));
 	BEFORE(glGetUniformiv);
 	CALL_ORIG(glGetUniformiv, program, location, params);
 	GL_GET_ERROR();
@@ -945,7 +949,7 @@ void REAL_NAME(glGetUniformiv)(GLuint program, GLint location, GLint *params)
 //lsh_get
 GLint REAL_NAME(glGetUniformLocation)(GLuint program, const char *name)
 {
-	typedef GLint (*methodType)(GLuint, const char *);
+	TYPEDEF(GLint (*methodType)(GLuint, const char *));
 	BEFORE(glGetUniformLocation);
 	GLint ret = CALL_ORIG(glGetUniformLocation, program, name);
 	GL_GET_ERROR();
@@ -957,7 +961,7 @@ GLint REAL_NAME(glGetUniformLocation)(GLuint program, const char *name)
 //lsh_get
 void REAL_NAME(glGetVertexAttribfv)(GLuint index, GLenum pname, GLfloat *params)
 {
-	typedef void (*methodType)(GLuint, GLenum, GLfloat *);
+	TYPEDEF(void (*methodType)(GLuint, GLenum, GLfloat *));
 	BEFORE(glGetVertexAttribfv);
 	CALL_ORIG(glGetVertexAttribfv, index, pname, params);
 	GL_GET_ERROR();
@@ -968,7 +972,7 @@ void REAL_NAME(glGetVertexAttribfv)(GLuint index, GLenum pname, GLfloat *params)
 //lsh_get
 void REAL_NAME(glGetVertexAttribiv)(GLuint index, GLenum pname, GLint *params)
 {
-	typedef void (*methodType)(GLuint, GLenum, GLint *);
+	TYPEDEF(void (*methodType)(GLuint, GLenum, GLint *));
 	BEFORE(glGetVertexAttribiv);
 	CALL_ORIG(glGetVertexAttribiv, index, pname, params);
 	GL_GET_ERROR();
@@ -979,7 +983,7 @@ void REAL_NAME(glGetVertexAttribiv)(GLuint index, GLenum pname, GLint *params)
 //lsh_get
 void REAL_NAME(glGetVertexAttribPointerv)(GLuint index, GLenum pname, GLvoid **pointer)
 {
-	typedef void (*methodType)(GLuint, GLenum, GLvoid **);
+	TYPEDEF(void (*methodType)(GLuint, GLenum, GLvoid **));
 	BEFORE(glGetVertexAttribPointerv);
 	CALL_ORIG(glGetVertexAttribPointerv, index, pname, pointer);
 	GL_GET_ERROR();
@@ -993,7 +997,7 @@ void REAL_NAME(glGetVertexAttribPointerv)(GLuint index, GLenum pname, GLvoid **p
 
 void REAL_NAME(glHint)(GLenum target, GLenum mode)
 {
-	typedef void (*methodType)(GLenum, GLenum);
+	TYPEDEF(void (*methodType)(GLenum, GLenum));
 	BEFORE(glHint);
 	CALL_ORIG(glHint, target, mode);
 	GL_GET_ERROR();
@@ -1007,7 +1011,7 @@ void REAL_NAME(glHint)(GLenum target, GLenum mode)
 
 GLboolean REAL_NAME(glIsBuffer)(GLuint buffer)
 {
-	typedef GLboolean (*methodType)(GLuint);
+	TYPEDEF(GLboolean (*methodType)(GLuint));
 	BEFORE(glIsBuffer);
 	GLboolean ret = CALL_ORIG(glIsBuffer, buffer);
 	GL_GET_ERROR();
@@ -1018,7 +1022,7 @@ GLboolean REAL_NAME(glIsBuffer)(GLuint buffer)
 
 GLboolean REAL_NAME(glIsEnabled)(GLenum cap)
 {
-	typedef GLboolean (*methodType)(GLenum);
+	TYPEDEF(GLboolean (*methodType)(GLenum));
 	BEFORE(glIsEnabled);
 	GLboolean ret = CALL_ORIG(glIsEnabled, cap);
 	GL_GET_ERROR();
@@ -1029,7 +1033,7 @@ GLboolean REAL_NAME(glIsEnabled)(GLenum cap)
 
 GLboolean REAL_NAME(glIsFramebuffer)(GLuint framebuffer)
 {
-	typedef GLboolean (*methodType)(GLuint);
+	TYPEDEF(GLboolean (*methodType)(GLuint));
 	BEFORE(glIsFramebuffer);
 	GLboolean ret = CALL_ORIG(glIsFramebuffer, framebuffer);
 	GL_GET_ERROR();
@@ -1040,7 +1044,7 @@ GLboolean REAL_NAME(glIsFramebuffer)(GLuint framebuffer)
 
 GLboolean REAL_NAME(glIsProgram)(GLuint program)
 {
-	typedef GLboolean (*methodType)(GLuint);
+	TYPEDEF(GLboolean (*methodType)(GLuint));
 	BEFORE(glIsProgram);
 	GLboolean ret = CALL_ORIG(glIsProgram, program);
 	GL_GET_ERROR();
@@ -1051,7 +1055,7 @@ GLboolean REAL_NAME(glIsProgram)(GLuint program)
 
 GLboolean REAL_NAME(glIsRenderbuffer)(GLuint renderbuffer)
 {
-	typedef GLboolean (*methodType)(GLuint);
+	TYPEDEF(GLboolean (*methodType)(GLuint));
 	BEFORE(glIsRenderbuffer);
 	GLboolean ret = CALL_ORIG(glIsRenderbuffer, renderbuffer);
 	GL_GET_ERROR();
@@ -1062,7 +1066,7 @@ GLboolean REAL_NAME(glIsRenderbuffer)(GLuint renderbuffer)
 
 GLboolean REAL_NAME(glIsShader)(GLuint shader)
 {
-	typedef GLboolean (*methodType)(GLuint);
+	TYPEDEF(GLboolean (*methodType)(GLuint));
 	BEFORE(glIsShader);
 	GLboolean ret = CALL_ORIG(glIsShader, shader);
 	GL_GET_ERROR();
@@ -1073,7 +1077,7 @@ GLboolean REAL_NAME(glIsShader)(GLuint shader)
 
 GLboolean REAL_NAME(glIsTexture)(GLuint texture)
 {
-	typedef GLboolean (*methodType)(GLuint);
+	TYPEDEF(GLboolean (*methodType)(GLuint));
 	BEFORE(glIsTexture);
 	GLboolean ret = CALL_ORIG(glIsTexture, texture);
 	GL_GET_ERROR();
@@ -1088,7 +1092,7 @@ GLboolean REAL_NAME(glIsTexture)(GLuint texture)
 
 void REAL_NAME(glLineWidth)(GLfloat width)
 {
-	typedef void (*methodType)(GLfloat);
+	TYPEDEF(void (*methodType)(GLfloat));
 	BEFORE(glLineWidth);
 	CALL_ORIG(glLineWidth, width);
 	GL_GET_ERROR();
@@ -1097,7 +1101,7 @@ void REAL_NAME(glLineWidth)(GLfloat width)
 
 void REAL_NAME(glLinkProgram)(GLuint program)
 {
-	typedef void (*methodType)(GLuint);
+	TYPEDEF(void (*methodType)(GLuint));
 	BEFORE(glLinkProgram);
 	CALL_ORIG(glLinkProgram, program);
 	GL_GET_ERROR();
@@ -1147,7 +1151,7 @@ void REAL_NAME(glLinkProgram)(GLuint program)
 
 void REAL_NAME(glPixelStorei)(GLenum pname, GLint param)
 {
-	typedef void (*methodType)(GLenum, GLint);
+	TYPEDEF(void (*methodType)(GLenum, GLint));
 	BEFORE(glPixelStorei);
 	CALL_ORIG(glPixelStorei, pname, param);
 	GL_GET_ERROR();
@@ -1157,7 +1161,7 @@ void REAL_NAME(glPixelStorei)(GLenum pname, GLint param)
 
 void REAL_NAME(glPolygonOffset)(GLfloat factor, GLfloat units)
 {
-	typedef void (*methodType)(GLfloat, GLfloat);
+	TYPEDEF(void (*methodType)(GLfloat, GLfloat));
 	BEFORE(glPolygonOffset);
 	CALL_ORIG(glPolygonOffset, factor, units);
 	GL_GET_ERROR();
@@ -1173,8 +1177,8 @@ void REAL_NAME(glPolygonOffset)(GLfloat factor, GLfloat units)
 void REAL_NAME(glReadPixels)(GLint x, GLint y, GLsizei width, GLsizei height,
 		  GLenum format, GLenum type, GLvoid * data)
 {
-	typedef void (*methodType)(GLint, GLint, GLsizei, GLsizei, GLenum,
-				   GLenum, GLvoid *);
+	TYPEDEF(void (*methodType)(GLint, GLint, GLsizei, GLsizei, GLenum,
+				   GLenum, GLvoid *));
 	BEFORE(glReadPixels);
 	CALL_ORIG(glReadPixels, x, y, width, height, format, type, data);
 	GL_GET_ERROR();
@@ -1185,7 +1189,7 @@ void REAL_NAME(glReadPixels)(GLint x, GLint y, GLsizei width, GLsizei height,
 
 void REAL_NAME(glReleaseShaderCompiler)(void)
 {
-	typedef void (*methodType)(void);
+	TYPEDEF(void (*methodType)(void));
 	BEFORE(glReleaseShaderCompiler);
 	CALL_ORIG(glReleaseShaderCompiler,);
 	GL_GET_ERROR();
@@ -1195,7 +1199,7 @@ void REAL_NAME(glReleaseShaderCompiler)(void)
 void REAL_NAME(glRenderbufferStorage)(GLenum target, GLenum internalformat, GLsizei width,
 			   GLsizei height)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLsizei, GLsizei);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLsizei, GLsizei));
 	BEFORE(glRenderbufferStorage);
 	CALL_ORIG(glRenderbufferStorage, target, internalformat, width, height);
 	GL_GET_ERROR();
@@ -1209,7 +1213,7 @@ void REAL_NAME(glRenderbufferStorage)(GLenum target, GLenum internalformat, GLsi
 
 void REAL_NAME(glSampleCoverage)(GLclampf value, GLboolean invert)
 {
-	typedef void (*methodType)(GLclampf, GLboolean);
+	TYPEDEF(void (*methodType)(GLclampf, GLboolean));
 	BEFORE(glSampleCoverage);
 	CALL_ORIG(glSampleCoverage, value, invert);
 	GL_GET_ERROR();
@@ -1219,7 +1223,7 @@ void REAL_NAME(glSampleCoverage)(GLclampf value, GLboolean invert)
 
 void REAL_NAME(glScissor)(GLint x, GLint y, GLsizei width, GLsizei height)
 {
-	typedef void (*methodType)(GLint, GLint, GLsizei, GLsizei);
+	TYPEDEF(void (*methodType)(GLint, GLint, GLsizei, GLsizei));
 	BEFORE(glScissor);
 	CALL_ORIG(glScissor, x, y, width, height);
 	GL_GET_ERROR();
@@ -1231,8 +1235,8 @@ void REAL_NAME(glScissor)(GLint x, GLint y, GLsizei width, GLsizei height)
 void REAL_NAME(glShaderBinary)(GLsizei n, const GLuint *shaders, GLenum binaryformat,
 		    const void *binary, GLsizei length)
 {
-	typedef void (*methodType)(GLsizei, const GLuint *, GLenum,
-				   const void *, GLsizei);
+	TYPEDEF(void (*methodType)(GLsizei, const GLuint *, GLenum,
+				   const void *, GLsizei));
 	BEFORE(glShaderBinary);
 	CALL_ORIG(glShaderBinary, n, shaders, binaryformat, binary, length);
 	GL_GET_ERROR();
@@ -1245,8 +1249,8 @@ void REAL_NAME(glShaderBinary)(GLsizei n, const GLuint *shaders, GLenum binaryfo
 void REAL_NAME(glShaderSource)(GLuint shader, GLsizei count, const char **string,
 		    const GLint *length)
 {
-	typedef void (*methodType)(GLuint, GLsizei, const char **,
-				   const GLint*);
+	TYPEDEF(void (*methodType)(GLuint, GLsizei, const char **,
+				   const GLint*));
 	BEFORE(glShaderSource);
 	CALL_ORIG(glShaderSource, shader, count, string, length);
 	GL_GET_ERROR();
@@ -1267,7 +1271,7 @@ void REAL_NAME(glShaderSource)(GLuint shader, GLsizei count, const char **string
 
 void REAL_NAME(glStencilFunc)(GLenum func, GLint ref, GLuint mask)
 {
-	typedef void (*methodType)(GLenum, GLint, GLint);
+	TYPEDEF(void (*methodType)(GLenum, GLint, GLint));
 	BEFORE(glStencilFunc);
 	CALL_ORIG(glStencilFunc, func, ref, mask);
 	GL_GET_ERROR();
@@ -1277,7 +1281,7 @@ void REAL_NAME(glStencilFunc)(GLenum func, GLint ref, GLuint mask)
 
 void REAL_NAME(glStencilFuncSeparate)(GLenum face, GLenum func, GLint ref, GLuint mask)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLint, GLuint);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint, GLuint));
 	BEFORE(glStencilFuncSeparate);
 	CALL_ORIG(glStencilFuncSeparate, face, func, ref, mask);
 	GL_GET_ERROR();
@@ -1287,7 +1291,7 @@ void REAL_NAME(glStencilFuncSeparate)(GLenum face, GLenum func, GLint ref, GLuin
 
 void REAL_NAME(glStencilMask)(GLuint mask)
 {
-	typedef void (*methodType)(GLuint);
+	TYPEDEF(void (*methodType)(GLuint));
 	BEFORE(glStencilMask);
 	CALL_ORIG(glStencilMask, mask);
 	GL_GET_ERROR();
@@ -1296,7 +1300,7 @@ void REAL_NAME(glStencilMask)(GLuint mask)
 
 void REAL_NAME(glStencilMaskSeparate)(GLenum face, GLuint mask)
 {
-	typedef void (*methodType)(GLenum, GLuint);
+	TYPEDEF(void (*methodType)(GLenum, GLuint));
 	BEFORE(glStencilMaskSeparate);
 	CALL_ORIG(glStencilMaskSeparate, face, mask);
 	GL_GET_ERROR();
@@ -1306,7 +1310,7 @@ void REAL_NAME(glStencilMaskSeparate)(GLenum face, GLuint mask)
 
 void REAL_NAME(glStencilOp)(GLenum sfail, GLenum dpfail, GLenum dppass)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLenum);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLenum));
 	BEFORE(glStencilOp);
 	CALL_ORIG(glStencilOp, sfail, dpfail, dppass);
 	GL_GET_ERROR();
@@ -1318,7 +1322,7 @@ void REAL_NAME(glStencilOp)(GLenum sfail, GLenum dpfail, GLenum dppass)
 void REAL_NAME(glStencilOpSeparate)(GLenum face, GLenum sfail, GLenum dpfail,
 			 GLenum dppass)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLenum, GLenum);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLenum, GLenum));
 	BEFORE(glStencilOpSeparate);
 	CALL_ORIG(glStencilOpSeparate, face, sfail, dpfail, dppass);
 	GL_GET_ERROR();
@@ -1335,8 +1339,8 @@ void REAL_NAME(glTexImage2D)(GLenum target, GLint level, GLenum internalformat,
 		  GLsizei width, GLsizei height, GLint border, GLenum format,
 		  GLenum type, const GLvoid *data)
 {
-	typedef void (*methodType)(GLenum, GLint, GLint, GLsizei, GLsizei,
-				   GLint, GLenum, GLenum, const GLvoid *);
+	TYPEDEF(void (*methodType)(GLenum, GLint, GLint, GLsizei, GLsizei,
+				   GLint, GLenum, GLenum, const GLvoid *));
 	BEFORE(glTexImage2D);
 	CALL_ORIG(glTexImage2D, target, level, internalformat, width,
 		  height, border, format, type, data);
@@ -1349,7 +1353,7 @@ void REAL_NAME(glTexImage2D)(GLenum target, GLint level, GLenum internalformat,
 
 void REAL_NAME(glTexParameterf)(GLenum target, GLenum pname, GLfloat param)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLfloat);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLfloat));
 	BEFORE(glTexParameterf);
 	CALL_ORIG(glTexParameterf, target, pname, param);
 	GL_GET_ERROR();
@@ -1359,7 +1363,7 @@ void REAL_NAME(glTexParameterf)(GLenum target, GLenum pname, GLfloat param)
 
 void REAL_NAME(glTexParameterfv)(GLenum target, GLenum pname, const GLfloat * params)
 {
-	typedef void (*methodType)(GLenum, GLenum, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, const GLfloat *));
 	BEFORE(glTexParameterfv);
 	CALL_ORIG(glTexParameterfv, target, pname, params);
 	GL_GET_ERROR();
@@ -1378,7 +1382,7 @@ void REAL_NAME(glTexParameterfv)(GLenum target, GLenum pname, const GLfloat * pa
 
 void REAL_NAME(glTexParameteri)(GLenum target, GLenum pname, GLint param)
 {
-	typedef void (*methodType)(GLenum, GLenum, GLint);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint));
 	BEFORE(glTexParameteri);
 	CALL_ORIG(glTexParameteri, target, pname, param);
 	GL_GET_ERROR();
@@ -1389,7 +1393,7 @@ void REAL_NAME(glTexParameteri)(GLenum target, GLenum pname, GLint param)
 
 void REAL_NAME(glTexParameteriv)(GLenum target, GLenum pname, const GLint * params)
 {
-	typedef void (*methodType)(GLenum, GLenum, const GLint *);
+	TYPEDEF(void (*methodType)(GLenum, GLenum, const GLint *));
 	BEFORE(glTexParameteriv);
 	CALL_ORIG(glTexParameteriv, target, pname, params);
 	GL_GET_ERROR();
@@ -1411,8 +1415,8 @@ void REAL_NAME(glTexSubImage2D)(GLenum target, GLint level, GLint xoffset, GLint
 		     GLsizei width, GLsizei height, GLenum format, GLenum type,
 		     const GLvoid * data)
 {
-	typedef void (*methodType)(GLenum, GLint, GLint, GLint, GLsizei,
-				   GLsizei, GLenum, GLenum, const GLvoid *);
+	TYPEDEF(void (*methodType)(GLenum, GLint, GLint, GLint, GLsizei,
+				   GLsizei, GLenum, GLenum, const GLvoid *));
 	BEFORE(glTexSubImage2D);
 	CALL_ORIG(glTexSubImage2D, target, level, xoffset, yoffset, width,
 		  height, format, type, data);
@@ -1429,7 +1433,7 @@ void REAL_NAME(glTexSubImage2D)(GLenum target, GLint level, GLint xoffset, GLint
 
 void REAL_NAME(glUniform1f)(GLint location, GLfloat v0)
 {
-	typedef void (*methodType)(GLint, GLfloat);
+	TYPEDEF(void (*methodType)(GLint, GLfloat));
 	BEFORE(glUniform1f);
 	CALL_ORIG(glUniform1f, location, v0);
 	GL_GET_ERROR();
@@ -1439,7 +1443,7 @@ void REAL_NAME(glUniform1f)(GLint location, GLfloat v0)
 
 void REAL_NAME(glUniform2f)(GLint location, GLfloat v0, GLfloat v1)
 {
-	typedef void (*methodType)(GLint, GLfloat, GLfloat);
+	TYPEDEF(void (*methodType)(GLint, GLfloat, GLfloat));
 	BEFORE(glUniform2f);
 	CALL_ORIG(glUniform2f, location, v0, v1);
 	GL_GET_ERROR();
@@ -1449,7 +1453,7 @@ void REAL_NAME(glUniform2f)(GLint location, GLfloat v0, GLfloat v1)
 
 void REAL_NAME(glUniform3f)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2)
 {
-	typedef void (*methodType)(GLint, GLfloat, GLfloat, GLfloat);
+	TYPEDEF(void (*methodType)(GLint, GLfloat, GLfloat, GLfloat));
 	BEFORE(glUniform3f);
 	CALL_ORIG(glUniform3f, location, v0, v1, v2);
 	GL_GET_ERROR();
@@ -1459,7 +1463,7 @@ void REAL_NAME(glUniform3f)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2)
 
 void REAL_NAME(glUniform4f)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
 {
-	typedef void (*methodType)(GLint, GLfloat, GLfloat, GLfloat, GLfloat);
+	TYPEDEF(void (*methodType)(GLint, GLfloat, GLfloat, GLfloat, GLfloat));
 	BEFORE(glUniform4f);
 	CALL_ORIG(glUniform4f, location, v0, v1, v2, v3);
 	GL_GET_ERROR();
@@ -1469,7 +1473,7 @@ void REAL_NAME(glUniform4f)(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, 
 
 void REAL_NAME(glUniform1fv)(GLint location, GLsizei count, const GLfloat *value)
 {
-	typedef void (*methodType)(GLint, GLsizei, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLint, GLsizei, const GLfloat *));
 	BEFORE(glUniform1fv);
 	CALL_ORIG(glUniform1fv, location, count, value);
 	GL_GET_ERROR();
@@ -1479,7 +1483,7 @@ void REAL_NAME(glUniform1fv)(GLint location, GLsizei count, const GLfloat *value
 
 void REAL_NAME(glUniform2fv)(GLint location, GLsizei count, const GLfloat *value)
 {
-	typedef void (*methodType)(GLint, GLsizei, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLint, GLsizei, const GLfloat *));
 	BEFORE(glUniform2fv);
 	CALL_ORIG(glUniform2fv, location, count, value);
 	GL_GET_ERROR();
@@ -1489,7 +1493,7 @@ void REAL_NAME(glUniform2fv)(GLint location, GLsizei count, const GLfloat *value
 
 void REAL_NAME(glUniform3fv)(GLint location, GLsizei count, const GLfloat *value)
 {
-	typedef void (*methodType)(GLint, GLsizei, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLint, GLsizei, const GLfloat *));
 	BEFORE(glUniform3fv);
 	CALL_ORIG(glUniform3fv, location, count, value);
 	GL_GET_ERROR();
@@ -1499,7 +1503,7 @@ void REAL_NAME(glUniform3fv)(GLint location, GLsizei count, const GLfloat *value
 
 void REAL_NAME(glUniform4fv)(GLint location, GLsizei count, const GLfloat *value)
 {
-	typedef void (*methodType)(GLint, GLsizei, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLint, GLsizei, const GLfloat *));
 	BEFORE(glUniform4fv);
 	CALL_ORIG(glUniform4fv, location, count, value);
 	GL_GET_ERROR();
@@ -1509,7 +1513,7 @@ void REAL_NAME(glUniform4fv)(GLint location, GLsizei count, const GLfloat *value
 
 void REAL_NAME(glUniform1i)(GLint location, GLint v0)
 {
-	typedef void (*methodType)(GLint, GLint);
+	TYPEDEF(void (*methodType)(GLint, GLint));
 	BEFORE(glUniform1i);
 	CALL_ORIG(glUniform1i, location, v0);
 	GL_GET_ERROR();
@@ -1519,7 +1523,7 @@ void REAL_NAME(glUniform1i)(GLint location, GLint v0)
 
 void REAL_NAME(glUniform2i)(GLint location, GLint v0, GLint v1)
 {
-	typedef void (*methodType)(GLint, GLint, GLint);
+	TYPEDEF(void (*methodType)(GLint, GLint, GLint));
 	BEFORE(glUniform2i);
 	CALL_ORIG(glUniform2i, location, v0, v1);
 	GL_GET_ERROR();
@@ -1529,7 +1533,7 @@ void REAL_NAME(glUniform2i)(GLint location, GLint v0, GLint v1)
 
 void REAL_NAME(glUniform3i)(GLint location, GLint v0, GLint v1, GLint v2)
 {
-	typedef void (*methodType)(GLint, GLint, GLint, GLint);
+	TYPEDEF(void (*methodType)(GLint, GLint, GLint, GLint));
 	BEFORE(glUniform3i);
 	CALL_ORIG(glUniform3i, location, v0, v1, v2);
 	GL_GET_ERROR();
@@ -1539,7 +1543,7 @@ void REAL_NAME(glUniform3i)(GLint location, GLint v0, GLint v1, GLint v2)
 
 void REAL_NAME(glUniform4i)(GLint location, GLint v0, GLint v1, GLint v2, GLint v3)
 {
-	typedef void (*methodType)(GLint, GLint, GLint, GLint, GLint);
+	TYPEDEF(void (*methodType)(GLint, GLint, GLint, GLint, GLint));
 	BEFORE(glUniform4i);
 	CALL_ORIG(glUniform4i, location, v0, v1, v2, v3);
 	GL_GET_ERROR();
@@ -1549,7 +1553,7 @@ void REAL_NAME(glUniform4i)(GLint location, GLint v0, GLint v1, GLint v2, GLint 
 
 void REAL_NAME(glUniform1iv)(GLint location, GLsizei count, const GLint *value)
 {
-	typedef void (*methodType)(GLint, GLsizei, const GLint *);
+	TYPEDEF(void (*methodType)(GLint, GLsizei, const GLint *));
 	BEFORE(glUniform1iv);
 	CALL_ORIG(glUniform1iv, location, count, value);
 	GL_GET_ERROR();
@@ -1559,7 +1563,7 @@ void REAL_NAME(glUniform1iv)(GLint location, GLsizei count, const GLint *value)
 
 void REAL_NAME(glUniform2iv)(GLint location, GLsizei count, const GLint *value)
 {
-	typedef void (*methodType)(GLint, GLsizei, const GLint *);
+	TYPEDEF(void (*methodType)(GLint, GLsizei, const GLint *));
 	BEFORE(glUniform2iv);
 	CALL_ORIG(glUniform2iv, location, count, value);
 	GL_GET_ERROR();
@@ -1569,7 +1573,7 @@ void REAL_NAME(glUniform2iv)(GLint location, GLsizei count, const GLint *value)
 
 void REAL_NAME(glUniform3iv)(GLint location, GLsizei count, const GLint *value)
 {
-	typedef void (*methodType)(GLint, GLsizei, const GLint *);
+	TYPEDEF(void (*methodType)(GLint, GLsizei, const GLint *));
 	BEFORE(glUniform3iv);
 	CALL_ORIG(glUniform3iv, location, count, value);
 	GL_GET_ERROR();
@@ -1579,7 +1583,7 @@ void REAL_NAME(glUniform3iv)(GLint location, GLsizei count, const GLint *value)
 
 void REAL_NAME(glUniform4iv)(GLint location, GLsizei count, const GLint *value)
 {
-	typedef void (*methodType)(GLint, GLsizei, const GLint *);
+	TYPEDEF(void (*methodType)(GLint, GLsizei, const GLint *));
 	BEFORE(glUniform4iv);
 	CALL_ORIG(glUniform4iv, location, count, value);
 	GL_GET_ERROR();
@@ -1590,7 +1594,7 @@ void REAL_NAME(glUniform4iv)(GLint location, GLsizei count, const GLint *value)
 void REAL_NAME(glUniformMatrix2fv)(GLint location, GLsizei count, GLboolean transpose,
 			const GLfloat *value)
 {
-	typedef void (*methodType)(GLint, GLsizei, GLboolean, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLint, GLsizei, GLboolean, const GLfloat *));
 	BEFORE(glUniformMatrix2fv);
 	CALL_ORIG(glUniformMatrix2fv, location, count, transpose, value);
 	GL_GET_ERROR();
@@ -1602,7 +1606,7 @@ void REAL_NAME(glUniformMatrix2fv)(GLint location, GLsizei count, GLboolean tran
 void REAL_NAME(glUniformMatrix3fv)(GLint location, GLsizei count, GLboolean transpose,
 			const GLfloat *value)
 {
-	typedef void (*methodType)(GLint, GLsizei, GLboolean, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLint, GLsizei, GLboolean, const GLfloat *));
 	BEFORE(glUniformMatrix3fv);
 	CALL_ORIG(glUniformMatrix3fv, location, count, transpose, value);
 	GL_GET_ERROR();
@@ -1614,7 +1618,7 @@ void REAL_NAME(glUniformMatrix3fv)(GLint location, GLsizei count, GLboolean tran
 void REAL_NAME(glUniformMatrix4fv)(GLint location, GLsizei count, GLboolean transpose,
 			const GLfloat *value)
 {
-	typedef void (*methodType)(GLint, GLsizei, GLboolean, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLint, GLsizei, GLboolean, const GLfloat *));
 	BEFORE(glUniformMatrix4fv);
 	CALL_ORIG(glUniformMatrix4fv, location, count, transpose, value);
 	GL_GET_ERROR();
@@ -1625,7 +1629,7 @@ void REAL_NAME(glUniformMatrix4fv)(GLint location, GLsizei count, GLboolean tran
 
 void REAL_NAME(glUseProgram)(GLuint program)
 {
-	typedef void (*methodType)(GLuint);
+	TYPEDEF(void (*methodType)(GLuint));
 	BEFORE(glUseProgram);
 	CALL_ORIG(glUseProgram, program);
 	GL_GET_ERROR();
@@ -1639,7 +1643,7 @@ void REAL_NAME(glUseProgram)(GLuint program)
 
 void REAL_NAME(glValidateProgram)(GLuint program)
 {
-	typedef void (*methodType)(GLuint);
+	TYPEDEF(void (*methodType)(GLuint));
 	BEFORE(glValidateProgram);
 	CALL_ORIG(glValidateProgram, program);
 	GL_GET_ERROR();
@@ -1649,7 +1653,7 @@ void REAL_NAME(glValidateProgram)(GLuint program)
 
 void REAL_NAME(glVertexAttrib1f)(GLuint index, GLfloat v0)
 {
-	typedef void (*methodType)(GLuint, GLfloat);
+	TYPEDEF(void (*methodType)(GLuint, GLfloat));
 	BEFORE(glVertexAttrib1f);
 	CALL_ORIG(glVertexAttrib1f, index, v0);
 
@@ -1664,7 +1668,7 @@ void REAL_NAME(glVertexAttrib1f)(GLuint index, GLfloat v0)
 
 void REAL_NAME(glVertexAttrib2f)(GLuint index, GLfloat v0, GLfloat v1)
 {
-	typedef void (*methodType)(GLuint, GLfloat, GLfloat);
+	TYPEDEF(void (*methodType)(GLuint, GLfloat, GLfloat));
 	BEFORE(glVertexAttrib2f);
 	CALL_ORIG(glVertexAttrib2f, index, v0, v1);
 
@@ -1679,7 +1683,7 @@ void REAL_NAME(glVertexAttrib2f)(GLuint index, GLfloat v0, GLfloat v1)
 
 void REAL_NAME(glVertexAttrib3f)(GLuint index, GLfloat v0, GLfloat v1, GLfloat v2)
 {
-	typedef void (*methodType)(GLuint, GLfloat, GLfloat, GLfloat);
+	TYPEDEF(void (*methodType)(GLuint, GLfloat, GLfloat, GLfloat));
 	BEFORE(glVertexAttrib3f);
 	CALL_ORIG(glVertexAttrib3f, index, v0, v1, v2);
 
@@ -1695,7 +1699,7 @@ void REAL_NAME(glVertexAttrib3f)(GLuint index, GLfloat v0, GLfloat v1, GLfloat v
 void REAL_NAME(glVertexAttrib4f)(GLuint index, GLfloat v0, GLfloat v1, GLfloat v2,
 		      GLfloat v3)
 {
-	typedef void (*methodType)(GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
+	TYPEDEF(void (*methodType)(GLuint, GLfloat, GLfloat, GLfloat, GLfloat));
 	BEFORE(glVertexAttrib4f);
 	CALL_ORIG(glVertexAttrib4f, index, v0, v1, v2, v3);
 
@@ -1710,7 +1714,7 @@ void REAL_NAME(glVertexAttrib4f)(GLuint index, GLfloat v0, GLfloat v1, GLfloat v
 
 void REAL_NAME(glVertexAttrib1fv)(GLuint index, const GLfloat *v)
 {
-	typedef void (*methodType)(GLuint, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLuint, const GLfloat *));
 	BEFORE(glVertexAttrib1fv);
 	CALL_ORIG(glVertexAttrib1fv, index, v);
 
@@ -1725,7 +1729,7 @@ void REAL_NAME(glVertexAttrib1fv)(GLuint index, const GLfloat *v)
 
 void REAL_NAME(glVertexAttrib2fv)(GLuint index, const GLfloat *v)
 {
-	typedef void (*methodType)(GLuint, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLuint, const GLfloat *));
 	BEFORE(glVertexAttrib2fv);
 	CALL_ORIG(glVertexAttrib2fv, index, v);
 
@@ -1740,7 +1744,7 @@ void REAL_NAME(glVertexAttrib2fv)(GLuint index, const GLfloat *v)
 
 void REAL_NAME(glVertexAttrib3fv)(GLuint index, const GLfloat *v)
 {
-	typedef void (*methodType)(GLuint, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLuint, const GLfloat *));
 	BEFORE(glVertexAttrib3fv);
 	CALL_ORIG(glVertexAttrib3fv, index, v);
 
@@ -1755,7 +1759,7 @@ void REAL_NAME(glVertexAttrib3fv)(GLuint index, const GLfloat *v)
 
 void REAL_NAME(glVertexAttrib4fv)(GLuint index, const GLfloat *v)
 {
-	typedef void (*methodType)(GLuint, const GLfloat *);
+	TYPEDEF(void (*methodType)(GLuint, const GLfloat *));
 	BEFORE(glVertexAttrib4fv);
 	CALL_ORIG(glVertexAttrib4fv, index, v);
 	GLfloat cv[4];
@@ -1771,8 +1775,8 @@ void REAL_NAME(glVertexAttribPointer)(GLuint index, GLint size, GLenum type,
 			   GLboolean normalized, GLsizei stride,
 			   const GLvoid *pointer)
 {
-	typedef void (*methodType)(GLuint, GLint, GLenum, GLboolean, GLsizei,
-				   const GLvoid *);
+	TYPEDEF(void (*methodType)(GLuint, GLint, GLenum, GLboolean, GLsizei,
+				   const GLvoid *));
 	BEFORE(glVertexAttribPointer);
 	CALL_ORIG(glVertexAttribPointer, index, size, type, normalized, stride,
 		  pointer);
@@ -1784,7 +1788,7 @@ void REAL_NAME(glVertexAttribPointer)(GLuint index, GLint size, GLenum type,
 
 void REAL_NAME(glViewport)(GLint x, GLint y, GLsizei width, GLsizei height)
 {
-	typedef void (*methodType)(GLint, GLint, GLsizei, GLsizei);
+	TYPEDEF(void (*methodType)(GLint, GLint, GLsizei, GLsizei));
 
 	BEFORE(glViewport);
 
