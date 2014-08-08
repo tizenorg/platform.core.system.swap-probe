@@ -447,6 +447,16 @@ int pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize)
 	return ret;
 }
 
+#if 0
+/* TODO FIXME
+ * this code is disabled becouse it can not be compiled with some versions
+ * of libpthread. Next error occures:
+ *   multiple definition of `pthread_attr_getstackaddr'
+ *   multiple definition of `pthread_attr_setstackaddr'
+ * Possible becouse of deprecated attribute
+ *
+ * happens on pthread-2.18 (target TV emul), not happens on pthread-2.13
+ */
 int pthread_attr_getstackaddr(const pthread_attr_t *attr, void **stackaddr)
 {
 	pthread_t thread = 0;
@@ -483,6 +493,7 @@ int pthread_attr_setstackaddr(pthread_attr_t *attr, void *stackaddr)
 
 	return ret;
 }
+#endif
 
 int pthread_attr_getinheritsched(const pthread_attr_t *attr, int *inheritsched)
 {
