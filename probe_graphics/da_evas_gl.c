@@ -42,7 +42,7 @@ void evas_gl_free(Evas_GL *evas_gl)
 	evas_gl_freep(evas_gl);
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "p",
-	      evas_gl);
+	      voidp_to_uint64(evas_gl));
 }
 
 void evas_gl_config_free(Evas_GL_Config *cfg)
@@ -52,7 +52,7 @@ void evas_gl_config_free(Evas_GL_Config *cfg)
 	evas_gl_config_freep(cfg);
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "p",
-	      cfg);
+	      voidp_to_uint64(cfg));
 }
 
 void evas_gl_surface_destroy(Evas_GL *evas_gl, Evas_GL_Surface *surf)
@@ -62,7 +62,7 @@ void evas_gl_surface_destroy(Evas_GL *evas_gl, Evas_GL_Surface *surf)
 	evas_gl_surface_destroyp(evas_gl, surf);
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "pp",
-	      evas_gl, surf);
+	      voidp_to_uint64(evas_gl), voidp_to_uint64(surf));
 }
 
 void evas_gl_context_destroy(Evas_GL *evas_gl, Evas_GL_Context *ctx)
@@ -72,7 +72,7 @@ void evas_gl_context_destroy(Evas_GL *evas_gl, Evas_GL_Context *ctx)
 	evas_gl_context_destroyp(evas_gl, ctx);
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "pp",
-	      evas_gl, ctx);
+	      voidp_to_uint64(evas_gl), voidp_to_uint64(ctx));
 }
 
 Evas_GL *evas_gl_new(Evas *e)
@@ -81,8 +81,8 @@ Evas_GL *evas_gl_new(Evas *e)
 	BEFORE_EVAS_GL(evas_gl_new);
 	Evas_GL *res = evas_gl_newp(e);
 	GL_GET_ERROR();
-	AFTER('p', res, APITYPE_CONTEXT, "", "p",
-	      e);
+	AFTER('p', voidp_to_uint64(res), APITYPE_CONTEXT, "", "p",
+	      voidp_to_uint64(e));
 	return res;
 }
 
@@ -92,7 +92,7 @@ Evas_GL_Config *evas_gl_config_new(void)
 	BEFORE_EVAS_GL(evas_gl_config_new);
 	Evas_GL_Config *res = evas_gl_config_newp();
 	GL_GET_ERROR();
-	AFTER_NO_PARAM('p', res, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('p', voidp_to_uint64(res), APITYPE_CONTEXT, "");
 	return res;
 }
 
@@ -102,11 +102,12 @@ Evas_GL_Surface *evas_gl_surface_create(Evas_GL *evas_gl, Evas_GL_Config *cfg,
 	typedef Evas_GL_Surface *(*methodType)(Evas_GL *evas_gl,
 					       Evas_GL_Config *cfg,
 					       int w, int h);
+
 	BEFORE_EVAS_GL(evas_gl_surface_create);
 	Evas_GL_Surface *res = evas_gl_surface_createp(evas_gl, cfg, w, h);
 	GL_GET_ERROR();
-	AFTER('p', res, APITYPE_CONTEXT, "", "ppdd",
-	      evas_gl, cfg, w, h);
+	AFTER('p', voidp_to_uint64(res), APITYPE_CONTEXT, "", "ppdd",
+	      voidp_to_uint64(evas_gl), voidp_to_uint64(cfg), w, h);
 	return res;
 }
 
@@ -118,8 +119,8 @@ Evas_GL_Context *evas_gl_context_create(Evas_GL *evas_gl,
 	BEFORE_EVAS_GL(evas_gl_context_create);
 	Evas_GL_Context *res = evas_gl_context_createp(evas_gl, share_ctx);
 	GL_GET_ERROR();
-	AFTER('p', res, APITYPE_CONTEXT, "", "pp",
-	      evas_gl, share_ctx);
+	AFTER('p', voidp_to_uint64(res), APITYPE_CONTEXT, "", "pp",
+	      voidp_to_uint64(evas_gl), voidp_to_uint64(share_ctx));
 	return res;
 }
 
@@ -132,7 +133,7 @@ Eina_Bool evas_gl_make_current(Evas_GL *evas_gl, Evas_GL_Surface *surf,
 	Eina_Bool res = evas_gl_make_currentp(evas_gl, surf, ctx);
 	GL_GET_ERROR();
 	AFTER('b', res, APITYPE_CONTEXT, "", "ppp",
-	      evas_gl, surf, ctx);
+	      voidp_to_uint64(evas_gl), voidp_to_uint64(surf), voidp_to_uint64(ctx));
 	return res;
 }
 
@@ -143,7 +144,7 @@ const char *evas_gl_string_query(Evas_GL *evas_gl, int name)
 	const char *res = evas_gl_string_queryp(evas_gl, name);
 	GL_GET_ERROR();
 	AFTER('s', res, APITYPE_CONTEXT, "", "pd",
-	      evas_gl, name);
+	      voidp_to_uint64(evas_gl), name);
 	return res;
 }
 
@@ -153,8 +154,8 @@ Evas_GL_Func evas_gl_proc_address_get(Evas_GL *evas_gl, const char *name)
 	BEFORE_EVAS_GL(evas_gl_proc_address_get);
 	Evas_GL_Func res = evas_gl_proc_address_getp(evas_gl, name);
 	GL_GET_ERROR();
-	AFTER('p', res, APITYPE_CONTEXT, "", "ps",
-	      evas_gl, name);
+	AFTER('p', voidp_to_uint64(res), APITYPE_CONTEXT, "", "ps",
+	      voidp_to_uint64(evas_gl), name);
 	return res;
 }
 
@@ -167,7 +168,7 @@ Eina_Bool evas_gl_native_surface_get(Evas_GL *evas_gl, Evas_GL_Surface *surf,
 	Eina_Bool res = evas_gl_native_surface_getp(evas_gl, surf, ns);
 	GL_GET_ERROR();
 	AFTER('b', res, APITYPE_CONTEXT, "", "ppp",
-	      evas_gl, surf, ns);
+	      voidp_to_uint64(evas_gl), voidp_to_uint64(surf), voidp_to_uint64(ns));
 	return res;
 }
 
@@ -183,6 +184,6 @@ Evas_GL_API *evas_gl_api_get(Evas_GL *evas_gl)
 
 	GL_GET_ERROR();
 	AFTER('p', res, APITYPE_CONTEXT, "", "p",
-	      evas_gl);
+	      voidp_to_uint64(evas_gl));
 	return res;
 }
