@@ -89,9 +89,9 @@ PROBE_SRCS =	   				\
 	./probe_file/da_io_stdc.c		\
 
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
-CAPI_SRCS = 	$(COMMON_SRCS)			\
-		./probe_capi/capi_appfw.c
-#		./probe_ui/capi_capture.c
+CAPI_SRCS = $(COMMON_SRCS)							\
+		./probe_capi/capi_appfw.c					\
+		./probe_ui/capi_capture.c
 
 TIZEN_SRCS =	$(COMMON_SRCS) $(CAPI_SRCS)\
 		./helper/addr-tizen.c						\

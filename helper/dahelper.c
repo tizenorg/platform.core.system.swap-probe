@@ -40,7 +40,7 @@ int app_efl_main_flg = 0;
 const char *lib_string[NUM_ORIGINAL_LIBRARY] = {
 	"libc.so.6",				//0
 	"libpthread.so.0",			//1
-	"libelementary.so",			//2
+	"libelementary.so.1",			//2
 	"libecore_input_evas.so.1",		//3
 	"libdaemon.so.0",			//4
 	"libcapi-appfw-application.so.0",	//5

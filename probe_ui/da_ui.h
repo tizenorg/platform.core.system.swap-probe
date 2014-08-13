@@ -53,13 +53,14 @@
 	Evas_Object* ret;									\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME)
 
-#define AFTER_ORIGINAL_SNAPSHOT(EVASOBJECT)							\
-	do {															\
-		probeBlockStart();											\
+#define AFTER_ORIGINAL_SNAPSHOT(EVASOBJECT)					\
+	do {									\
+		probeBlockStart();						\
+		SCREENSHOT_SET();						\
 		evas_event_callback_add(evas_object_evas_get(EVASOBJECT),	\
-			EVAS_CALLBACK_RENDER_FLUSH_POST,						\
-			_cb_render_post, NULL);									\
-		probeBlockEnd();											\
+			EVAS_CALLBACK_RENDER_FLUSH_POST,			\
+			_cb_render_post, NULL);					\
+		probeBlockEnd();						\
 	} while(0)
 
 #endif // __DA_SNAPSHOT_H__
