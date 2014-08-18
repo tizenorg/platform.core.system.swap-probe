@@ -12,12 +12,6 @@ BuildRequires:  capi-system-runtime-info-devel
 BuildRequires:  libXext-devel
 Provides:  swap-probe
 
-%if "%_project" == "Kirana_SWA_OPEN:Build" || "%_project" == "Kirana_SDK:Daily"
-%define SWAP_PROBE_DEFS "-DPRIVATE_CAPI_APPFW"
-%else
-%define SWAP_PROBE_DEFS ""
-%endif
-
 %description
 SWAP probe is a part of data collection back-end for DA.
 This library will be installed in target.
@@ -28,7 +22,7 @@ This library will be installed in target.
 %build
 make rmheaders
 make headers
-SWAP_PROBE_DEFS="%{SWAP_PROBE_DEFS}" make -j
+make -j
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
