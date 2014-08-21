@@ -60,6 +60,7 @@
 #include "daforkexec.h"
 #include "damaps.h"
 #include "common_probe_init.h"
+#include "version.h"
 
 #define APP_INSTALL_PATH		"/opt/apps"
 #define TISEN_APP_POSTFIX			".exe"
@@ -452,8 +453,7 @@ void _init_(void)
 	}
 
 
-	sprintf(msg, "dynamic analyzer probe helper so loading... pid[%d]\n",
-		getpid());
+	sprintf(msg, "Loading... pid[%d] ver[%s]\n", getpid(), VERSION);
 	PRINTMSG(msg);
 
 	gTraceInfo.init_complete = 1;
