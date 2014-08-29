@@ -135,9 +135,9 @@ static int createSocket(void)
 		{
 			char buf[64];
 			int recved = 0;
-			/* send pid */
-			sprintf(buf, "%d|%llu", getpid(),
-				gTraceInfo.app.startTime);
+
+			/* send pid and ppid to manager */
+			sprintf(buf, "%d %d", getpid(), getppid());
 			print_log_str(MSG_PID, buf);
 
 			/* we need recv this messages right now! */
