@@ -155,10 +155,12 @@ static const double __ac_HASH_UPPER = 0.77;
         khint_t j = 1;                                                  \
         {                                                               \
             khint_t t = __ac_HASH_PRIME_SIZE - 1;                       \
-            while (__ac_prime_list[t] > new_n_buckets) {                \
-                --t;                                                    \
+            if (new_n_buckets < __ac_prime_list[__ac_HASH_PRIME_SIZE - 1]) { \
+                while (__ac_prime_list[t] > new_n_buckets) {            \
+                    --t;                                                \
+                }                                                       \
+                new_n_buckets = __ac_prime_list[t + 1];                 \
             }                                                           \
-            new_n_buckets = __ac_prime_list[t+1];                       \
             if (h->size >= (khint_t)(new_n_buckets * __ac_HASH_UPPER + 0.5)) j = 0; \
             else {                                                      \
                 new_flags = (uint32_t*)malloc(((new_n_buckets>>4) + 1) * sizeof(uint32_t)); \
