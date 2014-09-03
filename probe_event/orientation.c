@@ -36,7 +36,7 @@
 
 
 Ecore_Event_Handler *register_orientation_event_listener();
-void unregister_orientation_event_listener(Ecore_Event_Handler **handler);
+void unregister_orientation_event_listener(Ecore_Event_Handler *handler);
 
 Ecore_Event_Handler *handler = NULL;
 
@@ -79,12 +79,12 @@ Ecore_Event_Handler *register_orientation_event_listener()
 	return handler;
 }
 
-void unregister_orientation_event_listener(Ecore_Event_Handler **handler)
+void unregister_orientation_event_listener(Ecore_Event_Handler *handler)
 {
 	probeBlockStart();
-	if (*handler) {
-		ecore_event_handler_del(*handler);
-		*handler = NULL;
-	}
+
+	if (handler)
+		ecore_event_handler_del(handler);
+
 	probeBlockEnd();
 }
