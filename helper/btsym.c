@@ -336,7 +336,7 @@ char** da_backtrace_symbols (void* const* array, int size)
 				/* If this is the main program the information is incomplete.  */
 				if (map->l_name[0] == '\0' && map->l_type == lt_executable)
 				{
-					strcpy(filepath, program_invocation_name);
+					strncpy(filepath, program_invocation_name, FILEPATH_MAX - 1);
 				}
 				else
 				{
