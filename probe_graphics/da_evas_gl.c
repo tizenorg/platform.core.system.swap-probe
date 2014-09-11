@@ -186,3 +186,40 @@ Evas_GL_API *evas_gl_api_get(Evas_GL *evas_gl)
 	      voidp_to_uint64(evas_gl));
 	return res;
 }
+
+/* ----------------- api get functions -------------- */
+
+Evas_GL_API* elm_glview_gl_api_get(const Evas_Object *obj)
+{
+	typedef Evas_GL_API *(*methodType)(const Evas_Object *obj);
+	BEFORE_EVAS_GL(elm_glview_gl_api_get);
+	Evas_GL_API *res = elm_glview_gl_api_getp(obj);
+
+	/* save original api functions and rewrite it by probes */
+	if (res != NULL) {
+		save_orig_gl_api_list(res);
+		change_gl_api_list(res);
+	}
+
+	GL_GET_ERROR();
+	AFTER('p', res, APITYPE_CONTEXT, "", "p",
+	      voidp_to_uint64(obj));
+
+	return res;
+}
+
+Evas_GL_API *evas_gl_context_api_get(Evas_GL *evas_gl, Evas_GL_Context *ctx)
+{
+	typedef Evas_GL_API *(*methodType)(Evas_GL *evas_gl, Evas_GL_Context *ctx);
+	static methodType evas_gl_context_api_getp = 0;
+
+	GET_REAL_FUNC_RTLD_NEXT(evas_gl_context_api_get);
+
+	Evas_GL_API *res = evas_gl_context_api_getp(evas_gl, ctx);
+
+	/* save original api functions and rewrite it by probes */
+	save_orig_gl_api_list(res);
+	change_gl_api_list(res);
+
+	return res;
+}
