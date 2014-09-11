@@ -39,6 +39,7 @@
 /* --------------------------------- */
 
 
+static bool __gl_api_initialized = 0;
 Evas_GL_API *__gl_api = NULL;
 
 void __init_gl_api__(void)
@@ -50,7 +51,11 @@ void __init_gl_api__(void)
 
 void save_orig_gl_api_list(Evas_GL_API *api)
 {
-	memcpy(__gl_api, api, sizeof(*api));
+	/* TODO make this check more pretty */
+	if (__gl_api_initialized == 0) {
+		memcpy(__gl_api, api, sizeof(*api));
+		__gl_api_initialized = 1;
+	}
 }
 
 /* IMPORTANT this code must be right before change_gl_api_list function!
