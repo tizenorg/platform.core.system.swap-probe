@@ -285,6 +285,8 @@ ecore_event_evas_mouse_button_down
 ecore_event_evas_mouse_button_up
 ecore_event_evas_mouse_move
 
+elm_glview_gl_api_get
+
 evas_gl_free
 evas_gl_config_free
 evas_gl_surface_destroy
