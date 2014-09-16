@@ -95,6 +95,10 @@ static void _configure(char* configstr)
 	gTraceInfo.optionflag = atoll(configstr);
 
 	sprintf(buf, "configure in probe : %s, %llx\n", configstr, gTraceInfo.optionflag);
+	if isOptionEnabled(OPT_SNAPSHOT)
+		SCREENSHOT_SET();
+	else
+		SCREENSHOT_UNSET();
 	PRINTMSG(buf);
 }
 

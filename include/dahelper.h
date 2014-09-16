@@ -130,7 +130,7 @@ extern int app_efl_main_flg;
 		pthread_mutex_lock(&(gTraceInfo.screenshot.ssMutex));	\
 		old = gTraceInfo.screenshot.state;						\
 		if(gTraceInfo.screenshot.state == 2) 					\
-			gTraceInfo.screenshot.state = 0;					\
+			gTraceInfo.screenshot.state = 1;					\
 		pthread_mutex_unlock(&(gTraceInfo.screenshot.ssMutex));	\
 		if(old == 2) {											\
 			if(isOptionEnabled(OPT_SNAPSHOT))					\

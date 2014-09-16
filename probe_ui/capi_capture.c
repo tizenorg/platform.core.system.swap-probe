@@ -28,17 +28,8 @@
  *
  */
 
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
-//#include <dlfcn.h>
-//#include <stdbool.h>
-//#include <memory.h>
-//#include <errno.h>
-
 #include <Evas.h>
 #include <Elementary.h>
-//#include <app.h>
 
 #include "daprobe.h"
 #include "probeinfo.h"
@@ -49,27 +40,21 @@ Evas_Object *elm_win_add(Evas_Object *parent, const char* name, Elm_Win_Type typ
 	static Evas_Object * (*elm_win_addp)(Evas_Object *parent, const char* name, Elm_Win_Type type);
 
 	BEFORE_ORIGINAL_SNAPSHOT(elm_win_add, LIBELEMENTARY);
-
 	ret = elm_win_addp(parent, name, type);
-
 	AFTER_ORIGINAL_SNAPSHOT(ret);
 
 	return ret;
 }
 
-Evas_Object * 	elm_controlbar_add (Evas_Object *parent)
+Evas_Object *elm_controlbar_add (Evas_Object *parent)
 {
 	static Evas_Object * (*elm_controlbar_addp)(Evas_Object *parent);
 
 	BEFORE_ORIGINAL_SNAPSHOT(elm_controlbar_add, LIBELEMENTARY);
-
 	ret = elm_controlbar_addp(parent);
-
 	AFTER_ORIGINAL_SNAPSHOT(ret);
 
 	return ret;
-
-//	ecore_evas_callback_post_render_set(ecore_evas_ecore_evas_get(evas_object_evas_get(parent)), _cbecore);
 }
 
 Evas_Object *elm_naviframe_add(Evas_Object *parent)
@@ -77,9 +62,7 @@ Evas_Object *elm_naviframe_add(Evas_Object *parent)
 	static Evas_Object * (*elm_naviframe_addp)(Evas_Object *parent);
 
 	BEFORE_ORIGINAL_SNAPSHOT(elm_naviframe_add, LIBELEMENTARY);
-
 	ret = elm_naviframe_addp(parent);
-
 	AFTER_ORIGINAL_SNAPSHOT(ret);
 
 	return ret;
@@ -90,9 +73,7 @@ Evas_Object *elm_pager_add(Evas_Object *parent)
 	static Evas_Object * (*elm_pager_addp)(Evas_Object *parent);
 
 	BEFORE_ORIGINAL_SNAPSHOT(elm_pager_add, LIBELEMENTARY);
-
 	ret = elm_pager_addp(parent);
-
 	AFTER_ORIGINAL_SNAPSHOT(ret);
 
 	return ret;
