@@ -780,6 +780,9 @@ int preBlockBegin(const void *caller, bool bFiltering, enum DaOptions option)
 {
 	bool opt_nofilt;
 
+	if (gTraceInfo.socket.daemonSock == -1)
+		return 0;
+
 	if(gProbeBlockCount != 0 || gProbeDepth != 0)
 		return 0;
 
