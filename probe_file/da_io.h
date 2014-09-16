@@ -132,6 +132,17 @@
 	}											\
 	POST_PACK_PROBEBLOCK_END()
 
+#define AFTER_PACK_ORIGINAL_FD_MIDDLE(API_ID, RTYPE, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)	\
+	POST_PACK_PROBEBLOCK_BEGIN();								\
+	_fstatret = fstat(FD, &_statbuf);							\
+	if (stat_regular_or_socket_p(&_statbuf)) {						\
+		PREPARE_LOCAL_BUF();								\
+		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
+		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);				\
+		POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE);				\
+	}											\
+	POST_PACK_PROBEBLOCK_ADD_END()
+
 #define AFTER_PACK_ORIGINAL_NOFD(API_ID, RTYPE, RVAL, SIZE, APITYPE, INPUTFORMAT, ...)	\
 	POST_PACK_PROBEBLOCK_BEGIN();							\
 	PREPARE_LOCAL_BUF();								\
