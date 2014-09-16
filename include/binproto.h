@@ -512,6 +512,12 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	}								\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
+#define POST_PACK_PROBEBLOCK_ADD_END()					\
+		preBlockEnd();						\
+	}								\
+	errno = (newerrno != 0) ? newerrno : olderrno
+
+
 /* int main(int argc, char **argv) */
 /* { */
 /* 	char buf[1024]; */

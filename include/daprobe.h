@@ -188,7 +188,7 @@ typedef struct {
 	int blockresult = 0;		\
 	bool bfiltering = true;		\
 	DECLARE_ERRNO_VARS;		\
-	int __attribute__((unused)) ret
+	int __attribute__((unused)) ret = 0
 
 // declare variable for standard api (not tizen related api) without ret
 #define DECLARE_VARIABLE_STANDARD_NORET		\
