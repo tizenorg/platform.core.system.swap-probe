@@ -400,11 +400,14 @@ ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 // *****************************************************************
 // File Attributes APIs
 // *****************************************************************
-
 int fcntl(int fd, int cmd, ...)
 {
 	static int (*fcntlp)(int fd, int cmd, ...);
 	int arg = 0, api_type = FD_API_OTHER;
+	int64_t start = 0;
+	int64_t len = 0;
+	int type = 0;
+	int whence = 0;
 
 	BEFORE_ORIGINAL_FILE(fcntl, LIBC);
 
@@ -413,14 +416,12 @@ int fcntl(int fd, int cmd, ...)
 	arg = va_arg(argl, int);
 	va_end(argl);
 
-	ret = fcntlp(fd, cmd, arg);
-
 	if (cmd == F_SETLK || cmd == F_SETLKW) {
 		struct flock *flock = (struct flock *)arg;
-		int type = flock->l_type;
-		int whence = flock->l_whence;
-		int64_t /*off_t*/ start = flock->l_start;
-		int64_t /*off_t*/ len = flock->l_len;
+		type = flock->l_type;
+		whence = flock->l_whence;
+		start = flock->l_start;
+		len = flock->l_len;
 
 		switch (type) {
 		case F_RDLCK:
@@ -428,15 +429,38 @@ int fcntl(int fd, int cmd, ...)
 			api_type = FD_API_LOCK_START;
 			break;
 		case F_UNLCK:
-			api_type = FD_API_LOCK_END;
+			api_type = FD_API_LOCK_RELEASE;
 			break;
 		}
+	} else {
+		return FD_API_OTHER;
+	}
 
+	/* before lock event */
+	if (api_type == FD_API_LOCK_START) {
+		PRINTERR("LOCK_START");
+		AFTER_PACK_ORIGINAL_FD(API_ID_fcntl,
+				       'd', ret, 0, fd, api_type,
+				       "ddddxx", fd, cmd, type,
+				       whence, start, len);
+	}
+
+	/* call original lock function */
+	ret = fcntlp(fd, cmd, arg);
+
+	/* after lock event */
+	if (api_type != FD_API_OTHER) {
+		PRINTERR("LOCK_END/UNLOCK %d", api_type);
+		if (api_type == FD_API_LOCK_START)
+			api_type = FD_API_LOCK_END;
+		/* pack FD_API_LOCK_END or FD_API_UNLOCK events */
 		AFTER_PACK_ORIGINAL_FD(API_ID_fcntl,
 				       'd', ret, 0, fd, api_type,
 				       "ddddxx", fd, cmd, type,
 				       whence, start, len);
 	} else {
+		/* pack FD_API_OTHER */
+		PRINTERR("FD_API_OTHER");
 		AFTER_PACK_ORIGINAL_FD(API_ID_fcntl,
 				       'd', ret, 0, fd, api_type,
 				       "ddd", fd, cmd, arg);
