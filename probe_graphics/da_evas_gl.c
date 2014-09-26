@@ -159,6 +159,9 @@ Eina_Bool evas_gl_native_surface_get(Evas_GL *evas_gl, Evas_GL_Surface *surf,
 	return res;
 }
 
+
+/* ----------------- api get functions -------------- */
+
 Evas_GL_API *evas_gl_api_get(Evas_GL *evas_gl)
 {
 	typedef Evas_GL_API *(*methodType)(Evas_GL *evas_gl);
@@ -171,5 +174,22 @@ Evas_GL_API *evas_gl_api_get(Evas_GL *evas_gl)
 
 	AFTER('p', res, APITYPE_CONTEXT, "", "p",
 	      voidp_to_uint64(evas_gl));
+	return res;
+}
+
+
+Evas_GL_API *evas_gl_context_api_get(Evas_GL *evas_gl, Evas_GL_Context *ctx)
+{
+	typedef Evas_GL_API *(*methodType)(Evas_GL *evas_gl, Evas_GL_Context *ctx);
+	static methodType evas_gl_context_api_getp = 0;
+
+	GET_REAL_FUNC_RTLD_NEXT(evas_gl_context_api_get);
+
+	Evas_GL_API *res = evas_gl_context_api_getp(evas_gl, ctx);
+
+	/* save original api functions and rewrite it by probes */
+	save_orig_gl_api_list(res);
+	change_gl_api_list(res);
+
 	return res;
 }
