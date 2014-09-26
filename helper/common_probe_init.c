@@ -150,7 +150,7 @@ void init_probe_gl(const char *func_name, void **func_pointer,
 		   ORIGINAL_LIBRARY id, int blockresult, int32_t vAPI_ID)
 {
 	void *faddr;
-	probeInfo_t tempProbeInfo;
+	probeInfo_t probeInfo;
 
 	probeBlockStart();
 	if (lib_handle[id] == ((void *)0)) {
@@ -159,7 +159,7 @@ void init_probe_gl(const char *func_name, void **func_pointer,
 			probe_terminate_with_err("dlopen failed", func_name,
 						 id);
 
-		setProbePoint(&tempProbeInfo);
+		setProbePoint(&probeInfo);
 		if (blockresult != 0) {
 			/* get max value */
 			char maxValString[64];

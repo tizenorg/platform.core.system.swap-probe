@@ -58,8 +58,10 @@ app_event_callback_s gAppCallback;
 static bool _dalc_app_create(void *user_data)
 {
 	bool bret = false;
-	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+	DECLARE_VARIABLE_STANDARD;
+
+	blockresult = 1;
+	setProbePoint(&probeInfo);
 
 	bret = gAppCallback.create(user_data);
 
@@ -71,8 +73,10 @@ static bool _dalc_app_create(void *user_data)
 
 static void _dalc_app_terminate(void *user_data)
 {
-	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+	DECLARE_VARIABLE_STANDARD;
+
+	blockresult = 1;
+	setProbePoint(&probeInfo);;
 
 	gAppCallback.terminate(user_data);
 
@@ -82,8 +86,10 @@ static void _dalc_app_terminate(void *user_data)
 
 static void _dalc_app_pause(void *user_data)
 {
-	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+	DECLARE_VARIABLE_STANDARD;
+
+	blockresult = 1;
+	setProbePoint(&probeInfo);;
 
 	gAppCallback.pause(user_data);
 
@@ -93,8 +99,10 @@ static void _dalc_app_pause(void *user_data)
 
 static void _dalc_app_resume(void *user_data)
 {
-	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+	DECLARE_VARIABLE_STANDARD;
+
+	blockresult = 1;
+	setProbePoint(&probeInfo);;
 
 	gAppCallback.resume(user_data);
 
@@ -108,8 +116,10 @@ static void _dalc_app_control(app_control_h handle, void *user_data)
 static void _dalc_app_service(service_h handle, void *user_data)
 #endif /* PRIVATE_CAPI_APPFW */
 {
-	DECLARE_ERRNO_VARS;
-	int blockresult = 1;
+	DECLARE_VARIABLE_STANDARD;
+
+	blockresult = 1;
+	setProbePoint(&probeInfo);;
 
 #ifdef PRIVATE_CAPI_APPFW
 	gAppCallback.app_control(handle, user_data);

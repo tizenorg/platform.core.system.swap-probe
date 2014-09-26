@@ -117,13 +117,18 @@ static inline char *pack_double(char *to, double val)
 	return to + sizeof(double);
 }
 
-static inline char *pack_timestamp(char *to)
+static inline char *pack_timestamp(char *to, probeInfo_t *pr)
 {
-	struct timeval tv;
 
-	gettimeofday(&tv, NULL);
-	to = pack_int32(to, tv.tv_sec);
-	to = pack_int32(to, tv.tv_usec * 1000);
+	if (pr == NULL) {
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		to = pack_int32(to, tv.tv_sec);
+		to = pack_int32(to, tv.tv_usec * 1000);
+	} else {
+		to = pack_int32(to, pr->start_sec);
+		to = pack_int32(to, pr->start_nsec);
+	}
 
 	return to;
 }
@@ -344,11 +349,11 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	do {	/* PACK_COMMON_BEGIN*/				\
 		BUF_PTR = pack_int32(BUF_PTR, msg_id);		/* msg id */	\
 		BUF_PTR = pack_int32(BUF_PTR, 0);		/* sequence */	\
-		BUF_PTR = pack_timestamp(BUF_PTR);		/* timestamp */	\
+		BUF_PTR = pack_timestamp(BUF_PTR, &probeInfo);	/* timestamp */	\
 		BUF_PTR = pack_int32(BUF_PTR, 0);		/* length */	\
 		BUF_PTR = pack_int32(BUF_PTR, api_id);		/* API id */	\
-		BUF_PTR = pack_int32(BUF_PTR, _getpid());	/* PID */	\
-		BUF_PTR = pack_int32(BUF_PTR, _gettid());	/* call pc*/\
+		BUF_PTR = pack_int32(BUF_PTR, probeInfo.pID);	/* PID */	\
+		BUF_PTR = pack_int32(BUF_PTR, probeInfo.tID);	/* call pc*/\
 		BUF_PTR = pack_args(BUF_PTR, fmt, __VA_ARGS__);	/* args */	\
 		RET_PTR = BUF_PTR;		\
 	} while (0)

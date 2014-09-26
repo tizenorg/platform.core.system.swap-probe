@@ -839,13 +839,20 @@ void postBlockEnd()
  * helper info getter functions
  *************************************************************************/
 // return current time in 1/10000 sec unit
-unsigned long getCurrentTime()
+void get_current_time(uint32_t *sec, uint32_t *nsec)
 {
 	struct timeval cTime;
 
 	gettimeofday(&cTime, NULL);
 
-	return (unsigned long)((cTime.tv_sec * 10000 + (cTime.tv_usec/100)));
+	*sec = (uint32_t)(cTime.tv_sec);
+	*nsec = (uint32_t)(cTime.tv_usec * 1000ll);
+
+}
+
+void update_probe_time(probeInfo_t *pr)
+{
+	get_current_time(&pr->start_sec, &pr->start_nsec);
 }
 
 unsigned int getCurrentEventIndex()
@@ -877,7 +884,8 @@ bool setProbePoint(probeInfo_t* iProbe)
 	iProbe->eventIndex = gTraceInfo.index.eventIndex++;
 	real_pthread_mutex_unlock(&(gTraceInfo.index.eventMutex));
 
-	iProbe->currentTime = getCurrentTime();
+	update_probe_time(iProbe);
+
 	iProbe->pID = _getpid();
 	iProbe->tID = _gettid();
 	iProbe->callDepth = gProbeDepth;

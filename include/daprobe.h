@@ -86,7 +86,8 @@ typedef struct
 	int				eventIndex;
 	int				pID;
 	int				tID;
-	unsigned long	currentTime;
+	uint32_t	start_sec;
+	uint32_t	start_nsec;
 	unsigned int	callDepth;
 } probeInfo_t;
 
@@ -183,11 +184,11 @@ typedef struct {
 	int newerrno = 0;
 
 // declare variable for standard api (not tizen related api)
-#define DECLARE_VARIABLE_STANDARD	\
-	probeInfo_t probeInfo;		\
-	int blockresult = 0;		\
-	bool bfiltering = true;		\
-	DECLARE_ERRNO_VARS;		\
+#define DECLARE_VARIABLE_STANDARD				\
+	probeInfo_t probeInfo;					\
+	int blockresult = 0;					\
+	bool __attribute__((unused)) bfiltering = true;		\
+	DECLARE_ERRNO_VARS;					\
 	int __attribute__((unused)) ret
 
 // declare variable for standard api (not tizen related api) without ret
