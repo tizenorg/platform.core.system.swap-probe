@@ -46,6 +46,11 @@ void (*real_glGetActiveUniform)(GLuint program, GLuint index, GLsizei bufSize,
 void (*real_glGetShaderSource)(GLuint shader, GLsizei bufSize, GLsizei *length,
 			       char *source);
 
+void __gl_dummy_function()
+{
+	PRINTERR("call of dummy gl function!!!");
+}
+
 void set_real_func(const char *func_name, void **func_pointer,
 		   ORIGINAL_LIBRARY id)
 {
@@ -57,9 +62,11 @@ void set_real_func(const char *func_name, void **func_pointer,
 		probe_terminate_with_err("dlopen failed", func_name, id);
 
 	faddr = dlsym(_id, func_name);
-	if (faddr == NULL || dlerror() != NULL)
-		probe_terminate_with_err("function not found in lib", func_name,
-					 id);
+	if (faddr == NULL || dlerror() != NULL) {
+		PRINTWRN("[set_real_function] function <%s> not found in lib <%s>; dummy function will be seted",
+			 func_name, lib_string[id]);
+		faddr = __gl_dummy_function;
+	}
 
 	memcpy(func_pointer, &faddr, sizeof(faddr));
 }
@@ -94,7 +101,7 @@ void probe_terminate_with_err(const char *msg, const char *func_name,
 
 	if (id != LIB_NO && id < NUM_ORIGINAL_LIBRARY)
 		lib_name = lib_string[id];
-	sprintf(error_msg, "%s : [%s], %s", msg, func_name, lib_name);
+	sprintf(error_msg, "%s : [%s], %s\n", msg, func_name, lib_name);
 	perror(error_msg);
 	PRINTERR(error_msg);
 	//wait for flush
