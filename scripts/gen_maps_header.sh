@@ -138,7 +138,7 @@ function print_section_begin_c()
     echo -e "};\n" >> $c_output_types
 
     echo -e "struct feature_list_t{" >> $c_output_types
-    echo -e "\tuint64_t feature_value;" >> $c_output_types
+    echo -e "\tenum feature_code feature_value;" >> $c_output_types
     echo -e "\tstruct ld_feature_list_el_t **feature_ld;" >> $c_output_types
     echo -e "};\n" >> $c_output_types
 
@@ -356,6 +356,7 @@ function print_probes()
     lib="HZ"
     filename="hz"
     feature="hz"
+    feature_always="hz"
     while read line; do
         if [ "$line" != "" ];then
             if [ "${line:0:1}" != "#" ];then
@@ -369,6 +370,9 @@ function print_probes()
                 fi
 
                 echo "$feature $lib $line $filename"
+                if [ $feature_always != "hz" ];then
+                    echo "$feature_always $lib $line $filename"
+                fi
             elif [ "${line:0:5}" == "#lib " ];then
                 lib="${line#\#lib*\ }"
                 lib="${lib#\"*}"
@@ -379,6 +383,9 @@ function print_probes()
                 filename="${filename%*\"}"
             elif [ "${line:0:9}" == "#feature " ];then
                 feature="${line#\#feature*\ }"
+                feature_always="hz"
+            elif [ "${line:0:16}" == "#feature_always " ];then
+                feature_always="${line#\#feature_always*\ }"
             fi
         fi
     done < $1

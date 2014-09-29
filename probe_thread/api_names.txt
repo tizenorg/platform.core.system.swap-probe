@@ -1,6 +1,7 @@
 #filename libdasync.c
 #lib "libpthread.so.0"
 #feature FL_THREAD_API_PROBING
+#feature_always FL_THREAD_API_ALWAYS_PROBING
 pthread_mutex_init
 pthread_mutex_destroy
 real_pthread_mutex_lock
@@ -29,6 +30,7 @@ pthread_cond_broadcast
 #filename libdathread.c
 #lib "libpthread.so.0"
 #feature FL_THREAD_API_PROBING
+#feature_always FL_THREAD_API_ALWAYS_PROBING
 _da_cleanup_handler
 _da_ThreadProc
 pthread_create

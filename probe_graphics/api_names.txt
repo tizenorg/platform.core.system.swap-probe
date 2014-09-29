@@ -1,6 +1,7 @@
 #filename "da_evas_gl.c"
 #lib "???"
 #feature FL_OPENGL_API_PROBING
+#feature_always FL_OPENGL_API_ALWAYS_PROBING
 evas_gl_free
 evas_gl_config_free
 evas_gl_surface_destroy
@@ -60,6 +61,7 @@ eglWaitNative
 #filename "da_egl_tizen.c"
 #lib "???"
 #feature FL_OPENGL_API_PROBING
+#feature_always FL_OPENGL_API_ALWAYS_PROBING
 _SglBindAPI
 _SglBindTexImage
 _SglChooseConfig
@@ -103,6 +105,7 @@ _SglWaitNative
 #filename "da_gles20_native.c"
 #lib "libGLESv2.so"
 #feature FL_OPENGL_API_PROBING
+#feature_always FL_OPENGL_API_ALWAYS_PROBING
 glActiveTexture
 glAttachShader
 glBindAttribLocation
