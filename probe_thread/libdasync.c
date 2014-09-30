@@ -110,7 +110,7 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 				  API_ID_pthread_mutex_lock,
 				  "p", voidp_to_uint64(mutex));
-		PACK_COMMON_END('p', ret, errno, blockresult);
+		PACK_COMMON_END('d', ret, errno, blockresult);
 		PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
 		FLUSH_LOCAL_BUF();
 
