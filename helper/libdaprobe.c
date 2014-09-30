@@ -104,16 +104,11 @@ static void _configure(char* configstr)
 
 void application_exit()
 {
-	void (*elm_exit)(void);
-
 	PRINTMSG("App termination: EXIT(0)");
 	/* TODO think of another way for correct app termination */
 
-	elm_exit = dlsym(RTLD_DEFAULT, "elm_exit");
-	if (elm_exit)
-		elm_exit();
-
-	exit(0);
+	/* Kill yourself!! ]:> */
+	killpg(getpgrp(), SIGKILL);
 }
 
 // create socket to daemon and connect
