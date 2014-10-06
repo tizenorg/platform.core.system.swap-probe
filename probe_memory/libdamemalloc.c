@@ -46,8 +46,6 @@
 #include "da_memory.h"
 #include "binproto.h"
 
-static enum DaOptions _sopt = OPT_ALLOC;
-
 void *malloc(size_t size)
 {
 	static void* (*mallocp)(size_t);
@@ -60,7 +58,7 @@ void *malloc(size_t size)
 
 	pret = (*mallocp)(size);
 
-	if(pret != NULL && gProbeBlockCount == 0)
+	if(pret != NULL)
 		add_memory_hash(pret, size, MEMTYPE_ALLOC,
 				blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 
@@ -88,7 +86,7 @@ void free(void *ptr)
 
 	PRE_PROBEBLOCK();
 
-	if(ptr != NULL && gProbeBlockCount == 0)
+	if(ptr != NULL)
 		del_memory_hash(ptr, MEMTYPE_FREE, NULL);
 
 	(*freep)(ptr);
@@ -114,12 +112,12 @@ void *realloc(void *memblock, size_t size)
 	rtdl_next_current_set_once(reallocp);
 	PRE_PROBEBLOCK();
 
-	if(memblock != NULL && gProbeBlockCount == 0)
+	if(memblock != NULL)
 		del_memory_hash(memblock, MEMTYPE_FREE, NULL);
 
 	pret = (*reallocp)(memblock, size);
 
-	if(pret != NULL && gProbeBlockCount == 0)
+	if(pret != NULL)
 		add_memory_hash(pret, size, MEMTYPE_ALLOC,
 				blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 
@@ -166,7 +164,7 @@ void *calloc(size_t nelem, size_t elsize)
 
 	pret = (*callocp)(nelem, elsize);
 
-	if(pret != NULL && gProbeBlockCount == 0)
+	if(pret != NULL)
 		add_memory_hash(pret, nelem * elsize, MEMTYPE_ALLOC,
 				blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 

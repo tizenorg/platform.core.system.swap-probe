@@ -43,7 +43,6 @@ int daemon_close_allv(const int except_fds[])
 
 	GET_REAL_FUNCP(daemon_close_allv, LIBDAEMON, daemon_close_allvp);
 
-	probeBlockStart();
 	// get number of fds
 	for(i = 0; ; i++)
 	{
@@ -66,7 +65,6 @@ int daemon_close_allv(const int except_fds[])
 	{
 		// do nothing
 	}
-	probeBlockEnd();
 
 	// call original function
 	if(fds)
@@ -78,11 +76,9 @@ int daemon_close_allv(const int except_fds[])
 		ret = daemon_close_allvp(except_fds);
 	}
 
-	probeBlockStart();
 	saved_errno = errno;
 	free(fds);
 	errno = saved_errno;
-	probeBlockEnd();
 
 	return ret;
 }

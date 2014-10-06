@@ -505,11 +505,11 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 #define POST_PACK_PROBEBLOCK_BEGIN()					\
 	newerrno = errno;						\
-	if(postBlockBegin(blockresult)) {
+	do {
 
 #define POST_PACK_PROBEBLOCK_END() 					\
 		postBlockEnd();						\
-	}								\
+	} while (0);							\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
 /* int main(int argc, char **argv) */

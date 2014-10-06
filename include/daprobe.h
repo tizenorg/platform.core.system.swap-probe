@@ -90,11 +90,8 @@ typedef struct
 	unsigned int	callDepth;
 } probeInfo_t;
 
-extern __thread int	gProbeBlockCount;
 extern __thread int	gProbeDepth;
 
-#define probeBlockStart()	(gProbeBlockCount++)
-#define probeBlockEnd()		(gProbeBlockCount--)
 #define probingStart()		(gProbeDepth++)
 #define probingEnd()		(gProbeDepth--)
 
@@ -102,10 +99,7 @@ extern __thread int	gProbeDepth;
  * helper apis
  ***************************************************************************/
 
-int preBlockBegin(const void *caller, bool bFiltering, enum DaOptions);
-void preBlockEnd();
-
-int postBlockBegin(int preresult);
+int preBlockBegin(void);
 void postBlockEnd();
 
 unsigned int getCurrentEventIndex();
@@ -186,7 +180,6 @@ typedef struct {
 #define DECLARE_VARIABLE_STANDARD	\
 	probeInfo_t probeInfo;		\
 	int blockresult = 0;		\
-	bool bfiltering = true;		\
 	DECLARE_ERRNO_VARS;		\
 	int __attribute__((unused)) ret
 
@@ -194,7 +187,6 @@ typedef struct {
 #define DECLARE_VARIABLE_STANDARD_NORET		\
 		probeInfo_t	probeInfo; 			\
 		int blockresult;				\
-		bool bfiltering = true;			\
 		int olderrno, newerrno;			\
 
 // ========================== get function pointer =========================
@@ -205,7 +197,6 @@ typedef struct {
 #define GET_REAL_FUNCP_STR(FUNCNAME, SONAME, FUNCTIONPOINTER)			\
 		do {														\
 			if (!FUNCTIONPOINTER) {									\
-				probeBlockStart();									\
 				if (lib_handle[SONAME] == NULL) {					\
 					lib_handle[SONAME] = dlopen(lib_string[SONAME], RTLD_LAZY);			\
 					if (lib_handle[SONAME] == NULL) {				\
@@ -220,7 +211,6 @@ typedef struct {
 					PRINTMSG("dlsym failed : <" FUNCNAME ">\n");			\
 					exit(0);										\
 				}													\
-				probeBlockEnd();									\
 			}														\
 		} while(0)
 
@@ -230,11 +220,9 @@ typedef struct {
 #define GET_REAL_FUNCP_RTLD_NEXT(FUNCNAME, FUNCTIONPOINTER)			\
 		do {														\
 			if(!FUNCTIONPOINTER) {									\
-				probeBlockStart(); 									\
 				FUNCTIONPOINTER = dlsym(RTLD_NEXT, #FUNCNAME);		\
 				if(FUNCTIONPOINTER == NULL || dlerror() != NULL)	\
 					probe_terminate_with_err("function not found", #FUNCNAME, LIB_NO);		\
-				probeBlockEnd(); 									\
 			}														\
 		} while(0)
 
@@ -244,14 +232,12 @@ typedef struct {
 #define GET_REAL_FUNCP_RTLD_NEXT_CPP(FUNCNAME, FUNCTIONPOINTER)		\
 		do {														\
 			if(!FUNCTIONPOINTER) {									\
-				probeBlockStart(); 									\
 				void* funcp = dlsym(RTLD_NEXT, #FUNCNAME);			\
 				if(funcp == NULL || dlerror() != NULL) {			\
 					fprintf(stderr, "dlsym failed <%s>\n", #FUNCNAME);							\
 					exit(0);										\
 				}													\
 				memcpy(&FUNCTIONPOINTER, &funcp, sizeof(void*));	\
-				probeBlockEnd(); 									\
 			}														\
 		} while(0)
 
@@ -260,12 +246,11 @@ typedef struct {
 
 // ======================= pre block macro ================================
 
-#define PRE_PROBEBLOCK_BEGIN()		 											\
-	if((blockresult = preBlockBegin(CALLER_ADDRESS, bfiltering, _sopt)) != 0) {	\
+#define PRE_PROBEBLOCK_BEGIN()					\
+	if((blockresult = preBlockBegin()) != 0) {	\
 		setProbePoint(&probeInfo)
 
 #define PRE_PROBEBLOCK_END()							\
-		preBlockEnd();							\
 	}									\
 	olderrno = errno;							\
 	errno = 0
@@ -278,18 +263,16 @@ typedef struct {
 
 #define PRE_UNCONDITIONAL_BLOCK_BEGIN()	\
 	do {								\
-		probeBlockStart(); 				\
 		setProbePoint(&probeInfo)
 
 #define PRE_UNCONDITIONAL_BLOCK_END()	\
-		probeBlockEnd();				\
 	} while(0)
 
 // =========================== post block macro ===========================
 
 #define POST_PROBEBLOCK_BEGIN(LCTYPE, RETTYPE, RETVALUE, INPUTFORMAT, ...)	\
 	newerrno = errno;														\
-	if(postBlockBegin(blockresult)) {										\
+	do {																	\
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
 		PACK_COMMON_END(RETTYPE, RETVALUE, errno, blockresult);
@@ -297,8 +280,14 @@ typedef struct {
 #define POST_PROBEBLOCK_END() 						\
 		FLUSH_LOCAL_BUF();						\
 		postBlockEnd();								\
-	}												\
+	} while(0);												\
 	errno = (newerrno != 0) ? newerrno : olderrno
+
+#define POST_PROBEBLOCK_FUNC_START_END()					\
+		postBlockEnd();							\
+	} while(0);								\
+	olderrno = errno;							\
+	errno = 0
 
 // ========================= simplify macro ================================
 
@@ -310,7 +299,6 @@ typedef struct {
 #define BEFORE_ORIGINAL_NOFILTER(FUNCNAME, LIBNAME)	\
 	DECLARE_VARIABLE_STANDARD;						\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);				\
-	bfiltering = false;								\
 	PRE_PROBEBLOCK()
 
 #ifdef __cplusplus

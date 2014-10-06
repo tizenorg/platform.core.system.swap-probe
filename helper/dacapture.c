@@ -322,8 +322,6 @@ int captureScreen()
 
 	pthread_mutex_lock(&captureScreenLock);
 
-	probeBlockStart();
-
 	setProbePoint(&probeInfo);
 	sdata.ximage = NULL;
 	scrimage = captureScreenShotX(&width, &height, &sdata);
@@ -392,8 +390,6 @@ int captureScreen()
 	if(ev)
 		destroy_canvas(ev);
 
-	probeBlockEnd();
-
 	pthread_mutex_unlock(&captureScreenLock);
 	return ret;
 }
@@ -420,9 +416,7 @@ int finalize_screencapture()
 
 static Eina_Bool _captureTimer(void __unused * data)
 {
-	probeBlockStart();
 	SCREENSHOT_TIMEOUT();
-	probeBlockEnd();
 
 	return ECORE_CALLBACK_CANCEL;
 }
@@ -436,7 +430,5 @@ int activateCaptureTimer()
 void _cb_render_post(void __unused * data, Evas __unused * e,
 		     void __unused * eventinfo)
 {
-	probeBlockStart();
 	SCREENSHOT_DONE();
-	probeBlockEnd();
 }

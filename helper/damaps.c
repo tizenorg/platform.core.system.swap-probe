@@ -110,18 +110,6 @@ static struct data_list_t *get_next_el(struct data_list_t *el)
 	return (struct data_list_t *)el->next;
 }
 
-static void print_map(struct map_t *map)
-{
-	PRINTMSG("mapp-> %p-%p %s %llx %s %llx %s",
-		  map->addr,
-		  map->endaddr,
-		  map->permissions,
-		  map->offset,
-		  map->device,
-		  map->inode,
-		  map->filename);
-}
-
 static int read_mapping_line(FILE *mapfile, struct map_t *m)
 {
 	char ch1, ch2;
@@ -160,28 +148,6 @@ static int read_mapping_line(FILE *mapfile, struct map_t *m)
 		return 0;
 
 	return (ret != 0 && ret != EOF);
-}
-
-static void print_list()
-{
-	struct data_list_t *p = NULL;
-	struct map_t *m = NULL;
-	uint32_t i = 0;
-
-	PRINTMSG("=====================================");
-	for (p = get_first_el(&sections_list); p != NULL && i < sections_list.count; p = p->next) {
-		m = (struct map_t *)p->data;
-		PRINTMSG("mapp[%03d]-> %p-%p %s %llx %s %llx %s",
-			 ++i,
-			 m->addr,
-			 m->endaddr,
-			 m->permissions,
-			 m->offset,
-			 m->device,
-			 m->inode,
-			 m->filename);
-	}
-
 }
 
 static struct data_list_t *new_data(void)
@@ -391,51 +357,6 @@ static int update_is_instrument_lib_attr_nolock()
 	print_list_sorted(name_hash_table);
 }
 
-static struct map_t *get_map_by_addr(void *addr)
-{
-	struct map_t *d = NULL;
-	struct map_t *res = NULL;
-	uint32_t left, right, cur;
-
-	if (addr_hash_table_el_count_buzy == 0)
-		goto find_exit;
-
-	if (addr < addr_hash_table[0]->addr)
-		goto find_exit;
-
-	if (addr > addr_hash_table[addr_hash_table_el_count_buzy - 1]->addr)
-		goto find_exit;
-
-	left = 0;
-	right = addr_hash_table_el_count_buzy - 1;
-	cur = 0;
-	while (left < right) {
-		cur = (left + right) >> 1;
-
-		d = (struct map_t *)addr_hash_table[cur];
-		if (addr < d->addr) {
-			right = cur - 1;
-			continue;
-		}
-		if (addr > d->endaddr) {
-			left = cur + 1;
-			continue;
-		}
-
-		/* success */
-		return (addr_hash_table[cur]);
-	}
-
-	if (left == right) {
-		d = (struct map_t *)addr_hash_table[left];
-		if ((d->addr <= addr) && (addr <= d->endaddr))
-			res = addr_hash_table[left];
-	}
-
-find_exit:
-	return res;
-}
-
 static void maps_reader_lock_all()
 {
 	int i;
@@ -562,66 +483,13 @@ void maps_make()
 	maps_writer_unlock();
 }
 
-int maps_print_maps_by_addr(const void *addr)
-{
-	int res = -1;
-	struct map_t *map = NULL;
-
-	maps_reader_lock();
-	map = get_map_by_addr((void *)addr);
-	if (map != NULL)
-		print_map(map);
-	maps_reader_unlock();
-
-	return res;
-}
-
-int maps_is_instrument_section_by_addr_no_remap(const void *addr)
-{
-	int res = -1;
-	struct map_t *map;
-
-	maps_reader_lock();
-	map = get_map_by_addr((void *)addr);
-	if (map != NULL)
-		res = map->is_instrument;
-	maps_reader_unlock();
-
-	return res;
-
-}
-
-/* interface function */
-int maps_is_instrument_section_by_addr(const void *addr)
-{
-	int ret = maps_is_instrument_section_by_addr_no_remap(addr);
-
-	if (ret == -1) {
-		PRINTMSG("========> hz addr %p. remap", addr);
-		maps_make();
-		ret = maps_is_instrument_section_by_addr_no_remap(addr);
-		if (ret == -1) {
-			print_list();
-			PRINTERR("!!!!unknown addr %p", addr);
-			get_map_by_addr((void *)addr);
-			sleep(2);
-			exit(0);
-			ret = 0;
-		}
-	}
-
-	return ret;
-}
-
 /* must be called ones */
 int maps_init()
 {
 	int res = 0;
 
-	probeBlockStart();
 	res = sem_init(&readers_mutex, 0, MAX_READERS_COUNT);
 	set_map_inst_list(NULL, 0);
-	probeBlockEnd();
 
 	return res;
 }

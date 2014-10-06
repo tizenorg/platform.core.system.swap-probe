@@ -222,8 +222,6 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 
 void *profil_log_func(void __unused * data)
 {
-	probeBlockStart();
-
 	sigset_t profsigmask;
 	sigemptyset(&profsigmask);
 	sigaddset(&profsigmask, SIGPROF);
@@ -237,7 +235,6 @@ void *profil_log_func(void __unused * data)
 		}
 		usleep(PROFIL_LOG_SENDING_INTERVAL_USEC);
 	}
-	probeBlockEnd();
 
 	return NULL;
 }
@@ -251,7 +248,6 @@ void __cyg_profile_func_enter(void *this, void *callsite)
 	sigaddset(&profsigmask, SIGPROF);
 	pthread_sigmask(SIG_BLOCK, &profsigmask, &oldsigmask);
 
-	probeBlockStart();
 	do {
 		// remove custom chart callback function
 		if(gTraceInfo.custom_chart_callback_count > 0)
@@ -284,7 +280,6 @@ void __cyg_profile_func_enter(void *this, void *callsite)
 		elapsed_time_index++;
 
 	} while(0);
-	probeBlockEnd();
 
 	pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
 	return;
@@ -299,7 +294,6 @@ void __cyg_profile_func_exit(void *this, void *callsite)
 	sigaddset(&profsigmask, SIGPROF);
 	pthread_sigmask(SIG_BLOCK, &profsigmask, &oldsigmask);
 
-	probeBlockStart();
 	do {
 		// remove custom chart callback function
 		if(gTraceInfo.custom_chart_callback_count > 0)
@@ -339,7 +333,6 @@ void __cyg_profile_func_exit(void *this, void *callsite)
 
 		setProbePoint(&probeInfo);
 	} while(0);
-	probeBlockEnd();
 
 	pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
 	return;
@@ -378,10 +371,6 @@ static inline void profil_count(void *pc)
 	if((pc >= (void*)(&profil_count - 0x18)) && (pc <= (void*)(&profil_count)))
 		return;
 #endif
-	if(gProbeBlockCount != 0)
-		return;
-
-	probeBlockStart();
 
 	real_pthread_mutex_lock(&profil_log_mutex);
 	do {
@@ -414,8 +403,6 @@ static inline void profil_count(void *pc)
 		sample_write_index = (sample_write_index + 1) % SAMPLE_MAX_IN_INTERVAL;
 	} while(0);
 	real_pthread_mutex_unlock(&profil_log_mutex);
-
-	probeBlockEnd();
 }
 
 #if defined(__i386__)
@@ -522,14 +509,12 @@ void __monstartup(u_long lowpc, u_long highpc)
 	high_pc = highpc;
 
 	pthread_mutex_init(&profil_log_mutex, NULL);
-	probeBlockStart();
 	profil_thread_on = 1;
 	__profil(profil_option);
 	if(pthread_create(&profil_log_thread, NULL, &profil_log_func, NULL) < 0)
 	{
 		perror("Fail to create profil_log thread");
 	}
-	probeBlockEnd();
 	return;
 }
 
