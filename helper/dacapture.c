@@ -237,22 +237,22 @@ static void releaseScreenShotX(screenshot_data* sdata)
 
 static Evas* create_canvas(int width, int height)
 {
-	Evas* canvas;
-	Evas_Engine_Info_Buffer* einfo;
+	Evas *canvas;
+	Evas_Engine_Info_Buffer *einfo;
 	int method;
-	void* pixels;
+	void *pixels;
 
 	method = evas_render_method_lookup("buffer");
-	if(unlikely(method <= 0))
+	if (unlikely(method <= 0))
 	{
-		// ERROR: evas was not compiled with 'buffer' engine!
+		//fputs("ERROR: evas was not compiled with 'buffer' engine!\n", stderr);
 		return NULL;
 	}
 
 	canvas = evas_new();
-	if(unlikely(canvas == NULL))
+	if (unlikely(canvas == NULL))
 	{
-		// ERROR: could not instantiate new evas canvas.
+		//fputs("ERROR: could not instantiate new evas canvas.\n", stderr);
 		return NULL;
 	}
 
@@ -260,10 +260,10 @@ static Evas* create_canvas(int width, int height)
 	evas_output_size_set(canvas, width, height);
 	evas_output_viewport_set(canvas, 0, 0, width, height);
 
-	einfo = (Evas_Engine_Info_Buffer*)evas_engine_info_get(canvas);
-	if(unlikely(einfo == NULL))
+	einfo = (Evas_Engine_Info_Buffer *)evas_engine_info_get(canvas);
+	if (unlikely(einfo == NULL))
 	{
-		// ERROR: could not get evas engine info!
+		//fputs("ERROR: could not get evas engine info!\n", stderr);
 		evas_free(canvas);
 		return NULL;
 	}
@@ -271,7 +271,7 @@ static Evas* create_canvas(int width, int height)
 	// ARGB32 is sizeof(int), that is 4 bytes, per pixel
 	pixels = malloc(width * height * sizeof(int));
 	if (unlikely(pixels == NULL)) {
-		// ERROR: could not allocate canvas pixels!
+		//fputs("ERROR: could not allocate canvas pixels!\n", stderr);
 		evas_free(canvas);
 		return NULL;
 	}
@@ -283,6 +283,7 @@ static Evas* create_canvas(int width, int height)
 	einfo->info.alpha_threshold = 0;
 	einfo->info.func.new_update_region = NULL;
 	einfo->info.func.free_update_region = NULL;
+
 	if (unlikely(evas_engine_info_set(canvas,(Evas_Engine_Info*)einfo) == EINA_FALSE)) {
 		PRINTMSG("ERROR: could not set evas engine info!\n");
 		evas_free(canvas);
@@ -294,17 +295,17 @@ static Evas* create_canvas(int width, int height)
 
 static void destroy_canvas(Evas* canvas)
 {
-	Evas_Engine_Info_Buffer* einfo;
+	Evas_Engine_Info_Buffer *einfo;
 
-	einfo = (Evas_Engine_Info_Buffer*)evas_engine_info_get(canvas);
-	if(unlikely(einfo == NULL))
+	einfo = (Evas_Engine_Info_Buffer *)evas_engine_info_get(canvas);
+	if (unlikely(einfo == NULL))
 	{
-		; // ERROR: could not get evas engine info!
+		//fputs("ERROR: could not get evas engine info!\n", stderr);
+		evas_free(canvas);
+		return;
 	}
-	else
-	{
-		free(einfo->info.dest_buffer);
-	}
+
+	free(einfo->info.dest_buffer);
 	evas_free(canvas);
 }
 
