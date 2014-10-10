@@ -60,6 +60,12 @@ void getAddress(const struct sockaddr *sa, char *address) {
 	char buff[INET6_ADDRSTRLEN];
 	char *path;
 
+	if (sa == NULL) {
+		const char sa_is_null[] = "<addr is NULL>";
+		memcpy(address, sa_is_null, sizeof(sa_is_null));
+		return;
+	}
+
 	switch (sa->sa_family) {
 	case AF_INET:
 		snprintf(address, MAX_PATH_LENGTH, "%s:%d",
@@ -84,7 +90,6 @@ void getAddress(const struct sockaddr *sa, char *address) {
 			 sa->sa_family);
 		break;
 	}
-
 }
 
 //FD
