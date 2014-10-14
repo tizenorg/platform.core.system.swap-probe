@@ -27,8 +27,7 @@ make -j
 %install
 rm -rf ${RPM_BUILD_ROOT}
 mkdir -p %{buildroot}/usr/share/license
-cp LICENSE.MIT %{buildroot}/usr/share/license/%{name}
-cat LICENSE.LGPLv2.1 >> %{buildroot}/usr/share/license/%{name}
+cp LICENSE %{buildroot}/usr/share/license/%{name}
 %make_install
 
 %files
