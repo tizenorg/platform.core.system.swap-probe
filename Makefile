@@ -134,6 +134,7 @@ API_NAME_LIST = scripts/api_names_all.txt
 GENERATED_CONFIG = include/api_config.h
 GENERATED_HEADERS = include/api_id_mapping.h include/api_id_list.h include/id_list
 SOURCE_HEADERS = include/api_ld_mapping.h
+
 headers: $(API_NAME_LIST) $(GENERATED_CONFIG) $(GENERATED_HEADERS)
 rmheaders:
 	rm -f $(API_NAME_LIST) $(GENERATED_CONFIG) $(GENERATED_HEADERS) $(SOURCE_HEADERS)
@@ -147,7 +148,7 @@ $(API_NAME_LIST):
 
 $(SOURCE_HEADERS): $(API_NAME_LIST)
 $(SOURCE_HEADERS): ./scripts/gen_maps_header.sh
-	bash $< $(API_NAME_LIST) $(TIZEN_TARGET) > $@
+	bash $< $(API_NAME_LIST) $(TIZEN_TARGET) $(INSTALLDIR) > $@
 	cat $@
 
 include/api_id_mapping.h: ./scripts/gen_api_id_mapping_header.awk
@@ -156,8 +157,6 @@ include/id_list: ./scripts/gen_api_id_mapping_list.awk
 
 da_api_map: $(GENERATED_HEADERS)
 
-#$(GENERATED_HEADERS): APINAMES=scripts/api_names.txt
-#$(GENERATED_HEADERS): ./scripts/api_names.txt
 $(GENERATED_HEADERS):
 	awk -f $< < $(API_NAME_LIST) > $@
 
@@ -179,9 +178,12 @@ install_da: all
 	install -m 644 include/id_list $(DESTDIR)/$(INSTALLDIR)/da_api_map
 
 
-install_ld: ldheader
+install_ld: ldheader # var_addr
 	install -m 644 include/ld_preload_probes.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_probes.h
 	install -m 644 include/ld_preload_types.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_types.h
+	install -m 644 include/ld_preload_probe_lib.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_probe_lib.h
+
+
 
 clean:
 	rm -f *.so *.o $(GENERATED_HEADERS) $(API_NAME_LIST) $(SOURCE_HEADERS)

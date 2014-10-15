@@ -1,6 +1,7 @@
 #!/bin/bash
 func_list_file=$1
-da_lib="$2"
+da_lib=$2
+da_inst_dir=$3
 da_lib_func_list="/tmp/$2.list"
 probe_tmp="/tmp/probe_list.tmp"
 lib_tmp="/tmp/lib_list.tmp"
@@ -8,6 +9,7 @@ lib_tmp="/tmp/lib_list.tmp"
 py_output=/tmp/res.py
 c_output=include/ld_preload_probes.h
 c_output_types=include/ld_preload_types.h
+c_output_probe_lib=include/ld_preload_probe_lib.h
 c_output_feature_list_tmp=/tmp/res_feature_list.tmp
 c_output_libs_arr_tmp=/tmp/res_libs_arr.tmp
 
@@ -142,6 +144,13 @@ function print_section_begin_c()
     echo -e "\tstruct ld_feature_list_el_t **feature_ld;" >> $c_output_types
     echo -e "};\n" >> $c_output_types
 
+    print_license "$c_output_probe_lib"
+
+    echo -e "#ifndef __LD_PRELOAD_PROBE_LIB_H__" >> $c_output_probe_lib
+    echo -e "#define __LD_PRELOAD_PROBE_LIB_H__\n" >> $c_output_probe_lib
+
+    echo -e "static const char *probe_lib = \"$da_inst_dir/$da_lib\";" >> $c_output_probe_lib
+    echo -e "static unsigned long get_caller_addr = 0x$(readelf -sW $da_lib | grep get_caller_addr$ | awk '{print $2}' | uniq);" >> $c_output_probe_lib
 
     echo end>&2
 }
@@ -159,6 +168,8 @@ function print_section_end_c()
     echo -e "#endif /* __LD_PRELOAD_PROBES__ */" >> $c_output
 
     echo -e "#endif /* __LD_PRELOAD_TYPES__ */" >> $c_output_types
+
+    echo -e "#endif /* __LD_PRELOAD_PROBE_LIB_H__ */\n" >> $c_output_probe_lib
     echo end>&2
 }
 
@@ -479,6 +490,7 @@ rm $probe_tmp
 rm $py_output
 rm $c_output
 rm $c_output_types
+rm $c_output_probe_lib
 
 rm $c_output_libs_arr_tmp
 #rm $c_output_pr_list_tmp

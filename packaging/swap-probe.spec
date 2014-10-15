@@ -63,6 +63,4 @@ mkdir -p %{buildroot}/usr/local/include
 /usr/local/include/ld_preload_*.h
 
 
-
 %changelog
-

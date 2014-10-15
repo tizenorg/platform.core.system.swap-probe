@@ -70,10 +70,6 @@
 #define MAX_LOCAL_BUF_SIZE (MAX_SHADER_LEN + ADD_LOCAL_BUF_SIZE)
 #define LOCAL_BUF msg_buf
 
-// TODO: remove this copy-paste
-#define CALLER_ADDRESS							\
-	((void*) __builtin_extract_return_addr(__builtin_return_address(0)))
-
 static inline uint64_t voidp_to_uint64(const void *p)
 {
 	return (uint64_t)(uintptr_t)p;

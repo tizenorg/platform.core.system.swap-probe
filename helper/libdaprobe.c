@@ -76,6 +76,8 @@ pthread_t	g_recvthread_id;
 
 int log_fd = 0;
 
+unsigned long list_page_p = 0;
+
 int getExecutableMappingAddress();
 
 bool printLog(log_t* log, int msgType);
@@ -766,6 +768,65 @@ void postBlockEnd()
 /*************************************************************************
  * helper info getter functions
  *************************************************************************/
+static int max_items_on_page(void)
+{
+	int page_size = getpagesize();
+
+	return (page_size / sizeof(unsigned long));
+}
+
+static unsigned long get_caller_for_current(unsigned long *page_p)
+{
+	unsigned long tid = syscall(SYS_gettid);
+	int i = 0;
+
+	while ((page_p[i] != 0) || (i < max_items_on_page())) {
+		if (page_p[i] == tid)
+			return page_p[i + 1];
+		i += 2;
+	}
+
+	return 0;
+}
+
+static unsigned long get_page_ptr(unsigned long *page, unsigned long **pages)
+{
+	*pages = &page[1];
+
+	return *page;
+}
+
+static unsigned long iterate_over_pages(unsigned long *list_page_p)
+{
+	unsigned long pages_count;
+	unsigned long *pages_p;
+	unsigned long ret = 0;
+	unsigned long i;
+
+	pages_count = get_page_ptr(list_page_p, &pages_p);
+
+	/* If pages_count == 0 - no pages on this list page */
+	if (pages_count == 0 || pages_p == 0)
+		return 0;
+
+	for (i = 0; i < pages_count; i++) {
+
+		/* This is the last entry on this page, so it is a pointer to the next
+		 * one. */
+		if (i == ((unsigned long)max_items_on_page() - 2))
+			return iterate_over_pages((unsigned long *)pages_p[i]);
+
+		ret = get_caller_for_current((unsigned long *)pages_p[i]);
+		if (ret != 0)
+			return ret;
+	}
+
+	/* If we're here - searching failed. */
+	PRINTERR("Failed to find caller for %u", syscall(SYS_gettid));
+
+	return 0;
+}
+
 // return current time in 1/10000 sec unit
 unsigned long getCurrentTime()
 {
@@ -788,6 +849,15 @@ uint64_t get_current_nsec(void)
 	return (uint64_t)tv.tv_sec * 1000 * 1000 * 1000 + tv.tv_usec * 1000;
 }
 
+unsigned long get_caller_addr(void)
+{
+	/* Actually, this means problems in kernel modules */
+	if (list_page_p == 0)
+		return 0;
+
+	return iterate_over_pages((unsigned long *)list_page_p);
+}
+
 /************************************************************************
  * probe functions
  ************************************************************************/
@@ -799,10 +869,8 @@ bool setProbePoint(probeInfo_t* iProbe)
 	}
 
 	// atomic operaion(gcc builtin) is more expensive then pthread_mutex
-	real_pthread_mutex_lock(&(gTraceInfo.index.eventMutex));
-	iProbe->eventIndex = gTraceInfo.index.eventIndex++;
-	real_pthread_mutex_unlock(&(gTraceInfo.index.eventMutex));
-
+    // ...but it leads to a great workaround when using with the new preload.
+	iProbe->eventIndex = __sync_add_and_fetch(&gTraceInfo.index.eventIndex, 1);
 	iProbe->currentTime = getCurrentTime();
 	iProbe->pID = _getpid();
 	iProbe->tID = _gettid();
