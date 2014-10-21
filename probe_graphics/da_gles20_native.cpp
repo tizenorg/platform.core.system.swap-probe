@@ -50,16 +50,25 @@
 	#define TYPEDEF(type) typedef type
 #endif
 
-static char contextValue[MAX_GL_CONTEXT_VALUE_SIZE];
+static char contextValue[MAX_GL_CONTEXT_VALUE_SIZE]; /* maybe it should not be gobal static variable */
 static enum DaOptions _sopt = OPT_GLES;
 static __thread GLenum gl_error_external = GL_NO_ERROR;
 
-static void __ui_array_to_str(char *to, GLuint *arr ,int count)
+static void __ui_array_to_str(char *to, GLuint *arr ,int count, size_t bufsize)
 {
-	int i = 0;
+	int i = 0, len = 0;
 
-	for (i = 0; i < count; i++)
-		to += sprintf(to, "%u, ", *arr++);
+	for (i = 0; i < count; i++) {
+		if (bufsize < sizeof(GLuint) * 4) {
+			PRINTERR("too small buffer.");
+			break;
+		}
+
+		len = snprintf(to, bufsize,"%u, ", *arr++);
+
+		to += len;
+		bufsize -= len;
+	}
 
 	if (count != 0) {
 		to -= 2;
@@ -471,7 +480,7 @@ void REAL_NAME(glDeleteTextures)(GLsizei n, const GLuint *textures)
 	CALL_ORIG(glDeleteTextures, n, textures);
 	GL_GET_ERROR();
 	if (error == GL_NO_ERROR)
-		__ui_array_to_str(buf, (GLuint *)textures, n);
+		__ui_array_to_str(buf, (GLuint *)textures, n, sizeof(buf));
 
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
 	      n, voidp_to_uint64(textures));
@@ -649,7 +658,7 @@ void REAL_NAME(glGenBuffers)(GLsizei n, GLuint * buffers)
 	CALL_ORIG(glGenBuffers, n, buffers);
 	GL_GET_ERROR();
 	if (error == GL_NO_ERROR)
-		__ui_array_to_str(buf, buffers, n);
+		__ui_array_to_str(buf, buffers, n, sizeof(buf));
 
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
 	      n, voidp_to_uint64(buffers));
@@ -684,7 +693,7 @@ void REAL_NAME(glGenTextures)(GLsizei n, GLuint * textures)
 	CALL_ORIG(glGenTextures, n, textures);
 	GL_GET_ERROR();
 	if (error == GL_NO_ERROR)
-		__ui_array_to_str(buf, textures, n);
+		__ui_array_to_str(buf, textures, n, sizeof(buf));
 
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
 	      n, voidp_to_uint64(textures));
@@ -1099,6 +1108,7 @@ void REAL_NAME(glLineWidth)(GLfloat width)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "f", width);
 }
 
+/* TODO refactor snprintf check*/
 void REAL_NAME(glLinkProgram)(GLuint program)
 {
 	TYPEDEF(void (*methodType)(GLuint));
@@ -1108,24 +1118,37 @@ void REAL_NAME(glLinkProgram)(GLuint program)
 	char buf[512] = "";
 	if (error == GL_NO_ERROR) {
 		char *to = buf;
-		int i;
+		int i, len;
+		size_t avail;
 		GLint activeNum[1];
 		GLint maxLength[1];
 		GLsizei length[1];
 		GLint size[1];
 		GLenum type[1];
 
+		avail = sizeof(buf);
+
 		real_glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, activeNum);
 		real_glGetProgramiv(program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,
 				    maxLength);
 
 		char name1[maxLength[0]];
-		to += sprintf(to, "%d", activeNum[0]);
+		len = snprintf(to, avail, "%d", activeNum[0]);
+		to += len;
+		avail -= len;
 		for (i = 0; i < activeNum[0]; i++) {
 			real_glGetActiveAttrib(program, i, maxLength[0], length,
 					       size, type, name1);
-			to += sprintf(to, ",%d,%s,%d,%x", i, name1, size[0],
-				      type[0]);
+			len = snprintf(to, avail, ",%d,%s,%d,%x", i, name1, size[0],
+				       type[0]);
+
+			if (avail <= (unsigned int)len) {
+				PRINTERR("fatal. too small buf");
+				break;
+			}
+
+			to += len;
+			avail -= len;
 		}
 
 		real_glGetProgramiv(program, GL_ACTIVE_UNIFORMS, activeNum);
@@ -1133,12 +1156,29 @@ void REAL_NAME(glLinkProgram)(GLuint program)
 				    maxLength);
 
 		char name2[maxLength[0]];
-		to += sprintf(to, ",%d", activeNum[0]);
+		len = snprintf(to, avail, ",%d", activeNum[0]);
+
+		if (avail <= (unsigned int)len) {
+			PRINTERR("fatal. too small buf");
+		} else {
+			to += len;
+			avail -= len;
+		}
+
 		for (i = 0; i < activeNum[0]; i++) {
 			real_glGetActiveUniform(program, i, maxLength[0],
 						length, size, type, name2);
-			to += sprintf(to, ",%d,%s,%d,%x", i, name2, size[0],
-				      type[0]);
+			len = snprintf(to, avail, ",%d,%s,%d,%x", i, name2,
+				       size[0], type[0]);
+
+			if (avail <= (unsigned int)len) {
+				PRINTERR("fatal. too small buf");
+				break;
+			}
+
+			to += len;
+			avail -= len;
+
 		}
 	}
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "d",
@@ -1368,8 +1408,8 @@ void REAL_NAME(glTexParameterfv)(GLenum target, GLenum pname, const GLfloat * pa
 	CALL_ORIG(glTexParameterfv, target, pname, params);
 	GL_GET_ERROR();
 	if (error == GL_NO_ERROR) {
-		char param0[8];
-		sprintf(param0, "%x", (GLenum)params[0]);
+		char param0[sizeof(GLenum) * 4];
+		snprintf(param0, sizeof(param0), "%x", (GLenum)params[0]);
 		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, param0, "xxp",
 		      (uint64_t)(target), (uint64_t)(pname),
 		      voidp_to_uint64(params));
@@ -1398,8 +1438,8 @@ void REAL_NAME(glTexParameteriv)(GLenum target, GLenum pname, const GLint * para
 	CALL_ORIG(glTexParameteriv, target, pname, params);
 	GL_GET_ERROR();
 	if (error == GL_NO_ERROR) {
-		char param0[8];
-		sprintf(param0, "%x", (GLenum)params[0]);
+		char param0[sizeof(GLenum) * 4];
+		snprintf(param0, sizeof(param0), "%x", (GLenum)params[0]);
 		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, param0, "xxp",
 		      (uint64_t)(target), (uint64_t)(pname),
 		      voidp_to_uint64(params));
@@ -1659,7 +1699,8 @@ void REAL_NAME(glVertexAttrib1f)(GLuint index, GLfloat v0)
 
 	GLfloat cv[4];
 	real_glGetVertexAttribfv(index, GL_CURRENT_VERTEX_ATTRIB, cv);
-	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
+	snprintf(contextValue, sizeof(contextValue), "%f,%f,%f,%f",
+		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue, "df",
@@ -1674,7 +1715,8 @@ void REAL_NAME(glVertexAttrib2f)(GLuint index, GLfloat v0, GLfloat v1)
 
 	GLfloat cv[4];
 	real_glGetVertexAttribfv(index, GL_CURRENT_VERTEX_ATTRIB, cv);
-	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
+	snprintf(contextValue, sizeof(contextValue), "%f,%f,%f,%f",
+		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue, "dff",
@@ -1689,7 +1731,8 @@ void REAL_NAME(glVertexAttrib3f)(GLuint index, GLfloat v0, GLfloat v1, GLfloat v
 
 	GLfloat cv[4];
 	real_glGetVertexAttribfv(index, GL_CURRENT_VERTEX_ATTRIB, cv);
-	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
+	snprintf(contextValue, sizeof(contextValue), "%f,%f,%f,%f",
+		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue, "dfff",
@@ -1705,7 +1748,8 @@ void REAL_NAME(glVertexAttrib4f)(GLuint index, GLfloat v0, GLfloat v1, GLfloat v
 
 	GLfloat cv[4];
 	real_glGetVertexAttribfv(index, GL_CURRENT_VERTEX_ATTRIB, cv);
-	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
+	snprintf(contextValue, sizeof(contextValue), "%f,%f,%f,%f",
+		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue, "dffff",
@@ -1720,7 +1764,8 @@ void REAL_NAME(glVertexAttrib1fv)(GLuint index, const GLfloat *v)
 
 	GLfloat cv[4];
 	real_glGetVertexAttribfv(index, GL_CURRENT_VERTEX_ATTRIB, cv);
-	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
+	snprintf(contextValue, sizeof(contextValue), "%f,%f,%f,%f",
+		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
@@ -1735,7 +1780,8 @@ void REAL_NAME(glVertexAttrib2fv)(GLuint index, const GLfloat *v)
 
 	GLfloat cv[4];
 	real_glGetVertexAttribfv(index, GL_CURRENT_VERTEX_ATTRIB, cv);
-	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
+	snprintf(contextValue, sizeof(contextValue), "%f,%f,%f,%f",
+		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
@@ -1750,7 +1796,8 @@ void REAL_NAME(glVertexAttrib3fv)(GLuint index, const GLfloat *v)
 
 	GLfloat cv[4];
 	real_glGetVertexAttribfv(index, GL_CURRENT_VERTEX_ATTRIB, cv);
-	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
+	snprintf(contextValue, sizeof(contextValue), "%f,%f,%f,%f",
+		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
@@ -1764,7 +1811,8 @@ void REAL_NAME(glVertexAttrib4fv)(GLuint index, const GLfloat *v)
 	CALL_ORIG(glVertexAttrib4fv, index, v);
 	GLfloat cv[4];
 	real_glGetVertexAttribfv(index, GL_CURRENT_VERTEX_ATTRIB, cv);
-	sprintf(contextValue, "%f,%f,%f,%f", cv[0], cv[1], cv[2], cv[3]);
+	snprintf(contextValue, sizeof(contextValue), "%f,%f,%f,%f",
+		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,

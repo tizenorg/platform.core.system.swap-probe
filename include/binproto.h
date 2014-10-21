@@ -182,7 +182,7 @@ static char __attribute__((used)) *pack_string_to_file(char *to, const char *st,
 			fwrite(st, data_len, 1, file);
 			fclose(file);
 		}
-		sprintf(dst_path_pack, "FILE:%s", template_name);
+		snprintf(dst_path_pack, sizeof(dst_path_pack), "FILE:%s", template_name);
 		to = pack_string(to, dst_path_pack);
 	}
 	return to;
@@ -280,9 +280,7 @@ static char __attribute__((used)) *pack_value_by_type(char *to, const char **t, 
 		to = pack_array(to, args, sizeof(w));
 		break;
 	default: {
-		char buf[128];
-		sprintf(buf, "ERROR PACK #%d '%c'!!!", **t, **t);
-		PRINTERR(buf);
+		PRINTERR("ERROR PACK #%d '%c'!!!", **t, **t);
 		to--;
 		break;
 		}

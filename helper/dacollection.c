@@ -755,7 +755,7 @@ int add_to_glist(char* key, void* data)
 			elm->keystr = (char*)real_malloc(elm->keylen + 1);
 			if (likely(elm->keystr != NULL))
 			{
-				strcpy(elm->keystr, key);
+				memcpy(elm->keystr, key, elm->keylen + 1);
 				elm->dataptr = data;
 				elm->next = gsymbol_list;
 				elm->prev = NULL;
