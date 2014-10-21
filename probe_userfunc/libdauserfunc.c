@@ -115,19 +115,23 @@ static unsigned long getTime()
 	return (unsigned long)(ts.tv_sec * 10000 + (ts.tv_nsec/100000));
 }
 
+/* TODO refactor close equal code in ifdef/else section */
+/* TODO remove code. it seems unused. */
 #ifdef USING_BACKTRACE
 int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 {
 	char **strings = NULL;
 	size_t i;
 	int initsize;
+	int curlen;
 	int stringlen;
 
 	if(log == NULL)
 		return 0;
 
 	initsize = log->length;
-	log->data[log->length] = '\0';	// is this necessary ?
+	curlen = initsize;
+	log->data[curlen] = '\0';	// is this necessary ?
 	if(likely(sample_info_array[index].bt_size > PROFIL_TRIM_STACK_DEPTH))
 	{
 		strings = BACKTRACE_SYMBOLS(sample_info_array[index].bt_array + PROFIL_TRIM_STACK_DEPTH,
@@ -138,15 +142,16 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 			for(i = PROFIL_TRIM_STACK_DEPTH; i < sample_info_array[index].bt_size; i++)
 			{
 				stringlen = strlen(strings[i - PROFIL_TRIM_STACK_DEPTH]) + 14;
-				if(log->length + stringlen >= bufsize + initsize)
+				if(curlen + stringlen >= bufsize + initsize)
 					break;
 
-				log->length += sprintf(log->data + log->length, "%010u`,%s`,",
+				curlen += snprintf(log->data + curlen, bufsize - curlen, "%010u`,%s`,",
 						(unsigned int)(sample_info_array[index].bt_array[i]),
 						strings[i - PROFIL_TRIM_STACK_DEPTH]);
 			}
-			log->data[log->length-2] = '\0';
-			log->length -= 2;
+			curlen -= 2;
+			log->data[curlen] = '\0';
+			log->length = curlen;
 			free(strings);
 		}
 		else
@@ -154,14 +159,15 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 			for(i = PROFIL_TRIM_STACK_DEPTH; i < sample_info_array[index].bt_size; i++)
 			{
 				stringlen = 23;
-				if(log->length + stringlen >= bufsize + initsize)
+				if(curlen + stringlen >= bufsize + initsize)
 					break;
 
-				log->length += sprintf(log->data + log->length, "%010u`,(unknown)`,",
+				curlen += snprintf(log->data + curlen, bufsize - curlen, "%010u`,(unknown)`,",
 						(unsigned int)(sample_info_array[index].bt_array[i]));
 			}
-			log->data[log->length-2] = '\0';
-			log->length -= 2;
+			curlen -= 2;
+			log->data[curlen] = '\0';
+			log->length = curlen;
 		}
 		return (int)(sample_info_array[index].bt_size - PROFIL_TRIM_STACK_DEPTH);
 	}
@@ -176,13 +182,15 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 	char **strings = NULL;
 	size_t i;
 	int initsize;
+	int curlen;
 	int stringlen;
 
 	if(log == NULL)
 		return 0;
 
 	initsize = log->length;
-	log->data[log->length] = '\0';	// is this necessary ?
+	curlen = initsize;
+	log->data[curlen] = '\0';	// is this necessary ?
 	strings = BACKTRACE_SYMBOLS(sample_info_array[index].bt_array,
 			sample_info_array[index].bt_size);
 
@@ -191,15 +199,16 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 		for(i = 0; i < sample_info_array[index].bt_size; i++)
 		{
 			stringlen = strlen(strings[i]) + 14;
-			if(log->length + stringlen >= bufsize + initsize)
+			if(curlen + stringlen >= bufsize + initsize)
 				break;
 
-			log->length += sprintf(log->data + log->length, "%010u`,%s`,",
+			curlen += snprintf(log->data + curlen, bufsize - curlen, "%010u`,%s`,",
 					(unsigned int)(sample_info_array[index].bt_array[i]),
 					strings[i]);
 		}
-		log->data[log->length-2] = '\0';
-		log->length -= 2;
+		curlen -= 2;
+		log->data[curlen] = '\0';
+		log->length = curlen;
 		free(strings);
 	}
 	else
@@ -207,14 +216,15 @@ int profil_backtrace_symbols(log_t *log, int bufsize, int index)
 		for(i = 0; i < sample_info_array[index].bt_size; i++)
 		{
 			stringlen = 23;
-			if(log->length + stringlen >= bufsize + initsize)
+			if(curlen + stringlen >= bufsize + initsize)
 				break;
 
-			log->length += sprintf(log->data + log->length, "%010u`,(unknown)`,",
+			curlen += snprintf(log->data + curlen, bufsize - curlen, "%010u`,(unknown)`,",
 					(unsigned int)(sample_info_array[index].bt_array[i]));
 		}
-		log->data[log->length-2] = '\0';
-		log->length -= 2;
+		curlen -= 2;
+		log->data[curlen] = '\0';
+		log->length = curlen;
 	}
 	return (int)(sample_info_array[index].bt_size);
 }
