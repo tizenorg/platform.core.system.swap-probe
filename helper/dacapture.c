@@ -311,7 +311,7 @@ static void destroy_canvas(Evas* canvas)
 
 int captureScreen()
 {
-	char dstpath[32];
+	char dstpath[MAX_PATH_LENGTH];
 	char* scrimage;
 	int width, height;
 	Evas* ev = NULL;
@@ -333,7 +333,9 @@ int captureScreen()
 		ev = create_canvas(width, height);
 		if(likely(ev != NULL))
 		{
-			sprintf(dstpath, SCREENSHOT_DIRECTORY "/%d_%d.png", getpid(), probeInfo.eventIndex);
+			snprintf(dstpath, sizeof(dstpath),
+				 SCREENSHOT_DIRECTORY "/%d_%d.png", getpid(),
+				 probeInfo.eventIndex);
 
 			// make image buffer
 			if((img = evas_object_image_add(ev)) != NULL)

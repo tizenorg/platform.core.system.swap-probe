@@ -57,7 +57,11 @@ void set_real_func(const char *func_name, void **func_pointer,
 	void *faddr;
 	void *_id;
 
-	_id = dlopen(lib_string[id], RTLD_LAZY);
+	if (lib_handle[id] == NULL)
+		lib_handle[id] = dlopen(lib_string[id], RTLD_LAZY);
+
+	_id = lib_handle[id];
+
 	if (_id == NULL)
 		probe_terminate_with_err("dlopen failed", func_name, id);
 
@@ -101,7 +105,8 @@ void probe_terminate_with_err(const char *msg, const char *func_name,
 
 	if (id != LIB_NO && id < NUM_ORIGINAL_LIBRARY)
 		lib_name = lib_string[id];
-	sprintf(error_msg, "%s : [%s], %s\n", msg, func_name, lib_name);
+	snprintf(error_msg, sizeof(error_msg), "%s : [%s], %s\n", msg,
+		 func_name, lib_name);
 	perror(error_msg);
 	PRINTERR(error_msg);
 	//wait for flush
@@ -174,7 +179,7 @@ void init_probe_gl(const char *func_name, void **func_pointer,
 			real_glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxVal[0]);
 			real_glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
 					   &maxVal[1]);
-			sprintf(maxValString, "%d,%d", maxVal[0], maxVal[1]);
+			snprintf(maxValString, sizeof(maxValString), "%d,%d", maxVal[0], maxVal[1]);
 			PREPARE_LOCAL_BUF();
 			PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, "", 0);
 			PACK_COMMON_END('p', 1, 0, 0);

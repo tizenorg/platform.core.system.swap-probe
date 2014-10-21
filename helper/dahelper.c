@@ -92,6 +92,9 @@ int remove_indir(const char *dirname)
 	DIR *dir;
 	struct dirent *entry;
 	char path[MAX_PATH_LENGTH];
+	static char dirent_buffer[ sizeof(struct dirent) + PATH_MAX + 1 ] = {0,};
+	static struct dirent *dirent_r = (struct dirent *)dirent_buffer;
+
 
 	dir = opendir(dirname);
 	if(dir == NULL)
@@ -99,8 +102,7 @@ int remove_indir(const char *dirname)
 		return -1;
 	}
 
-	while((entry = readdir(dir)) != NULL)
-	{
+	while ((readdir_r(dir, dirent_r, &entry) == 0) && entry) {
 		if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
 		{
 			snprintf(path, (size_t) MAX_PATH_LENGTH, "%s/%s", dirname, entry->d_name);
@@ -142,7 +144,7 @@ char *real_abs_path(int fd, char *buffer, size_t bufsiz)
 	if (fd < 0)
 		return NULL;
 
-	sprintf(proc_path, PROC_FD, fd);
+	snprintf(proc_path, sizeof(proc_path), PROC_FD, fd);
 
 	ret = readlink(proc_path, buffer, bufsiz);
 	if (ret < 0) /* some error occured */

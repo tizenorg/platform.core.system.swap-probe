@@ -61,13 +61,6 @@ extern int app_efl_main_flg;
 #define ENABLE_INTERNAL_MALLOC		0x0001
 #define ENABLE_SNAPSHOT				0x0002
 
-#define LOG(FORMAT, ...)					\
-	do {									\
-		char buf[128];						\
-		sprintf(buf, FORMAT, __VA_ARGS__);	\
-		PRINTMSG(buf);						\
-	} while(0)								\
-
 #define SCREENSHOT_LOCK()										\
 	do {														\
 		int old;												\

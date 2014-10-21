@@ -91,15 +91,13 @@ void *(*real_malloc)(size_t) = NULL;
 // runtime configure the probe option
 static void _configure(char* configstr)
 {
-	char buf[64];
 	gTraceInfo.optionflag = atoll(configstr);
 
-	sprintf(buf, "configure in probe : %s, %llx\n", configstr, gTraceInfo.optionflag);
 	if isOptionEnabled(OPT_SNAPSHOT)
 		SCREENSHOT_SET();
 	else
 		SCREENSHOT_UNSET();
-	PRINTMSG(buf);
+	PRINTMSG("configure in probe : %s, %llx\n", configstr, gTraceInfo.optionflag);
 }
 
 void application_exit()
@@ -126,7 +124,7 @@ static int createSocket(void)
 	if (gTraceInfo.socket.daemonSock != -1)	{
 		memset(&clientAddr, '\0', sizeof(clientAddr));
 		clientAddr.sun_family = AF_UNIX;
-		sprintf(clientAddr.sun_path, "%s", UDS_NAME);
+		snprintf(clientAddr.sun_path, sizeof(UDS_NAME), "%s", UDS_NAME);
 
 		clientLen = sizeof(clientAddr);
 		if (connect(gTraceInfo.socket.daemonSock,
@@ -136,7 +134,7 @@ static int createSocket(void)
 			int recved = 0;
 
 			/* send pid and ppid to manager */
-			sprintf(buf, "%d %d", getpid(), getppid());
+			snprintf(buf, sizeof(buf), "%d %d", getpid(), getppid());
 			print_log_str(MSG_PID, buf);
 
 			/* we need recv this messages right now! */
@@ -299,7 +297,7 @@ static void *recvThread(void __unused * data)
 			recvlen = read(g_timerfd, &xtime, sizeof(xtime));
 			if(recvlen > 0)
 			{
-				log.length = sprintf(log.data, "%ld", g_total_alloc_size);
+				log.length = snprintf(log.data, sizeof(log.data), "%ld", g_total_alloc_size) + 1;
 				printLog(&log, MSG_ALLOC);
 			}
 			else
@@ -435,8 +433,6 @@ static int create_recv_thread()
 
 void _init_(void)
 {
-	char msg[DA_LOG_MAX];
-
 	probeBlockStart();
 
 	init_exec_fork();
@@ -458,9 +454,8 @@ void _init_(void)
 	}
 
 
-	sprintf(msg, "dynamic analyzer probe helper so loading... pid[%d]\n",
-		getpid());
-	PRINTMSG(msg);
+	PRINTMSG("dynamic analyzer probe helper so loading... pid[%d]\n",
+		 getpid());
 
 	gTraceInfo.init_complete = 1;
 	maps_make();
@@ -485,21 +480,17 @@ void __attribute__((constructor)) _init_probe()
 	/* init gl functions */
 	__init_gl_functions__();
 
-	char msg[DA_LOG_MAX];
-	sprintf(msg, "<-lib construnctor");
-	PRINTMSG(msg);
+	PRINTMSG("<-lib construnctor");
 }
 
 void _uninit_(void)
 {
 	int i;
-	char msg[DA_LOG_MAX];
 	probeBlockStart();
 
 	gTraceInfo.init_complete = -1;
-	sprintf(msg, "dynamic analyzer probe helper so unloading... pid[%d]\n",
-		getpid());
-	PRINTMSG(msg);
+	PRINTMSG("dynamic analyzer probe helper so unloading... pid[%d]\n",
+		 getpid());
 
 	remove_all_glist();
 
@@ -534,9 +525,7 @@ void _uninit_(void)
 
 void __attribute__((destructor)) _fini_probe()
 {
-	char msg[DA_LOG_MAX];
-	sprintf(msg, "->lib destructor. pid[%d]\n", getpid());
-	PRINTMSG(msg);
+	PRINTMSG("->lib destructor. pid[%d]\n", getpid());
 	_uninit_();
 }
 
@@ -671,12 +660,14 @@ bool print_log_fmt(int msgType, const char *func_name, int line, ...)
 // get backtrace string
 // return stack depth if succeed, otherwise return 0
 // parameter 'log' cannot be null
+/* TODO remove unused code (getBacktraceString)*/
 int getBacktraceString(log_t* log, int bufsize)
 {
 	void* array[MAX_STACK_DEPTH];
 	char** strings = NULL;
 	size_t i, size;
 	int initsize;
+	int curlen;
 	int stringlen;
 
 	if(log == NULL)
@@ -685,7 +676,8 @@ int getBacktraceString(log_t* log, int bufsize)
 	probeBlockStart();
 
 	initsize = log->length;
-	log->data[log->length] = '\0';	// is this necessary ?
+	curlen = initsize;
+	log->data[curlen] = '\0';	// is this necessary ?
 	size = backtrace(array, MAX_STACK_DEPTH);
 	if(likely(size > TRIM_STACK_DEPTH))
 	{
@@ -696,13 +688,14 @@ int getBacktraceString(log_t* log, int bufsize)
 			for(i = TRIM_STACK_DEPTH; i < size; i++)
 			{
 				stringlen = strlen(strings[i - TRIM_STACK_DEPTH]) + 14;
-				if(log->length + stringlen >= bufsize + initsize)
+				if(curlen + stringlen >= bufsize + initsize)
 					break;
 
-				log->length += sprintf(log->data + log->length, "%010u`,%s`,", (unsigned int)(array[i]), strings[i - TRIM_STACK_DEPTH]);
+				curlen += snprintf(log->data + curlen, bufsize - curlen, "%010u`,%s`,", (unsigned int)(array[i]), strings[i - TRIM_STACK_DEPTH]);
 			}
-			log->data[log->length-2] = '\0';
-			log->length -= 2;
+			curlen -= 2;
+			log->data[curlen] = '\0';
+			log->length = curlen;
 			free(strings);
 		}
 		else	// failed to get backtrace symbols
@@ -711,13 +704,14 @@ int getBacktraceString(log_t* log, int bufsize)
 			for(i = TRIM_STACK_DEPTH; i < size; i++)
 			{
 				stringlen = 23;
-				if(log->length + stringlen >= bufsize + initsize)
+				if(curlen + stringlen >= bufsize + initsize)
 					break;
 
-				log->length += sprintf(log->data + log->length, "%010u`,(unknown)`,", (unsigned int)(array[i]));
+				curlen += snprintf(log->data + curlen, bufsize - curlen, "%010u`,(unknown)`,", (unsigned int)(array[i]));
 			}
-			log->data[log->length-2] = '\0';
-			log->length -= 2;
+			curlen -= 2;
+			log->data[curlen] = '\0';
+			log->length = curlen;
 		}
 
 		probeBlockEnd();
