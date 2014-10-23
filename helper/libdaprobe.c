@@ -102,10 +102,36 @@ static void _configure(char* configstr)
 
 void application_exit()
 {
-	PRINTMSG("App termination: EXIT(0)");
+	pid_t gpid;
+	FILE *f = NULL;
+	char buf[MAX_PATH_LENGTH];
+	const char *manager_name = "da_manager";
+
 	/* TODO think of another way for correct app termination */
 
-	/* Kill yourself!! */
+	gpid = getpgrp();
+	/* check for parent */
+	snprintf(buf, sizeof(buf), "/proc/%d/cmdline", gpid);
+	f = fopen(buf, "r");
+	if (f != NULL) {
+		fscanf(f, "%s", buf);
+		fclose(f);
+		if (strncmp(buf, manager_name, sizeof(manager_name)) == 0) {
+			/* Luke, I am your father
+			 * da_manager is our parent
+			 * looks like we are common applicaton
+			 */
+			PRINTMSG("App termination: EXIT(0)");
+			exit(0);
+		}
+	}
+
+	/* da_manager is not our father
+	 * we are native app or already launched.
+	 * Will be troubles up there if we are common already launched app!!!
+	 * Kill yourself!!
+	 */
+	PRINTMSG("App termination: kill all process group");
 	killpg(getpgrp(), SIGKILL);
 }
 
