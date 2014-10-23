@@ -100,12 +100,38 @@ static void _configure(char* configstr)
 	PRINTMSG("configure in probe : %s, %llx\n", configstr, gTraceInfo.optionflag);
 }
 
+#define MANAGER_NAME "da_manager"
 void application_exit()
 {
-	PRINTMSG("App termination: EXIT(0)");
+	pid_t gpid;
+	FILE *f = NULL;
+	char buf[MAX_PATH_LENGTH];
+
 	/* TODO think of another way for correct app termination */
 
-	/* Kill yourself!! */
+	gpid = getpgrp();
+	/* check for parent */
+	snprintf(buf, sizeof(buf), "/proc/%d/cmdline", gpid);
+	f = fopen(buf, "r");
+	if (f != NULL) {
+		fscanf(f, "%s", buf);
+		fclose(f);
+		if (strncmp(buf, MANAGER_NAME, sizeof(MANAGER_NAME)) == 0) {
+			/* Luke, I am your father
+			 * da_manager is our parent
+			 * looks like we are common applicaton
+			 */
+			PRINTMSG("App termination: EXIT(0)");
+			exit(0);
+		}
+	}
+
+	/* da_manager is not our father
+	 * we are native app or already launched.
+	 * Will be troubles up there if we are common already launched app!!!
+	 * Kill yourself!!
+	 */
+	PRINTMSG("App termination: kill all process group");
 	killpg(getpgrp(), SIGKILL);
 }
 
@@ -331,6 +357,7 @@ static void *recvThread(void __unused * data)
 					_configure(data_buf);
 				} else if(log.type == MSG_STOP) {
 					PRINTMSG("MSG_STOP");
+					sleep(1);
 					if (data_buf) {
 						free(data_buf);
 						data_buf = NULL;
