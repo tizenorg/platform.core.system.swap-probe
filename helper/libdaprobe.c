@@ -9,6 +9,7 @@
  * Woojin Jung <woojin2.jung@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Nikita Kalyazin <n.kalyazin@samsung.com>
+ * Vitaliy Cherepanov <v.cherepanov@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -59,6 +60,7 @@
 #include "binproto.h"
 #include "daforkexec.h"
 #include "damaps.h"
+#include "dastdout.h"
 #include "common_probe_init.h"
 
 #define APP_INSTALL_PATH		"/opt/apps"
@@ -167,8 +169,8 @@ static int createSocket(void)
 			while (((recved & MSG_CONFIG_RECV) == 0) ||
 			       ((recved & MSG_MAPS_INST_LIST_RECV) == 0))
 			{
-				fprintf(stderr, "wait message\n");
-				PRINTMSG("wait incoming message");
+				PRINTMSG("wait incoming message %d\n",
+					 gTraceInfo.socket.daemonSock);
 				/* recv header */
 				recvlen = recv(gTraceInfo.socket.daemonSock, &log,
 					       sizeof(log.type) + sizeof(log.length),
@@ -205,12 +207,15 @@ static int createSocket(void)
 						free(data_buf);
 
 				} else if (recvlen < 0) {
-					fprintf(stderr, "recv failed in socket creation with error(%d)\n", recvlen);
+					gTraceInfo.socket.daemonSock = -1;
+					PRINTERR("recv failed in socket creation with error(%d)\n", recvlen);
 					ret = -1;
 					application_exit();
 					break;
 				} else {
 					/* closed by other peer */
+					gTraceInfo.socket.daemonSock = -1;
+					PRINTERR("closed by other peer\n");
 					ret = -1;
 					application_exit();
 					break;
@@ -222,9 +227,13 @@ static int createSocket(void)
 		} else {
 			close(gTraceInfo.socket.daemonSock);
 			gTraceInfo.socket.daemonSock = -1;
+			PRINTERR("cannot connect to da_manager. err <%s>\n",
+				 strerror(errno));
 			ret = -1;
 		}
 	} else {
+		PRINTERR("cannot create socket. err <%s>\n",
+			 strerror(errno));
 		ret = -1;
 	}
 
@@ -462,6 +471,10 @@ void _init_(void)
 {
 	probeBlockStart();
 
+	/* redirect stderr and stdout.*/
+	/* if there is no std - print call will crash app */
+	__redirect_std();
+
 	init_exec_fork();
 	initialize_hash_table();
 
@@ -564,6 +577,20 @@ void __attribute__((destructor)) _fini_probe()
 /************************************************************************
  * manipulate and print log functions
  ************************************************************************/
+const char *msg_code_to_srt(enum MessageType type)
+{
+	switch (type) {
+		case MSG_MSG:
+			return "[INF]";
+		case MSG_ERROR:
+			return "[ERR]";
+		case MSG_WARNING:
+			return "[WRN]";
+		default:
+			return "[???]";
+	}
+}
+
 bool printLog(log_t *log, int msgType)
 {
 	ssize_t res, len;
@@ -632,15 +659,13 @@ bool print_log_str(int msgType, char *str)
  */
 bool print_log_fmt(int msgType, const char *func_name, int line, ...)
 {
-	ssize_t res, len;
+	ssize_t res = 0, len = 0;
 	char *fmt, *p;
 	int n;
 	log_t log;
 	va_list ap;
 
 	/* Check connection status */
-	if(unlikely(gTraceInfo.socket.daemonSock == -1))
-		return false;
 
 	probeBlockStart();
 
@@ -675,7 +700,15 @@ bool print_log_fmt(int msgType, const char *func_name, int line, ...)
 
 	/* lock socket and send */
 	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
-	res = send(gTraceInfo.socket.daemonSock, &log, len, MSG_DONTWAIT);
+
+	if(unlikely(gTraceInfo.socket.daemonSock != -1)) {
+		res = send(gTraceInfo.socket.daemonSock, &log, len, MSG_DONTWAIT);
+	} else {
+		/* if socket is not connected, out to stderr */
+		fprintf(stderr, "%s %s\n", msg_code_to_srt(msgType), log.data);
+		fflush(stderr);
+	}
+
 	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 
 	probeBlockEnd();
@@ -931,7 +964,7 @@ void *rtdl_next(const char *symname)
 
 	symbol = dlsym(RTLD_NEXT, symname);
 	if (symbol == NULL || dlerror() != NULL) {
-		fprintf(stderr, "dlsym failed <%s>\n", symname);
+		PRINTERR("dlsym failed <%s>\n", symname);
 		exit(41);
 	}
 
