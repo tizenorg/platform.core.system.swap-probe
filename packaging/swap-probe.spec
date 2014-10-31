@@ -27,6 +27,7 @@ make -j
 %install
 rm -rf ${RPM_BUILD_ROOT}
 mkdir -p %{buildroot}/usr/share/license
+mkdir -p %{buildroot}/home/developer/sdk_tools/
 cp LICENSE %{buildroot}/usr/share/license/%{name}
 %make_install
 
@@ -37,7 +38,7 @@ cp LICENSE %{buildroot}/usr/share/license/%{name}
 %defattr(-,root,root,-)
 %{_prefix}/lib/da_probe_tizen.so
 %{_prefix}/lib/libdaprobe.so
-%{_prefix}/lib/da_api_map
+/home/developer/sdk_tools/da_api_map
 
 
 %changelog
