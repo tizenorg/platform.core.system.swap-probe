@@ -57,7 +57,10 @@ LDFLAGS = -shared   	\
 	-leina				\
 	-levas				\
 	-lpthread			\
-	-lrt
+	-lrt				\
+	-Wl					\
+	-z					\
+	noexecstack
 
 ASMFLAG = -O0 -g
 
