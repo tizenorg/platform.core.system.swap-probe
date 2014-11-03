@@ -1,5 +1,4 @@
 INSTALLDIR = usr/lib
-INSTALLAPIMAPDIR = home/developer/sdk_tools
 
 ## Since include directives do not impose additional dependencies, we can make
 ## Makefile more clear, simply putting all includes we ever need in single
@@ -165,7 +164,7 @@ $(DUMMY_TARGET): $(DUMMY_OBJS)
 install: all
 	[ -d "$(DESTDIR)/$(INSTALLDIR)" ] || mkdir -p $(DESTDIR)/$(INSTALLDIR)
 	install $(TIZEN_TARGET) $(DUMMY_TARGET) $(DESTDIR)/$(INSTALLDIR)/
-	install -m 644 include/id_list $(DESTDIR)/$(INSTALLAPIMAPDIR)/da_api_map
+	install -m 644 include/id_list $(DESTDIR)/$(INSTALLDIR)/da_api_map
 
 clean:
 	rm -f *.so *.o $(GENERATED_HEADERS)
