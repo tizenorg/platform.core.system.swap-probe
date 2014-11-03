@@ -403,7 +403,7 @@ static struct map_t *get_map_by_addr(void *addr)
 	if (addr < addr_hash_table[0]->addr)
 		goto find_exit;
 
-	if (addr > addr_hash_table[addr_hash_table_el_count_buzy - 1]->addr)
+	if (addr > addr_hash_table[addr_hash_table_el_count_buzy - 1]->endaddr)
 		goto find_exit;
 
 	left = 0;
