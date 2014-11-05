@@ -146,7 +146,7 @@ static int read_mapping_line(FILE *mapfile, struct map_t *m)
 					while (*p == ' ')
 						p++;
 					len = strlen(p);
-					memcpy(m->filename, p, len);
+					memmove(m->filename, p, len);
 				} else
 					len = strlen(m->filename);
 
