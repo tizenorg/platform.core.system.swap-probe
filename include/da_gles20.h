@@ -159,7 +159,7 @@ extern EGLContext eglGetCurrentContext(void);
 
 #define GL_GET_ERROR()							\
 	if (blockresult != 0) {						\
-		error = glGetError();					\
+		error = REAL_NAME(glGetError)();					\
 	}
 
 #define AFTER_SHADER(RET_TYPE, RET_VAL, APITYPE, CONTEXT_VAL, CONTEXT_SIZE, INPUTFORMAT, ...)	\
