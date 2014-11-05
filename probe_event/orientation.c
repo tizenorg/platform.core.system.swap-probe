@@ -33,6 +33,7 @@
 
 #include "daprobe.h"
 #include "dahelper.h"
+#include "common_probe_init.h"
 
 
 Ecore_Event_Handler *register_orientation_event_listener();
@@ -87,4 +88,23 @@ void unregister_orientation_event_listener(Ecore_Event_Handler *handler)
 		ecore_event_handler_del(handler);
 
 	probeBlockEnd();
+}
+
+EAPI int ecore_x_init(const char *name)
+{
+	static Ecore_Event_Handler *event_handler = NULL;
+
+	int res = 0;
+	static int (*ecore_x_initp)(const char *name);
+	PRINTMSG("(%s)", name);
+
+	GET_REAL_FUNC_RTLD_NEXT(ecore_x_init);
+	res = ecore_x_initp(name);
+
+	if (event_handler == NULL) {
+		event_handler = register_orientation_event_listener();
+		if (event_handler == NULL)
+			PRINTERR("Fail to init event listener");
+	}
+	return res;
 }
