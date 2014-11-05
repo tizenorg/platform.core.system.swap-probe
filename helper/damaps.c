@@ -136,24 +136,26 @@ static int read_mapping_line(FILE *mapfile, struct map_t *m)
 
 	m->is_instrument = 0;
 	if (ret > 0 && ret != EOF) {
+		int len = 0;
+
 		if (ch2 != '\n') {
 			ret = (fgets((char *)m->filename, sizeof(m->filename), mapfile) != NULL);
 			if (ret) {
-				int len;
 				/* remove leading white spaces */
 				if (m->filename[0] == ' ') {
 					char *p = m->filename;
 					while (*p == ' ')
 						p++;
 					len = strlen(p);
-					memcpy(m->filename, p, len);
+					memmove(m->filename, p, len);
 				} else
 					len = strlen(m->filename);
-
-				m->filename[len-1] = '\0';
+				if (len > 0)
+					len--;
 			}
-		} else
-			m->filename[0] = '\0';	/* no filename */
+		}
+
+		m->filename[len] = '\0';
 
 		return 1;
 	} else
