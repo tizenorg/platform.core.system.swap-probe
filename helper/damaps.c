@@ -180,6 +180,7 @@ static void print_list()
 			 m->device,
 			 m->inode,
 			 m->filename);
+		usleep(500);
 	}
 
 }
@@ -232,6 +233,7 @@ static void print_list_sorted(struct map_t **list)
 			 m->hash,
 			 m->is_instrument,
 			 m->filename);
+		usleep(500);
 	}
 }
 
@@ -320,11 +322,13 @@ static int create_name_hash_table()
 	return 0;
 }
 
-static struct map_t *get_map_by_filename(char *filename)
+static struct map_t **get_map_by_filename(char *filename, int *count)
 {
 	uint32_t hash = calc_string_hash(filename);
-	struct map_t *res = NULL;
+	struct map_t **res = NULL;
 	uint32_t left, right, cur;
+
+	*count = 0;
 
 	if (name_hash_table_el_count_buzy == 0 ||
 	    name_hash_table[0]->hash > hash ||
@@ -351,6 +355,8 @@ static struct map_t *get_map_by_filename(char *filename)
 
 	/* resolve collisions */
 	if (name_hash_table[cur]->hash == hash) {
+
+		/* get first with same hash */
 		while (1) {
 			if (cur == 0)
 				/* top of list */
@@ -361,7 +367,30 @@ static struct map_t *get_map_by_filename(char *filename)
 			/* previous element have the same hash */
 			cur--;
 		}
-		res = name_hash_table[cur];
+
+		/* get first with same hash and filename */
+		while (1) {
+			if (cur > name_hash_table_el_count_buzy - 1)
+				/* top of list */
+				break;
+			if (name_hash_table[cur]->hash != hash)
+				/* previous element have different hash */
+				break;
+			if (strncmp(name_hash_table[cur]->filename, filename, strlen(filename)) == 0)
+				break;
+			/* previous element have the same hash */
+			cur++;
+		}
+
+		/* calculate sections count */
+		while (cur <= (name_hash_table_el_count_buzy - 1) &&
+		       name_hash_table[cur]->hash == hash &&
+		       strncmp(name_hash_table[cur]->filename, filename, strlen(filename)) == 0) {
+			if (res == NULL)
+				res = &name_hash_table[cur];
+			cur++;
+			*count = *count + 1;
+		}
 	}
 
 find_exit:
@@ -371,7 +400,7 @@ find_exit:
 static int update_is_instrument_lib_attr_nolock()
 {
 	uint32_t i;
-	struct map_t *map;
+	struct map_t **map;
 
 	/* clear is_instrument fields */
 	for (i = 0; i < name_hash_table_el_count_buzy; i++)
@@ -379,11 +408,13 @@ static int update_is_instrument_lib_attr_nolock()
 
 	/* set is_instrument fields */
 	for (i = 0; i < map_inst_count; i++) {
-		map = get_map_by_filename(map_inst_list[i]);
-		if (map) {
-			PRINTMSG("set 1!!! = %s [%p:%p]", map->filename,
-				  map->addr, map->endaddr);
-			map->is_instrument = 1;
+		int count = 0;
+		map = get_map_by_filename(map_inst_list[i], &count);
+		for (;count > 0; count--) {
+			PRINTMSG("set 1!!! = %s [%p:%p]", (*map)->filename,
+				  (*map)->addr, (*map)->endaddr);
+			(*map)->is_instrument = 1;
+			map++;
 		}
 	}
 
