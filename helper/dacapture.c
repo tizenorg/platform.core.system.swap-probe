@@ -360,11 +360,25 @@ int captureScreen()
 				{
 					chmod(dstpath, 0777);
 
-					PREPARE_LOCAL_BUF();
+					/* welcome to the hell */
+					log_t log;
+					PREPARE_LOCAL_BUF_THOUGH((char *)&log);
+
+					/* skeep header */
+					LOCAL_BUF += offsetof(log_t, data);
+					/* pack screenshot name */
+					BUF_PTR = pack_string(LOCAL_BUF, dstpath); /* file name */
+					LOCAL_BUF = BUF_PTR;
+
+					/* pack probe */
 					PACK_COMMON_BEGIN(MSG_PROBE_SCREENSHOT, API_ID_captureScreen, "", 0);
 					PACK_COMMON_END('d', 0, 0, 0);
 					PACK_SCREENSHOT(dstpath, getOrientation());
-					FLUSH_LOCAL_BUF();
+					SET_MSG_LEN();
+					log.length = GET_MSG_LEN() + MSG_LEN_OFFSET + strlen(dstpath) + 1;
+
+					/* send all message */
+					printLog(&log, MSG_IMAGE);
 				}
 				else
 				{
