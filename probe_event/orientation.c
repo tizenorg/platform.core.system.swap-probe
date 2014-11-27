@@ -50,12 +50,15 @@ Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
 	probeBlockStart();
 	pClientEvent = (Ecore_X_Event_Client_Message*)pEvent;
 
-	//This code from ecore_x
-	//So I don't know what 32 does mean
-	if (pClientEvent->format != 32)
-		return ECORE_CALLBACK_PASS_ON;
-
 	if (pClientEvent != NULL) {
+
+		//This code from ecore_x
+		//So I don't know what 32 does mean
+		if (pClientEvent->format != 32) {
+			probeBlockEnd();
+			return ECORE_CALLBACK_PASS_ON;
+		}
+
 		if (pClientEvent->message_type ==
 		    ECORE_X_ATOM_E_WINDOW_ROTATION_CHANGE_PREPARE) {
 			int orientation = (int)pClientEvent->data.l[1];

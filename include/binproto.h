@@ -549,7 +549,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 /* 	return 0; */
 /* } */
 
-extern void _init_(void);
+extern int _init_(void);
 extern void _uninit_(void);
 
 #endif /* __BIN_PROTO_H__ */

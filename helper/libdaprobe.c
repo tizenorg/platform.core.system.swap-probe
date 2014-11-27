@@ -191,6 +191,11 @@ static int createSocket(void)
 					recvlen = recv(gTraceInfo.socket.daemonSock, data_buf,
 						       log.length, MSG_WAITALL);
 
+					if (recvlen != log.length) {
+						PRINTERR("Can not get data from daemon sock\n");
+						goto free_data_buf;
+					}
+
 					if (log.type == MSG_CONFIG) {
 						PRINTMSG("MSG_CONFIG");
 						_configure(data_buf);
@@ -204,6 +209,7 @@ static int createSocket(void)
 						PRINTERR("unknown message! %d", log.type);
 					}
 
+free_data_buf:
 					if (data_buf != NULL)
 						free(data_buf);
 
@@ -361,7 +367,10 @@ static void *recvThread(void __unused * data)
 					}
 					recvlen = recv(gTraceInfo.socket.daemonSock, data_buf,
 						log.length, MSG_WAITALL);
-
+					if (recvlen != log.length) {
+						PRINTERR("Can not recv data from\n");
+						goto free_data_buf;
+					}
 				}
 
 				if (log.type == MSG_CAPTURE_SCREEN) {
@@ -389,6 +398,7 @@ static void *recvThread(void __unused * data)
 					PRINTERR("recv unknown message. id = (%d)", log.type);
 				}
 
+free_data_buf:
 				if (data_buf) {
 					free(data_buf);
 					data_buf = NULL;
@@ -470,8 +480,10 @@ static int create_recv_thread()
 	return err;
 }
 
-void _init_(void)
+int _init_(void)
 {
+	int res = 0;
+
 	probeBlockStart();
 
 	/* redirect stderr and stdout.*/
@@ -501,9 +513,16 @@ void _init_(void)
 		 getpid());
 
 	gTraceInfo.init_complete = 1;
-	maps_make();
+	if (maps_make() != 0) {
+		PRINTERR("maps make failed\n");
+		res = -1;
+		goto unlock_exit;
+	}
+
+unlock_exit:
 	probeBlockEnd();
 
+	return res;
 }
 
 void __attribute__((constructor)) _init_probe()

@@ -503,6 +503,7 @@ static inline void maps_writer_unlock()
 	pthread_mutex_unlock(&maps_lock);
 }
 
+/* TODO refactor this function to alloc map_inst_list_set and copy it frm src*/
 // WARNING! this function use maps_set and set it to NULL
 // so first param must be malloced and do not free maps_set after call
 int set_map_inst_list(char **maps_set, uint32_t maps_count)
@@ -525,16 +526,25 @@ int set_map_inst_list(char **maps_set, uint32_t maps_count)
 	}
 
 	map_inst_list = real_malloc(sizeof(*map_inst_list) * maps_count);
-	if (maps_set != NULL && *maps_set != NULL)
-		map_inst_list_set = *maps_set;
-	map_inst_count = maps_count;
+	if (maps_count != 0 && map_inst_list == NULL) {
+		PRINTERR("Cannot allocate data for map_inst_list\n");
+		res = -1;
+		goto unlock_exit;
+	}
 
-	/* add library mapping names */
-	p = map_inst_list_set + sizeof(maps_count);
-	for (i = 0; i < maps_count; i++) {
-		map_inst_list[i] = p;
-		p += strlen(p) + 1;
-		PRINTMSG("-------> %s", map_inst_list[i]);
+	if (maps_set != NULL && *maps_set != NULL && map_inst_list != NULL) {
+		map_inst_list_set = *maps_set;
+		map_inst_count = maps_count;
+
+		/* add library mapping names */
+		p = map_inst_list_set + sizeof(maps_count);
+		for (i = 0; i < maps_count; i++) {
+			map_inst_list[i] = p;
+			p += strlen(p) + 1;
+			PRINTMSG("-------> %s", map_inst_list[i]);
+		}
+	} else {
+		map_inst_count = 0;
 	}
 
 	res = update_is_instrument_lib_attr_nolock();
@@ -542,14 +552,16 @@ int set_map_inst_list(char **maps_set, uint32_t maps_count)
 	if (maps_set != NULL)
 		*maps_set = NULL;
 
+unlock_exit:
 	maps_reader_unlock_all();
 	maps_writer_unlock();
 
 	return res;
 }
 
-void maps_make()
+int maps_make()
 {
+	int res = 0;
 	maps_writer_lock();
 	maps_reader_lock_all();
 	FILE *f = fopen("/proc/self/maps", "r");
@@ -572,6 +584,11 @@ void maps_make()
 
 	/* add  locations */
 	map = (*real_malloc)(sizeof(*map));
+	if (map == NULL) {
+		PRINTERR("Can not alloc data for map\n");
+		res = -1;
+		goto unlock_exit;
+	}
 	while (read_mapping_line(f, map)) {
 		if (map->permissions[2] == 'x') {
 			map->hash = calc_string_hash(map->filename);
@@ -591,8 +608,11 @@ void maps_make()
 
 	update_is_instrument_lib_attr_nolock();
 
+unlock_exit:
 	maps_reader_unlock_all();
 	maps_writer_unlock();
+
+	return res;
 }
 
 int maps_print_maps_by_addr(const void *addr)
@@ -631,7 +651,11 @@ int maps_is_instrument_section_by_addr(const void *addr)
 
 	if (ret == -1) {
 		PRINTMSG("========> hz addr %p. remap", addr);
-		maps_make();
+		if (maps_make() != 0) {
+			PRINTERR("maps make failed\n");
+			ret = -1;
+			goto exit;
+		}
 		ret = maps_is_instrument_section_by_addr_no_remap(addr);
 		if (ret == -1) {
 			print_list();
@@ -643,6 +667,7 @@ int maps_is_instrument_section_by_addr(const void *addr)
 		}
 	}
 
+exit:
 	return ret;
 }
 
