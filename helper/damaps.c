@@ -125,14 +125,21 @@ static void print_map(struct map_t *map)
 static int read_mapping_line(FILE *mapfile, struct map_t *m)
 {
 	char ch1, ch2;
-	int ret = fscanf(mapfile, "%p-%p %s %llx %s %llx%c%c",
-			 &m->addr,
-			 &m->endaddr,
-			 (char *)m->permissions,
-			 &m->offset,
-			 (char *)m->device,
-			 &m->inode,
-			 &ch1, &ch2);
+	int ret = 0;
+
+	if (m == NULL) {
+		PRINTERR("map_t param is NULL\n");
+		return 0;
+	}
+
+	ret = fscanf(mapfile, "%p-%p %s %llx %s %llx%c%c",
+		     &m->addr,
+		     &m->endaddr,
+		     (char *)m->permissions,
+		     &m->offset,
+		     (char *)m->device,
+		     &m->inode,
+		     &ch1, &ch2);
 
 	m->is_instrument = 0;
 	if (ret > 0 && ret != EOF) {
