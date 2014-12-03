@@ -143,6 +143,7 @@ void application_exit()
 #define MSG_MAPS_INST_LIST_RECV 0x02
 static int createSocket(void)
 {
+	char strerr_buf[MAX_PATH_LENGTH];
 	ssize_t recvlen;
 	int clientLen, ret = 0;
 	struct sockaddr_un clientAddr;
@@ -237,13 +238,14 @@ free_data_buf:
 		} else {
 			close(gTraceInfo.socket.daemonSock);
 			gTraceInfo.socket.daemonSock = -1;
+			strerror_r(errno, strerr_buf, sizeof(strerr_buf));
 			PRINTERR("cannot connect to da_manager. err <%s>\n",
-				 strerror(errno));
+				 strerr_buf);
 			ret = -1;
 		}
 	} else {
-		PRINTERR("cannot create socket. err <%s>\n",
-			 strerror(errno));
+		strerror_r(errno, strerr_buf, sizeof(strerr_buf));
+		PRINTERR("cannot create socket. err <%s>\n", strerr_buf);
 		ret = -1;
 	}
 

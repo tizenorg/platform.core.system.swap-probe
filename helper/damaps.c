@@ -608,14 +608,14 @@ int maps_make()
 	if (map != NULL)
 		free(map);
 
-	fclose(f);
-
 	create_addr_hash_table();
 	create_name_hash_table();
 
 	update_is_instrument_lib_attr_nolock();
 
 unlock_exit:
+	fclose(f);
+
 	maps_reader_unlock_all();
 	maps_writer_unlock();
 
