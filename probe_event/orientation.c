@@ -47,7 +47,6 @@ Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
 {
 	Ecore_X_Event_Client_Message *pClientEvent;
 
-	probeBlockStart();
 	pClientEvent = (Ecore_X_Event_Client_Message*)pEvent;
 
 	if (pClientEvent != NULL) {
@@ -55,7 +54,6 @@ Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
 		//This code from ecore_x
 		//So I don't know what 32 does mean
 		if (pClientEvent->format != 32) {
-			probeBlockEnd();
 			return ECORE_CALLBACK_PASS_ON;
 		}
 
@@ -65,7 +63,6 @@ Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
 			on_orientation_changed(orientation, false);
 		}
 	}
-	probeBlockEnd();
 
 	return ECORE_CALLBACK_RENEW;
 }
@@ -73,24 +70,17 @@ Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
 Ecore_Event_Handler *register_orientation_event_listener()
 {
 	Ecore_Event_Handler *handler;
-	probeBlockStart();
 
 	handler = ecore_event_handler_add(ECORE_X_EVENT_CLIENT_MESSAGE,
 					  _da_onclientmessagereceived, NULL);
-
-	probeBlockEnd();
 
 	return handler;
 }
 
 void unregister_orientation_event_listener(Ecore_Event_Handler *handler)
 {
-	probeBlockStart();
-
 	if (handler)
 		ecore_event_handler_del(handler);
-
-	probeBlockEnd();
 }
 
 EAPI int ecore_x_init(const char *name)

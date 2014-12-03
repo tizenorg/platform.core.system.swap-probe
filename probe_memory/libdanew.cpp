@@ -43,8 +43,6 @@
 #include "da_memory.h"
 #include "binproto.h"
 
-static enum DaOptions _sopt = OPT_ALLOC;
-
 void *operator new(std::size_t size) throw (std::bad_alloc)
 {
 	static void*(*newp)(std::size_t size);
@@ -52,13 +50,11 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 	void *pret;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_Znwj,newp);
-
-	bfiltering = INTERNAL_NEW_FILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = newp(size);
 
-	if(pret != NULL && gProbeBlockCount == 0)
+	if(pret != NULL)
 	{
 		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
@@ -86,12 +82,11 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_Znaj, newp);
 
-	bfiltering = INTERNAL_NEW_FILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = newp(size);
 
-	if(pret != NULL && gProbeBlockCount == 0)
+	if(pret != NULL)
 	{
 		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
@@ -118,13 +113,10 @@ void operator delete(void *ptr) throw()
 	unsigned short caller;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPv, deletep);
-
-	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
-	if(ptr != NULL && gProbeBlockCount == 0)
+	if(ptr != NULL)
 	{
-		probeBlockStart();
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
 		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
 		{
@@ -132,7 +124,6 @@ void operator delete(void *ptr) throw()
 			blockresult = 2;
 			probingStart();
 		}
-		probeBlockEnd();
 	}
 
 	deletep(ptr);
@@ -158,12 +149,10 @@ void operator delete[](void *ptr) throw()
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPv, deletep);
 
-	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
-	if(ptr != NULL && gProbeBlockCount == 0)
+	if(ptr != NULL)
 	{
-		probeBlockStart();
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
 		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
 		{
@@ -171,7 +160,6 @@ void operator delete[](void *ptr) throw()
 			blockresult = 2;
 			probingStart();
 		}
-		probeBlockEnd();
 	}
 
 	deletep(ptr);
@@ -197,12 +185,11 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZnwjRKSt9nothrow_t, newp);
 
-	bfiltering = INTERNAL_NEW_FILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = newp(size, nothrow);
 
-	if(pret != NULL && gProbeBlockCount == 0)
+	if(pret != NULL)
 	{
 		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
@@ -230,12 +217,11 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZnajRKSt9nothrow_t, newp);
 
-	bfiltering = INTERNAL_NEW_FILTERING;
 	PRE_PROBEBLOCK();
 
 	pret = newp(size, nothrow);
 
-	if(pret != NULL && gProbeBlockCount == 0)
+	if(pret != NULL)
 	{
 		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
 	}
@@ -263,12 +249,10 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPvRKSt9nothrow_t, deletep);
 
-	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
-	if(ptr != NULL && gProbeBlockCount == 0)
+	if(ptr != NULL)
 	{
-		probeBlockStart();
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
 		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
 		{
@@ -276,7 +260,6 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 			blockresult = 2;
 			probingStart();
 		}
-		probeBlockEnd();
 	}
 
 	deletep(ptr, nothrow);
@@ -302,12 +285,10 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPvRKSt9nothrow_t, deletep);
 
-	bfiltering = INTERNAL_DELETE_FILTERING;
 	PRE_PROBEBLOCK();
 
-	if(ptr != NULL && gProbeBlockCount == 0)
+	if(ptr != NULL)
 	{
-		probeBlockStart();
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
 		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
 		{
@@ -315,7 +296,6 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 			blockresult = 2;
 			probingStart();
 		}
-		probeBlockEnd();
 	}
 
 	deletep(ptr, nothrow);

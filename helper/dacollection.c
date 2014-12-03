@@ -185,8 +185,6 @@ int find_symbol_hash(void* ptr, char** psymbol)
 	if (unlikely(psymbol == NULL))
 		return ERR_WRONGPARAMETER;
 
-	probeBlockStart();
-
 	SYMBOLHASH_LOCK;
 	k = kh_get(symbol, SYMBOLHASH, (uint32_t)ptr);
 	if (k == kh_end(SYMBOLHASH))		// there is no entry for key
@@ -199,7 +197,6 @@ int find_symbol_hash(void* ptr, char** psymbol)
 		ret = 1;
 	}
 	SYMBOLHASH_UNLOCK;
-	probeBlockEnd();
 	return ret;
 }
 
@@ -219,8 +216,6 @@ int add_symbol_hash(void* ptr, const char* str, int strlen)
 
 	if (unlikely(str == NULL))
 		return ERR_WRONGPARAMETER;
-
-	probeBlockStart();
 
 	SYMBOLHASH_LOCK;
 	k = kh_put(symbol, SYMBOLHASH, (uint32_t)ptr, &rethash);
@@ -244,7 +239,6 @@ int add_symbol_hash(void* ptr, const char* str, int strlen)
 		ret = 1;
 	}
 	SYMBOLHASH_UNLOCK;
-	probeBlockEnd();
 	return ret;
 }
 
@@ -267,7 +261,6 @@ int add_memory_hash(void* ptr, size_t size, unsigned short type, unsigned short 
 	if (unlikely(ptr == NULL))
 		return ERR_WRONGPARAMETER;
 
-	probeBlockStart();
 	MEMORYHASH_LOCK;
 	k = kh_put(allocmap, MEMORYHASH, (uint32_t)ptr, &rethash);
 	if (likely(rethash != 0))	// succeed to add in hash table
@@ -288,7 +281,6 @@ int add_memory_hash(void* ptr, size_t size, unsigned short type, unsigned short 
 		ret = 1;
 	}
 	MEMORYHASH_UNLOCK;
-	probeBlockEnd();
 	return ret;
 }
 
@@ -308,7 +300,6 @@ int del_memory_hash(void* ptr, unsigned short type, unsigned short* caller)
 	if (unlikely(ptr == NULL))
 		return ERR_WRONGPARAMETER;
 
-	probeBlockStart();
 	MEMORYHASH_LOCK;
 	k = kh_get(allocmap, MEMORYHASH, (uint32_t)ptr);
 	if (likely(k != kh_end(MEMORYHASH)))
@@ -332,7 +323,6 @@ int del_memory_hash(void* ptr, unsigned short type, unsigned short* caller)
 		ret = 1;	// there is not entry in hash table
 	}
 	MEMORYHASH_UNLOCK;
-	probeBlockEnd();
 
 	return ret;
 }
@@ -360,7 +350,6 @@ int find_uiobject_hash(void* ptr, char** type, char** classname)
 	if (unlikely(classname == NULL))
 		return ERR_WRONGPARAMETER;
 
-	probeBlockStart();
 
 	UIOBJECTHASH_LOCK;
 	k = kh_get(uiobject, UIOBJECTHASH, (uint32_t)ptr);
@@ -375,7 +364,6 @@ int find_uiobject_hash(void* ptr, char** type, char** classname)
 		ret = 1;
 	}
 	UIOBJECTHASH_UNLOCK;
-	probeBlockEnd();
 	return ret;
 }
 
@@ -396,8 +384,6 @@ int add_uiobject_hash_class(void* ptr, const char* classname)
 
 	if (unlikely(classname == NULL))
 		return ERR_WRONGPARAMETER;
-
-	probeBlockStart();
 
 	str_len = strlen(classname) + 1;
 
@@ -431,7 +417,6 @@ int add_uiobject_hash_class(void* ptr, const char* classname)
 		ret = 1;	// there is no entry
 
 	UIOBJECTHASH_UNLOCK;
-	probeBlockEnd();
 	return ret;
 }
 
@@ -452,8 +437,6 @@ int add_uiobject_hash_type(void* ptr, const char* type)
 
 	if (unlikely(type == NULL))
 		return ERR_WRONGPARAMETER;
-
-	probeBlockStart();
 
 	str_len = strlen(type) + 1;
 
@@ -491,7 +474,6 @@ int add_uiobject_hash_type(void* ptr, const char* type)
 		ret = 1;
 
 	UIOBJECTHASH_UNLOCK;
-	probeBlockEnd();
 	return ret;
 }
 
@@ -510,7 +492,6 @@ int del_uiobject_hash(void* ptr)
 	if (unlikely(ptr == NULL))
 		return ERR_WRONGPARAMETER;
 
-	probeBlockStart();
 	UIOBJECTHASH_LOCK;
 	k = kh_get(uiobject, UIOBJECTHASH, (uint32_t)ptr);
 	if (likely(k != kh_end(UIOBJECTHASH)))		// there is entry in hash table
@@ -526,7 +507,6 @@ int del_uiobject_hash(void* ptr)
 		ret = 1;
 	}
 	UIOBJECTHASH_UNLOCK;
-	probeBlockEnd();
 
 	return ret;
 }
@@ -551,8 +531,6 @@ int find_object_hash(void* ptr, unsigned short *caller)
 	if (unlikely(caller == NULL))
 		return ERR_WRONGPARAMETER;
 
-	probeBlockStart();
-
 	OBJECTHASH_LOCK;
 	k = kh_get(object, OBJECTHASH, (uint32_t)ptr);
 	if (unlikely(k == kh_end(OBJECTHASH)))		// there is no entry for key
@@ -565,7 +543,6 @@ int find_object_hash(void* ptr, unsigned short *caller)
 		ret = 1;
 	}
 	OBJECTHASH_UNLOCK;
-	probeBlockEnd();
 	return ret;
 }
 
@@ -583,8 +560,6 @@ int add_object_hash(void* ptr, unsigned short caller)
 	if (unlikely(ptr == NULL))
 		return ERR_WRONGPARAMETER;
 
-	probeBlockStart();
-
 	OBJECTHASH_LOCK;
 	k = kh_put(object, OBJECTHASH, (uint32_t)ptr, &rethash);
 	if (likely(rethash != 0))	// entry is already in hash table
@@ -598,7 +573,6 @@ int add_object_hash(void* ptr, unsigned short caller)
 	}
 
 	OBJECTHASH_UNLOCK;
-	probeBlockEnd();
 	return ret;
 }
 
@@ -619,8 +593,6 @@ int del_object_hash(void* ptr, unsigned short *caller)
 	if (unlikely(caller == NULL))
 		return ERR_WRONGPARAMETER;
 
-	probeBlockStart();
-
 	OBJECTHASH_LOCK;
 	k = kh_get(object, OBJECTHASH, (uint32_t)ptr);
 	if (likely(k != kh_end(OBJECTHASH)))		// there is entry in hash table
@@ -633,7 +605,6 @@ int del_object_hash(void* ptr, unsigned short *caller)
 		ret = 1;
 	}
 	OBJECTHASH_UNLOCK;
-	probeBlockEnd();
 
 	return ret;
 }
@@ -658,8 +629,6 @@ int add_detector_hash(void* ptr, void* listener)
 	if (unlikely(listener == NULL))
 		return ERR_WRONGPARAMETER;
 
-	probeBlockStart();
-
 	DETECTORHASH_LOCK;
 	k = kh_put(detector, DETECTORHASH, (uint32_t)ptr, &rethash);
 	if (likely(rethash != 0))	// succeed to add in hash table
@@ -672,7 +641,6 @@ int add_detector_hash(void* ptr, void* listener)
 		ret = 1;
 	}
 	DETECTORHASH_UNLOCK;
-	probeBlockEnd();
 	return ret;
 }
 
@@ -690,7 +658,6 @@ int del_detector_hash(void* ptr)
 	if (unlikely(ptr == NULL))
 		return ERR_WRONGPARAMETER;
 
-	probeBlockStart();
 	DETECTORHASH_LOCK;
 	k = kh_get(detector, DETECTORHASH, (uint32_t)ptr);
 	if (likely(k != kh_end(DETECTORHASH)))		// there is entry in hash table
@@ -702,7 +669,6 @@ int del_detector_hash(void* ptr)
 		ret = 1;
 	}
 	DETECTORHASH_UNLOCK;
-	probeBlockEnd();
 
 	return ret;
 }

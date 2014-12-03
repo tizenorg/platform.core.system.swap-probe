@@ -79,8 +79,6 @@ void on_orientation_changed(int angle, bool capi)
 {
 	probeInfo_t	probeInfo;
 
-	probeBlockStart();
-
 	internal_angle = angle;
 	external_angle = internal_angle;
 
@@ -102,8 +100,6 @@ void on_orientation_changed(int angle, bool capi)
 //	{
 //		SCREENSHOT_DONE();
 //	}
-
-	probeBlockEnd();
 }
 
 int getOrientation()

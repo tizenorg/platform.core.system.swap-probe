@@ -42,7 +42,6 @@ int getExecutableMappingAddress()
 	void *main_symbol;
 	static const char *funcs[] = {"OspMain", "main"};
 
-	probeBlockStart();
 	for (i = 0; i < (int)(sizeof(funcs)/sizeof(funcs[0])); i++){
 		main_symbol = dlsym(RTLD_NEXT, funcs[i]);
 		if(main_symbol != NULL) {
@@ -51,7 +50,6 @@ int getExecutableMappingAddress()
 			break;
 		}
 	}
-	probeBlockEnd();
 
 	return ret;
 }

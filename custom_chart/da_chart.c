@@ -116,8 +116,6 @@ void* _chart_timerThread(void* data)
 	sigset_t profsigmask;
 	interval_manager* pmanager = (interval_manager*)data;
 
-	probeBlockStart();
-
 	sigemptyset(&profsigmask);
 	sigaddset(&profsigmask, SIGPROF);
 	pthread_sigmask(SIG_BLOCK, &profsigmask, NULL);
@@ -148,8 +146,6 @@ void* _chart_timerThread(void* data)
 
 		sleep(0);
 	}
-
-	probeBlockEnd();
 
 	return NULL;
 }
@@ -395,8 +391,6 @@ static void remove_from_callback_list(da_handle charthandle, da_handle series_ha
 
 void __attribute__((constructor)) _init_lib()
 {
-	probeBlockStart();
-
 	memset(&chm, 0, sizeof(chm));
 	chm.interval_10ms.timerfd = -1;
 	chm.interval_100ms.timerfd = -1;
@@ -407,14 +401,10 @@ void __attribute__((constructor)) _init_lib()
 	pthread_mutex_init(&chm.interval_10ms.list_mutex, NULL);
 	pthread_mutex_init(&chm.interval_100ms.list_mutex, NULL);
 	pthread_mutex_init(&chm.interval_1s.list_mutex, NULL);
-
-	probeBlockEnd();
 }
 
 void __attribute__((destructor)) _fini_lib()
 {
-	probeBlockStart();
-
 	remove_all_callback_list();
 	if (chm.interval_10ms.timerfd != -1)
 		close(chm.interval_10ms.timerfd);
@@ -429,8 +419,6 @@ void __attribute__((destructor)) _fini_lib()
 		pthread_join(chm.interval_100ms.thread_handle, NULL);
 	if (chm.interval_1s.thread_handle != (pthread_t) -1)
 		pthread_join(chm.interval_1s.thread_handle, NULL);
-
-	probeBlockEnd();
 }
 
 
@@ -442,8 +430,6 @@ void da_mark(chart_color color, char* mark_text)
 {
 	DECLARE_CHART_VARIABLE;
 
-	probeBlockStart();
-
 	setProbePoint(&probeInfo);
 
 	PREPARE_LOCAL_BUF();
@@ -454,7 +440,7 @@ void da_mark(chart_color color, char* mark_text)
 	PACK_CUSTOM(0, 0, mark_text, color, 0.0f);
 	FLUSH_LOCAL_BUF();
 
-	probeBlockEnd();
+	
 }
 
 da_handle da_create_chart(char* chart_name)
@@ -469,7 +455,7 @@ da_handle da_create_chart(char* chart_name)
 	if(chart_name == NULL)
 		return ERR_WRONG_PARAMETER;
 
-	probeBlockStart();
+	
 	ret = ++(chm.chart_handle_index);
 
 	setProbePoint(&probeInfo);
@@ -482,7 +468,7 @@ da_handle da_create_chart(char* chart_name)
 	PACK_CUSTOM(0, 0, chart_name, 0, 0.0f);
 	FLUSH_LOCAL_BUF();
 
-	probeBlockEnd();
+	
 
 	return ret;
 }
@@ -504,7 +490,7 @@ da_handle da_create_series(da_handle charthandle, char* seriesname,
 	if(chm.series_handle_index[(int)charthandle] + 1 >= MAX_SERIES_PER_CHART)
 		return ERR_MAX_CHART_NUMBER;
 
-	probeBlockStart();
+	
 	ret = ++(chm.series_handle_index[charthandle]);
 	ret += (10 * charthandle);
 
@@ -519,7 +505,7 @@ da_handle da_create_series(da_handle charthandle, char* seriesname,
 	PACK_CUSTOM(charthandle, type, seriesname, color, 0.0f);
 	FLUSH_LOCAL_BUF();
 
-	probeBlockEnd();
+	
 
 	return ret;
 }
@@ -548,7 +534,7 @@ int da_set_callback(da_handle series_handle, da_user_data_2_chart_data callback,
 	if(interval == CHART_NO_CYCLE && callback != NULL)
 		return ERR_WRONG_PARAMETER;
 
-	probeBlockStart();
+	
 
 	// remove previously registered callback
 	remove_from_callback_list(cindex, series_handle);
@@ -561,7 +547,7 @@ int da_set_callback(da_handle series_handle, da_user_data_2_chart_data callback,
 		re = start_callback_thread(interval);
 		PRINTMSG("start callback thread return %d\n", re);
 	}
-	probeBlockEnd();
+	
 
 	return 0;
 }
@@ -581,7 +567,7 @@ void da_log(da_handle series_handle, float uservalue)
 	if(sindex > chm.series_handle_index[(int)cindex])
 		return;
 
-	probeBlockStart();
+	
 
 	setProbePoint(&probeInfo);
 
@@ -593,5 +579,5 @@ void da_log(da_handle series_handle, float uservalue)
 	PACK_CUSTOM(series_handle, 0, "", 0, uservalue);
 	FLUSH_LOCAL_BUF();
 
-	probeBlockEnd();
+	
 }

@@ -68,7 +68,6 @@
 #define UDS_NAME				"/tmp/da.socket"
 #define TIMERFD_INTERVAL		100000000		// 0.1 sec
 
-__thread int		gProbeBlockCount = 0;
 __thread int		gProbeDepth = 0;
 pid_t gPid = -1;
 __thread pid_t		gTid = -1;
@@ -314,8 +313,6 @@ static void *recvThread(void __unused * data)
 	if(gTraceInfo.socket.daemonSock == -1)
 		return NULL;
 
-	probeBlockStart();
-
 	sigemptyset(&profsigmask);
 	sigaddset(&profsigmask, SIGPROF);
 	pthread_sigmask(SIG_BLOCK, &profsigmask, NULL);
@@ -429,7 +426,6 @@ free_data_buf:
 	if (data_buf)
 		free(data_buf);
 
-	probeBlockEnd();
 	return NULL;
 }
 
@@ -486,12 +482,6 @@ int _init_(void)
 {
 	int res = 0;
 
-	probeBlockStart();
-
-	/* redirect stderr and stdout.*/
-	/* if there is no std - print call will crash app */
-	__redirect_std();
-
 	init_exec_fork();
 	initialize_hash_table();
 
@@ -518,11 +508,7 @@ int _init_(void)
 	if (maps_make() != 0) {
 		PRINTERR("maps make failed\n");
 		res = -1;
-		goto unlock_exit;
 	}
-
-unlock_exit:
-	probeBlockEnd();
 
 	return res;
 }
@@ -550,7 +536,6 @@ void __attribute__((constructor)) _init_probe()
 void _uninit_(void)
 {
 	int i;
-	probeBlockStart();
 
 	gTraceInfo.init_complete = -1;
 	PRINTMSG("dynamic analyzer probe helper so unloading... pid[%d]\n",
@@ -583,8 +568,6 @@ void _uninit_(void)
 			dlclose(lib_handle[i]);
 		}
 	}
-
-	probeBlockEnd();
 }
 
 void __attribute__((destructor)) _fini_probe()
@@ -624,14 +607,12 @@ bool printLog(log_t *log, int msgType)
 	if(unlikely(log == NULL))
 		return false;
 
-	probeBlockStart();
 	log->type = msgType;
 	len = sizeof(log->type) + sizeof(log->length) + log->length;
 
 	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
 	res = send(gTraceInfo.socket.daemonSock, log, len, 0);
 	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
-	probeBlockEnd();
 
 	return (res == len);
 }
@@ -652,8 +633,6 @@ bool print_log_str(int msgType, char *str)
 	if(unlikely(gTraceInfo.socket.daemonSock == -1))
 		return false;
 
-	probeBlockStart();
-
 	/* fill message */
 	log.type = msgType;
 	if (str != NULL)
@@ -668,7 +647,6 @@ bool print_log_str(int msgType, char *str)
 	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
 	res = send(gTraceInfo.socket.daemonSock, &log, len, 0);
 	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
-	probeBlockEnd();
 
 	return (res == len);
 }
@@ -690,8 +668,6 @@ bool print_log_fmt(int msgType, const char *func_name, int line, ...)
 	va_list ap;
 
 	/* Check connection status */
-
-	probeBlockStart();
 
 	/* fill message */
 	log.type = msgType;
@@ -735,8 +711,6 @@ bool print_log_fmt(int msgType, const char *func_name, int line, ...)
 
 	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 
-	probeBlockEnd();
-
 	/* return result */
 	return (res == len);
 }
@@ -756,8 +730,6 @@ int getBacktraceString(log_t* log, int bufsize)
 
 	if(log == NULL)
 		return 0;
-
-	probeBlockStart();
 
 	initsize = log->length;
 	curlen = initsize;
@@ -798,12 +770,10 @@ int getBacktraceString(log_t* log, int bufsize)
 			log->length = curlen;
 		}
 
-		probeBlockEnd();
 		return (int)(size - TRIM_STACK_DEPTH);
 	}
 	else
 	{
-		probeBlockEnd();
 		return 0;
 	}
 }
@@ -849,66 +819,19 @@ static inline bool is_user_call(const void *caller)
 	return user;
 }
 
-int preBlockBegin(const void *caller, bool bFiltering, enum DaOptions option)
+int preBlockBegin(void)
 {
-	bool opt_nofilt;
-
-	if (gTraceInfo.socket.daemonSock == -1)
-		return 0;
-
-	if(gProbeBlockCount != 0 || gProbeDepth != 0)
-		return 0;
-
 	if(gTraceInfo.init_complete <= 0)
 		return 0;
 
-	opt_nofilt = isNoFiltOptionEnabled(option);
+    probingStart();
 
-	/* Actually we are considering 3 variables here:
-	    - regular option is enabled
-	    - non-filtering (always) option is enabled
-	    - per-probe filtering
-	*/
-	if (!isOptionEnabled(option) && !opt_nofilt)
-		return 0;
-	else if (opt_nofilt)
-		bFiltering = false;
-
-	probeBlockStart();
-
-	if (maps_is_instrument_section_by_addr(caller) == 1) {
-		probingStart();
-		return 2; /* user call */
-	} else {
-		if (bFiltering) {
-			probeBlockEnd();
-			return 0; /* not probing */
-		} else {
-			probingStart();
-			return 1; /* internal call */
-		}
-	}
-}
-
-int postBlockBegin(int preresult)
-{
-	if(preresult)
-	{
-		probeBlockStart();
-	}
-
-	return preresult;
-}
-
-void preBlockEnd()
-{
-	probeBlockEnd();
+    return 1;
 }
 
 void postBlockEnd()
 {
 	probingEnd();
-	probeBlockEnd();
 }
 
 /*************************************************************************
@@ -936,6 +859,11 @@ uint64_t get_current_nsec(void)
 	return (uint64_t)tv.tv_sec * 1000 * 1000 * 1000 + tv.tv_usec * 1000;
 }
 
+unsigned long get_caller_addr(unsigned long caller_addr)
+{
+	return caller_addr;
+}
+
 /************************************************************************
  * probe functions
  ************************************************************************/
@@ -945,8 +873,6 @@ bool setProbePoint(probeInfo_t* iProbe)
 	{
 		return false;
 	}
-
-	probeBlockStart();
 
 	// atomic operaion(gcc builtin) is more expensive then pthread_mutex
 	real_pthread_mutex_lock(&(gTraceInfo.index.eventMutex));
@@ -958,7 +884,6 @@ bool setProbePoint(probeInfo_t* iProbe)
 	iProbe->tID = _gettid();
 	iProbe->callDepth = gProbeDepth;
 
-	probeBlockEnd();
 	return true;
 }
 
@@ -984,15 +909,11 @@ void *rtdl_next(const char *symname)
 {
 	void *symbol;
 
-	probeBlockStart();
-
 	symbol = dlsym(RTLD_NEXT, symname);
 	if (symbol == NULL || dlerror() != NULL) {
 		PRINTERR("dlsym failed <%s>\n", symname);
 		exit(41);
 	}
-
-	probeBlockEnd();
 
 	return symbol;
 }

@@ -52,8 +52,6 @@
 
 #include "binproto.h"
 
-static enum DaOptions _sopt = OPT_FILE;
-
 static inline char *get_abs_path(int fd, const char *fname,
 				 char *buf, size_t bufsiz)
 {
@@ -141,7 +139,6 @@ int close(int fd)
 
 	GET_REAL_FUNC(close, LIBC);
 
-	bfiltering = false;
 	PRE_PROBEBLOCK_BEGIN();
 	_fstatret = fstat(fd, &_statbuf);
 	PRE_PROBEBLOCK_END();

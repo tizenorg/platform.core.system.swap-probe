@@ -1,0 +1,15 @@
+#filename  daforkexec.c
+#lib "libc.so.6"
+#feature ---
+execl
+execlp
+execle
+execv
+execvp
+execve
+execvpe
+
+#filename  dacapture.c
+#lib "---"
+#feature ---
+captureScreen

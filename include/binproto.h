@@ -70,10 +70,6 @@
 #define MAX_LOCAL_BUF_SIZE (MAX_SHADER_LEN + ADD_LOCAL_BUF_SIZE)
 #define LOCAL_BUF msg_buf
 
-// TODO: remove this copy-paste
-#define CALLER_ADDRESS							\
-	((void*) __builtin_extract_return_addr(__builtin_return_address(0)))
-
 static inline uint64_t voidp_to_uint64(const void *p)
 {
 	return (uint64_t)(uintptr_t)p;
@@ -339,7 +335,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	BUF_PTR = pack_string(BUF_PTR, str);
 
 #define PACK_COMMON_BEGIN(msg_id, api_id, fmt, ...)		\
-	do {	/* PACK_COMMON_BEGIN*/				\
+	if (BUF_PTR != NULL) {	/* PACK_COMMON_BEGIN*/				\
 		BUF_PTR = pack_int32(BUF_PTR, msg_id);		/* msg id */	\
 		BUF_PTR = pack_int32(BUF_PTR, 0);		/* sequence */	\
 		BUF_PTR = pack_timestamp(BUF_PTR);		/* timestamp */	\
@@ -349,30 +345,30 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		BUF_PTR = pack_int32(BUF_PTR, _gettid());	/* call pc*/\
 		BUF_PTR = pack_args(BUF_PTR, fmt, __VA_ARGS__);	/* args */	\
 		RET_PTR = BUF_PTR;		\
-	} while (0)
+	}
 
 #define PACK_COMMON_END(ret_type, ret, errn, intern_call)			\
-	do {	/* PACK_COMMON_END */						\
+	if (BUF_PTR != NULL) {	/* PACK_COMMON_END */				\
 		BUF_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret); /* return val */ \
 		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);	/* errno */	\
 		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)intern_call);	/* internal call*/	\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); /*caller addr*/\
 		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
 		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
-	} while (0)
+	}
 
 #define PACK_RETURN_END(ret_type, ret)						\
 		RET_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret); /* return val */
 
 #define PACK_MEMORY(size, memory_api_type, addr)				\
-	do {	/* PACK_MEMORY */						\
+	if (BUF_PTR != NULL) {	/* PACK_MEMORY */				\
 		BUF_PTR = pack_int64(BUF_PTR, size);	/* alloc size */	\
 		BUF_PTR = pack_int32(BUF_PTR, memory_api_type);	/* alloc type */\
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)addr);	/* alloc addr */\
-	} while (0)
+	}
 
 #define PACK_UICONTROL(control)						\
-	do {								\
+	if (BUF_PTR != NULL) {						\
 		if (unlikely(control == NULL)) {			\
 			BUF_PTR = pack_string(BUF_PTR, "");		\
 			BUF_PTR = pack_string(BUF_PTR, "");		\
@@ -389,21 +385,21 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 			}						\
 			BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(control)); \
 		}							\
-	} while(0)
+	}
 
 #define PACK_UIEVENT(event_type, detail_type, x, y, info1, info2)	\
-	do {	/* PACK_UIEVENT */					\
+	if (BUF_PTR != NULL) {	/* PACK_UIEVENT */			\
 		BUF_PTR = pack_int32(BUF_PTR, event_type);		\
 		BUF_PTR = pack_int32(BUF_PTR, detail_type);		\
 		BUF_PTR = pack_int32(BUF_PTR, x);			\
 		BUF_PTR = pack_int32(BUF_PTR, y);			\
 		BUF_PTR = pack_string(BUF_PTR, info1);			\
 		BUF_PTR = pack_int32(BUF_PTR, info2);			\
-	} while (0)
+	}
 
 #define PACK_RESOURCE(size, fd_value, fd_api_type, file_size,	\
 		      file_path)					\
-	do {	/* PACK_RESOURCE */					\
+	if (BUF_PTR != NULL) {	/* PACK_RESOURCE */			\
 		BUF_PTR = pack_int64(BUF_PTR, size);			\
 		BUF_PTR = pack_int64(BUF_PTR, fd_value);		\
 		BUF_PTR = pack_int32(BUF_PTR, fd_api_type);		\
@@ -411,16 +407,16 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		BUF_PTR = pack_string_to_file(BUF_PTR, file_path,	\
 					      strlen(file_path),	\
 					      MAX_PACK_FILENAME_LEN);	\
-	} while (0)
+	}
 
 #define PACK_SCREENSHOT(image_file_path, orientation)				\
-		do {	/* PACK_SCREENSHOT */					\
+		if (BUF_PTR != NULL) {	/* PACK_SCREENSHOT */			\
 			  BUF_PTR = pack_string(BUF_PTR, image_file_path); 	\
 			  BUF_PTR = pack_int32(BUF_PTR, orientation);		\
-		} while (0)
+		}
 
 #define PACK_SCENE(scene_name, formid, pform, panelid, ppanel, transition, user)	\
-	do {										\
+	if (BUF_PTR != NULL) {								\
 		BUF_PTR = pack_string(BUF_PTR,  scene_name);				\
 		if (unlikely(pform == NULL)) {						\
 			BUF_PTR = pack_string(BUF_PTR, "");				\
@@ -448,10 +444,10 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		}									\
 		BUF_PTR = pack_int64(BUF_PTR, transition);				\
 		BUF_PTR = pack_int64(BUF_PTR, user);					\
-	} while(0)
+	}
 
 #define PACK_THREAD(thread_id, thread_type, api_type, class_name)	\
-	 do {								\
+	if (BUF_PTR != NULL) {						\
 	if(thread_type == THREAD_PTHREAD) {	                        \
 	    BUF_PTR = pack_int64(BUF_PTR, thread_id);			\
 	    BUF_PTR = pack_int64(BUF_PTR, 0);				\
@@ -466,30 +462,34 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	BUF_PTR = pack_int32(BUF_PTR, thread_type);	                \
 	BUF_PTR = pack_int32(BUF_PTR, api_type);		        \
 	BUF_PTR = pack_string(BUF_PTR, class_name);			\
-	} while (0)
+	}
 
 #define PACK_CUSTOM(handle, type, name, color, value)		\
-	do {						    	\
+	if (BUF_PTR != NULL) {				    	\
 		BUF_PTR = pack_int32(BUF_PTR, handle);		\
 		BUF_PTR = pack_int32(BUF_PTR, type);		\
 		BUF_PTR = pack_string(BUF_PTR, name);		\
 		BUF_PTR = pack_int32(BUF_PTR, color);		\
 		BUF_PTR = pack_double(BUF_PTR, value);		\
-	} while (0)
+	}
 
 #define PACK_SYNC(sync_val, sync_type, api_type)		     \
-	do {						     	     \
+	if (BUF_PTR != NULL) {					     \
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)sync_val);  \
 		BUF_PTR = pack_int32(BUF_PTR, sync_type);	     \
 		BUF_PTR = pack_int32(BUF_PTR, api_type);	     \
-	} while (0)
+	}
 
 /* TODO maloc/free for each event turns out expensive: think of buffer
  * allocator implementation */
 #define PREPARE_LOCAL_BUF()			\
-		char *LOCAL_BUF = (char *)(*real_malloc)(MAX_LOCAL_BUF_SIZE);	\
-		char *BUF_PTR = LOCAL_BUF;			\
-		char *RET_PTR = NULL
+		char *LOCAL_BUF = NULL;						\
+		char *BUF_PTR = NULL;						\
+		char *RET_PTR = NULL;						\
+		if (real_malloc != NULL) {					\
+			LOCAL_BUF = (char *)(*real_malloc)(MAX_LOCAL_BUF_SIZE);	\
+			BUF_PTR = LOCAL_BUF;					\
+		}
 
 #define PREPARE_LOCAL_BUF_THOUGH(BUFF)				\
 		char *LOCAL_BUF = BUFF;				\
@@ -506,25 +506,26 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		(p - msg_buf) - MSG_HDR_LEN
 
 #define FLUSH_LOCAL_BUF()						\
-		SET_MSG_LEN();						\
-		send(gTraceInfo.socket.daemonSock, msg_buf, (p - msg_buf), 0); \
-		free(LOCAL_BUF);					\
-		LOCAL_BUF = NULL
+		if (msg_buf != NULL) {						\
+			SET_MSG_LEN();						\
+			send(gTraceInfo.socket.daemonSock, msg_buf, (p - msg_buf), 0); \
+			free(LOCAL_BUF);					\
+			LOCAL_BUF = NULL;					\
+		}
 
 // =========================== post block macro ===========================
 
 #define POST_PACK_PROBEBLOCK_BEGIN()					\
 	newerrno = errno;						\
-	if(postBlockBegin(blockresult)) {
+	do {
 
 #define POST_PACK_PROBEBLOCK_END() 					\
 		postBlockEnd();						\
-	}								\
+	} while (0);							\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
 #define POST_PACK_PROBEBLOCK_ADD_END()					\
-		preBlockEnd();						\
-	}								\
+	} while (0);								\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
 
