@@ -70,10 +70,6 @@
 #define MAX_LOCAL_BUF_SIZE (MAX_SHADER_LEN + ADD_LOCAL_BUF_SIZE)
 #define LOCAL_BUF msg_buf
 
-// TODO: remove this copy-paste
-#define CALLER_ADDRESS							\
-	((void*) __builtin_extract_return_addr(__builtin_return_address(0)))
-
 static inline uint64_t voidp_to_uint64(const void *p)
 {
 	return (uint64_t)(uintptr_t)p;
@@ -503,16 +499,15 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 #define POST_PACK_PROBEBLOCK_BEGIN()					\
 	newerrno = errno;						\
-	if(postBlockBegin(blockresult)) {
+	do {
 
 #define POST_PACK_PROBEBLOCK_END() 					\
 		postBlockEnd();						\
-	}								\
+	} while (0);							\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
 #define POST_PACK_PROBEBLOCK_ADD_END()					\
-		preBlockEnd();						\
-	}								\
+	} while (0);								\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
 

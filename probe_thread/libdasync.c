@@ -40,8 +40,6 @@
 
 #include "binproto.h"
 
-static enum DaOptions _sopt = OPT_THREAD;
-
 int pthread_mutex_init(pthread_mutex_t *mutex,
 		const pthread_mutexattr_t *attr) {
 	static int (*pthread_mutex_initp)(pthread_mutex_t *mutex,
@@ -103,20 +101,18 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 
 	// send WAIT_END log
 	newerrno = errno;
-	if(postBlockBegin(blockresult)) {
-		setProbePoint(&probeInfo);
+	setProbePoint(&probeInfo);
 
-		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
-				  API_ID_pthread_mutex_lock,
-				  "p", voidp_to_uint64(mutex));
-		PACK_COMMON_END('d', ret, errno, blockresult);
-		PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
-		FLUSH_LOCAL_BUF();
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+			  API_ID_pthread_mutex_lock,
+			  "p", voidp_to_uint64(mutex));
+	PACK_COMMON_END('d', ret, errno, blockresult);
+	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
+	FLUSH_LOCAL_BUF();
 
-		postBlockEnd();
-	}
-        errno = (newerrno != 0) ? newerrno : olderrno;
+	postBlockEnd();
+	errno = (newerrno != 0) ? newerrno : olderrno;
 
 	return ret;
 }
@@ -146,22 +142,19 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 
 	// send WAIT_END log
 	newerrno = errno;
-	if(postBlockBegin(blockresult)) {
-		setProbePoint(&probeInfo);
+	setProbePoint(&probeInfo);
 
-		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
-				  API_ID_pthread_mutex_timedlock,
-				  "pp", voidp_to_uint64(mutex),
-				  voidp_to_uint64(abs_timeout));
-		PACK_COMMON_END('d', ret, errno, blockresult);
-		PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
-		FLUSH_LOCAL_BUF();
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+			  API_ID_pthread_mutex_timedlock,
+			  "pp", voidp_to_uint64(mutex),
+			  voidp_to_uint64(abs_timeout));
+	PACK_COMMON_END('d', ret, errno, blockresult);
+	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
+	FLUSH_LOCAL_BUF();
 
-		postBlockEnd();
-	}
-
-    errno = (newerrno != 0) ? newerrno : olderrno;
+	postBlockEnd();
+	errno = (newerrno != 0) ? newerrno : olderrno;
 
 	return ret;
 }
@@ -438,22 +431,20 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 
 	// send WAIT_END log
 	newerrno = errno;
-	if(postBlockBegin(blockresult)) {
-		setProbePoint(&probeInfo);
+	setProbePoint(&probeInfo);
 
-		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
-				  API_ID_pthread_cond_wait,
-				  "pp",
-				  voidp_to_uint64(cond),
-				  voidp_to_uint64(mutex));
-		PACK_COMMON_END('d', ret, errno, blockresult);
-		PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
-		FLUSH_LOCAL_BUF();
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+			  API_ID_pthread_cond_wait,
+			  "pp",
+			  voidp_to_uint64(cond),
+			  voidp_to_uint64(mutex));
+	PACK_COMMON_END('d', ret, errno, blockresult);
+	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
+	FLUSH_LOCAL_BUF();
 
-		postBlockEnd();
-	}
-    errno = (newerrno != 0) ? newerrno : olderrno;
+	postBlockEnd();
+	errno = (newerrno != 0) ? newerrno : olderrno;
 
 	return ret;
 }
@@ -486,24 +477,21 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 
 	// send WAIT_END log
 	newerrno = errno;
-	if(postBlockBegin(blockresult)) {
-		setProbePoint(&probeInfo);
+	setProbePoint(&probeInfo);
 
-		PREPARE_LOCAL_BUF();
-		PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
-				  API_ID_pthread_cond_timedwait,
-				  "ppp",
-				  voidp_to_uint64(cond),
-				  voidp_to_uint64(mutex),
-				  voidp_to_uint64(abstime));
-		PACK_COMMON_END('d', ret, errno, blockresult);
-		PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
-		FLUSH_LOCAL_BUF();
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
+			  API_ID_pthread_cond_timedwait,
+			  "ppp",
+			  voidp_to_uint64(cond),
+			  voidp_to_uint64(mutex),
+			  voidp_to_uint64(abstime));
+	PACK_COMMON_END('d', ret, errno, blockresult);
+	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
+	FLUSH_LOCAL_BUF();
 
-		postBlockEnd();
-	}
-
-    errno = (newerrno != 0) ? newerrno : olderrno;
+	postBlockEnd();
+	errno = (newerrno != 0) ? newerrno : olderrno;
 
 	return ret;
 }

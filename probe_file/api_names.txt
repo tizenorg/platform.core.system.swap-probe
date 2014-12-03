@@ -1,0 +1,66 @@
+#filename da_io_stdc.c
+#lib "libc.so.6"
+#feature FL_FILE_API_PROBING
+#feature_always FL_FILE_API_ALWAYS_PROBING
+clearerr
+fclose
+fdopen
+feof
+ferror
+fflush
+fgetc
+fgetpos
+fileno
+fopen
+fprintf
+fputc
+fputs
+fread
+freopen
+fscanf
+fseek
+fsetpos
+ftell
+fwrite
+getc
+getchar
+gets
+printf
+putc
+putchar
+puts
+rewind
+scanf
+setbuf
+setbuffer
+setlinebuf
+setvbuf
+tmpfile
+ungetc
+vfprintf
+vfscanf
+
+#filename da_io_posix.c
+#lib "libc.so.6"
+#feature FL_FILE_API_PROBING
+#feature_always FL_FILE_API_ALWAYS_PROBING
+close
+creat
+dup
+dup2
+fchmod
+fchown
+fcntl
+fdatasync
+fsync
+ftruncate
+futimens
+lockf
+lseek
+open
+openat
+pread
+pwrite
+read
+readv
+write

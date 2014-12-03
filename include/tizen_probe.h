@@ -42,7 +42,6 @@ extern "C" {
 #define GET_REAL_FUNC_TIZEN(FUNCNAME, LIBNAME, FUNCTIONPOINTER)						\
 	do {												\
 		if(!FUNCTIONPOINTER) {									\
-			probeBlockStart();								\
 			if(lib_handle[LIBNAME] == NULL) {						\
 				lib_handle[LIBNAME] = dlopen(lib_string[LIBNAME], RTLD_LAZY);		\
 				if(lib_handle[LIBNAME] == NULL) {					\
@@ -58,15 +57,13 @@ extern "C" {
 				exit(0);								\
 			}										\
 			memcpy(&FUNCTIONPOINTER, &funcp, sizeof(void*));				\
-			probeBlockEnd();								\
 		}											\
 	} while(0)
 
 #define PRE_PROBEBLOCK_TIZEN(FILTER)												\
 	do {																		\
-		if((blockresult = preBlockBegin(CALLER_ADDRESS, FILTER, _sopt)) != 0) {	\
+		if((blockresult = preBlockBegin()) != 0) {                              \
 			setProbePoint(&probeInfo);					\
-			preBlockEnd();							\
 		}									\
 	} while(0)
 
