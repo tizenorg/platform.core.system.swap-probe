@@ -37,6 +37,7 @@
 #include "dahelper.h"
 #include "probeinfo.h"
 #include "binproto.h"
+#include "real_functions.h"
 #include "common_probe_init.h"
 #include "api_config.h"
 

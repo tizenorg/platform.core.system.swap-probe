@@ -68,6 +68,7 @@ ASMFLAG = -O0 -g
 
 COMMON_SRCS = $(UTILITY_SRCS) $(PROBE_SRCS)
 UTILITY_SRCS =				\
+	./helper/real_functions.c	\
 	./helper/libdaprobe.c		\
 	./helper/dahelper.c		\
 	./helper/dacollection.c		\

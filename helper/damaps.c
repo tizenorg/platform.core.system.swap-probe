@@ -28,6 +28,7 @@
 
 #include <unistd.h>
 #include "dahelper.h"
+#include "real_functions.h"
 
 struct data_list_t {
 	union {

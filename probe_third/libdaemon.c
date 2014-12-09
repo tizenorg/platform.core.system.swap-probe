@@ -28,12 +28,13 @@
  *
  */
 
-#include <stdlib.h>	// for malloc
 #include <string.h>	// for memcpy
 #include <errno.h>	// for errno
 
 #include "daprobe.h"
 #include "dahelper.h"
+
+#include "real_functions.h"
 
 int daemon_close_allv(const int except_fds[])
 {
@@ -52,7 +53,7 @@ int daemon_close_allv(const int except_fds[])
 	}
 
 	// allocate memory for new except fds
-	fds = (int*)malloc((i + 2) * sizeof(int));
+	fds = (int*)real_malloc((i + 2) * sizeof(int));
 
 	// copy fds
 	if(fds)
