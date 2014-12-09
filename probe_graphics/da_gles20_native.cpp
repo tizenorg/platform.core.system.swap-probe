@@ -32,6 +32,7 @@
 #include "da_gles20.h"
 #include "daprobe.h"
 #include "binproto.h"
+#include "real_functions.h"
 #include "common_probe_init.h"
 
 #ifndef REAL_NAME

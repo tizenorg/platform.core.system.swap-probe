@@ -62,6 +62,7 @@
 #include "damaps.h"
 #include "dastdout.h"
 #include "common_probe_init.h"
+#include "real_functions.h"
 
 #define APP_INSTALL_PATH		"/opt/apps"
 #define TISEN_APP_POSTFIX			".exe"
@@ -82,8 +83,6 @@ int log_fd = 0;
 int getExecutableMappingAddress();
 
 bool printLog(log_t* log, int msgType);
-
-void *(*real_malloc)(size_t) = NULL;
 
 /******************************************************************************
  * internal functions
@@ -530,6 +529,10 @@ unlock_exit:
 void __attribute__((constructor)) _init_probe()
 {
 
+	if (_init_real_functions()) {
+		PRINTERR("cannot init real functions\n");
+		exit(1);
+	}
 	rtdl_next_set_once(real_malloc, "malloc");
 
 	 /* init maps */

@@ -34,6 +34,7 @@
 #include <pthread.h>			// for pthread_mutex_t
 
 #include "khash.h"
+#include "real_functions.h"
 
 #ifdef __cplusplus
 extern "C"{
