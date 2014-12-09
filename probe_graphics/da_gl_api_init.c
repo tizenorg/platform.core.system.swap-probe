@@ -30,6 +30,7 @@
 #include "da_gles20.h"
 #include "binproto.h"
 #include "common_probe_init.h"
+#include "real_functions.h"
 
 /* GL __local_* functions prototypes */
 #define X(func) extern void __local_##func(void);
@@ -45,7 +46,7 @@ Evas_GL_API *__gl_api = NULL;
 void __init_gl_api__(void)
 {
 	if (__gl_api == NULL)
-		__gl_api = malloc(sizeof(*__gl_api));
+		__gl_api = real_malloc(sizeof(*__gl_api));
 	memset(__gl_api, 0, sizeof(*__gl_api));
 }
 

@@ -43,6 +43,7 @@
 #include "da_io.h"
 
 #include "binproto.h"
+#include "real_functions.h"
 
 static enum DaOptions _sopt = OPT_FILE;
 

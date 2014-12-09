@@ -50,6 +50,7 @@
 #include <Evas.h>
 #include <Evas_Engine_Buffer.h>
 
+#include "real_functions.h"
 #include "daprobe.h"
 #include "dahelper.h"
 
@@ -269,7 +270,7 @@ static Evas* create_canvas(int width, int height)
 	}
 
 	// ARGB32 is sizeof(int), that is 4 bytes, per pixel
-	pixels = malloc(width * height * sizeof(int));
+	pixels = real_malloc(width * height * sizeof(int));
 	if (unlikely(pixels == NULL)) {
 		//fputs("ERROR: could not allocate canvas pixels!\n", stderr);
 		evas_free(canvas);

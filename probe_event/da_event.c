@@ -42,6 +42,7 @@
 #include "da_event.h"
 
 #include "binproto.h"
+#include "real_functions.h"
 
 static int external_angle = 0;
 static int internal_angle = 0;
