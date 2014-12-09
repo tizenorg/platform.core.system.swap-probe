@@ -52,6 +52,7 @@
 #include "dahelper.h"
 #include "api_id_mapping.h"
 #include "binproto.h"
+#include "real_functions.h"
 
 #define OBJ_DUMMY 0
 
@@ -375,7 +376,7 @@ ssize_t recvmsg(int socket, struct msghdr *message, int flags) {
 	}
 
 	int sendMaxSize = SOCKET_SEND_SIZE;
-	char* out = (char*) malloc(sendMaxSize + 5);
+	char* out = (char*) real_malloc(sendMaxSize + 5);
 	if (sret <= 0) {
 		out[0] = '\0';
 	} else {
@@ -418,7 +419,7 @@ ssize_t sendmsg(int socket, const struct msghdr *message, int flags) {
 		memset(&message, 0, sizeof(message));
 	}
 	int sendMaxSize = SOCKET_SEND_SIZE;
-	char* out = (char*) malloc(sendMaxSize + 5);
+	char* out = (char*) real_malloc(sendMaxSize + 5);
 	if (sret <= 0) {
 		out[0] = '\0';
 	} else {
