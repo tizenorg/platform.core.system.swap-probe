@@ -1,0 +1,7 @@
+Code-Review+2: Dmitry Kovalenko <d.kovalenko@samsung.com>
+Verified+1: Dmitry Kovalenko <d.kovalenko@samsung.com>
+Submitted-by: Dmitry Kovalenko <d.kovalenko@samsung.com>
+Submitted-at: Tue, 09 Dec 2014 23:01:05 -0800
+Reviewed-on: https://review.tizen.org/gerrit/31789
+Project: platform/core/system/swap-probe
+Branch: refs/heads/new_profile
