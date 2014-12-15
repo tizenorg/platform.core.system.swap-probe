@@ -122,6 +122,25 @@ void REAL_NAME(glAttachShader)(GLuint program, GLuint shader)
 // ==================================================================
 // B 12
 // ==================================================================
+void __get_context_buf_data(char *buf, size_t buf_size)
+{
+	GLint n_buffer_size, n_buffer_usage_size, n_element_buffer_size,
+	      n_element_buffer_usage_size;
+
+	real_glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE,
+				    &n_buffer_size);
+	real_glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_USAGE,
+				    &n_buffer_usage_size);
+	real_glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE,
+				    &n_element_buffer_size);
+	real_glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_USAGE,
+				    &n_element_buffer_usage_size);
+
+	snprintf(buf, buf_size, "%u,%u,%u,%u",
+		 n_buffer_size, n_buffer_usage_size, n_element_buffer_size,
+		 n_element_buffer_usage_size);
+
+}
 
 void REAL_NAME(glBindAttribLocation)(GLuint program, GLuint index, const char *name)
 {
@@ -135,11 +154,17 @@ void REAL_NAME(glBindAttribLocation)(GLuint program, GLuint index, const char *n
 
 void REAL_NAME(glBindBuffer)(GLenum target, GLuint buffer)
 {
+	char context_value[MAX_GL_CONTEXT_VALUE_SIZE] = {0,};
+
 	TYPEDEF(void (*methodType)(GLenum, GLuint));
 	BEFORE(glBindBuffer);
 	CALL_ORIG(glBindBuffer, target, buffer);
+
+	if (blockresult)
+		__get_context_buf_data(&context_value[0], sizeof(context_value));
+
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, context_value, "xd",
 	      (uint64_t)(target), buffer);
 }
 
@@ -231,8 +256,12 @@ void REAL_NAME(glBufferData)(GLenum target, GLsizeiptr size, const GLvoid * data
 	TYPEDEF(void (*methodType)(GLenum, GLsizeiptr, const GLvoid *, GLenum));
 	BEFORE(glBufferData);
 	CALL_ORIG(glBufferData, target, size, data, usage);
+
+	char context_value[MAX_GL_CONTEXT_VALUE_SIZE];
+	if (blockresult)
+		__get_context_buf_data(&context_value[0], sizeof(context_value));
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxpx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, context_value, "xxpx",
 	      (uint64_t)(target), (uint64_t)(size),
 	      voidp_to_uint64(data), (uint64_t)(usage));
 }
@@ -243,9 +272,13 @@ void REAL_NAME(glBufferSubData)(GLenum target, GLintptr offset, GLsizeiptr size,
 	TYPEDEF(void (*methodType)(GLenum, GLintptr, GLsizeiptr,
 				   const GLvoid *));
 	BEFORE(glBufferSubData);
+
+	char context_value[MAX_GL_CONTEXT_VALUE_SIZE];
+	if (blockresult)
+		__get_context_buf_data(&context_value[0], sizeof(context_value));
 	CALL_ORIG(glBufferSubData, target, offset, size, data);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, context_value, "xxxp",
 	      (uint64_t)(target), (uint64_t)(offset),
 	      (uint64_t)(size), voidp_to_uint64(data));
 }
@@ -427,9 +460,13 @@ void REAL_NAME(glDeleteBuffers)(GLsizei n, const GLuint * buffers)
 {
 	TYPEDEF(void (*methodType)(GLsizei, const GLuint *));
 	BEFORE(glDeleteBuffers);
+
+	char context_value[MAX_GL_CONTEXT_VALUE_SIZE];
+	if (blockresult)
+		__get_context_buf_data(&context_value[0], sizeof(context_value));
 	CALL_ORIG(glDeleteBuffers, n, buffers);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, context_value, "dp",
 	      n, voidp_to_uint64(buffers));
 }
 
