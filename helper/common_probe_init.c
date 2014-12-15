@@ -45,6 +45,7 @@ void (*real_glGetActiveUniform)(GLuint program, GLuint index, GLsizei bufSize,
 				char *name);
 void (*real_glGetShaderSource)(GLuint shader, GLsizei bufSize, GLsizei *length,
 			       char *source);
+void (*real_glGetBufferParameteriv)(GLenum target, GLenum value, GLint *data);
 
 void __gl_dummy_function()
 {
@@ -93,6 +94,7 @@ int __init_gl_functions__(void)
 	INIT_REAL_GL(glGetActiveUniform);
 	INIT_REAL_GL(glGetShaderSource);
 	INIT_REAL_GL(glGetIntegerv);
+	INIT_REAL_GL(glGetBufferParameteriv);
 
 	return 0;
 }
