@@ -69,6 +69,8 @@ extern void (*real_glGetActiveUniform)(GLuint program, GLuint index,
 				       GLint *size, GLenum *type, char *name);
 extern void (*real_glGetShaderSource)(GLuint shader, GLsizei bufSize,
 				      GLsizei *length, char *source);
+extern void (*real_glGetBufferParameteriv)(GLenum target, GLenum value,
+					   GLint *data);
 
 #ifdef __cplusplus
 } /* extern "C" */
