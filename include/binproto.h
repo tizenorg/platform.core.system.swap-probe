@@ -491,10 +491,22 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		char *BUF_PTR = LOCAL_BUF;			\
 		char *RET_PTR = NULL
 
+#define PREPARE_LOCAL_BUF_THOUGH(BUFF)				\
+		char *LOCAL_BUF = BUFF;				\
+		char *BUF_PTR = LOCAL_BUF;			\
+		char *RET_PTR = NULL
+
 #define MSG_LEN_OFFSET 16
 #define MSG_HDR_LEN 20
+
+#define SET_MSG_LEN()							\
+		*(uint32_t *)(msg_buf + MSG_LEN_OFFSET) = (p - msg_buf) - MSG_HDR_LEN;
+
+#define GET_MSG_LEN()							\
+		(p - msg_buf) - MSG_HDR_LEN
+
 #define FLUSH_LOCAL_BUF()						\
-		*(uint32_t *)(msg_buf + MSG_LEN_OFFSET) = (p - msg_buf) - MSG_HDR_LEN; \
+		SET_MSG_LEN();						\
 		send(gTraceInfo.socket.daemonSock, msg_buf, (p - msg_buf), 0); \
 		free(LOCAL_BUF);					\
 		LOCAL_BUF = NULL
@@ -537,7 +549,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 /* 	return 0; */
 /* } */
 
-extern void _init_(void);
+extern int _init_(void);
 extern void _uninit_(void);
 
 #endif /* __BIN_PROTO_H__ */

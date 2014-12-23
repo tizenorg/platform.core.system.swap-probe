@@ -33,6 +33,7 @@
 
 #include "daprobe.h"
 #include "dahelper.h"
+#include "common_probe_init.h"
 
 
 Ecore_Event_Handler *register_orientation_event_listener();
@@ -49,12 +50,15 @@ Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
 	probeBlockStart();
 	pClientEvent = (Ecore_X_Event_Client_Message*)pEvent;
 
-	//This code from ecore_x
-	//So I don't know what 32 does mean
-	if (pClientEvent->format != 32)
-		return ECORE_CALLBACK_PASS_ON;
-
 	if (pClientEvent != NULL) {
+
+		//This code from ecore_x
+		//So I don't know what 32 does mean
+		if (pClientEvent->format != 32) {
+			probeBlockEnd();
+			return ECORE_CALLBACK_PASS_ON;
+		}
+
 		if (pClientEvent->message_type ==
 		    ECORE_X_ATOM_E_WINDOW_ROTATION_CHANGE_PREPARE) {
 			int orientation = (int)pClientEvent->data.l[1];
@@ -87,4 +91,23 @@ void unregister_orientation_event_listener(Ecore_Event_Handler *handler)
 		ecore_event_handler_del(handler);
 
 	probeBlockEnd();
+}
+
+EAPI int ecore_x_init(const char *name)
+{
+	static Ecore_Event_Handler *event_handler = NULL;
+
+	int res = 0;
+	static int (*ecore_x_initp)(const char *name);
+	PRINTMSG("(%s)", name);
+
+	GET_REAL_FUNC_RTLD_NEXT(ecore_x_init);
+	res = ecore_x_initp(name);
+
+	if (event_handler == NULL) {
+		event_handler = register_orientation_event_listener();
+		if (event_handler == NULL)
+			PRINTERR("Fail to init event listener");
+	}
+	return res;
 }

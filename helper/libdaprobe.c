@@ -9,6 +9,7 @@
  * Woojin Jung <woojin2.jung@samsung.com>
  * Juyoung Kim <j0.kim@samsung.com>
  * Nikita Kalyazin <n.kalyazin@samsung.com>
+ * Vitaliy Cherepanov <v.cherepanov@samsung.com>
  * Anastasia Lyupa <a.lyupa@samsung.com>
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -59,6 +60,7 @@
 #include "binproto.h"
 #include "daforkexec.h"
 #include "damaps.h"
+#include "dastdout.h"
 #include "common_probe_init.h"
 
 #define APP_INSTALL_PATH		"/opt/apps"
@@ -102,11 +104,38 @@ static void _configure(char* configstr)
 
 void application_exit()
 {
-	PRINTMSG("App termination: EXIT(0)");
+	pid_t gpid;
+	FILE *f = NULL;
+	char buf[MAX_PATH_LENGTH];
+	const char manager_name[] = "da_manager";
+
 	/* TODO think of another way for correct app termination */
 
-	/* Kill yourself!! */
-	killpg(getpgrp(), SIGKILL);
+	gpid = getpgrp();
+	/* check for parent */
+	snprintf(buf, sizeof(buf), "/proc/%d/cmdline", gpid);
+	f = fopen(buf, "r");
+	if (f != NULL) {
+		fscanf(f, "%s", buf);
+		fclose(f);
+		if (strlen(buf) == strlen(manager_name) &&
+		    strncmp(buf, manager_name, sizeof(manager_name)) == 0) {
+			/* Luke, I am your father
+			 * da_manager is our parent
+			 * looks like we are common applicaton
+			 */
+			PRINTMSG("App termination: EXIT(0)");
+			exit(0);
+		}
+	}
+
+	/* da_manager is not our father
+	 * we are native app or already launched.
+	 * Will be troubles up there if we are common already launched app!!!
+	 * Kill yourself!!
+	 */
+	PRINTMSG("App termination: kill all process group");
+	killpg(gpid, SIGKILL);
 }
 
 // create socket to daemon and connect
@@ -114,6 +143,7 @@ void application_exit()
 #define MSG_MAPS_INST_LIST_RECV 0x02
 static int createSocket(void)
 {
+	char strerr_buf[MAX_PATH_LENGTH];
 	ssize_t recvlen;
 	int clientLen, ret = 0;
 	struct sockaddr_un clientAddr;
@@ -141,8 +171,8 @@ static int createSocket(void)
 			while (((recved & MSG_CONFIG_RECV) == 0) ||
 			       ((recved & MSG_MAPS_INST_LIST_RECV) == 0))
 			{
-				fprintf(stderr, "wait message\n");
-				PRINTMSG("wait incoming message");
+				PRINTMSG("wait incoming message %d\n",
+					 gTraceInfo.socket.daemonSock);
 				/* recv header */
 				recvlen = recv(gTraceInfo.socket.daemonSock, &log,
 					       sizeof(log.type) + sizeof(log.length),
@@ -162,6 +192,11 @@ static int createSocket(void)
 					recvlen = recv(gTraceInfo.socket.daemonSock, data_buf,
 						       log.length, MSG_WAITALL);
 
+					if (recvlen != log.length) {
+						PRINTERR("Can not get data from daemon sock\n");
+						goto free_data_buf;
+					}
+
 					if (log.type == MSG_CONFIG) {
 						PRINTMSG("MSG_CONFIG");
 						_configure(data_buf);
@@ -175,16 +210,23 @@ static int createSocket(void)
 						PRINTERR("unknown message! %d", log.type);
 					}
 
+free_data_buf:
 					if (data_buf != NULL)
 						free(data_buf);
 
 				} else if (recvlen < 0) {
-					fprintf(stderr, "recv failed in socket creation with error(%d)\n", recvlen);
+					close(gTraceInfo.socket.daemonSock);
+					gTraceInfo.socket.daemonSock = -1;
+					PRINTERR("recv failed with error(%d)\n",
+						 recvlen);
 					ret = -1;
 					application_exit();
 					break;
 				} else {
 					/* closed by other peer */
+					close(gTraceInfo.socket.daemonSock);
+					gTraceInfo.socket.daemonSock = -1;
+					PRINTERR("closed by other peer\n");
 					ret = -1;
 					application_exit();
 					break;
@@ -196,9 +238,14 @@ static int createSocket(void)
 		} else {
 			close(gTraceInfo.socket.daemonSock);
 			gTraceInfo.socket.daemonSock = -1;
+			strerror_r(errno, strerr_buf, sizeof(strerr_buf));
+			PRINTERR("cannot connect to da_manager. err <%s>\n",
+				 strerr_buf);
 			ret = -1;
 		}
 	} else {
+		strerror_r(errno, strerr_buf, sizeof(strerr_buf));
+		PRINTERR("cannot create socket. err <%s>\n", strerr_buf);
 		ret = -1;
 	}
 
@@ -322,7 +369,10 @@ static void *recvThread(void __unused * data)
 					}
 					recvlen = recv(gTraceInfo.socket.daemonSock, data_buf,
 						log.length, MSG_WAITALL);
-
+					if (recvlen != log.length) {
+						PRINTERR("Can not recv data from\n");
+						goto free_data_buf;
+					}
 				}
 
 				if (log.type == MSG_CAPTURE_SCREEN) {
@@ -350,6 +400,7 @@ static void *recvThread(void __unused * data)
 					PRINTERR("recv unknown message. id = (%d)", log.type);
 				}
 
+free_data_buf:
 				if (data_buf) {
 					free(data_buf);
 					data_buf = NULL;
@@ -431,9 +482,15 @@ static int create_recv_thread()
 	return err;
 }
 
-void _init_(void)
+int _init_(void)
 {
+	int res = 0;
+
 	probeBlockStart();
+
+	/* redirect stderr and stdout.*/
+	/* if there is no std - print call will crash app */
+	__redirect_std();
 
 	init_exec_fork();
 	initialize_hash_table();
@@ -458,9 +515,16 @@ void _init_(void)
 		 getpid());
 
 	gTraceInfo.init_complete = 1;
-	maps_make();
+	if (maps_make() != 0) {
+		PRINTERR("maps make failed\n");
+		res = -1;
+		goto unlock_exit;
+	}
+
+unlock_exit:
 	probeBlockEnd();
 
+	return res;
 }
 
 void __attribute__((constructor)) _init_probe()
@@ -537,6 +601,20 @@ void __attribute__((destructor)) _fini_probe()
 /************************************************************************
  * manipulate and print log functions
  ************************************************************************/
+const char *msg_code_to_srt(enum MessageType type)
+{
+	switch (type) {
+		case MSG_MSG:
+			return "[INF]";
+		case MSG_ERROR:
+			return "[ERR]";
+		case MSG_WARNING:
+			return "[WRN]";
+		default:
+			return "[???]";
+	}
+}
+
 bool printLog(log_t *log, int msgType)
 {
 	ssize_t res, len;
@@ -605,15 +683,13 @@ bool print_log_str(int msgType, char *str)
  */
 bool print_log_fmt(int msgType, const char *func_name, int line, ...)
 {
-	ssize_t res, len;
+	ssize_t res = 0, len = 0;
 	char *fmt, *p;
 	int n;
 	log_t log;
 	va_list ap;
 
 	/* Check connection status */
-	if(unlikely(gTraceInfo.socket.daemonSock == -1))
-		return false;
 
 	probeBlockStart();
 
@@ -648,7 +724,15 @@ bool print_log_fmt(int msgType, const char *func_name, int line, ...)
 
 	/* lock socket and send */
 	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
-	res = send(gTraceInfo.socket.daemonSock, &log, len, MSG_DONTWAIT);
+
+	if(unlikely(gTraceInfo.socket.daemonSock != -1)) {
+		res = send(gTraceInfo.socket.daemonSock, &log, len, MSG_DONTWAIT);
+	} else {
+		/* if socket is not connected, out to stderr */
+		fprintf(stderr, "%s %s\n", msg_code_to_srt(msgType), log.data);
+		fflush(stderr);
+	}
+
 	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 
 	probeBlockEnd();
@@ -904,7 +988,7 @@ void *rtdl_next(const char *symname)
 
 	symbol = dlsym(RTLD_NEXT, symname);
 	if (symbol == NULL || dlerror() != NULL) {
-		fprintf(stderr, "dlsym failed <%s>\n", symname);
+		PRINTERR("dlsym failed <%s>\n", symname);
 		exit(41);
 	}
 

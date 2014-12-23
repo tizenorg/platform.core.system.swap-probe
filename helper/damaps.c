@@ -125,35 +125,44 @@ static void print_map(struct map_t *map)
 static int read_mapping_line(FILE *mapfile, struct map_t *m)
 {
 	char ch1, ch2;
-	int ret = fscanf(mapfile, "%p-%p %s %llx %s %llx%c%c",
-			 &m->addr,
-			 &m->endaddr,
-			 (char *)m->permissions,
-			 &m->offset,
-			 (char *)m->device,
-			 &m->inode,
-			 &ch1, &ch2);
+	int ret = 0;
+
+	if (m == NULL) {
+		PRINTERR("map_t param is NULL\n");
+		return 0;
+	}
+
+	ret = fscanf(mapfile, "%p-%p %s %llx %s %llx%c%c",
+		     &m->addr,
+		     &m->endaddr,
+		     (char *)m->permissions,
+		     &m->offset,
+		     (char *)m->device,
+		     &m->inode,
+		     &ch1, &ch2);
 
 	m->is_instrument = 0;
 	if (ret > 0 && ret != EOF) {
+		int len = 0;
+
 		if (ch2 != '\n') {
 			ret = (fgets((char *)m->filename, sizeof(m->filename), mapfile) != NULL);
 			if (ret) {
-				int len;
 				/* remove leading white spaces */
 				if (m->filename[0] == ' ') {
 					char *p = m->filename;
 					while (*p == ' ')
 						p++;
 					len = strlen(p);
-					memcpy(m->filename, p, len);
+					memmove(m->filename, p, len);
 				} else
 					len = strlen(m->filename);
-
-				m->filename[len-1] = '\0';
+				if (len > 0)
+					len--;
 			}
-		} else
-			m->filename[0] = '\0';	/* no filename */
+		}
+
+		m->filename[len] = '\0';
 
 		return 1;
 	} else
@@ -180,6 +189,7 @@ static void print_list()
 			 m->device,
 			 m->inode,
 			 m->filename);
+		usleep(500);
 	}
 
 }
@@ -232,6 +242,7 @@ static void print_list_sorted(struct map_t **list)
 			 m->hash,
 			 m->is_instrument,
 			 m->filename);
+		usleep(500);
 	}
 }
 
@@ -320,11 +331,13 @@ static int create_name_hash_table()
 	return 0;
 }
 
-static struct map_t *get_map_by_filename(char *filename)
+static struct map_t **get_map_by_filename(char *filename, int *count)
 {
 	uint32_t hash = calc_string_hash(filename);
-	struct map_t *res = NULL;
+	struct map_t **res = NULL;
 	uint32_t left, right, cur;
+
+	*count = 0;
 
 	if (name_hash_table_el_count_buzy == 0 ||
 	    name_hash_table[0]->hash > hash ||
@@ -351,6 +364,8 @@ static struct map_t *get_map_by_filename(char *filename)
 
 	/* resolve collisions */
 	if (name_hash_table[cur]->hash == hash) {
+
+		/* get first with same hash */
 		while (1) {
 			if (cur == 0)
 				/* top of list */
@@ -361,7 +376,30 @@ static struct map_t *get_map_by_filename(char *filename)
 			/* previous element have the same hash */
 			cur--;
 		}
-		res = name_hash_table[cur];
+
+		/* get first with same hash and filename */
+		while (1) {
+			if (cur > name_hash_table_el_count_buzy - 1)
+				/* top of list */
+				break;
+			if (name_hash_table[cur]->hash != hash)
+				/* previous element have different hash */
+				break;
+			if (strncmp(name_hash_table[cur]->filename, filename, strlen(filename)) == 0)
+				break;
+			/* previous element have the same hash */
+			cur++;
+		}
+
+		/* calculate sections count */
+		while (cur <= (name_hash_table_el_count_buzy - 1) &&
+		       name_hash_table[cur]->hash == hash &&
+		       strncmp(name_hash_table[cur]->filename, filename, strlen(filename)) == 0) {
+			if (res == NULL)
+				res = &name_hash_table[cur];
+			cur++;
+			*count = *count + 1;
+		}
 	}
 
 find_exit:
@@ -371,7 +409,7 @@ find_exit:
 static int update_is_instrument_lib_attr_nolock()
 {
 	uint32_t i;
-	struct map_t *map;
+	struct map_t **map;
 
 	/* clear is_instrument fields */
 	for (i = 0; i < name_hash_table_el_count_buzy; i++)
@@ -379,11 +417,13 @@ static int update_is_instrument_lib_attr_nolock()
 
 	/* set is_instrument fields */
 	for (i = 0; i < map_inst_count; i++) {
-		map = get_map_by_filename(map_inst_list[i]);
-		if (map) {
-			PRINTMSG("set 1!!! = %s [%p:%p]", map->filename,
-				  map->addr, map->endaddr);
-			map->is_instrument = 1;
+		int count = 0;
+		map = get_map_by_filename(map_inst_list[i], &count);
+		for (;count > 0; count--) {
+			PRINTMSG("set 1!!! = %s [%p:%p]", (*map)->filename,
+				  (*map)->addr, (*map)->endaddr);
+			(*map)->is_instrument = 1;
+			map++;
 		}
 	}
 
@@ -403,7 +443,7 @@ static struct map_t *get_map_by_addr(void *addr)
 	if (addr < addr_hash_table[0]->addr)
 		goto find_exit;
 
-	if (addr > addr_hash_table[addr_hash_table_el_count_buzy - 1]->addr)
+	if (addr > addr_hash_table[addr_hash_table_el_count_buzy - 1]->endaddr)
 		goto find_exit;
 
 	left = 0;
@@ -470,6 +510,7 @@ static inline void maps_writer_unlock()
 	pthread_mutex_unlock(&maps_lock);
 }
 
+/* TODO refactor this function to alloc map_inst_list_set and copy it frm src*/
 // WARNING! this function use maps_set and set it to NULL
 // so first param must be malloced and do not free maps_set after call
 int set_map_inst_list(char **maps_set, uint32_t maps_count)
@@ -492,16 +533,25 @@ int set_map_inst_list(char **maps_set, uint32_t maps_count)
 	}
 
 	map_inst_list = real_malloc(sizeof(*map_inst_list) * maps_count);
-	if (maps_set != NULL && *maps_set != NULL)
-		map_inst_list_set = *maps_set;
-	map_inst_count = maps_count;
+	if (maps_count != 0 && map_inst_list == NULL) {
+		PRINTERR("Cannot allocate data for map_inst_list\n");
+		res = -1;
+		goto unlock_exit;
+	}
 
-	/* add library mapping names */
-	p = map_inst_list_set + sizeof(maps_count);
-	for (i = 0; i < maps_count; i++) {
-		map_inst_list[i] = p;
-		p += strlen(p) + 1;
-		PRINTMSG("-------> %s", map_inst_list[i]);
+	if (maps_set != NULL && *maps_set != NULL && map_inst_list != NULL) {
+		map_inst_list_set = *maps_set;
+		map_inst_count = maps_count;
+
+		/* add library mapping names */
+		p = map_inst_list_set + sizeof(maps_count);
+		for (i = 0; i < maps_count; i++) {
+			map_inst_list[i] = p;
+			p += strlen(p) + 1;
+			PRINTMSG("-------> %s", map_inst_list[i]);
+		}
+	} else {
+		map_inst_count = 0;
 	}
 
 	res = update_is_instrument_lib_attr_nolock();
@@ -509,14 +559,16 @@ int set_map_inst_list(char **maps_set, uint32_t maps_count)
 	if (maps_set != NULL)
 		*maps_set = NULL;
 
+unlock_exit:
 	maps_reader_unlock_all();
 	maps_writer_unlock();
 
 	return res;
 }
 
-void maps_make()
+int maps_make()
 {
+	int res = 0;
 	maps_writer_lock();
 	maps_reader_lock_all();
 	FILE *f = fopen("/proc/self/maps", "r");
@@ -539,6 +591,11 @@ void maps_make()
 
 	/* add  locations */
 	map = (*real_malloc)(sizeof(*map));
+	if (map == NULL) {
+		PRINTERR("Can not alloc data for map\n");
+		res = -1;
+		goto unlock_exit;
+	}
 	while (read_mapping_line(f, map)) {
 		if (map->permissions[2] == 'x') {
 			map->hash = calc_string_hash(map->filename);
@@ -551,15 +608,18 @@ void maps_make()
 	if (map != NULL)
 		free(map);
 
-	fclose(f);
-
 	create_addr_hash_table();
 	create_name_hash_table();
 
 	update_is_instrument_lib_attr_nolock();
 
+unlock_exit:
+	fclose(f);
+
 	maps_reader_unlock_all();
 	maps_writer_unlock();
+
+	return res;
 }
 
 int maps_print_maps_by_addr(const void *addr)
@@ -598,7 +658,11 @@ int maps_is_instrument_section_by_addr(const void *addr)
 
 	if (ret == -1) {
 		PRINTMSG("========> hz addr %p. remap", addr);
-		maps_make();
+		if (maps_make() != 0) {
+			PRINTERR("maps make failed\n");
+			ret = -1;
+			goto exit;
+		}
 		ret = maps_is_instrument_section_by_addr_no_remap(addr);
 		if (ret == -1) {
 			print_list();
@@ -610,6 +674,7 @@ int maps_is_instrument_section_by_addr(const void *addr)
 		}
 	}
 
+exit:
 	return ret;
 }
 

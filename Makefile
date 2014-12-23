@@ -3,6 +3,8 @@ INSTALLDIR = usr/lib
 ## Since include directives do not impose additional dependencies, we can make
 ## Makefile more clear, simply putting all includes we ever need in single
 ## variable. Keep it alphabetic, please.
+DEBUG_FLAGS=					\
+#		-DSTDTOFILE				\#
 
 INCLUDE_CPPFLAGS =				\
 		-I./include			\
@@ -55,7 +57,8 @@ LDFLAGS = -shared   	\
 	-leina				\
 	-levas				\
 	-lpthread			\
-	-lrt
+	-lrt				\
+	-Wl,-z,noexecstack
 
 ASMFLAG = -O0 -g
 
@@ -67,10 +70,12 @@ COMMON_SRCS = $(UTILITY_SRCS) $(PROBE_SRCS)
 UTILITY_SRCS =				\
 	./helper/libdaprobe.c		\
 	./helper/dahelper.c		\
+	./helper/btsym.c		\
 	./helper/dacollection.c		\
 	./helper/dacapture.c		\
 	./helper/daforkexec.c		\
 	./helper/damaps.c			\
+	./helper/dastdout.c			\
 	./custom_chart/da_chart.c	\
 
 PROBE_SRCS =	   				\
@@ -150,6 +155,7 @@ $(GENERATED_HEADERS):
 
 $(TIZEN_TARGET): LDFLAGS+=$(TIZEN_LDFLAGS)
 $(TIZEN_TARGET): CPPFLAGS+=$(TIZEN_CPPFLAGS)
+$(TIZEN_TARGET): CPPFLAGS+=$(DEBUG_FLAGS)
 $(TIZEN_TARGET): $(TIZEN_OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 

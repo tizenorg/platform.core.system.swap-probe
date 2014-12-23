@@ -191,7 +191,9 @@ Evas_GL_API* elm_glview_gl_api_get(const Evas_Object *obj)
 		change_gl_api_list(res);
 	}
 
-	GL_GET_ERROR();
+	/*clean error code*/
+	__gl_api->glGetError();
+
 	AFTER('p', res, APITYPE_CONTEXT, "", "p",
 	      voidp_to_uint64(obj));
 
