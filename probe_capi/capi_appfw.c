@@ -45,7 +45,6 @@ Ecore_Event_Handler *register_orientation_event_listener();
 void unregister_orientation_event_listener(Ecore_Event_Handler *handler);
 
 app_event_callback_s gAppCallback;
-ui_app_lifecycle_callback_s uiAppCallback;
 
 #define PACK_ORIGINAL_APPFWCYCLE(API_ID, RTYPE, RVAL, INPUTFORMAT, ...)		\
 	newerrno = errno;							\
@@ -192,6 +191,10 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 
 
 /************************************ UI APP ******************************************/
+#ifdef UI_APP_SUPPORT
+
+ui_app_lifecycle_callback_s uiAppCallback;
+
 static bool _ui_dalc_app_create(void *user_data)
 {
 	bool bret = false;
@@ -297,3 +300,5 @@ int ui_app_main(int argc, char **argv, ui_app_lifecycle_callback_s *callback, vo
 
 	return ret;
 }
+
+#endif /* UI_APP_SUPPORT */

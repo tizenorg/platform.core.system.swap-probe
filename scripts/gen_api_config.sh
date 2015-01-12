@@ -17,8 +17,14 @@ NEW_CAPI_APPFW=$(check_feature PRIVATE_CAPI_APPFW \
                                ./feature_tests/new_capi_appfw.cpp \
                                -I/usr/include/appfw)
 
+UI_APP_SP=$(check_feature UI_APP_SUPPORT \
+                          ./feature_tests/ui_app_support.c \
+                          -I/usr/include/appfw)
+
+
 API_CONFIG_DEFINES="
 ${NEW_CAPI_APPFW}
+${UI_APP_SP}
 "
 
 cat << EOF
