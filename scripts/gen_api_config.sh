@@ -1,6 +1,8 @@
 #!/bin/sh
 
-function check_feature()
+set -x
+
+check_feature()
 {
     FEATURE="$1"
     SRC="$2"
