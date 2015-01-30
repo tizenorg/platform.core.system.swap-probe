@@ -284,6 +284,7 @@ ecore_event_evas_key_up
 ecore_event_evas_mouse_button_down
 ecore_event_evas_mouse_button_up
 ecore_event_evas_mouse_move
+__common_elm_gesture_layer_cb
 
 elm_glview_gl_api_get
 

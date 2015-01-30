@@ -33,56 +33,23 @@
 #ifndef __GESTURE_H__
 #define __GESTURE_H__
 
-#include <FUi.h>
+#include <Evas.h>
+#include <elm_gesture_layer.h>
 
-using namespace Tizen::Ui;
-
-class GestureEventListener :
-		public ITouchCustomGestureEventListener,
-		public ITouchFlickGestureEventListener,
-		public ITouchLongPressGestureEventListener,
-		public ITouchPanningGestureEventListener,
-		public ITouchPinchGestureEventListener,
-		public ITouchRotationGestureEventListener,
-		public ITouchTapGestureEventListener
-{
-public:
-	GestureEventListener();
-	virtual ~GestureEventListener();
-
-	virtual void 	OnCustomGestureStarted (TouchGestureDetector &gestureDetector);
-	virtual void 	OnCustomGestureChanged (TouchGestureDetector &gestureDetector);
-	virtual void 	OnCustomGestureFinished (TouchGestureDetector &gestureDetector);
-	virtual void 	OnCustomGestureCanceled (TouchGestureDetector &gestureDetector);
-
-	virtual void 	OnFlickGestureDetected (TouchFlickGestureDetector &gestureDetector);
-	virtual void 	OnFlickGestureCanceled (TouchFlickGestureDetector &gestureDetector);
-
-	virtual void 	OnLongPressGestureDetected (TouchLongPressGestureDetector &gestureDetector);
-	virtual void 	OnLongPressGestureCanceled (TouchLongPressGestureDetector &gestureDetector);
-
-	virtual void 	OnPanningGestureStarted (TouchPanningGestureDetector &gestureDetector);
-	virtual void 	OnPanningGestureChanged (TouchPanningGestureDetector &gestureDetector);
-	virtual void 	OnPanningGestureFinished (TouchPanningGestureDetector &gestureDetector);
-	virtual void 	OnPanningGestureCanceled (TouchPanningGestureDetector &gestureDetector);
-
-	virtual void 	OnPinchGestureStarted (TouchPinchGestureDetector &gestureDetector);
-	virtual void 	OnPinchGestureChanged (TouchPinchGestureDetector &gestureDetector);
-	virtual void 	OnPinchGestureFinished (TouchPinchGestureDetector &gestureDetector);
-	virtual void 	OnPinchGestureCanceled (TouchPinchGestureDetector &gestureDetector);
-
-	virtual void 	OnRotationGestureStarted (TouchRotationGestureDetector &gestureDetector);
-	virtual void 	OnRotationGestureChanged (TouchRotationGestureDetector &gestureDetector);
-	virtual void 	OnRotationGestureFinished (TouchRotationGestureDetector &gestureDetector);
-	virtual void 	OnRotationGestureCanceled (TouchRotationGestureDetector &gestureDetector);
-
-	virtual void 	OnTapGestureDetected (TouchTapGestureDetector &gestureDetector);
-	virtual void 	OnTapGestureCanceled (TouchTapGestureDetector &gestureDetector);
-
-	static GestureEventListener& GetInstance(void);
-
-private:
-	static GestureEventListener rInstance;
+struct __elm_gesture_layer_cb_set_data{
+	Evas_Object *obj;
+	Elm_Gesture_Type idx;
+	Elm_Gesture_State cb_type;
+	Elm_Gesture_Event_Cb cb;
+	void *data;
 };
+
+//int kh_gesture_cmp(struct __elm_gesture_layer_cb_set_data *elm1,
+//		   struct __elm_gesture_layer_cb_set_data *elm2);
+//uint32_t kh_gesture_calc_hash(struct __elm_gesture_layer_cb_set_data *elm);
+
+int kh_gesture_cmp(void *elm1, void *elm2);
+uint32_t kh_gesture_calc_hash(void *elm);
+
 
 #endif
