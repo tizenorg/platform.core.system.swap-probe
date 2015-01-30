@@ -207,14 +207,14 @@ typedef struct {
 					lib_handle[SONAME] = dlopen(lib_string[SONAME], RTLD_LAZY);			\
 					if (lib_handle[SONAME] == NULL) {				\
 						fprintf(stderr, "dlopen failed : %s\n", lib_string[SONAME]);	\
-						PRINTMSG("dlopen failed : %s\n", lib_string[SONAME]);	\
+						PRINTERR("dlopen failed : %s\n", lib_string[SONAME]);	\
 						exit(0);									\
 					} \
 				}													\
 				FUNCTIONPOINTER = dlsym(lib_handle[SONAME], FUNCNAME);		\
 				if (FUNCTIONPOINTER == NULL || dlerror() != NULL) {		\
 					fprintf(stderr, "dlsym failed : <" FUNCNAME ">\n");			\
-					PRINTMSG("dlsym failed : <" FUNCNAME ">\n");			\
+					PRINTERR("dlsym failed : <" FUNCNAME ">\n");			\
 					exit(0);										\
 				}													\
 			}														\

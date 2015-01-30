@@ -24,6 +24,11 @@ void GestureEventListener::OnRotationGestureStarted (TouchRotationGestureDetecto
 void GestureEventListener::OnTapGestureCanceled (TouchTapGestureDetector &gestureDetector)
 void GestureEventListener::OnTapGestureDetected (TouchTapGestureDetector &gestureDetector)
 
+#filename "gesture.c"
+#lib "???"
+#feature ---
+__common_elm_gesture_layer_cb
+
 #filename "orientation.c"
 #lib "???"
 #feature ---
