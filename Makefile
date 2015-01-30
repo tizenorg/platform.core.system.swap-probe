@@ -9,6 +9,7 @@ DEBUG_FLAGS=					\
 INCLUDE_CPPFLAGS =				\
 		-I./include			\
 		-I./probe_thread		\
+		-I./probe_event				\
 		-I/usr/include/appfw		\
 		-I/usr/include/dbus-1.0		\
 		-I/usr/include/e_dbus-1		\
@@ -82,6 +83,7 @@ PROBE_SRCS =	   				\
 	./probe_memory/libdamemalloc.c		\
 	./probe_memory/libdamemmanage.c		\
 	./probe_socket/libdasocket.c		\
+	./probe_event/gesture.c			\
 	./probe_event/da_event.c		\
 	./probe_event/keytouch.c		\
 	./probe_event/orientation.c		\

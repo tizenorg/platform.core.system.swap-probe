@@ -36,6 +36,21 @@
 #include "dahelper.h"
 #include "daerror.h"
 #include "dacollection.h"
+#include "gesture.h"
+
+// khash table function definition
+
+KHASH_MAP_INIT_VOIDP(symbol, char*)
+
+KHASH_MAP_INIT_VOIDP(detector, void*)
+
+KHASH_MAP_INIT_VOIDP(uiobject, _uiobjectinfo*)
+
+KHASH_MAP_INIT_VOIDP(object, unsigned short)
+
+KHASH_MAP_INIT_VOIDP(allocmap, uint64_t)
+
+KHASH_INIT(gesture, void *, void *, 1, kh_gesture_calc_hash, kh_gesture_cmp)
 
 // hash table variable
 __hashInfo _hashinfo =
@@ -49,7 +64,9 @@ __hashInfo _hashinfo =
 	NULL,						// khash_t(object)*	objHash
 	PTHREAD_MUTEX_INITIALIZER,	// pthread_mutex_t objHashMutex
 	NULL,						// khash_t(detector)*	dttHash
-	PTHREAD_MUTEX_INITIALIZER	// pthread_mutex_t dttHashMutex
+	PTHREAD_MUTEX_INITIALIZER,	// pthread_mutex_t dttHashMutex
+	NULL,						// khash_t(gesture)*	gestHash
+	PTHREAD_MUTEX_INITIALIZER	// pthread_mutex_t gestHashMutex
 };
 
 // glist typedef and variable
@@ -93,6 +110,9 @@ int initialize_hash_table()
 	DETECTORHASH = kh_init(detector);
 	DETECTORHASH_UNLOCK;
 
+	GESTUREHASH_LOCK;
+	GESTUREHASH = kh_init(gesture);
+	GESTUREHASH_UNLOCK;
 	return 0;
 }
 
@@ -162,6 +182,24 @@ int finalize_hash_table()
 		DETECTORHASH_UNLOCK;
 	}
 
+	if (GESTUREHASH) {
+		khiter_t k;
+		void *val;
+
+		GESTUREHASH_LOCK;
+		for(k = kh_begin(GESTUREHASH); k != kh_end(GESTUREHASH); k++) {
+			if (kh_exist(GESTUREHASH, k)) {
+				val = kh_value(GESTUREHASH, k);
+				if (likely(val != NULL))
+					free(val);
+			}
+		}
+		kh_destroy(gesture, GESTUREHASH);
+		GESTUREHASH = NULL;
+		GESTUREHASH_UNLOCK;
+	}
+
+
 	return 0;
 }
 
@@ -188,7 +226,7 @@ int find_symbol_hash(void* ptr, char** psymbol)
 	probeBlockStart();
 
 	SYMBOLHASH_LOCK;
-	k = kh_get(symbol, SYMBOLHASH, (uint32_t)ptr);
+	k = kh_get(symbol, SYMBOLHASH, ptr);
 	if (k == kh_end(SYMBOLHASH))		// there is no entry for key
 	{
 		ret = 0;
@@ -223,7 +261,7 @@ int add_symbol_hash(void* ptr, const char* str, int strlen)
 	probeBlockStart();
 
 	SYMBOLHASH_LOCK;
-	k = kh_put(symbol, SYMBOLHASH, (uint32_t)ptr, &rethash);
+	k = kh_put(symbol, SYMBOLHASH, ptr, &rethash);
 	if (likely(rethash != 0))	// succeed to add in hash table
 	{
 		char* tlast = (char*)real_malloc(strlen);
@@ -269,7 +307,7 @@ int add_memory_hash(void* ptr, size_t size, unsigned short type, unsigned short 
 
 	probeBlockStart();
 	MEMORYHASH_LOCK;
-	k = kh_put(allocmap, MEMORYHASH, (uint32_t)ptr, &rethash);
+	k = kh_put(allocmap, MEMORYHASH, ptr, &rethash);
 	if (likely(rethash != 0))	// succeed to add in hash table
 	{
 		kh_value(MEMORYHASH, k) = MAKE_MEMINFO(caller, type, size);
@@ -310,7 +348,7 @@ int del_memory_hash(void* ptr, unsigned short type, unsigned short* caller)
 
 	probeBlockStart();
 	MEMORYHASH_LOCK;
-	k = kh_get(allocmap, MEMORYHASH, (uint32_t)ptr);
+	k = kh_get(allocmap, MEMORYHASH, ptr);
 	if (likely(k != kh_end(MEMORYHASH)))
 	{				// there is entry in hash table
 		meminfo = kh_value(MEMORYHASH, k);
@@ -363,7 +401,7 @@ int find_uiobject_hash(void* ptr, char** type, char** classname)
 	probeBlockStart();
 
 	UIOBJECTHASH_LOCK;
-	k = kh_get(uiobject, UIOBJECTHASH, (uint32_t)ptr);
+	k = kh_get(uiobject, UIOBJECTHASH, ptr);
 	if (unlikely(k == kh_end(UIOBJECTHASH)))		// there is no entry for key
 	{
 		ret = 0;
@@ -402,7 +440,7 @@ int add_uiobject_hash_class(void* ptr, const char* classname)
 	str_len = strlen(classname) + 1;
 
 	UIOBJECTHASH_LOCK;
-	k = kh_put(uiobject, UIOBJECTHASH, (uint32_t)ptr, &rethash);
+	k = kh_put(uiobject, UIOBJECTHASH, ptr, &rethash);
 	if (likely(rethash == 0))	// entry is already in hash table
 	{
 		if (likely(kh_value(UIOBJECTHASH, k) != NULL))
@@ -458,7 +496,7 @@ int add_uiobject_hash_type(void* ptr, const char* type)
 	str_len = strlen(type) + 1;
 
 	UIOBJECTHASH_LOCK;
-	k = kh_put(uiobject, UIOBJECTHASH, (uint32_t)ptr, &rethash);
+	k = kh_put(uiobject, UIOBJECTHASH, ptr, &rethash);
 	if (likely(rethash != 0))	// succeed to add in hash table
 	{
 		char* tlast;
@@ -512,7 +550,7 @@ int del_uiobject_hash(void* ptr)
 
 	probeBlockStart();
 	UIOBJECTHASH_LOCK;
-	k = kh_get(uiobject, UIOBJECTHASH, (uint32_t)ptr);
+	k = kh_get(uiobject, UIOBJECTHASH, ptr);
 	if (likely(k != kh_end(UIOBJECTHASH)))		// there is entry in hash table
 	{
 		val = kh_value(UIOBJECTHASH, k);
@@ -554,7 +592,7 @@ int find_object_hash(void* ptr, unsigned short *caller)
 	probeBlockStart();
 
 	OBJECTHASH_LOCK;
-	k = kh_get(object, OBJECTHASH, (uint32_t)ptr);
+	k = kh_get(object, OBJECTHASH, ptr);
 	if (unlikely(k == kh_end(OBJECTHASH)))		// there is no entry for key
 	{
 		ret = 0;
@@ -586,7 +624,7 @@ int add_object_hash(void* ptr, unsigned short caller)
 	probeBlockStart();
 
 	OBJECTHASH_LOCK;
-	k = kh_put(object, OBJECTHASH, (uint32_t)ptr, &rethash);
+	k = kh_put(object, OBJECTHASH, ptr, &rethash);
 	if (likely(rethash != 0))	// entry is already in hash table
 	{
 		kh_value(OBJECTHASH, k) = caller;
@@ -622,7 +660,7 @@ int del_object_hash(void* ptr, unsigned short *caller)
 	probeBlockStart();
 
 	OBJECTHASH_LOCK;
-	k = kh_get(object, OBJECTHASH, (uint32_t)ptr);
+	k = kh_get(object, OBJECTHASH, ptr);
 	if (likely(k != kh_end(OBJECTHASH)))		// there is entry in hash table
 	{
 		*caller = kh_value(OBJECTHASH, k);
@@ -661,7 +699,7 @@ int add_detector_hash(void* ptr, void* listener)
 	probeBlockStart();
 
 	DETECTORHASH_LOCK;
-	k = kh_put(detector, DETECTORHASH, (uint32_t)ptr, &rethash);
+	k = kh_put(detector, DETECTORHASH, ptr, &rethash);
 	if (likely(rethash != 0))	// succeed to add in hash table
 	{
 		kh_value(DETECTORHASH, k) = listener;
@@ -692,7 +730,7 @@ int del_detector_hash(void* ptr)
 
 	probeBlockStart();
 	DETECTORHASH_LOCK;
-	k = kh_get(detector, DETECTORHASH, (uint32_t)ptr);
+	k = kh_get(detector, DETECTORHASH, ptr);
 	if (likely(k != kh_end(DETECTORHASH)))		// there is entry in hash table
 	{
 		kh_del(detector, DETECTORHASH, k);
@@ -836,3 +874,113 @@ void* find_glist(char* key)
 		return NULL;
 }
 
+
+/***********************************************************
+ * gesture hash related functions
+ ***********************************************************
+ * return 0 if succeed
+ * return 1 if key is already exist in hash table
+ * return negative value if other error occurred
+ */
+//uint32_t kh_gesture_calc_hash(struct __elm_gesture_layer_cb_set_data *elm)
+uint32_t kh_gesture_calc_hash(void *data)
+{
+	struct __elm_gesture_layer_cb_set_data *elm = data;
+
+	/* FIXME cast to uint64 */
+	uint32_t res = ((uint32_t)elm->obj << 16) +
+		       ((uint32_t)elm->idx << 8) +
+		       ((uint32_t)elm->cb_type << 0);
+	return res;
+}
+
+int kh_gesture_cmp(void *data1, void *data2)
+{
+	int res = 1;
+	struct __elm_gesture_layer_cb_set_data *elm1 = data1;
+	struct __elm_gesture_layer_cb_set_data *elm2 = data2;
+
+	if (elm1 == NULL || elm2 == NULL) {
+		PRINTERR("wrong incoming data");
+		goto exit;
+	}
+
+	res = (elm1->obj == elm2->obj &&
+	       elm1->idx == elm2->idx &&
+	       elm1->cb_type == elm2->cb_type);
+
+exit:
+	return res;
+}
+
+int gesture_update(struct __elm_gesture_layer_cb_set_data *elm1,
+		   struct __elm_gesture_layer_cb_set_data *elm2)
+{
+	int res = 0;
+	if (elm1 == NULL || elm2 == NULL) {
+		PRINTERR("wrong incoming data");
+		res = 1;
+		goto exit;
+	} else {
+		elm1->cb = elm2->cb;
+		elm1->data = elm2->data;
+	}
+
+exit:
+	return res;
+}
+
+void *add_gesture_hash(void *ptr)
+{
+	khiter_t k;
+	int rethash;
+	void *ret = NULL;
+	struct __elm_gesture_layer_cb_set_data *data;
+
+	if (GESTUREHASH == NULL) {
+		PRINTERR("gesture hash not initialized");
+		goto exit;
+	}
+
+	if (ptr == NULL) {
+		PRINTERR("wrong incoming data");
+		goto exit;
+	}
+
+	GESTUREHASH_LOCK;
+
+	data = (struct __elm_gesture_layer_cb_set_data *)ptr;
+	k = kh_put(gesture, GESTUREHASH, data, &rethash);
+	if (rethash != 0) {
+		// succeed to add in hash table
+		PRINTERR("> new");
+		if (data != NULL) {
+			data = (struct __elm_gesture_layer_cb_set_data *)real_malloc(sizeof(*data));
+			memcpy(data, ptr, sizeof(*data));
+
+			kh_key(GESTUREHASH, k) = data;
+			kh_value(GESTUREHASH, k) = data;
+			ret = data;
+		} else {
+			PRINTERR("Cannot alloc memory.");
+			goto exit_unlock;
+		}
+
+	} else {
+		PRINTERR("> update");
+		// key is already exist in hash
+		// update memory info
+		data = kh_value(GESTUREHASH, k);
+		if (gesture_update(data, (struct __elm_gesture_layer_cb_set_data *)ptr) != 0) {
+			PRINTERR("Cannot update hash data");
+			goto exit_unlock;
+		}
+		ret = data;
+	}
+
+exit_unlock:
+	GESTUREHASH_UNLOCK;
+
+exit:
+	return ret;
+}
