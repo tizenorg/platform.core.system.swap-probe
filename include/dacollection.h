@@ -34,6 +34,8 @@
 #include <pthread.h>			// for pthread_mutex_t
 
 #include "khash.h"
+//#include "real_functions.h"
+#include "gesture.h"
 
 #ifdef __cplusplus
 extern "C"{
@@ -58,6 +60,10 @@ extern "C"{
 #define DETECTORHASH		_hashinfo.dttHash
 #define DETECTORHASH_LOCK	pthread_mutex_lock(&(_hashinfo.dttHashMutex))
 #define DETECTORHASH_UNLOCK	pthread_mutex_unlock(&(_hashinfo.dttHashMutex))
+
+#define GESTUREHASH		_hashinfo.gestHash
+#define GESTUREHASH_LOCK	pthread_mutex_lock(&(_hashinfo.gestHashMutex))
+#define GESTUREHASH_UNLOCK	pthread_mutex_unlock(&(_hashinfo.gestHashMutex))
 
 #define MEMTYPE_ALLOC	0x01
 #define MEMTYPE_FREE	0x01
@@ -87,16 +93,12 @@ typedef struct
 	char* name;
 } _uiobjectinfo;
 
-// khash table function definition
-KHASH_MAP_INIT_INT(symbol, char*)
-
-KHASH_MAP_INIT_INT(allocmap, uint64_t)
-
-KHASH_MAP_INIT_INT(uiobject, _uiobjectinfo*)
-
-KHASH_MAP_INIT_INT(object, unsigned short)
-
-KHASH_MAP_INIT_INT(detector, void*)
+KHASH_INIT_TYPE_VOIDP(symbol, char*)
+KHASH_INIT_TYPE_VOIDP(detector, void*)
+KHASH_INIT_TYPE_VOIDP(uiobject, _uiobjectinfo*)
+KHASH_INIT_TYPE_VOIDP(object, unsigned short)
+KHASH_INIT_TYPE_VOIDP(allocmap, uint64_t)
+KHASH_INIT_TYPE_VOIDP(gesture, void *)
 
 typedef struct
 {
@@ -110,6 +112,8 @@ typedef struct
 	pthread_mutex_t		objHashMutex;
 	khash_t(detector)*	dttHash;
 	pthread_mutex_t		dttHashMutex;
+	khash_t(gesture)*	gestHash;
+	pthread_mutex_t		gestHashMutex;
 } __hashInfo;
 
 extern __hashInfo _hashinfo;
@@ -137,6 +141,10 @@ int del_uiobject_hash(void* ptr);
 int find_object_hash(void* ptr, unsigned short *caller);
 int add_object_hash(void* ptr, unsigned short caller);
 int del_object_hash(void* ptr, unsigned short *caller);
+
+int find_gesture_hash(void *data);
+void *add_gesture_hash(void *data);
+int del_gesture_hash(void *data);
 
 int add_detector_hash(void* ptr, void* listener);
 int del_detector_hash(void* ptr);
