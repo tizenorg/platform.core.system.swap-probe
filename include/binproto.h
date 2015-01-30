@@ -387,14 +387,26 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		}							\
 	} while(0)
 
-#define PACK_UIEVENT(event_type, detail_type, x, y, info1, info2)	\
-	do {	/* PACK_UIEVENT */					\
+#define PACK_UIEVENT_HEAD(event_type, detail_type)			\
 		BUF_PTR = pack_int32(BUF_PTR, event_type);		\
 		BUF_PTR = pack_int32(BUF_PTR, detail_type);		\
+
+#define PACK_UIEVENT_XY(x, y)						\
 		BUF_PTR = pack_int32(BUF_PTR, x);			\
 		BUF_PTR = pack_int32(BUF_PTR, y);			\
+
+#define PACK_UIEVENT_INFO1(info1)					\
 		BUF_PTR = pack_string(BUF_PTR, info1);			\
+
+#define PACK_UIEVENT_INFO2(info2)					\
 		BUF_PTR = pack_int32(BUF_PTR, info2);			\
+
+#define PACK_UIEVENT(event_type, detail_type, x, y, info1, info2)	\
+	do {	/* PACK_UIEVENT */					\
+		PACK_UIEVENT_HEAD(event_type, detail_type);		\
+		PACK_UIEVENT_XY(x, y)					\
+		PACK_UIEVENT_INFO1(info1)				\
+		PACK_UIEVENT_INFO2(info2)				\
 	} while (0)
 
 #define PACK_RESOURCE(size, fd_value, fd_api_type, file_size,	\
