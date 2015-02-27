@@ -327,6 +327,8 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 #define BUF_PTR p
 #define RET_PTR ret_p
+#define CALLER_PTR caller_p
+#define CALL_TYPE_PTR call_type_p
 #define PACK_INT32(val)				\
 	BUF_PTR = pack_int32(BUF_PTR, val);
 #define PACK_INT64(val)				\
@@ -351,8 +353,20 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	do {	/* PACK_COMMON_END */						\
 		BUF_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret); /* return val */ \
 		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);	/* errno */	\
-		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)CALL_TYPE);	/* internal call*/	\
-		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)CALLER_ADDRESS); /*caller addr*/\
+		CALL_TYPE_PTR = BUF_PTR;					\
+		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)0);	/* internal call*/	\
+		CALLER_PTR = BUF_PTR;						\
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)0); /*caller addr*/	\
+		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
+		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
+	} while (0)
+
+#define PACK_COMMON_END_THOUGH(ret_type, ret, errn, intern_call)			\
+	do {	/* PACK_COMMON_END */						\
+		BUF_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret); /* return val */ \
+		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);	/* errno */	\
+		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)0);	/* internal call*/	\
+		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)0); /*caller addr*/\
 		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
 		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
 	} while (0)
@@ -497,7 +511,9 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 #define PREPARE_LOCAL_BUF()			\
 		char *LOCAL_BUF = (char *)(*real_malloc)(MAX_LOCAL_BUF_SIZE);	\
 		char *BUF_PTR = LOCAL_BUF;			\
-		char *RET_PTR = NULL
+		char *RET_PTR = NULL;				\
+		char *CALL_TYPE_PTR = NULL;			\
+		char *CALLER_PTR = NULL
 
 #define PREPARE_LOCAL_BUF_THOUGH(BUFF)				\
 		char *LOCAL_BUF = BUFF;				\
@@ -515,7 +531,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 #define FLUSH_LOCAL_BUF()						\
 		SET_MSG_LEN();						\
-		send(gTraceInfo.socket.daemonSock, msg_buf, (p - msg_buf), 0); \
+		WRITE_MSG(msg_buf, (p - msg_buf), CALL_TYPE_PTR, CALLER_PTR); \
 		free(LOCAL_BUF);					\
 		LOCAL_BUF = NULL
 
