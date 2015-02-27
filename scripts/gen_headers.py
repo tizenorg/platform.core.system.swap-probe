@@ -382,9 +382,15 @@ def __print_probe_lib(file, da_inst_dir, da_lib, probe_lib):
         print "WARNING: <get_call_type> address is not found!"
         return
 
+    write_msg_addr = __get_addr_by_funcname_handler(probe_lib, "write_msg")
+    if write_msg_addr is None:
+        print "WARNING: <write_msg> address is not found!"
+        return
+
     file.write("static const char *probe_lib = \"" + da_inst_dir + "/" + da_lib + "\";\n")
     file.write("static unsigned long get_caller_addr = 0x" + get_caller_addr + ";\n")
     file.write("static unsigned long get_call_type_addr = 0x" + get_call_type_addr + ";\n")
+    file.write("static unsigned long write_msg_addr = 0x" + write_msg_addr + ";\n")
 
 
 def generate_headers(dict, da_inst_dir, da_lib, probe_lib):
