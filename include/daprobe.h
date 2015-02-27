@@ -58,12 +58,18 @@ extern "C"{
 
 unsigned long get_caller_addr(unsigned long caller_addr);
 unsigned char get_call_type(unsigned char call_type);
+void write_msg(unsigned long msg_buf, size_t len, unsigned long call_type_p,
+		unsigned long caller_p);
 
 #define CALLER_ADDRESS	\
 	((void*) get_caller_addr(0xbadbeef))
 
 #define CALL_TYPE       \
 	((uint32_t) get_call_type(0xff))
+
+#define WRITE_MSG(msg_buf, len, call_type_p, caller_p)      \
+	(write_msg((unsigned long)msg_buf, (size_t)len,         \
+		   (unsigned long)call_type_p, (unsigned long)caller_p))
 
 #define BACKTRACE_SYMBOLS cached_backtrace_symbols
 
