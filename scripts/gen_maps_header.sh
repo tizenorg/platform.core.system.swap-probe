@@ -152,8 +152,7 @@ function print_section_begin_c()
     echo -e "#define __LD_PRELOAD_PROBE_LIB_H__\n" >> $c_output_probe_lib
 
     echo -e "static const char *probe_lib = \"$da_inst_dir/$da_lib\";" >> $c_output_probe_lib
-    echo -e "static unsigned long get_caller_addr = 0x$(readelf -sW $da_lib | grep get_caller_addr$ | awk '{print $2}' | uniq);" >> $c_output_probe_lib
-    echo -e "static unsigned long get_call_type_addr = 0x$(readelf -sW $da_lib | grep get_call_type$ | awk '{print $2}' | uniq);" >> $c_output_probe_lib
+    echo -e "static unsigned long write_msg_addr = 0x$(readelf -sW $da_lib | grep write_msg$ | awk '{print $2}' | uniq);" >> $c_output_probe_lib
 
     echo end>&2
 }
