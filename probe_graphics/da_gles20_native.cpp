@@ -121,7 +121,7 @@ void REAL_NAME(glAttachShader)(GLuint program, GLuint shader)
 // ==================================================================
 // B 12
 // ==================================================================
-void __get_context_buf_data(GLenum target, char *buf, int buf_size)
+static void __get_context_buf_data(GLenum target, char *buf, int buf_size)
 {
 	GLint n_buffer_size, n_buffer_usage_size;
 	int print_size;

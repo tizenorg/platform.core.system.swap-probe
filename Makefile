@@ -118,7 +118,8 @@ TIZEN_SRCS =	$(COMMON_SRCS) $(CAPI_SRCS)\
 		./probe_graphics/da_evas_gl.c				\
 		./probe_graphics/da_gl_api_init.c			\
 		./probe_graphics/da_gles20_tizen.cpp			\
-		./probe_graphics/da_gles20_native.cpp
+		./probe_graphics/da_gles20_native.cpp			\
+		./probe_graphics/da_gles20_direct.cpp
 
 ASM_SRC = ./helper/da_call_original.S
 
