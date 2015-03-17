@@ -98,9 +98,9 @@ function print_lib_probe_py()
 {
     addr=$1
     handl_addr=$2
-    block_type=$3
+    probe_type=$3
     func=$4
-    echo -e "\t\t\t(0x$addr, 2, (0x$handl_addr, $block_type, \"xxxx\", \"p\", \"$func\")),">>$py_output
+    echo -e "\t\t\t(0x$addr, 2, (0x$handl_addr, $probe_type, \"xxxx\", \"p\", \"$func\")),">>$py_output
 }
 
 # C genarating
@@ -127,7 +127,7 @@ function print_section_begin_c()
     echo -e "struct ld_probe_el_t{" >> $c_output_types
     echo -e "\tuint64_t orig_addr;" >> $c_output_types
     echo -e "\tuint64_t handler_addr;" >> $c_output_types
-    echo -e "\tuint8_t block_type;" >> $c_output_types
+    echo -e "\tuint8_t probe_type;" >> $c_output_types
     echo -e "};\n" >> $c_output_types
 
     echo -e "struct ld_lib_list_el_t{" >> $c_output_types
@@ -277,10 +277,10 @@ function print_lib_probe_c()
 {
     addr=$1
     handl_addr=$2
-    block_type=$3
+    probe_type=$3
     func=$4
     let probe_count=${probe_count}+1
-    echo -e "\t\t\t\t{0x$addr, 0x$handl_addr, $block_type /* \"$func\" */},">>$c_output
+    echo -e "\t\t\t\t{0x$addr, 0x$handl_addr, $probe_type /* \"$func\" */},">>$c_output
 }
 #####################
 # global generation #
@@ -439,11 +439,15 @@ function generate_addres_list()
             cur_feature=`echo $line | awk '{print $1}'`
             cur_lib=`echo $line | awk '{print $2}'`
             cur_func=`echo $line | awk '{print $3}'`
+            if [ "`echo $cur_feature | grep \"ALWAYS\"`" != "" ]; then
+                cur_probe_type=1
+            else
+                cur_probe_type=0
+            fi
             if [ `echo $line | awk '{print $4}'` == "__nonblocking_probe__" ]; then
-                cur_block_type="0"
+                ((cur_probe_type+=2))
                 cur_filename=`echo $line | awk '{print $5}'`
             else
-                cur_block_type="1"
                 cur_filename=`echo $line | awk '{print $4}'`
             fi
 
@@ -483,7 +487,7 @@ function generate_addres_list()
                 continue
             fi
 
-            print_lib_probe "$addr" "$handl_addr" "$cur_block_type" "$cur_func"
+            print_lib_probe "$addr" "$handl_addr" "$cur_probe_type" "$cur_func"
 
         fi
     done < $1
