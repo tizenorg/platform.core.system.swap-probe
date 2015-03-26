@@ -22,7 +22,7 @@ elm_glview_gl_api_get
 #lib "???"
 
 #filename "da_egl_native.c"
-#lib "libEGL.so"
+#lib "/usr/lib/libEGL.so"
 eglBindAPI
 eglBindTexImage
 eglChooseConfig
@@ -104,7 +104,7 @@ _SglWaitNative
 #lib "???"
 
 #filename "da_gles20_native.c"
-#lib "libGLESv2.so"
+#lib "/usr/lib/libGLESv2.so"
 #feature FL_OPENGL_API_PROBING
 #feature_always FL_OPENGL_API_ALWAYS_PROBING
 glActiveTexture

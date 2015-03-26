@@ -19,7 +19,7 @@ BEGIN {
 	if ( orig == "" ) {
 		print ""
 	} else if ( substr(orig,1,1) == "#" ) {
-		printf "/* %s */\n", orig
+		printf "/* %s */\n", gsub("*", "\*", orig)
 	} else {
 		def = orig
 		split(def, splited, "###")
