@@ -40,8 +40,8 @@ void unregister_orientation_event_listener(Ecore_Event_Handler **handler)
 #feature ---
 on_orientation_changed
 
-#filename "keytouch.c"
-#lib "libecore_input_evas.so.1"
+#filename keytouch.c
+#lib "/usr/lib/libecore_input_evas.so.1"
 #feature FL_USER_EVENT
 ecore_event_evas_key_down
 ecore_event_evas_key_up
