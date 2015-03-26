@@ -1,5 +1,5 @@
 #filename "da_io_stdc.c"
-#lib "libc.so.6"
+#lib "/lib/*"
 #feature FL_FILE_API_PROBING
 #feature_always FL_FILE_API_ALWAYS_PROBING
 clearerr
@@ -41,7 +41,7 @@ vfprintf
 vfscanf
 
 #filename "da_io_posix.c"
-#lib "libc.so.6"
+#lib "/lib/*"
 #feature FL_FILE_API_PROBING
 #feature_always FL_FILE_API_ALWAYS_PROBING
 close

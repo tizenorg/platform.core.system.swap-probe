@@ -1,5 +1,5 @@
 #filename "capi_appfw.c"
-#lib "libcapi-appfw-application.so.0"
+#lib "/usr/lib/libcapi-appfw-application.so.0"
 #feature ---
 app_efl_main __nonblocking_probe__
 ui_app_main __nonblocking_probe__

@@ -19,7 +19,9 @@ cur_func=""
 cur_filename=""
 
 last_lib=""
+last_printed_lib=""
 last_feature=""
+last_printed_feature=""
 
 function print_license()
 {
@@ -254,7 +256,7 @@ function print_lib_end_c()
 
     echo -e "};\n">>$c_output
 
-    echo -e "\t{\"`get_real_path ${last_lib}`\", $probe_count, ${var}_probe_list}," >> $c_output_libs_arr_tmp
+    echo -e "\t{\"${last_lib}\", $probe_count, ${var}_probe_list}," >> $c_output_libs_arr_tmp
 #    echo -e "\t\t\t\t$probe_count, /* probe count */" >> $c_output
 #    cat $c_output_pr_list_tmp >> $c_output
 #    rm $c_output_pr_list_tmp
@@ -343,6 +345,21 @@ function get_real_path()
     echo $lib
 }
 
+function get_libs()
+{
+    path=$1
+
+    if [ "`basename \"$path\"`" == "*" ]; then
+        res=$(find `dirname "$path"`/ -type f | grep "\.so")
+    else
+        if [ -f "$path" ]; then
+            res=$path
+        fi
+    fi
+
+    echo -e "$res"
+}
+
 function print_libs()
 {
     lib="HZ"
@@ -359,8 +376,8 @@ function print_libs()
                     continue
                 fi
 
-                lib=`get_real_path $lib`
-                echo $lib
+                lib=`get_libs "$lib"`
+                echo -e "$lib"
             fi
         fi
     done < $1
@@ -375,7 +392,6 @@ function print_probes()
     while read line; do
         if [ "$line" != "" ];then
             if [ "${line:0:1}" != "#" ];then
-                #echo "$lib"
                 if [ "$lib" == "???" ];then
                     echo "WARNING skip <$line> filename<$filename> lib is <$lib>">&2
                     continue
@@ -384,10 +400,18 @@ function print_probes()
                     continue
                 fi
 
-                echo "$feature $lib $line $filename"
-                if [ $feature_always != "hz" ];then
-                    echo "$feature_always $lib $line $filename"
+                if [ "`basename \"$lib\"`" == "*" ];then
+                    libs=`get_libs "$lib"`
+                else
+                    libs=$lib
                 fi
+
+                for bin_name in $libs; do
+                    echo "$feature $bin_name $line $filename"
+                    if [ $feature_always != "hz" ];then
+                        echo "$feature_always $bin_name $line $filename"
+                    fi
+                done
             elif [ "${line:0:5}" == "#lib " ];then
                 lib="${line#\#lib*\ }"
                 lib="${lib#\"*}"
@@ -429,7 +453,7 @@ function get_elem()
     done;
 }
 
-function generate_addres_list()
+function generate_address_list()
 {
 
     print_section_begin
@@ -451,39 +475,46 @@ function generate_addres_list()
                 cur_filename=`echo $line | awk '{print $4}'`
             fi
 
+            lib_basename=`basename "$cur_lib"`
+            addr=`cat /tmp/$lib_basename.list | grep -e " $cur_func\$" | awk '{print $2}'| sort | uniq`
+            if [[ "$addr" == "" || 0x$addr -eq 0x0 ]];then
+                addr=`cat /tmp/$lib_basename.list | grep -e " $cur_func@@" | awk '{print $2}'| sort | uniq`
+            fi
+            handl_addr=`cat $da_lib_func_list | grep " $cur_func\$" | awk '{print $2}'| sort | uniq`
+
             if [ "$last_feature" != "$cur_feature" ];then
                 if [ "$last_feature" != "" ];then
-                    print_lib_end
-                    print_feature_end
+                    if [[ "$last_printed_lib" == "$last_lib" ]];then
+                        print_lib_end
+                    fi
+                    if [[ "$last_printed_feature" == "$last_feature" ]];then
+                        print_feature_end
+                    fi
                 fi
                 last_feature=$cur_feature
                 last_lib=""
                 print_feature_begin $cur_feature
             fi
 
-            if [ "$last_lib" != "$cur_lib" ];then
-                if [ "$last_lib" != "" ];then
+            if [[ "$last_lib" != "$cur_lib" || "$last_printed_lib" != "$cur_lib" ]];then
+                if [[ "$last_lib" != "" && "$last_printed_lib" == "$last_lib" ]];then
                     print_lib_end
                 fi
                 last_lib=$cur_lib
-                print_lib_begin `get_real_path $cur_lib`
+                if [[ "$addr" != "" && 0x$addr -ne 0x0 ]] && [[ "$handl_addr" != "" && 0x$handl_addr -ne 0x0 ]];then
+                    last_printed_lib=$cur_lib
+                    last_printed_feature=$cur_feature
+
+                    print_lib_begin $cur_lib
+                fi
             fi
-
-            addr=`cat /tmp/$cur_lib.list | grep -e " $cur_func\$" | awk '{print $2}'| sort | uniq`
-
-            if [[ "$addr" == "" || 0x$addr -eq 0x0 ]];then
-                addr=`cat /tmp/$cur_lib.list | grep -e " $cur_func@@" | awk '{print $2}'| sort | uniq`
-            fi
-
-            handl_addr=`cat $da_lib_func_list | grep " $cur_func\$" | awk '{print $2}'| sort | uniq`
 
             if [[ "$handl_addr" == ""  || 0x$handl_addr -eq 0x0 ]];then
-                echo "WARNING: func <$cur_func> not found in $da_lib file<$cur_filename>">&2
+                echo "WARNING: func <$cur_func> not found in $da_lib addr=$addr file<$cur_filename>">&2
                 continue
             fi
 
             if [[ "$addr" == "" || 0x$addr -eq 0x0 ]];then
-                echo "WARNING: func <$cur_func> not found in $cur_lib. addr=$addr file<$cur_filename>">&2
                 continue
             fi
 
@@ -514,4 +545,4 @@ print_libs $func_list_file | sort -t " " --key=1,1 | uniq  > $lib_tmp
 print_probes $func_list_file | sort -t " " --key=1,2  > $probe_tmp
 generate_libs_probe_list $lib_tmp
 
-generate_addres_list $probe_tmp
+generate_address_list $probe_tmp
