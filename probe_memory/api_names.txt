@@ -1,5 +1,5 @@
 #filename libdamemmanage.c
-#lib "libc.so.6"
+#lib "/lib/*"
 #feature FL_MEMORY_ALLOC_PROBING
 #feature_always FL_MEMORY_ALLOC_ALWAYS_PROBING
 memset
@@ -22,7 +22,7 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 
 
 #filename libdamemalloc.c
-#lib "libc.so.6"
+#lib "/lib/*"
 #feature FL_MEMORY_ALLOC_PROBING
 #feature_always FL_MEMORY_ALLOC_ALWAYS_PROBING
 malloc

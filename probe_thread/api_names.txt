@@ -1,5 +1,5 @@
 #filename libdasync.c
-#lib "libpthread.so.0"
+#lib "/lib/*"
 #feature FL_THREAD_API_PROBING
 #feature_always FL_THREAD_API_ALWAYS_PROBING
 pthread_mutex_init
@@ -28,7 +28,7 @@ pthread_cond_signal
 pthread_cond_broadcast
 
 #filename libdathread.c
-#lib "libpthread.so.0"
+#lib "/lib/*"
 #feature FL_THREAD_API_PROBING
 #feature_always FL_THREAD_API_ALWAYS_PROBING
 _da_cleanup_handler
@@ -48,8 +48,8 @@ pthread_attr_getdetachstate
 pthread_attr_setdetachstate
 pthread_attr_getstacksize
 pthread_attr_setstacksize
-pthread_attr_getstackaddr
-pthread_attr_setstackaddr
+#pthread_attr_getstackaddr
+#pthread_attr_setstackaddr
 pthread_attr_getinheritsched
 pthread_attr_setinheritsched
 pthread_attr_getschedparam
