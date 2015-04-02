@@ -697,4 +697,4 @@ int setvbuf(FILE* stream, char* buf, int mode, size_t size)
 }
 
 /**************************** ALIASES *********************************/
-weak_alias(__isoc99_scanf, scanf);
+weak_alias_pref(__isoc99_scanf, scanf);
