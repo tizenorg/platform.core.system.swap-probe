@@ -1,7 +1,7 @@
-#filename capi_capture.c
+#filename "capi_capture.c"
 #lib "/usr/lib/libelementary.so.1"
 #feature ---
-elm_win_add
-elm_controlbar_add
-elm_naviframe_add
-elm_pager_add
+elm_win_add,            elm_win_add,            0
+elm_controlbar_add,     elm_controlbar_add,     0
+elm_naviframe_add,      elm_naviframe_add,      0
+elm_pager_add,          elm_pager_add,          0
