@@ -1,5 +1,14 @@
 # This script generates api_id_mapping header from api list
 
+function find_el_in_array(a, el)
+{
+	for (i in a)
+		if (a[i] == el)
+			return 1;
+
+	return 0
+}
+
 BEGIN {
 	print "/*"
 	print " * this file genereted by <swap-probe> project with cmd <make headers>"
@@ -14,20 +23,33 @@ BEGIN {
 	print ""
 	api_id = 1
 	macro_prefix = "API_ID_"
+	created_defs_cnt = 1
+	created_defs[1] = ""
 } {
 	orig = $0
+
 	if ( orig == "" ) {
 		print ""
 	} else if ( substr(orig,1,1) == "#" ) {
-		printf "/* %s */\n", gsub("*", "\*", orig)
+		gsub("\*", "\\*", orig)
+		printf "/* %s */\n", orig
 	} else {
-		def = orig
+		if (index(orig, "(") != 0) {
+			split(orig, tokens, "\)\s\*, ")
+		} else {
+			split(orig, tokens, ",  ")
+		}
+		def = tokens[1]
 		split(def, splited, "###")
 		def = splited[1]
 		gsub(/[,:()*&~\[\] ]/, "_", def)
 		def = macro_prefix def
-		printf "#define %-135s %d // %s\n", def, api_id, orig
-		api_id = api_id + 1
+		if (find_el_in_array(created_defs, def) == false) {
+			printf "#define %-135s %d // %s\n", def, api_id, tokens[1]
+			api_id++
+			created_defs[created_defs_cnt] = def
+			created_defs_cnt++
+		}
 	}
 }
 END {
