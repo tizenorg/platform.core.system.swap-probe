@@ -29,6 +29,10 @@
 #ifndef __ALIASES_H__
 #define __ALIASES_H__
 
+
 #define weak_alias(f1, f2) void f1 () __attribute__ ((weak, alias (#f2)))
+#define weak_alias_2(f1, pref, f2) weak_alias(f1, pref ## f2)
+#define weak_alias_1(f1, pref, f2) weak_alias_2(f1, pref, f2)
+#define weak_alias_pref(f1, f2) weak_alias_1(f1, PROBE_NAME_PREFIX, f2)
 
 #endif /* __ALIASES_H__ */
