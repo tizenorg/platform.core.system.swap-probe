@@ -462,25 +462,17 @@ function generate_address_list()
         if [ "$line" != "" ];then
             cur_feature=`echo $line | awk '{print $1}'`
             cur_lib=`echo $line | awk '{print $2}'`
-            cur_func=`echo $line | awk '{print $3}'`
-            if [ "`echo $cur_feature | grep \"ALWAYS\"`" != "" ]; then
-                cur_probe_type=1
-            else
-                cur_probe_type=0
-            fi
-            if [ `echo $line | awk '{print $4}'` == "__nonblocking_probe__" ]; then
-                ((cur_probe_type+=2))
-                cur_filename=`echo $line | awk '{print $5}'`
-            else
-                cur_filename=`echo $line | awk '{print $4}'`
-            fi
+            cur_func=`echo $line | awk '{gsub(/,$/, "", $3); print $3}'`
+            cur_handl=`echo $line | awk '{gsub(/,$/, "", $4); print $4}'`
+            cur_probe_type=`echo $line | awk '{print $5}'`
+            cur_filename=`echo $line | awk '{print $6}'`
 
             lib_basename=`basename "$cur_lib"`
             addr=`cat /tmp/$lib_basename.list | grep -e " $cur_func\$" | awk '{print $2}'| sort | uniq`
             if [[ "$addr" == "" || 0x$addr -eq 0x0 ]];then
                 addr=`cat /tmp/$lib_basename.list | grep -e " $cur_func@@" | awk '{print $2}'| sort | uniq`
             fi
-            handl_addr=`cat $da_lib_func_list | grep " $cur_func\$" | awk '{print $2}'| sort | uniq`
+            handl_addr=`cat $da_lib_func_list | grep " $cur_handl\$" | awk '{print $2}'| sort | uniq`
 
             if [ "$last_feature" != "$cur_feature" ];then
                 if [ "$last_feature" != "" ];then
