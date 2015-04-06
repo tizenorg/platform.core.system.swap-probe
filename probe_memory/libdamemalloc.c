@@ -59,9 +59,7 @@ void *malloc(size_t size)
 	pret = (*mallocp)(size);
 
 	if(pret != NULL)
-		add_memory_hash(pret, size, MEMTYPE_ALLOC,
-				blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
-
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -118,8 +116,7 @@ void *realloc(void *memblock, size_t size)
 	pret = (*reallocp)(memblock, size);
 
 	if(pret != NULL)
-		add_memory_hash(pret, size, MEMTYPE_ALLOC,
-				blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -165,8 +162,7 @@ void *calloc(size_t nelem, size_t elsize)
 	pret = (*callocp)(nelem, elsize);
 
 	if(pret != NULL)
-		add_memory_hash(pret, nelem * elsize, MEMTYPE_ALLOC,
-				blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
+		add_memory_hash(pret, nelem * elsize, MEMTYPE_ALLOC, CALL_TYPE);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
