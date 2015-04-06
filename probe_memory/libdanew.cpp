@@ -57,9 +57,7 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 	pret = newp(size);
 
 	if(pret != NULL)
-	{
-		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
-	}
+		add_memory_hash(pret, size, MEMTYPE_NEW, CALL_TYPE);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -89,9 +87,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 	pret = newp(size);
 
 	if(pret != NULL)
-	{
-		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
-	}
+		add_memory_hash(pret, size, MEMTYPE_NEW, CALL_TYPE);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -193,9 +189,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 	pret = newp(size, nothrow);
 
 	if(pret != NULL)
-	{
-		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
-	}
+		add_memory_hash(pret, size, MEMTYPE_NEW, CALL_TYPE);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -225,9 +219,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 	pret = newp(size, nothrow);
 
 	if(pret != NULL)
-	{
-		add_memory_hash(pret, size, MEMTYPE_NEW, blockresult ? MEM_EXTERNAL : MEM_INTERNAL);
-	}
+		add_memory_hash(pret, size, MEMTYPE_NEW, CALL_TYPE);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
