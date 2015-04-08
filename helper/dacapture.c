@@ -374,7 +374,7 @@ int captureScreen()
 					PACK_COMMON_END('d', 0, 0, 0);
 					PACK_SCREENSHOT(dstpath, getOrientation());
 					SET_MSG_LEN();
-					log.length = GET_MSG_LEN() + MSG_LEN_OFFSET + strlen(dstpath) + 1;
+					log.length = GET_MSG_LEN() + MSG_HDR_LEN + strlen(dstpath) + 1;
 
 					/* send all message */
 					printLog(&log, MSG_IMAGE);
