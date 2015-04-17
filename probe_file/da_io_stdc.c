@@ -44,6 +44,7 @@
 
 #include "binproto.h"
 #include "real_functions.h"
+#include "aliases.h"
 
 static inline char *get_abs_path(FILE *file, const char *fname,
 				 char *buf, size_t bufsiz)
@@ -694,3 +695,6 @@ int setvbuf(FILE* stream, char* buf, int mode, size_t size)
 				  (uint64_t)(size));
 	return ret;
 }
+
+/**************************** ALIASES *********************************/
+weak_alias(__isoc99_scanf, scanf);
