@@ -202,6 +202,6 @@ install_ld: ldheader # var_addr
 
 
 clean:
-	rm -f *.so *.o $(GENERATED_HEADERS) $(API_NAME_LIST) $(SOURCE_HEADERS)
+	rm -f *.so $(TIZEN_OBJS) $(GENERATED_HEADERS) $(API_NAME_LIST) $(SOURCE_HEADERS)
 
 .PHONY: all capi tizen dummy clean install_ld install_da install headers
