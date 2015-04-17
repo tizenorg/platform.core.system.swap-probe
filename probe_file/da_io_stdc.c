@@ -44,6 +44,7 @@
 
 #include "binproto.h"
 #include "real_functions.h"
+#include "aliases.h"
 
 static enum DaOptions _sopt = OPT_FILE;
 
@@ -696,3 +697,6 @@ int setvbuf(FILE* stream, char* buf, int mode, size_t size)
 				  (uint64_t)(size));
 	return ret;
 }
+
+/**************************** ALIASES *********************************/
+weak_alias(__isoc99_scanf, scanf);
