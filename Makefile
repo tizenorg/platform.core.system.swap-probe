@@ -169,6 +169,6 @@ install: all
 	install -m 644 include/id_list $(DESTDIR)/$(INSTALLDIR)/da_api_map
 
 clean:
-	rm -f *.so *.o $(GENERATED_HEADERS)
+	rm -f *.so $(TIZEN_OBJS) $(GENERATED_HEADERS)
 
 .PHONY: all capi tizen dummy clean install headers
