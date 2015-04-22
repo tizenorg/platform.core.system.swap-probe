@@ -407,9 +407,10 @@ function print_probes()
                 fi
 
                 for bin_name in $libs; do
-                    echo "$feature $bin_name $line $filename"
                     if [ $feature_always != "hz" ];then
                         echo "$feature_always $bin_name $line $filename"
+                    else
+                        echo "$feature $bin_name $line $filename"
                     fi
                 done
             elif [ "${line:0:5}" == "#lib " ];then
@@ -502,7 +503,7 @@ function generate_address_list()
             fi
 
             if [[ "$handl_addr" == ""  || 0x$handl_addr -eq 0x0 ]];then
-                echo "WARNING: func <$cur_func> not found in $da_lib addr=$addr file<$cur_filename>">&2
+                echo "WARNING: func <$cur_handl> not found in $da_lib addr=$addr file<$cur_filename>">&2
                 continue
             fi
 
