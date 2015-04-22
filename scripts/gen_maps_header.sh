@@ -407,9 +407,10 @@ function print_probes()
                 fi
 
                 for bin_name in $libs; do
-                    echo "$feature $bin_name $line $filename"
                     if [ $feature_always != "hz" ];then
                         echo "$feature_always $bin_name $line $filename"
+                    else
+                        echo "$feature $bin_name $line $filename"
                     fi
                 done
             elif [ "${line:0:5}" == "#lib " ];then
