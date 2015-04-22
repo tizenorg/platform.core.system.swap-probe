@@ -1,5 +1,14 @@
 # This script generates api_id_mapping text file from api list
 
+function find_el_in_array(a, el)
+{
+	for (i in a)
+		if (a[i] == el)
+			return 1;
+
+	return 0
+}
+
 BEGIN {
 	api_id = 1
 	tags[1] = "#filename "
@@ -21,6 +30,8 @@ BEGIN {
 	print ""
 	print "#define X_API_MAP_LIST \\"
 
+	handled_ids_cnt = 1
+	handled_ids[1] = ""
 } {
 	if ( $0 != ""  ) {
 		if ( substr($0,1,1) == "#" ) {
@@ -51,6 +62,14 @@ BEGIN {
 			}
 			printf "X(%d, \"%s\", %s, %s, %s, %s) \\\n", api_id, api_name, cur[1], cur[2], cur[3], cur[4]
 			api_id = api_id + 1
+		}
+		split(api_name, splited, ",")
+		api_name = splited[1]
+		if (find_el_in_array(handled_ids, api_name) == false) {
+			printf "%d %s\n", api_id, api_name
+			api_id++
+			handled_ids[handled_ids_cnt] = api_name
+			handled_ids_cnt++
 		}
 	}
 }
