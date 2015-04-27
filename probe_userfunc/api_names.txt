@@ -1,2 +1,2 @@
-#filename libdauserfunc.c
+#filename "libdauserfunc.c"
 #lib "???"

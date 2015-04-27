@@ -57,10 +57,10 @@ mkdir -p %{buildroot}/usr/local/include
 %defattr(-,root,root,-)
 %{_prefix}/lib/da_probe_tizen.so
 %{_prefix}/lib/libdaprobe.so
-%{_prefix}/lib/da_api_map
 
 %files -n swap-probe-devel
 /usr/local/include/ld_preload_*.h
+/usr/local/include/x_define_api_id_list.h
 
 
 %changelog

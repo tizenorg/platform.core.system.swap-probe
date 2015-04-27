@@ -1,4 +1,4 @@
-#filename capi_capture.c
+#filename "capi_capture.c"
 #lib "libelementary.so.1"
 #feature ---
 elm_win_add

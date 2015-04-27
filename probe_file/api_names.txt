@@ -1,4 +1,4 @@
-#filename da_io_stdc.c
+#filename "da_io_stdc.c"
 #lib "libc.so.6"
 #feature FL_FILE_API_PROBING
 #feature_always FL_FILE_API_ALWAYS_PROBING
@@ -40,7 +40,7 @@ ungetc
 vfprintf
 vfscanf
 
-#filename da_io_posix.c
+#filename "da_io_posix.c"
 #lib "libc.so.6"
 #feature FL_FILE_API_PROBING
 #feature_always FL_FILE_API_ALWAYS_PROBING

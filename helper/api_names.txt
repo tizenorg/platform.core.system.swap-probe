@@ -1,4 +1,4 @@
-#filename  daforkexec.c
+#filename "daforkexec.c"
 #lib "libc.so.6"
 #feature ---
 execl
@@ -9,7 +9,7 @@ execvp
 execve
 execvpe
 
-#filename  dacapture.c
+#filename "dacapture.c"
 #lib "---"
 #feature ---
 captureScreen

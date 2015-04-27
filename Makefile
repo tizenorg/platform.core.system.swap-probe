@@ -147,7 +147,7 @@ $(ASM_OBJ): $(ASM_SRC)
 
 API_NAME_LIST = scripts/api_names_all.txt
 GENERATED_CONFIG = include/api_config.h
-GENERATED_HEADERS = include/api_id_mapping.h include/api_id_list.h include/id_list
+GENERATED_HEADERS = include/api_id_mapping.h include/api_id_list.h include/x_define_api_id_list.h
 SOURCE_HEADERS = include/api_ld_mapping.h
 
 headers: $(API_NAME_LIST) $(GENERATED_CONFIG) $(GENERATED_HEADERS)
@@ -168,7 +168,7 @@ $(SOURCE_HEADERS): ./scripts/gen_maps_header.sh
 
 include/api_id_mapping.h: ./scripts/gen_api_id_mapping_header.awk
 include/api_id_list.h: ./scripts/gen_api_id_mapping_header_list.awk
-include/id_list: ./scripts/gen_api_id_mapping_list.awk
+include/x_define_api_id_list.h: ./scripts/gen_api_id_mapping_list.awk
 
 da_api_map: $(GENERATED_HEADERS)
 
@@ -191,13 +191,13 @@ install: install_da install_ld
 install_da: all
 	[ -d "$(DESTDIR)/$(INSTALLDIR)" ] || mkdir -p $(DESTDIR)/$(INSTALLDIR)
 	install $(TIZEN_TARGET) $(DUMMY_TARGET) $(DESTDIR)/$(INSTALLDIR)/
-	install -m 644 include/id_list $(DESTDIR)/$(INSTALLDIR)/da_api_map
 
 
 install_ld: ldheader # var_addr
 	install -m 644 include/ld_preload_probes.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_probes.h
 	install -m 644 include/ld_preload_types.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_types.h
 	install -m 644 include/ld_preload_probe_lib.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_probe_lib.h
+	install -m 644 include/x_define_api_id_list.h $(DESTDIR)/$(HEADER_INSTALLDIR)/x_define_api_id_list.h
 
 
 
