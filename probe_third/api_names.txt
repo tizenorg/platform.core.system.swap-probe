@@ -1,4 +1,4 @@
-#filename libdaemon.c
+#filename "libdaemon.c"
 #lib "???"
 #feature ---
 daemon_close_allv

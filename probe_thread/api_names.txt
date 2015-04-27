@@ -1,4 +1,4 @@
-#filename libdasync.c
+#filename "libdasync.c"
 #lib "libpthread.so.0"
 #feature FL_THREAD_API_PROBING
 #feature_always FL_THREAD_API_ALWAYS_PROBING
@@ -27,7 +27,7 @@ pthread_cond_timedwait
 pthread_cond_signal
 pthread_cond_broadcast
 
-#filename libdathread.c
+#filename "libdathread.c"
 #lib "libpthread.so.0"
 #feature FL_THREAD_API_PROBING
 #feature_always FL_THREAD_API_ALWAYS_PROBING

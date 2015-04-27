@@ -1,4 +1,4 @@
-#filename capi_appfw.c
+#filename "capi_appfw.c"
 #lib "libcapi-appfw-application.so.0"
 #feature ---
 app_efl_main __nonblocking_probe__

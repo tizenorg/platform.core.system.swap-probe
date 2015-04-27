@@ -1,4 +1,4 @@
-#filename libdasocket.c
+#filename "libdasocket.c"
 #lib "libc.so.6"
 #feature FL_NETWORK_API_PROBING
 #feature_always FL_NETWORK_API_ALWAYS_PROBING

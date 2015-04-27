@@ -1,4 +1,4 @@
-#filename gesture.cpp
+#filename "gesture.cpp"
 #lib "???"
 #feature ---
 void GestureEventListener::OnCustomGestureCanceled (TouchGestureDetector &gestureDetector)
@@ -24,18 +24,18 @@ void GestureEventListener::OnRotationGestureStarted (TouchRotationGestureDetecto
 void GestureEventListener::OnTapGestureCanceled (TouchTapGestureDetector &gestureDetector)
 void GestureEventListener::OnTapGestureDetected (TouchTapGestureDetector &gestureDetector)
 
-#filename orientation.c
+#filename "orientation.c"
 #lib "???"
 #feature ---
 Ecore_Event_Handler *register_orientation_event_listener()
 void unregister_orientation_event_listener(Ecore_Event_Handler **handler)
 
-#filename da_event.c
+#filename "da_event.c"
 #lib "???"
 #feature ---
 on_orientation_changed
 
-#filename keytouch.c
+#filename "keytouch.c"
 #lib "libecore_input_evas.so.1"
 #feature FL_USER_EVENT
 ecore_event_evas_key_down
