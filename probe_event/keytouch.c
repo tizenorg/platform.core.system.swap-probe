@@ -51,6 +51,7 @@
 #include "da_event.h"
 
 #include "binproto.h"
+#include "real_functions.h"
 
 bool touch_pressed = false;
 

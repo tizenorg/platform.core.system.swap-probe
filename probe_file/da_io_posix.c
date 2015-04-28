@@ -51,6 +51,7 @@
 #include <errno.h>
 
 #include "binproto.h"
+#include "real_functions.h"
 
 static inline char *get_abs_path(int fd, const char *fname,
 				 char *buf, size_t bufsiz)

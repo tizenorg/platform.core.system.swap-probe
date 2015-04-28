@@ -5,7 +5,7 @@ Release:    1
 Group:      System/Libraries
 License:	GNU Lesser General Public License, Version 2.1
 Source:    %{name}_%{version}.tar.gz
-BuildRequires:  ecore-input-evas
+BuildRequires:  ecore-devel
 BuildRequires:  elementary-devel
 BuildRequires:  capi-appfw-application-devel
 BuildRequires:  capi-system-runtime-info-devel

@@ -43,6 +43,7 @@
 #include "da_io.h"
 
 #include "binproto.h"
+#include "real_functions.h"
 
 static inline char *get_abs_path(FILE *file, const char *fname,
 				 char *buf, size_t bufsiz)

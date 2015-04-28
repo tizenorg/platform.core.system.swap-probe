@@ -39,6 +39,7 @@
 #include "da_sync.h"
 
 #include "binproto.h"
+#include "real_functions.h"
 
 
 int pthread_mutex_init(pthread_mutex_t *mutex,

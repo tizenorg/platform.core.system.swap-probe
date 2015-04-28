@@ -1,11 +1,11 @@
 /*
  *  DA probe
  *
- * Copyright (c) 2000 - 2014 Samsung Electronics Co., Ltd. All rights reserved.
+ * Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
  *
  * Contact:
  *
- * Cherepanov Vitaliy <v.cherepanov@samsung.com>
+ * Vitaliy Cherepanov <v.cherepanov@samsung.com>
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
@@ -23,13 +23,14 @@
  *
  * Contributors:
  * - S-Core Co., Ltd
- * - Samsung RnD Institute Russia
  *
  */
 
-#ifndef __DASDTOUT_H__
-#define __DASDTOUT_H__
+#ifndef _REAL_FUNCTIONS_H_
+#define _REAL_FUNCTIONS_H_
 
-int __redirect_std(void);
+/* real malloc function pointer */
+extern void *(*real_malloc)(size_t);
 
-#endif /* __DASDTOUT_H__ */
+extern int _init_real_functions();
+#endif /* _REAL_FUNCTIONS_H_ */

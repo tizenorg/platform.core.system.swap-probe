@@ -30,6 +30,7 @@
 #include "daprobe.h"
 #include "binproto.h"
 #include "common_probe_init.h"
+#include "real_functions.h"
 
 /* Evas open gl API functions */
 

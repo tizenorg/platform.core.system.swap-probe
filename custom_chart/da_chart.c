@@ -46,6 +46,7 @@
 #include "da_chart.h"
 
 #include "binproto.h"
+#include "real_functions.h"
 
 #define ERR_THREAD_CREATE_FAIL	-2001	// thread creation fail
 
@@ -222,7 +223,7 @@ static void add_to_callback_list(chart_interval interval, da_handle charthandle,
 {
 	chart_interval_callback* newelem;
 
-	newelem = (chart_interval_callback*)malloc(sizeof(chart_interval_callback));
+	newelem = (chart_interval_callback*)real_malloc(sizeof(chart_interval_callback));
 	newelem->chart_handle = charthandle;
 	newelem->series_handle = series_handle;
 	newelem->callback = callback;

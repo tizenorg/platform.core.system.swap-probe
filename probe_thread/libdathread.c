@@ -38,6 +38,7 @@
 #include "da_thread.h"
 #include "da_sync.h"
 #include "binproto.h"
+#include "real_functions.h"
 
 typedef struct thread_routine_call_t {
 	void *(*thread_routine)(void *);
@@ -140,7 +141,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 	if(blockresult)
 	{
 		thread_routine_call *ptrc =
-			(thread_routine_call *) malloc(sizeof(thread_routine_call));
+			(thread_routine_call *) real_malloc(sizeof(thread_routine_call));
 		ptrc->thread_routine = start_routine;
 		ptrc->argument = arg;
 

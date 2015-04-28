@@ -14,19 +14,29 @@ INCLUDE_CPPFLAGS =				\
 		-I/usr/include/dbus-1.0		\
 		-I/usr/include/e_dbus-1		\
 		-I/usr/include/ecore-1		\
+		-I/usr/include/ecore-x-1	\
+		-I/usr/include/ecore-input-1	\
+		-I/usr/include/ecore-evas-1	\
+		-I/usr/include/ecore-file-1	\
+		-I/usr/include/ecore-imf-1	\
+		-I/usr/include/ecore-con-1	\
 		-I/usr/include/edje-1		\
 		-I/usr/include/eet-1		\
 		-I/usr/include/efreet-1		\
 		-I/usr/include/eina-1		\
 		-I/usr/include/eina-1/eina	\
 		-I/usr/include/elementary-1	\
+		-I/usr/include/eldbus-1		\
 		-I/usr/include/ethumb-1		\
+		-I/usr/include/ethumb-client-1	\
 		-I/usr/include/evas-1		\
 		-I/usr/include/pixman-1		\
 		-I/usr/include/system		\
 		-I/usr/include/capi-system-runtime-info	\
 		-I/usr/include/vconf		\
 		-I/usr/lib/dbus-1.0/include	\
+		-I/usr/include/efl-1 		\
+		-I/usr/include/eo-1			\
 
 WARN_CFLAGS = -g			\
 		-Wall			\
@@ -69,6 +79,7 @@ ASMFLAG = -O0 -g
 
 COMMON_SRCS = $(UTILITY_SRCS) $(PROBE_SRCS)
 UTILITY_SRCS =				\
+	./helper/real_functions.c	\
 	./helper/libdaprobe.c		\
 	./helper/dahelper.c		\
 	./helper/btsym.c		\

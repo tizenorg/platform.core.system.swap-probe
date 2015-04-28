@@ -43,6 +43,7 @@
 #include "da_memory.h"
 #include "binproto.h"
 #include "common_probe_init.h"
+#include "real_functions.h"
 
 
 void *memset(void *memblock, int c, size_t n)

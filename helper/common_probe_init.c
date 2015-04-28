@@ -30,6 +30,7 @@
 #include "da_gles20.h"
 #include "binproto.h"
 #include "common_probe_init.h"
+#include "real_functions.h"
 
 //#define EGL_TEST
 Evas_GL_API *__gl_api;
