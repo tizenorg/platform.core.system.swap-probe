@@ -3,7 +3,7 @@ Summary:    SWAP probe library
 Version:    3.0
 Release:    1
 Group:      System/Libraries
-License:	GNU Lesser General Public License, Version 2.1
+License:    LGPL-2.1+ and MIT
 Source:    %{name}_%{version}.tar.gz
 BuildRequires:  ecore-input-evas
 BuildRequires:  elementary-devel
