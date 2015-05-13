@@ -45,8 +45,8 @@ on_orientation_changed,     on_orientation_changed,     0
 #filename "keytouch.c"
 #lib "/usr/lib/libecore_input_evas.so.1"
 #feature FL_USER_EVENT
-ecore_event_evas_key_down,              ecore_event_evas_key_down,              0
-ecore_event_evas_key_up,                ecore_event_evas_key_up,                0
-ecore_event_evas_mouse_button_down,     ecore_event_evas_mouse_button_down,     0
-ecore_event_evas_mouse_button_up,       ecore_event_evas_mouse_button_up,       0
-ecore_event_evas_mouse_move,            ecore_event_evas_mouse_move,            0
+ecore_event_evas_key_down,              ecore_event_evas_key_down,              1
+ecore_event_evas_key_up,                ecore_event_evas_key_up,                1
+ecore_event_evas_mouse_button_down,     ecore_event_evas_mouse_button_down,     1
+ecore_event_evas_mouse_button_up,       ecore_event_evas_mouse_button_up,       1
+ecore_event_evas_mouse_move,            ecore_event_evas_mouse_move,            1
