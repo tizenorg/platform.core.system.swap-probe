@@ -118,7 +118,6 @@ eglWaitClient,                      eglWaitClient,                      1
 eglWaitGL,                          eglWaitGL,                          1
 eglWaitNative,                      eglWaitNative,                      1
 
-
 #filename "da_egl_tizen.c"
 #lib "???"
 #feature FL_OPENGL_API_PROBING
