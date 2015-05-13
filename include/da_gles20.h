@@ -57,9 +57,10 @@ extern EGLContext eglGetCurrentContext(void);
 #define APITYPE_NO_CONTEXT 2
 
 #define FUNC(FUNCNAME) FUNCNAME
-#define FUNCSTR(FUNCNAME) #FUNCNAME
-#define FUNCID(FUNCNAME) API_ID_##FUNCNAME
 
+#define FUNCSTR(FUNCNAME) FUNCSTR_L2(FUNCNAME)
+#define FUNCID(FUNCNAME) API_ID_##FUNCNAME
+#define FUNCSTR_L2(FUNCNAME) #FUNCNAME
 #define PACK_GL_ADD_COMMON(GL_api_type, GL_elapsed_time)			\
 	do {	/* PACK_GL_ADD_COMMON */					\
 		/* TODO restore eglGetCurrentContext */				\
@@ -171,6 +172,32 @@ extern EGLContext eglGetCurrentContext(void);
 	FLUSH_LOCAL_BUF();							\
 	POST_PACK_PROBEBLOCK_END()
 
+#define FUNC_DECLAR(TYPE, FUNCNAME, ...) 				\
+	/* alias for C function prototype */				\
+	extern ALIAS(FUNCNAME, _##FUNCNAME, TYPE);			\
+	}								\
+	/* alias for C++ function prototype */				\
+	extern ALIAS(FUNCNAME, _##FUNCNAME, TYPE, __VA_ARGS__);		\
+	extern "C"							\
+	{								\
+	TYPE _##FUNCNAME(__VA_ARGS__)					\
+
+#define FUNC_DECLAR_NOARGS(TYPE, FUNCNAME) 				\
+	/* alias for C function prototype */				\
+	extern ALIAS(FUNCNAME, _##FUNCNAME, TYPE, int);			\
+	}								\
+	/* alias for C++ function prototype */				\
+	extern ALIAS(FUNCNAME, _##FUNCNAME, TYPE);			\
+	extern "C"							\
+	{								\
+	TYPE _##FUNCNAME()						\
+
+#define ALIAS(NEW_FUNC, FUNCNAME, TYPE, ...) 				\
+	TYPE NEW_FUNC(__VA_ARGS__) __attribute__ (( 			\
+					alias(FUNCSTR(FUNCNAME))	\
+					))
+
+
 #define BEFORE_EVAS_GL(FUNCNAME)					\
 	DECLARE_VARIABLE_STANDARD_NORET;				\
 	GLenum error = GL_NO_ERROR;					\
@@ -182,11 +209,11 @@ extern EGLContext eglGetCurrentContext(void);
 		start_nsec = get_current_nsec();			\
 	GET_REAL_FUNC_RTLD_NEXT(FUNCNAME)
 
-GLenum glGetError(void);
-void glGetIntegerv(GLenum pname, GLint * params);
 extern Evas_GL_API *__gl_api;
 extern void save_orig_gl_api_list(Evas_GL_API *api);
 extern void change_gl_api_list(Evas_GL_API *api);
+
+extern void __get_context_buf_data(GLenum target, char *buf, int buf_size);
 
 #endif /* DA_GLES20_H_ */
 
