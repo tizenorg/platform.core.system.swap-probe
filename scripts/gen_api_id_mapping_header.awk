@@ -32,7 +32,7 @@ BEGIN {
 		print ""
 	} else if ( substr(orig,1,1) == "#" ) {
 		gsub(/*/, "\\*", orig)
-		printf "/* %s */\n", orig
+		printf "/* %s */\n", gsub("*", "\*", orig)
 	} else {
 		if (index(orig, "(") != 0) {
 			split(orig, tokens, ")\s\*, ")

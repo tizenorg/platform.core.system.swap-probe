@@ -475,6 +475,13 @@ function generate_address_list()
             fi
             handl_addr=`cat $da_lib_func_list | grep " $cur_handl\$" | awk '{print $2}'| sort | uniq`
 
+            lib_basename=`basename "$cur_lib"`
+            addr=`cat /tmp/$lib_basename.list | grep -e " $cur_func\$" | awk '{print $2}'| sort | uniq`
+            if [[ "$addr" == "" || 0x$addr -eq 0x0 ]];then
+                addr=`cat /tmp/$lib_basename.list | grep -e " $cur_func@@" | awk '{print $2}'| sort | uniq`
+            fi
+            handl_addr=`cat $da_lib_func_list | grep " $cur_func\$" | awk '{print $2}'| sort | uniq`
+
             if [ "$last_feature" != "$cur_feature" ];then
                 if [ "$last_feature" != "" ];then
                     if [[ "$last_printed_lib" == "$last_lib" ]];then
