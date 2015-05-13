@@ -96,7 +96,7 @@ void free(void *ptr)
 	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_free, 
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_free,
 			  "p", (int64_t)(int) ptr);
 	PACK_COMMON_END('v', 0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);

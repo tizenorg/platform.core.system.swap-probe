@@ -1,11 +1,11 @@
 /*
  *  DA probe
  *
- * Copyright (c) 2000 - 2014 Samsung Electronics Co., Ltd. All rights reserved.
+ * Copyright (c) 2015 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact:
+ * Contact:Yurchenko Darya<d.urchenko@partner.samsung.com>
  *
- * Vitaliy Cherepanov <v.cherepanov@samsung.com>
+ *
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
@@ -26,32 +26,28 @@
  *
  */
 
-//disable tizen redefines
-#define _GL2_MACRO_H_
-#define _GL_MACRO_H_
-
+#include "da_gles20.h"
 #include "common_probe_init.h"
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-#define REAL_NAME(func) __local_##func
-#define BEFORE BEFORE_GL_API
-#define CALL_ORIG(func, ...) __gl_api->func(__VA_ARGS__)
-#define TYPEDEF(type)
-#define DECLAR(type, func, ...) type REAL_NAME(func)(__VA_ARGS__)
-#define DECLAR_NOARGS DECLAR
-/*
- * this include to make tizen open gl api functions
- * probe prototypes
- *
- */
-#include "da_gles20_native.cpp"
 
-#ifdef __cplusplus
-} /* extern C */
-#endif
+void __get_context_buf_data(GLenum target, char *buf, int buf_size)
+{
+	GLint n_buffer_size, n_buffer_usage_size;
+	int print_size;
 
-#undef _GL2_MACRO_H_
-#undef _GL_MACRO_H_
+	if (buf == NULL)
+		return;
 
+	real_glGetBufferParameteriv(target, GL_BUFFER_SIZE,
+				    &n_buffer_size);
+	real_glGetBufferParameteriv(target, GL_BUFFER_USAGE,
+				    &n_buffer_usage_size);
+
+	print_size = snprintf(buf, buf_size, "%u,%u,%u",
+			      target, n_buffer_size, n_buffer_usage_size);
+
+	if (print_size >= buf_size) {
+		/* data was truncated. so data is invalid */
+		buf[0]='\0';
+	}
+}
