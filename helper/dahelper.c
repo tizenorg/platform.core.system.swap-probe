@@ -46,7 +46,8 @@ const char *lib_string[NUM_ORIGINAL_LIBRARY] = {
 	"libcapi-appfw-application.so.0",	//5
 	"libGLESv2.so",				//6
 	"libEGL.so",				//7
-	SELF_LIB_NAME				//8
+	SELF_LIB_NAME,				//8
+	"libGLESv2.so"				//9
 };
 void *lib_handle[NUM_ORIGINAL_LIBRARY];
 
