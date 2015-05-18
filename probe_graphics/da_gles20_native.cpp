@@ -48,7 +48,7 @@
 #endif
 
 #ifndef BEFORE
-	#define BEFORE BEFORE_GL_ORIG
+	#define BEFORE BEFORE_GL2_ORIG
 #endif
 
 #ifndef DECLAR

@@ -86,7 +86,7 @@ extern EGLContext eglGetCurrentContext(void);
 					      GL_shader_size, min);		\
 	} while (0)
 
-#define BEFORE_GL_ORIG(FUNCNAME)					\
+#define BEFORE_GL_ORIG(FUNCNAME, LIB_NAME)					\
 	DECLARE_VARIABLE_STANDARD_NORET;				\
 	GLenum error = GL_NO_ERROR;					\
 	static methodType FUNCNAME ## p = 0;				\
@@ -97,10 +97,13 @@ extern EGLContext eglGetCurrentContext(void);
 		start_nsec = get_current_nsec();			\
 	if(!FUNCNAME##p) {						\
 		init_probe_gl(#FUNCNAME, (void **)&FUNCNAME##p,		\
-			      LIBGLES20, blockresult, vAPI_ID);		\
+			      LIB_NAME, blockresult, vAPI_ID);		\
 	}
+#define BEFORE_GL2_ORIG(FUNCNAME) BEFORE_GL_ORIG(FUNCNAME, LIBGLES20)	\
 
-#define BEFORE_GL_API(FUNCNAME)						\
+#define BEFORE_GL3_ORIG(FUNCNAME) BEFORE_GL_ORIG(FUNCNAME, LIBGLES30)	\
+
+#define BEFORE_GL_API(FUNCNAME, LIB_NAME)						\
 	DECLARE_VARIABLE_STANDARD_NORET;				\
 	GLenum error = GL_NO_ERROR;					\
 	int32_t vAPI_ID = API_ID_ ## FUNCNAME;				\
@@ -110,8 +113,12 @@ extern EGLContext eglGetCurrentContext(void);
 		start_nsec = get_current_nsec();			\
 	if(!__gl_api->FUNCNAME) {						\
 		probe_terminate_with_err("api not initialized",		\
-					 #FUNCNAME, LIBGLES20);		\
+					 #FUNCNAME, LIB_NAME);		\
 	}
+
+#define BEFORE_GL2_API(FUNCNAME) BEFORE_GL_API(FUNCNAME, LIBGLES20)
+
+#define BEFORE_GL3_API(FUNCNAME) BEFORE_GL_API(FUNCNAME, LIBGLES30)
 
 #define INIT_LIB_ID_STR(LIB_ID, LIB_STR, KEYS)							\
 		if (lib_handle[LIB_ID] == ((void *) 0)) {		\
