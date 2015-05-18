@@ -131,7 +131,7 @@ extern int app_efl_main_flg;
 		}														\
 	} while(0)
 
-#define	NUM_ORIGINAL_LIBRARY	9
+#define	NUM_ORIGINAL_LIBRARY	10
 
 typedef enum
 {
@@ -144,7 +144,8 @@ typedef enum
 	LIBCAPI_APPFW_APPLICATION = 5,
 	LIBGLES20 = 6,
 	LIBEGL = 7,
-	LIBSELF = 8
+	LIBSELF = 8,
+	LIBGLES30 = 9
 } ORIGINAL_LIBRARY;
 
 extern const char *lib_string[NUM_ORIGINAL_LIBRARY];
