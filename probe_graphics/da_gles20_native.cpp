@@ -48,7 +48,7 @@
 #endif
 
 #ifndef BEFORE
-	#define BEFORE BEFORE_GL_ORIG
+	#define BEFORE BEFORE_GL2_ORIG
 #endif
 
 #ifndef DECLAR
@@ -124,7 +124,6 @@ DECLAR(void, glActiveTexture, GLenum texture)
 }
 
 DECLAR(void, glAttachShader, GLuint program, GLuint shader)
-//REAL_NAME(glAttachShader, void, GLuint program, GLuint shader)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint));
 	BEFORE(glAttachShader);

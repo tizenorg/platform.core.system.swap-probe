@@ -51,3 +51,4 @@ void __get_context_buf_data(GLenum target, char *buf, int buf_size)
 		buf[0]='\0';
 	}
 }
+
