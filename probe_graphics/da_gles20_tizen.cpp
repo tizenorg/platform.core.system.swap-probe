@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 #define REAL_NAME(func) __local_##func
-#define BEFORE BEFORE_GL_API
+#define BEFORE BEFORE_GL2_API
 #define CALL_ORIG(func, ...) __gl_api->func(__VA_ARGS__)
 #define TYPEDEF(type)
 #define DECLAR(type, func, ...) type REAL_NAME(func)(__VA_ARGS__)
