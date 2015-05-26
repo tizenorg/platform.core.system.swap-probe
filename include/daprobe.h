@@ -152,9 +152,9 @@ void *rtdl_next(const char *symname);
 	rtdl_next_set_once(symbol, __func__)
 
 // ========================= print log =====================================
-#define PRINTMSG(...)	print_log_fmt(MSG_MSG, __FUNCTION__, __LINE__, __VA_ARGS__)
-#define PRINTWRN(...)	print_log_fmt(MSG_WARNING, __FUNCTION__, __LINE__, __VA_ARGS__)
-#define PRINTERR(...)	print_log_fmt(MSG_ERROR, __FUNCTION__, __LINE__, __VA_ARGS__)
+#define PRINTMSG(...)	print_log_fmt(APP_MSG_MSG, __FUNCTION__, __LINE__, __VA_ARGS__)
+#define PRINTWRN(...)	print_log_fmt(APP_MSG_WARNING, __FUNCTION__, __LINE__, __VA_ARGS__)
+#define PRINTERR(...)	print_log_fmt(APP_MSG_ERROR, __FUNCTION__, __LINE__, __VA_ARGS__)
 
 #define INIT_INFO						\
 		info.host_ip = 0;				\

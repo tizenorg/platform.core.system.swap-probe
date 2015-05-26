@@ -377,7 +377,7 @@ int captureScreen()
 					log.length = GET_MSG_LEN() + MSG_HDR_LEN + strlen(dstpath) + 1;
 
 					/* send all message */
-					printLog(&log, MSG_IMAGE);
+					printLog(&log, APP_MSG_IMAGE);
 				}
 				else
 				{
