@@ -163,7 +163,7 @@ static int createSocket(void)
 
 			/* send pid and ppid to manager */
 			snprintf(buf, sizeof(buf), "%d %d", getpid(), getppid());
-			print_log_str(MSG_PID, buf);
+			print_log_str(APP_MSG_PID, buf);
 
 			/* we need recv this messages right now! */
 			while (((recved & MSG_CONFIG_RECV) == 0) ||
@@ -195,12 +195,12 @@ static int createSocket(void)
 						goto free_data_buf;
 					}
 
-					if (log.type == MSG_CONFIG) {
-						PRINTMSG("MSG_CONFIG");
+					if (log.type == APP_MSG_CONFIG) {
+						PRINTMSG("APP_MSG_CONFIG");
 						_configure(data_buf);
 						recved |= MSG_CONFIG_RECV;
-					} else if(log.type ==  MSG_MAPS_INST_LIST) {
-						PRINTMSG("MSG_MAPS_INST_LIST <%u>", *((uint32_t *)data_buf));
+					} else if(log.type ==  APP_MSG_MAPS_INST_LIST) {
+						PRINTMSG("APP_MSG_MAPS_INST_LIST <%u>", *((uint32_t *)data_buf));
 						set_map_inst_list(&data_buf, *((uint32_t *)data_buf));
 						recved |= MSG_MAPS_INST_LIST_RECV;
 					} else {
@@ -341,7 +341,7 @@ static void *recvThread(void __unused * data)
 			if(recvlen > 0)
 			{
 				log.length = snprintf(log.data, sizeof(log.data), "%ld", g_total_alloc_size) + 1;
-				printLog(&log, MSG_ALLOC);
+				printLog(&log, APP_MSG_ALLOC);
 			}
 			else
 			{
@@ -371,26 +371,26 @@ static void *recvThread(void __unused * data)
 					}
 				}
 
-				if (log.type == MSG_CAPTURE_SCREEN) {
+				if (log.type == APP_MSG_CAPTURE_SCREEN) {
 					captureScreen();
-				} else if (log.type == MSG_CONFIG) {
+				} else if (log.type == APP_MSG_CONFIG) {
 					_configure(data_buf);
-				} else if(log.type == MSG_STOP) {
-					PRINTMSG("MSG_STOP");
+				} else if(log.type == APP_MSG_STOP) {
+					PRINTMSG("APP_MSG_STOP");
 					if (data_buf) {
 						free(data_buf);
 						data_buf = NULL;
 					}
 					application_exit();
 					break;
-				} else if(log.type == MSG_MAPS_INST_LIST) {
+				} else if(log.type == APP_MSG_MAPS_INST_LIST) {
 					if(log.length > 0) {
 						tmp = *((uint32_t *)data_buf);
-						PRINTMSG("MSG_MAPS_INST_LIST <%u>", tmp);
+						PRINTMSG("APP_MSG_MAPS_INST_LIST <%u>", tmp);
 						set_map_inst_list(&data_buf, tmp);
 						continue;
 					} else {
-						PRINTERR("WRONG MSG_MAPS_INST_LIST");
+						PRINTERR("WRONG APP_MSG_MAPS_INST_LIST");
 					}
 				} else {
 					PRINTERR("recv unknown message. id = (%d)", log.type);
@@ -550,7 +550,7 @@ void _uninit_(void)
 	// close socket
 	if(gTraceInfo.socket.daemonSock != -1)
 	{
-		print_log_str(MSG_TERMINATE, NULL);
+		print_log_str(APP_MSG_TERMINATE, NULL);
 		close(gTraceInfo.socket.daemonSock);
 		gTraceInfo.socket.daemonSock = -1;
 	}
@@ -584,14 +584,14 @@ void __attribute__((destructor)) _fini_probe()
 /************************************************************************
  * manipulate and print log functions
  ************************************************************************/
-const char *msg_code_to_srt(enum MessageType type)
+const char *msg_code_to_srt(enum AppMessageType type)
 {
 	switch (type) {
-		case MSG_MSG:
+		case APP_MSG_MSG:
 			return "[INF]";
-		case MSG_ERROR:
+		case APP_MSG_ERROR:
 			return "[ERR]";
-		case MSG_WARNING:
+		case APP_MSG_WARNING:
 			return "[WRN]";
 		default:
 			return "[???]";
@@ -619,7 +619,7 @@ bool printLog(log_t *log, int msgType)
 
 /*
  * Debug function for ld preloaded library
- * msgType - message type (MSG_TERMINATE, MSG_PID)
+ * msgType - message type (APP_MSG_TERMINATE, APP_MSG_PID)
  * str     - string send to host. may be NULL
  * return  - true on success. false on fail.
  */
@@ -653,7 +653,7 @@ bool print_log_str(int msgType, char *str)
 
 /*
  * Additional debug function for ld preloaded library can be used in defines
- * msgType   - message type (MSG_TERMINATE, MSG_PID)
+ * msgType   - message type (APP_MSG_TERMINATE, APP_MSG_PID)
  * func_name - call function name
  * line      - call line number
  * ...       - format and arguments like for sprintf function
