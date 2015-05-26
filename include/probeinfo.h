@@ -37,6 +37,8 @@
 extern "C"{
 #endif
 
+#include "app_protocol.h"
+
 #define		VT_INT			'd'
 #define		VT_UINT			'd'
 #define		VT_LONG			'x'
@@ -168,25 +170,6 @@ extern "C"{
 #define		SYNC_API_NOTIFY				7
 #define		SYNC_API_NOTIFY_ALL			8
 #define		SYNC_API_OTHER				9
-
-enum MessageType
-{
-	MSG_DEVICE = 1,
-	MSG_TIME,
-	MSG_SAMPLE,
-	MSG_LOG = 5,
-	MSG_IMAGE = 6,
-	MSG_TERMINATE = 7,
-	MSG_PID = 8,
-	MSG_MSG = 9,
-	MSG_ALLOC = 10,
-	MSG_ERROR = 11,
-	MSG_WARNING = 12,
-	MSG_STOP = 101,
-	MSG_CONFIG = 103,
-	MSG_CAPTURE_SCREEN= 108,
-	MSG_MAPS_INST_LIST= 109
-};
 
 enum DaOptions
 {

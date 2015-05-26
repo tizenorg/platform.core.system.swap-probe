@@ -65,6 +65,7 @@ mkdir -p %{buildroot}/usr/local/include
 %files -n swap-probe-devel
 /usr/local/include/ld_preload_*.h
 /usr/local/include/x_define_api_id_list.h
+/usr/local/include/app_protocol.h
 
 
 %changelog

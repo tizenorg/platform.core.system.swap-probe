@@ -192,6 +192,7 @@ install_ld: ldheader # var_addr
 	install -m 644 include/ld_preload_types.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_types.h
 	install -m 644 include/ld_preload_probe_lib.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_probe_lib.h
 	install -m 644 include/x_define_api_id_list.h $(DESTDIR)/$(HEADER_INSTALLDIR)/x_define_api_id_list.h
+	install -m 644 include/app_protocol.h $(DESTDIR)/$(HEADER_INSTALLDIR)/app_protocol.h
 
 
 
