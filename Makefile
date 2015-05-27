@@ -165,8 +165,8 @@ $(API_NAME_LIST):
 	cat */api_names.txt >> $@
 
 $(SOURCE_HEADERS): $(API_NAME_LIST)
-$(SOURCE_HEADERS): ./scripts/gen_maps_header.sh
-	bash $< $(API_NAME_LIST) $(TIZEN_TARGET) $(INSTALLDIR) > $@
+$(SOURCE_HEADERS): ./scripts/gen_headers.py
+	python $< $(API_NAME_LIST) $(TIZEN_TARGET) $(INSTALLDIR) > $@ >&2
 	cat $@
 
 include/api_id_mapping.h: ./scripts/gen_api_id_mapping_header.awk
