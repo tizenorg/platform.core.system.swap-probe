@@ -42,7 +42,7 @@
 #include "real_functions.h"
 
 
-int pthread_mutex_init(pthread_mutex_t *mutex,
+int PROBE_NAME(pthread_mutex_init)(pthread_mutex_t *mutex,
 		const pthread_mutexattr_t *attr) {
 	static int (*pthread_mutex_initp)(pthread_mutex_t *mutex,
 			const pthread_mutexattr_t *attr);
@@ -59,7 +59,7 @@ int pthread_mutex_init(pthread_mutex_t *mutex,
 	return ret;
 }
 
-int pthread_mutex_destroy(pthread_mutex_t *mutex) {
+int PROBE_NAME(pthread_mutex_destroy)(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_destroyp)(pthread_mutex_t *mutex);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_destroy, LIBPTHREAD);
@@ -81,7 +81,7 @@ int real_pthread_mutex_lock(pthread_mutex_t *mutex) {
 	return pthread_mutex_lockp(mutex);
 }
 
-int pthread_mutex_lock(pthread_mutex_t *mutex) {
+int PROBE_NAME(pthread_mutex_lock)(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_lockp)(pthread_mutex_t *mutex);
 
 	DECLARE_VARIABLE_STANDARD;
@@ -119,7 +119,7 @@ int pthread_mutex_lock(pthread_mutex_t *mutex) {
 	return ret;
 }
 
-int pthread_mutex_timedlock(pthread_mutex_t *mutex,
+int PROBE_NAME(pthread_mutex_timedlock)(pthread_mutex_t *mutex,
 		const struct timespec *abs_timeout) {
 	static int (*pthread_mutex_timedlockp)(pthread_mutex_t *mutex,
 			const struct timespec *abs_timeout);
@@ -162,7 +162,7 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 	return ret;
 }
 
-int pthread_mutex_trylock(pthread_mutex_t *mutex) {
+int PROBE_NAME(pthread_mutex_trylock)(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_trylockp)(pthread_mutex_t *mutex);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_trylock, LIBPTHREAD);
@@ -185,7 +185,7 @@ int real_pthread_mutex_unlock(pthread_mutex_t *mutex) {
 	return pthread_mutex_unlockp(mutex);
 }
 
-int pthread_mutex_unlock(pthread_mutex_t *mutex) {
+int PROBE_NAME(pthread_mutex_unlock)(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_unlockp)(pthread_mutex_t *mutex);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_unlock, LIBPTHREAD);
@@ -200,7 +200,7 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex) {
 	return ret;
 }
 
-int pthread_mutexattr_init(pthread_mutexattr_t *attr) {
+int PROBE_NAME(pthread_mutexattr_init)(pthread_mutexattr_t *attr) {
 	static int (*pthread_mutexattr_initp)(pthread_mutexattr_t *attr);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_init, LIBPTHREAD);
@@ -215,7 +215,7 @@ int pthread_mutexattr_init(pthread_mutexattr_t *attr) {
 	return ret;
 }
 
-int pthread_mutexattr_destroy(pthread_mutexattr_t *attr) {
+int PROBE_NAME(pthread_mutexattr_destroy)(pthread_mutexattr_t *attr) {
 	static int (*pthread_mutexattr_destroyp)(pthread_mutexattr_t *attr);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_destroy, LIBPTHREAD);
@@ -230,7 +230,7 @@ int pthread_mutexattr_destroy(pthread_mutexattr_t *attr) {
 	return ret;
 }
 
-int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *attr,
+int PROBE_NAME(pthread_mutexattr_getprioceiling)(const pthread_mutexattr_t *attr,
 		int *prioceiling) {
 	static int (*pthread_mutexattr_getprioceilingp)(
 			const pthread_mutexattr_t *attr, int *prioceiling);
@@ -248,7 +248,7 @@ int pthread_mutexattr_getprioceiling(const pthread_mutexattr_t *attr,
 	return ret;
 }
 
-int pthread_mutexattr_setprioceiling(pthread_mutexattr_t *attr,
+int PROBE_NAME(pthread_mutexattr_setprioceiling)(pthread_mutexattr_t *attr,
 		int prioceiling) {
 	static int (*pthread_mutexattr_setprioceilingp)(
 			pthread_mutexattr_t *attr, int prioceiling);
@@ -265,7 +265,7 @@ int pthread_mutexattr_setprioceiling(pthread_mutexattr_t *attr,
 	return ret;
 }
 
-int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *attr,
+int PROBE_NAME(pthread_mutexattr_getprotocol)(const pthread_mutexattr_t *attr,
 		int *protocol) {
 	static int (*pthread_mutexattr_getprotocolp)(
 			const pthread_mutexattr_t *attr, int *protocol);
@@ -283,7 +283,7 @@ int pthread_mutexattr_getprotocol(const pthread_mutexattr_t *attr,
 	return ret;
 }
 
-int pthread_mutexattr_setprotocol(pthread_mutexattr_t *attr,
+int PROBE_NAME(pthread_mutexattr_setprotocol)(pthread_mutexattr_t *attr,
 		int protocol) {
 	static int (*pthread_mutexattr_setprotocolp)(
 			pthread_mutexattr_t *attr, int protocol);
@@ -300,7 +300,7 @@ int pthread_mutexattr_setprotocol(pthread_mutexattr_t *attr,
 	return ret;
 }
 
-int pthread_mutexattr_getpshared(const pthread_mutexattr_t *attr,
+int PROBE_NAME(pthread_mutexattr_getpshared)(const pthread_mutexattr_t *attr,
 		int *pshared) {
 	static int (*pthread_mutexattr_getpsharedp)(
 			const pthread_mutexattr_t *attr, int *pshared);
@@ -318,7 +318,7 @@ int pthread_mutexattr_getpshared(const pthread_mutexattr_t *attr,
 	return ret;
 }
 
-int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr,
+int PROBE_NAME(pthread_mutexattr_setpshared)(pthread_mutexattr_t *attr,
 		int pshared) {
 	static int (*pthread_mutexattr_setpsharedp)(
 			pthread_mutexattr_t *attr, int pshared);
@@ -335,7 +335,7 @@ int pthread_mutexattr_setpshared(pthread_mutexattr_t *attr,
 	return ret;
 }
 
-int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int *type) {
+int PROBE_NAME(pthread_mutexattr_gettype)(const pthread_mutexattr_t *attr, int *type) {
 	static int (*pthread_mutexattr_gettypep)(
 			const pthread_mutexattr_t *attr, int *type);
 
@@ -352,7 +352,7 @@ int pthread_mutexattr_gettype(const pthread_mutexattr_t *attr, int *type) {
 	return ret;
 }
 
-int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type) {
+int PROBE_NAME(pthread_mutexattr_settype)(pthread_mutexattr_t *attr, int type) {
 	static int (*pthread_mutexattr_settypep)(
 			pthread_mutexattr_t *attr, int type);
 
@@ -376,7 +376,7 @@ int pthread_mutex_setprioceiling(pthread_mutex_t *mutex,
 		int prioceiling, int *old_ceiling);
 */
 
-int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr) {
+int PROBE_NAME(pthread_cond_init)(pthread_cond_t *cond, const pthread_condattr_t *attr) {
 	static int (*pthread_cond_initp)(pthread_cond_t *cond,
 			const pthread_condattr_t *attr);
 
@@ -393,7 +393,7 @@ int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr) {
 	return ret;
 }
 
-int pthread_cond_destroy(pthread_cond_t *cond) {
+int PROBE_NAME(pthread_cond_destroy)(pthread_cond_t *cond) {
 	static int (*pthread_cond_destroyp)(pthread_cond_t *cond);
 
 	BEFORE_ORIGINAL_SYNC(pthread_cond_destroy, LIBPTHREAD);
@@ -408,7 +408,7 @@ int pthread_cond_destroy(pthread_cond_t *cond) {
 	return ret;
 }
 
-int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
+int PROBE_NAME(pthread_cond_wait)(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 	static int (*pthread_cond_waitp)(pthread_cond_t *cond,
 			pthread_mutex_t *mutex);
 
@@ -452,7 +452,7 @@ int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex) {
 	return ret;
 }
 
-int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
+int PROBE_NAME(pthread_cond_timedwait)(pthread_cond_t *cond, pthread_mutex_t *mutex,
 		const struct timespec *abstime) {
 	static int (*pthread_cond_timedwaitp)(pthread_cond_t *cond,
 				pthread_mutex_t *mutex, const struct timespec *abstime);
@@ -500,7 +500,7 @@ int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex,
 	return ret;
 }
 
-int pthread_cond_signal(pthread_cond_t *cond) {
+int PROBE_NAME(pthread_cond_signal)(pthread_cond_t *cond) {
 	static int (*pthread_cond_signalp)(pthread_cond_t *cond);
 
 	BEFORE_ORIGINAL_SYNC(pthread_cond_signal, LIBPTHREAD);
@@ -514,7 +514,7 @@ int pthread_cond_signal(pthread_cond_t *cond) {
 	return ret;
 }
 
-int pthread_cond_broadcast(pthread_cond_t *cond) {
+int PROBE_NAME(pthread_cond_broadcast)(pthread_cond_t *cond) {
 	static int (*pthread_cond_broadcastp)(pthread_cond_t *cond);
 
 	BEFORE_ORIGINAL_SYNC(pthread_cond_broadcast, LIBPTHREAD);
