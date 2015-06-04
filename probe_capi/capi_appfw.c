@@ -56,7 +56,6 @@ ui_app_lifecycle_callback_s uiAppCallback;
 	} while(0);								\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
-
 /************************************ UI APP ******************************************/
 static bool _ui_dalc_app_create(void *user_data)
 {
@@ -117,7 +116,7 @@ static void _ui_dalc_app_control(app_control_h handle, void *user_data)
 				 voidp_to_uint64(user_data));
 }
 
-int ui_app_main(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data)
+int PROBE_NAME(ui_app_main)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data)
 {
 	static int (*ui_app_mainp)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data);
 	Ecore_Event_Handler* handler;
