@@ -21,11 +21,11 @@ fseek,          fseek,      0
 fsetpos,        fsetpos,    0
 ftell,          ftell,      0
 fwrite,         fwrite,     0
-getc,           _IO_getc,   0
+getc,           getc,       0
 getchar,        getchar,    0
 gets,           gets,       0
 printf,         printf,     0
-putc,           _IO_putc,   0
+putc,           putc,       0
 putchar,        putchar,    0
 puts,           puts,       0
 rewind,         rewind,     0
