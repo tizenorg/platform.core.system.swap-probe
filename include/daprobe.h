@@ -44,6 +44,8 @@
 extern "C"{
 #endif
 
+#define PROBE_NAME(func) __PROBE__ ## func
+
 #ifndef likely
 #define likely(x)       __builtin_expect((x),1)
 #define unlikely(x)     __builtin_expect((x),0)
@@ -147,9 +149,6 @@ void *rtdl_next(const char *symname);
 		if (symbol == NULL)			\
 			symbol = rtdl_next(sname);	\
 	} while (0)
-
-#define rtdl_next_current_set_once(symbol)	\
-	rtdl_next_set_once(symbol, __func__)
 
 // ========================= print log =====================================
 #define PRINTMSG(...)	print_log_fmt(MSG_MSG, __FUNCTION__, __LINE__, __VA_ARGS__)
