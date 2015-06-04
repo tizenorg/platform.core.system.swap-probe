@@ -45,7 +45,7 @@
 #include "common_probe_init.h"
 
 
-void *memset(void *memblock, int c, size_t n)
+void *PROBE_NAME(memset)(void *memblock, int c, size_t n)
 {
 	static void *(*memsetp)(void *,int,size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -73,7 +73,7 @@ void *memset(void *memblock, int c, size_t n)
 	return pret;
 }
 
-int memcmp(const void * ptr1, const void * ptr2, size_t num)
+int PROBE_NAME(memcmp)(const void * ptr1, const void * ptr2, size_t num)
 {
 	static int(*memcmpp)(const void *,const void *,size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -100,7 +100,7 @@ int memcmp(const void * ptr1, const void * ptr2, size_t num)
 	return ret;
 }
 
-void *memcpy(void * destination, const void * source, size_t num )
+void *PROBE_NAME(memcpy)(void * destination, const void * source, size_t num )
 {
 	static void *(*memcpyp)(void *,const void *,size_t);
 	DECLARE_VARIABLE_STANDARD;
