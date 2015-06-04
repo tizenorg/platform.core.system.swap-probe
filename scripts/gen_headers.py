@@ -6,6 +6,7 @@ import subprocess
 import re
 import os
 
+defines={}
 
 def __add_item(data_dict, dict_keys, data):
     """ dict_keys is supposed to be a list with length 2, where the first element is the
@@ -43,6 +44,7 @@ def __add_item(data_dict, dict_keys, data):
 
 
 def __parse_file(libs_data, file):
+    defines_tag = "#define"
     filename_tag = "#filename"
     lib_tag = "#lib"
     feature_tag = "#feature"
@@ -50,8 +52,10 @@ def __parse_file(libs_data, file):
     current_filename = ""
     current_libs = []
     current_feature = ""
+    current_line = 0
 
     for line in file:
+        current_line = current_line + 1
         if line == "\n":
             continue
         elif line[:9] == filename_tag:
@@ -67,14 +71,28 @@ def __parse_file(libs_data, file):
                 current_libs = [lib_tmp]
         elif line[:8] == feature_tag:
             current_feature = re.sub("\"", "", line.split()[1])
+        elif line[:7] == defines_tag:
+            list = line.split()
+            if len(list) < 2 or len(list) > 3:
+                print "WARNING: Wrong string in api_names.txt +" + str(current_line) + ": <" + line + ">"
+            if len(list) != 3:
+                continue
+
+            global defines
+            print "defines[" + list[1] + "] = " + list[2]
+            defines[list[1]] = list[2]
+        elif line[:1] == "#":
+                #print "WARNING: commented code : <" + line + ">"
+                continue
         else:
             splitted = line.split()
             if len(splitted) < 3:
-                print "WARNING: Wrong string in api_names.txt : <" + line + ">"
+                print "WARNING: Wrong string in api_names.txt +" + str(current_line) + ": <" + line + ">"
                 continue
 
             func = splitted[0][:-1]
-            handler = splitted[1][:-1]
+            handler = defines["PROBE_NAME_PREFIX"] + splitted[1][:-1]
+            handler = "__PROBE__" + splitted[1][:-1]
             probe_type = splitted[2]
 
             if len(current_libs) == 1 and (current_libs[0] == "???" or current_libs[0] == "---"):
