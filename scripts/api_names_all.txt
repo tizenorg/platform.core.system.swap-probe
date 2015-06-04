@@ -1,0 +1,633 @@
+#filename "da_chart.c"
+#lib "???"
+#feature ---
+_chart_timerThread
+da_mark
+da_create_chart
+da_create_series
+da_log
+da_create_default_series
+da_set_callback
+
+#filename "da_chart_dummy.c"
+#lib "???"
+#feature ---
+#filename "daforkexec.c"
+#lib "libc.so.6"
+#feature ---
+execl
+execlp
+execle
+execv
+execvp
+execve
+execvpe
+
+#filename "dacapture.c"
+#lib "---"
+#feature ---
+captureScreen
+#filename "capi_appfw.c"
+#lib "libcapi-appfw-application.so.0"
+#feature ---
+app_efl_main __nonblocking_probe__
+ui_app_main __nonblocking_probe__
+_dalc_app_create
+_dalc_app_terminate
+_dalc_app_pause
+_dalc_app_resume
+_dalc_app_service
+#filename "gesture.cpp"
+#lib "???"
+#feature ---
+void GestureEventListener::OnCustomGestureCanceled (TouchGestureDetector &gestureDetector)
+void GestureEventListener::OnCustomGestureChanged (TouchGestureDetector &gestureDetector)
+void GestureEventListener::OnCustomGestureFinished (TouchGestureDetector &gestureDetector)
+void GestureEventListener::OnCustomGestureStarted (TouchGestureDetector &gestureDetector)
+void GestureEventListener::OnFlickGestureCanceled (TouchFlickGestureDetector &gestureDetector)
+void GestureEventListener::OnFlickGestureDetected (TouchFlickGestureDetector &gestureDetector)
+void GestureEventListener::OnLongPressGestureCanceled (TouchLongPressGestureDetector &gestureDetector)
+void GestureEventListener::OnLongPressGestureDetected (TouchLongPressGestureDetector &gestureDetector)
+void GestureEventListener::OnPanningGestureCanceled (TouchPanningGestureDetector &gestureDetector)
+void GestureEventListener::OnPanningGestureChanged (TouchPanningGestureDetector &gestureDetector)
+void GestureEventListener::OnPanningGestureFinished (TouchPanningGestureDetector &gestureDetector)
+void GestureEventListener::OnPanningGestureStarted (TouchPanningGestureDetector &gestureDetector)
+void GestureEventListener::OnPinchGestureCanceled (TouchPinchGestureDetector &gestureDetector)
+void GestureEventListener::OnPinchGestureChanged (TouchPinchGestureDetector &gestureDetector)
+void GestureEventListener::OnPinchGestureFinished (TouchPinchGestureDetector &gestureDetector)
+void GestureEventListener::OnPinchGestureStarted (TouchPinchGestureDetector &gestureDetector)
+void GestureEventListener::OnRotationGestureCanceled (TouchRotationGestureDetector &gestureDetector)
+void GestureEventListener::OnRotationGestureChanged (TouchRotationGestureDetector &gestureDetector)
+void GestureEventListener::OnRotationGestureFinished (TouchRotationGestureDetector &gestureDetector)
+void GestureEventListener::OnRotationGestureStarted (TouchRotationGestureDetector &gestureDetector)
+void GestureEventListener::OnTapGestureCanceled (TouchTapGestureDetector &gestureDetector)
+void GestureEventListener::OnTapGestureDetected (TouchTapGestureDetector &gestureDetector)
+
+#filename "gesture.c"
+#lib "???"
+#feature ---
+__common_elm_gesture_layer_cb
+
+#filename "orientation.c"
+#lib "???"
+#feature ---
+Ecore_Event_Handler *register_orientation_event_listener()
+void unregister_orientation_event_listener(Ecore_Event_Handler **handler)
+
+#filename "da_event.c"
+#lib "???"
+#feature ---
+on_orientation_changed
+
+#filename "keytouch.c"
+#lib "libecore_input_evas.so.1"
+#feature FL_USER_EVENT
+ecore_event_evas_key_down
+ecore_event_evas_key_up
+ecore_event_evas_mouse_button_down
+ecore_event_evas_mouse_button_up
+ecore_event_evas_mouse_move
+#filename "da_io_stdc.c"
+#lib "libc.so.6"
+#feature FL_FILE_API_PROBING
+#feature_always FL_FILE_API_ALWAYS_PROBING
+clearerr
+fclose
+fdopen
+feof
+ferror
+fflush
+fgetc
+fgetpos
+fileno
+fopen
+fprintf
+fputc
+fputs
+fread
+freopen
+fscanf
+fseek
+fsetpos
+ftell
+fwrite
+getc
+getchar
+gets
+printf
+putc
+putchar
+puts
+rewind
+scanf
+setbuf
+setbuffer
+setlinebuf
+setvbuf
+tmpfile
+ungetc
+vfprintf
+vfscanf
+
+#filename "da_io_posix.c"
+#lib "libc.so.6"
+#feature FL_FILE_API_PROBING
+#feature_always FL_FILE_API_ALWAYS_PROBING
+close
+creat
+dup
+dup2
+fchmod
+fchown
+fcntl
+fdatasync
+fsync
+ftruncate
+futimens
+lockf
+lseek
+open
+openat
+pread
+pwrite
+read
+readv
+write
+#filename "da_evas_gl.c"
+#lib "???"
+#feature FL_OPENGL_API_PROBING
+#feature_always FL_OPENGL_API_ALWAYS_PROBING
+evas_gl_free
+evas_gl_config_free
+evas_gl_surface_destroy
+evas_gl_context_destroy
+evas_gl_new
+evas_gl_config_new
+evas_gl_surface_create
+evas_gl_context_create
+evas_gl_make_current
+evas_gl_string_query
+evas_gl_proc_address_get
+evas_gl_native_surface_get
+evas_gl_api_get
+elm_glview_gl_api_get
+
+
+#filename "da_gl_api_init.c"
+#lib "???"
+
+#filename "da_egl_native.c"
+#lib "libEGL.so"
+eglBindAPI
+eglBindTexImage
+eglChooseConfig
+eglCopyBuffers
+eglCreateContext
+eglCreatePbufferFromClientBuffer
+eglCreatePbufferSurface
+eglCreatePixmapSurface
+eglCreateWindowSurface
+eglDestroyContext
+eglDestroySurface
+eglGetConfigAttrib
+eglGetConfigs
+eglGetCurrentContext
+eglGetCurrentDisplay
+eglGetCurrentSurface
+eglGetDisplay
+eglGetError
+eglGetProcAddress
+eglInitialize
+eglMakeCurrent
+eglQueryAPI
+eglQueryContext
+eglQueryString
+eglQuerySurface
+eglReleaseTexImage
+eglReleaseThread
+eglSurfaceAttrib
+eglSwapBuffers
+eglSwapInterval
+eglTerminate
+eglUpdateBufferOSP
+eglWaitClient
+eglWaitGL
+eglWaitNative
+
+#filename "da_egl_tizen.c"
+#lib "???"
+#feature FL_OPENGL_API_PROBING
+#feature_always FL_OPENGL_API_ALWAYS_PROBING
+_SglBindAPI
+_SglBindTexImage
+_SglChooseConfig
+_SglCopyBuffers
+_SglCreateContext
+_SglCreatePbufferFromClientBuffer
+_SglCreatePbufferSurface
+_SglCreatePixmapSurface
+_SglCreateWindowSurface
+_SglDestroyContext
+_SglDestroySurface
+_SglGetConfigAttrib
+_SglGetConfigs
+_SglGetCurrentContext
+_SglGetCurrentDisplay
+_SglGetCurrentSurface
+_SglGetDisplay
+_SglGetError
+_SglGetProcAddress
+_SglInitialize
+_SglMakeCurrent
+_SglQueryAPI
+_SglQueryContext
+_SglQueryString
+_SglQuerySurface
+_SglReleaseTexImage
+_SglReleaseThread
+_SglSurfaceAttrib
+_SglSwapBuffers
+_SglSwapInterval
+_SglTerminate
+_SglUpdateBufferOSP
+_SglWaitClient
+_SglWaitGL
+_SglWaitNative
+
+
+#filename "da_gles20_kiran.c"
+#lib "???"
+
+#filename "da_gles20_native.c"
+#lib "libGLESv2.so"
+#feature FL_OPENGL_API_PROBING
+#feature_always FL_OPENGL_API_ALWAYS_PROBING
+glActiveTexture
+glAttachShader
+glBindAttribLocation
+glBindBuffer
+glBindFramebuffer
+glBindRenderbuffer
+glBindTexture
+glBlendColor
+glBlendEquation
+glBlendEquationSeparate
+glBlendFunc
+glBlendFuncSeparate
+glBufferData
+glBufferSubData
+glClear
+glClearColor
+glClearDepthf
+glClearStencil
+glColorMask
+glCompileShader
+glCompressedTexImage2D
+glCompressedTexSubImage2D
+glCopyTexImage2D
+glCopyTexSubImage2D
+glCullFace
+glDeleteBuffers
+glDeleteFramebuffers
+glDeleteProgram
+glDeleteRenderbuffers
+glDeleteShader
+glDeleteTextures
+glDepthFunc
+glDepthMask
+glDepthRangef
+glDetachShader
+glDisable
+glDisableVertexAttribArray
+glDrawArrays
+glDrawElements
+glEnable
+glEnableVertexAttribArray
+glFinish
+glFlush
+glFramebufferRenderbuffer
+glFramebufferTexture2D
+glFrontFace
+glGenBuffers
+glGenFramebuffers
+glGenRenderbuffers
+glGenTextures
+glGenerateMipmap
+glGetBooleanv
+glGetFloatv
+glGetIntegerv
+glGetActiveAttrib
+glGetActiveUniform
+glGetAttachedShaders
+glGetAttribLocation
+glGetBufferParameteriv
+glGetFramebufferAttachmentParameteriv
+glGetProgramInfoLog
+glGetProgramiv
+glGetRenderbufferParameteriv
+glGetShaderInfoLog
+glGetShaderPrecisionFormat
+glGetShaderSource
+glGetShaderiv
+glGetTexParameterfv
+glGetTexParameteriv
+glGetUniformfv
+glGetUniformiv
+glGetVertexAttribfv
+glGetVertexAttribiv
+glGetVertexAttribPointerv
+glHint
+glLineWidth
+glLinkProgram
+glPixelStorei
+glPolygonOffset
+glReadPixels
+glReleaseShaderCompiler
+glRenderbufferStorage
+glSampleCoverage
+glScissor
+glShaderBinary
+glShaderSource
+glStencilFunc
+glStencilFuncSeparate
+glStencilMask
+glStencilMaskSeparate
+glStencilOp
+glStencilOpSeparate
+glTexImage2D
+glTexParameterf
+glTexParameterfv
+glTexParameteri
+glTexParameteriv
+glTexSubImage2D
+glUniform1f
+glUniform2f
+glUniform3f
+glUniform4f
+glUniform1fv
+glUniform2fv
+glUniform3fv
+glUniform4fv
+glUniform1i
+glUniform2i
+glUniform3i
+glUniform4i
+glUniform1iv
+glUniform2iv
+glUniform3iv
+glUniformMatrix2fv
+glUniformMatrix3fv
+glUniformMatrix4fv
+glUniform4iv
+glUseProgram
+glValidateProgram
+glVertexAttrib1f
+glVertexAttrib2f
+glVertexAttrib3f
+glVertexAttrib4f
+glVertexAttrib1fv
+glVertexAttrib2fv
+glVertexAttrib3fv
+glVertexAttrib4fv
+glVertexAttribPointer
+glViewport
+
+glCheckFramebufferStatus
+glCreateProgram
+glCreateShader
+glGetError
+glGetString
+glGetUniformLocation
+glIsBuffer
+glIsEnabled
+glIsFramebuffer
+glIsProgram
+glIsRenderbuffer
+glIsShader
+glIsTexture
+
+
+
+#filename "da_gles20_tizen.c"
+#lib "???"
+
+#filename "libdamemmanage.c"
+#lib "libc.so.6"
+#feature FL_MEMORY_ALLOC_PROBING
+#feature_always FL_MEMORY_ALLOC_ALWAYS_PROBING
+memset
+memcmp
+memcpy
+
+
+#filename "libdanew.cpp"
+#lib "???"
+#feature FL_MEMORY_ALLOC_PROBING
+#feature_always FL_MEMORY_ALLOC_ALWAYS_PROBING
+void *operator new(std::size_t size) throw (std::bad_alloc)
+void *operator new[](std::size_t size) throw (std::bad_alloc)
+void operator delete(void *ptr) throw()
+void operator delete[](void *ptr) throw()
+void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
+void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
+void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
+void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
+
+
+#filename "libdamemalloc.c"
+#lib "libc.so.6"
+#feature FL_MEMORY_ALLOC_PROBING
+#feature_always FL_MEMORY_ALLOC_ALWAYS_PROBING
+malloc
+free
+realloc
+calloc
+#filename "libdasocket.c"
+#lib "libc.so.6"
+#feature FL_NETWORK_API_PROBING
+#feature_always FL_NETWORK_API_ALWAYS_PROBING
+accept
+accept4
+#be16toh
+#be32toh
+#be64toh
+bind
+connect
+#endhostent
+#endnetent
+#endprotoent
+#endservent
+epoll_create
+epoll_create1
+epoll_ctl
+epoll_pwait
+epoll_wait
+#freeaddrinfo
+#freeifaddrs
+#gai_cancel
+#gai_error
+#gai_strerror
+#gai_suspend
+#getaddrinfo
+#getaddrinfo_a
+#getdomainname
+#gethostbyaddr
+#gethostbyaddr_r
+#gethostbyname
+#gethostbyname2
+#gethostbyname2_r
+#gethostbyname_r
+#gethostent
+#gethostent_r
+#gethostname
+#getifaddrs
+#getnameinfo
+#getnetbyaddr
+#getnetbyaddr_r
+#getnetbyname
+#getnetbyname_r
+#getnetent
+#getnetent_r
+getpeername
+#getprotobyname
+#getprotobyname_r
+#getprotobynumber
+#getprotobynumber_r
+#getprotoent
+#getprotoent_r
+#getservbyname
+#getservbyname_r
+#getservbyport
+#getservbyport_r
+#getservent
+#getservent_r
+getsockname
+getsockopt
+#herror
+#hstrerror
+#htobe16
+#htobe32
+#htobe64
+#htole16
+#htole32
+#htole64
+#htonl
+#htons
+#if_freenameindex
+#if_indextoname
+#if_nameindex
+#if_nametoindex
+#inet_addr
+#inet_aton
+#inet_lnaof
+#inet_makeaddr
+#inet_netof
+#inet_network
+#inet_ntoa
+#inet_ntop
+#inet_pton
+isfdtype
+#le16toh
+#le32toh
+#le64toh
+listen
+#ntohl
+#ntohs
+poll
+ppoll
+pselect
+recv
+recvfrom
+recvmsg
+select
+send
+sendmsg
+sendto
+#setdomainname
+#sethostent
+#sethostname
+#setnetent
+#setprotoent
+#setservent
+setsockopt
+shutdown
+sockatmark
+socket
+socketpair
+#filename "libdaemon.c"
+#lib "???"
+#feature ---
+daemon_close_allv
+#filename "libdasync.c"
+#lib "libpthread.so.0"
+#feature FL_THREAD_API_PROBING
+#feature_always FL_THREAD_API_ALWAYS_PROBING
+pthread_mutex_init
+pthread_mutex_destroy
+real_pthread_mutex_lock
+pthread_mutex_lock
+pthread_mutex_timedlock
+pthread_mutex_trylock
+real_pthread_mutex_unlock
+pthread_mutex_unlock
+pthread_mutexattr_init
+pthread_mutexattr_destroy
+pthread_mutexattr_getprioceiling
+pthread_mutexattr_setprioceiling
+pthread_mutexattr_getprotocol
+pthread_mutexattr_setprotocol
+pthread_mutexattr_getpshared
+pthread_mutexattr_setpshared
+pthread_mutexattr_gettype
+pthread_mutexattr_settype
+pthread_cond_init
+pthread_cond_destroy
+pthread_cond_wait
+pthread_cond_timedwait
+pthread_cond_signal
+pthread_cond_broadcast
+
+#filename "libdathread.c"
+#lib "libpthread.so.0"
+#feature FL_THREAD_API_PROBING
+#feature_always FL_THREAD_API_ALWAYS_PROBING
+_da_cleanup_handler
+_da_ThreadProc
+pthread_create
+pthread_join
+pthread_exit
+pthread_cancel
+pthread_detach
+pthread_self
+pthread_equal
+pthread_setcancelstate
+pthread_setcanceltype
+pthread_attr_init
+pthread_attr_destroy
+pthread_attr_getdetachstate
+pthread_attr_setdetachstate
+pthread_attr_getstacksize
+pthread_attr_setstacksize
+pthread_attr_getstackaddr
+pthread_attr_setstackaddr
+pthread_attr_getinheritsched
+pthread_attr_setinheritsched
+pthread_attr_getschedparam
+pthread_attr_setschedparam
+pthread_attr_getschedpolicy
+pthread_attr_setschedpolicy
+pthread_attr_getguardsize
+pthread_attr_setguardsize
+pthread_attr_getscope
+pthread_attr_setscope
+pthread_attr_getstack
+pthread_attr_setstack
+#filename "capi_capture.c"
+#lib "libelementary.so.1"
+#feature ---
+elm_win_add
+elm_controlbar_add
+elm_naviframe_add
+elm_pager_add
+#filename "libdauserfunc.c"
+#lib "???"
