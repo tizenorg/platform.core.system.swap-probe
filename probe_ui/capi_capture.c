@@ -35,7 +35,7 @@
 #include "probeinfo.h"
 #include "da_ui.h"
 
-Evas_Object *elm_win_add(Evas_Object *parent, const char* name, Elm_Win_Type type)
+Evas_Object *PROBE_NAME(elm_win_add)(Evas_Object *parent, const char* name, Elm_Win_Type type)
 {
 	static Evas_Object * (*elm_win_addp)(Evas_Object *parent, const char* name, Elm_Win_Type type);
 
@@ -46,7 +46,7 @@ Evas_Object *elm_win_add(Evas_Object *parent, const char* name, Elm_Win_Type typ
 	return ret;
 }
 
-Evas_Object *elm_controlbar_add (Evas_Object *parent)
+Evas_Object *PROBE_NAME(elm_controlbar_add)(Evas_Object *parent)
 {
 	static Evas_Object * (*elm_controlbar_addp)(Evas_Object *parent);
 
@@ -57,7 +57,7 @@ Evas_Object *elm_controlbar_add (Evas_Object *parent)
 	return ret;
 }
 
-Evas_Object *elm_naviframe_add(Evas_Object *parent)
+Evas_Object *PROBE_NAME(elm_naviframe_add)(Evas_Object *parent)
 {
 	static Evas_Object * (*elm_naviframe_addp)(Evas_Object *parent);
 
@@ -68,7 +68,7 @@ Evas_Object *elm_naviframe_add(Evas_Object *parent)
 	return ret;
 }
 
-Evas_Object *elm_pager_add(Evas_Object *parent)
+Evas_Object *PROBE_NAME(elm_pager_add)(Evas_Object *parent)
 {
 	static Evas_Object * (*elm_pager_addp)(Evas_Object *parent);
 
