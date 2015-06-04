@@ -46,13 +46,13 @@
 #include "da_memory.h"
 #include "binproto.h"
 
-void *malloc(size_t size)
+void *PROBE_NAME(malloc)(size_t size)
 {
 	static void* (*mallocp)(size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	rtdl_next_current_set_once(mallocp);
+	rtdl_next_set_once(mallocp, "malloc");
 
 	PRE_PROBEBLOCK();
 
@@ -75,12 +75,12 @@ void *malloc(size_t size)
 	return pret;
 }
 
-void free(void *ptr)
+void PROBE_NAME(free)(void *ptr)
 {
 	static void (*freep)(void *);
 	DECLARE_VARIABLE_STANDARD;
 
-	rtdl_next_current_set_once(freep);
+	rtdl_next_set_once(freep, "free");
 
 	PRE_PROBEBLOCK();
 
@@ -92,7 +92,7 @@ void free(void *ptr)
 	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_free, 
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_free,
 			  "p", (int64_t)(int) ptr);
 	PACK_COMMON_END('v', 0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
@@ -101,13 +101,13 @@ void free(void *ptr)
 	POST_PACK_PROBEBLOCK_END();
 }
 
-void *realloc(void *memblock, size_t size)
+void *PROBE_NAME(realloc)(void *memblock, size_t size)
 {
 	static void* (*reallocp)(void*, size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	rtdl_next_current_set_once(reallocp);
+	rtdl_next_set_once(reallocp, "realloc");
 	PRE_PROBEBLOCK();
 
 	if(memblock != NULL)
@@ -142,7 +142,7 @@ void *temp_calloc(size_t nelem, size_t elsize)
 		: NULL;
 }
 
-void *calloc(size_t nelem, size_t elsize)
+void *PROBE_NAME(calloc)(size_t nelem, size_t elsize)
 {
 	static void* (*callocp)(size_t, size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -154,7 +154,7 @@ void *calloc(size_t nelem, size_t elsize)
 		 * of static memory via `temp_calloc`.
 		 */
 		callocp = temp_calloc;
-		callocp = rtdl_next(__func__);
+		callocp = rtdl_next("calloc");
 	}
 
 	PRE_PROBEBLOCK();

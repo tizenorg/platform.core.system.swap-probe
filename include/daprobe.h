@@ -39,10 +39,15 @@
 #include <dlfcn.h>
 #include <stdint.h>
 #include "probeinfo.h"
+#include "api_names_global.h"
 
 #ifdef __cplusplus
 extern "C"{
 #endif
+
+#define GET_VALUE_2(x,y) x##y
+#define GET_VALUE_1(x,y) GET_VALUE_2(x, y)
+#define PROBE_NAME(func) GET_VALUE_1(PROBE_NAME_PREFIX, func)
 
 #ifndef likely
 #define likely(x)       __builtin_expect((x),1)
@@ -147,9 +152,6 @@ void *rtdl_next(const char *symname);
 		if (symbol == NULL)			\
 			symbol = rtdl_next(sname);	\
 	} while (0)
-
-#define rtdl_next_current_set_once(symbol)	\
-	rtdl_next_set_once(symbol, __func__)
 
 // ========================= print log =====================================
 #define PRINTMSG(...)	print_log_fmt(MSG_MSG, __FUNCTION__, __LINE__, __VA_ARGS__)
