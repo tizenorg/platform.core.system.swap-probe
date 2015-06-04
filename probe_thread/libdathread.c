@@ -129,7 +129,7 @@ void *_da_ThreadProc(void *params)
 	return ret;
 }
 
-int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
+int __PROBE__pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 		void *(*start_routine) (void*), void *arg)
 {
 	static int (*pthread_createp)(pthread_t *thread,
@@ -162,7 +162,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 	return ret;
 }
 
-int pthread_join(pthread_t thread, void **retval)
+int __PROBE__pthread_join(pthread_t thread, void **retval)
 {
 	static int (*pthread_joinp)(pthread_t thread, void **retval);
 
@@ -204,7 +204,7 @@ int pthread_join(pthread_t thread, void **retval)
 	return ret;
 }
 
-void pthread_exit(void *retval)
+void __PROBE__pthread_exit(void *retval)
 {
 	pthread_t pSelf;
 	static void (*pthread_exitp)(void *retval) __attribute__((noreturn));
@@ -232,7 +232,7 @@ void pthread_exit(void *retval)
 
 }
 
-int pthread_cancel(pthread_t thread)
+int __PROBE__pthread_cancel(pthread_t thread)
 {
 	static int (*pthread_cancelp)(pthread_t thread);
 
@@ -247,7 +247,7 @@ int pthread_cancel(pthread_t thread)
 	return ret;
 }
 
-int pthread_detach(pthread_t thread)
+int __PROBE__pthread_detach(pthread_t thread)
 {
 	static int (*pthread_detachp)(pthread_t thread);
 
@@ -262,7 +262,7 @@ int pthread_detach(pthread_t thread)
 	return ret;
 }
 
-pthread_t pthread_self(void)
+pthread_t __PROBE__pthread_self(void)
 {
 	pthread_t ret_pthr;
 	static pthread_t (*pthread_selfp)(void);
@@ -279,7 +279,7 @@ pthread_t pthread_self(void)
 	return ret_pthr;
 }
 
-int pthread_equal(pthread_t t1, pthread_t t2)
+int __PROBE__pthread_equal(pthread_t t1, pthread_t t2)
 {
 	static int (*pthread_equalp)(pthread_t t1, pthread_t t2);
 
@@ -303,7 +303,7 @@ int real_pthread_setcancelstate(int state, int *oldstate)
 	return pthread_setcancelstatep(state, oldstate);
 }
 
-int pthread_setcancelstate(int state, int *oldstate)
+int __PROBE__pthread_setcancelstate(int state, int *oldstate)
 {
 	pthread_t pSelf;
 	static int (*pthread_setcancelstatep)(int state, int *oldstate);
@@ -320,7 +320,7 @@ int pthread_setcancelstate(int state, int *oldstate)
 	return ret;
 }
 
-int pthread_setcanceltype(int type, int *oldtype)
+int __PROBE__pthread_setcanceltype(int type, int *oldtype)
 {
 	pthread_t pSelf;
 	static int (*pthread_setcanceltypep)(int type, int *oldtype);
@@ -337,7 +337,7 @@ int pthread_setcanceltype(int type, int *oldtype)
 	return ret;
 }
 
-int pthread_attr_init(pthread_attr_t *attr)
+int __PROBE__pthread_attr_init(pthread_attr_t *attr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_initp)(pthread_attr_t *attr);
@@ -353,7 +353,7 @@ int pthread_attr_init(pthread_attr_t *attr)
 	return ret;
 }
 
-int pthread_attr_destroy(pthread_attr_t *attr)
+int __PROBE__pthread_attr_destroy(pthread_attr_t *attr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_destroyp)(pthread_attr_t *attr);
@@ -369,7 +369,7 @@ int pthread_attr_destroy(pthread_attr_t *attr)
 	return ret;
 }
 
-int pthread_attr_getdetachstate(const pthread_attr_t *attr, int *detachstate)
+int __PROBE__pthread_attr_getdetachstate(const pthread_attr_t *attr, int *detachstate)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getdetachstatep)(const pthread_attr_t *attr,
@@ -387,7 +387,7 @@ int pthread_attr_getdetachstate(const pthread_attr_t *attr, int *detachstate)
 	return ret;
 }
 
-int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate)
+int __PROBE__pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setdetachstatep)(pthread_attr_t *attr,
@@ -405,7 +405,7 @@ int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate)
 	return ret;
 }
 
-int pthread_attr_getstacksize(const pthread_attr_t *attr, size_t *stacksize)
+int __PROBE__pthread_attr_getstacksize(const pthread_attr_t *attr, size_t *stacksize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getstacksizep)(const pthread_attr_t *attr,
@@ -423,7 +423,7 @@ int pthread_attr_getstacksize(const pthread_attr_t *attr, size_t *stacksize)
 	return ret;
 }
 
-int pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize)
+int __PROBE__pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setstacksizep)(pthread_attr_t *attr,
@@ -451,7 +451,7 @@ int pthread_attr_setstacksize(pthread_attr_t *attr, size_t stacksize)
  *
  * happens on pthread-2.18 (target TV emul), not happens on pthread-2.13
  */
-int pthread_attr_getstackaddr(const pthread_attr_t *attr, void **stackaddr)
+int __PROBE__pthread_attr_getstackaddr(const pthread_attr_t *attr, void **stackaddr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getstackaddrp)(const pthread_attr_t *attr,
@@ -469,7 +469,7 @@ int pthread_attr_getstackaddr(const pthread_attr_t *attr, void **stackaddr)
 	return ret;
 }
 
-int pthread_attr_setstackaddr(pthread_attr_t *attr, void *stackaddr)
+int __PROBE__pthread_attr_setstackaddr(pthread_attr_t *attr, void *stackaddr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setstackaddrp)(pthread_attr_t *attr,
@@ -489,7 +489,7 @@ int pthread_attr_setstackaddr(pthread_attr_t *attr, void *stackaddr)
 }
 #endif
 
-int pthread_attr_getinheritsched(const pthread_attr_t *attr, int *inheritsched)
+int __PROBE__pthread_attr_getinheritsched(const pthread_attr_t *attr, int *inheritsched)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getinheritschedp)(const pthread_attr_t *attr,
@@ -507,7 +507,7 @@ int pthread_attr_getinheritsched(const pthread_attr_t *attr, int *inheritsched)
 	return ret;
 }
 
-int pthread_attr_setinheritsched(pthread_attr_t *attr, int inheritsched)
+int __PROBE__pthread_attr_setinheritsched(pthread_attr_t *attr, int inheritsched)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setinheritschedp)(pthread_attr_t *attr,
@@ -525,7 +525,7 @@ int pthread_attr_setinheritsched(pthread_attr_t *attr, int inheritsched)
 	return ret;
 }
 
-int pthread_attr_getschedparam(const pthread_attr_t *attr,
+int __PROBE__pthread_attr_getschedparam(const pthread_attr_t *attr,
 		struct sched_param *param)
 {
 	pthread_t thread = 0;
@@ -544,7 +544,7 @@ int pthread_attr_getschedparam(const pthread_attr_t *attr,
 	return ret;
 }
 
-int pthread_attr_setschedparam(pthread_attr_t *attr,
+int __PROBE__pthread_attr_setschedparam(pthread_attr_t *attr,
 		const struct sched_param *param)
 {
 	pthread_t thread = 0;
@@ -564,7 +564,7 @@ int pthread_attr_setschedparam(pthread_attr_t *attr,
 	return ret;
 }
 
-int pthread_attr_getschedpolicy(const pthread_attr_t *attr, int *policy)
+int __PROBE__pthread_attr_getschedpolicy(const pthread_attr_t *attr, int *policy)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getschedpolicyp)(const pthread_attr_t *attr,
@@ -582,7 +582,7 @@ int pthread_attr_getschedpolicy(const pthread_attr_t *attr, int *policy)
 	return ret;
 }
 
-int pthread_attr_setschedpolicy(pthread_attr_t *attr, int policy)
+int __PROBE__pthread_attr_setschedpolicy(pthread_attr_t *attr, int policy)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setschedpolicyp)(pthread_attr_t *attr,
@@ -600,7 +600,7 @@ int pthread_attr_setschedpolicy(pthread_attr_t *attr, int policy)
 	return ret;
 }
 
-int pthread_attr_getguardsize(const pthread_attr_t *attr, size_t *guardsize)
+int __PROBE__pthread_attr_getguardsize(const pthread_attr_t *attr, size_t *guardsize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getguardsizep)(const pthread_attr_t *attr,
@@ -618,7 +618,7 @@ int pthread_attr_getguardsize(const pthread_attr_t *attr, size_t *guardsize)
 	return ret;
 }
 
-int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize)
+int __PROBE__pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setguardsizep)(pthread_attr_t *attr,
@@ -636,7 +636,7 @@ int pthread_attr_setguardsize(pthread_attr_t *attr, size_t guardsize)
 	return ret;
 }
 
-int pthread_attr_getscope(const pthread_attr_t *attr, int *contentionscope)
+int __PROBE__pthread_attr_getscope(const pthread_attr_t *attr, int *contentionscope)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getscopep)(const pthread_attr_t *attr,
@@ -654,7 +654,7 @@ int pthread_attr_getscope(const pthread_attr_t *attr, int *contentionscope)
 	return ret;
 }
 
-int pthread_attr_setscope(pthread_attr_t *attr, int contentionscope)
+int __PROBE__pthread_attr_setscope(pthread_attr_t *attr, int contentionscope)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setscopep)(pthread_attr_t *attr,
@@ -671,7 +671,7 @@ int pthread_attr_setscope(pthread_attr_t *attr, int contentionscope)
 	return ret;
 }
 
-int pthread_attr_getstack(const pthread_attr_t *attr,
+int __PROBE__pthread_attr_getstack(const pthread_attr_t *attr,
 		void **stackaddr, size_t *stacksize)
 {
 	pthread_t thread = 0;
@@ -691,7 +691,7 @@ int pthread_attr_getstack(const pthread_attr_t *attr,
 	return ret;
 }
 
-int pthread_attr_setstack(pthread_attr_t *attr,
+int __PROBE__pthread_attr_setstack(pthread_attr_t *attr,
 		void *stackaddr, size_t stacksize)
 {
 	pthread_t thread = 0;

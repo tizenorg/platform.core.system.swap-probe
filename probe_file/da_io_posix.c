@@ -63,7 +63,7 @@ static inline char *get_abs_path(int fd, const char *fname,
 	return path;
 }
 
-int open(const char* path, int oflag, ...)
+int __PROBE__open(const char* path, int oflag, ...)
 {
 	static int (*openp)(const char* path, int oflag, ...);
 	char buffer[PATH_MAX];
@@ -89,7 +89,7 @@ int open(const char* path, int oflag, ...)
 	return ret;
 }
 
-int openat(int fd, const char* path, int oflag, ...)
+int __PROBE__openat(int fd, const char* path, int oflag, ...)
 {
 	static int (*openatp)(int fd, const char* path, int oflag, ...);
 	char buffer[PATH_MAX];
@@ -115,7 +115,7 @@ int openat(int fd, const char* path, int oflag, ...)
 	return ret;
 }
 
-int creat(const char* path, mode_t mode)
+int __PROBE__creat(const char* path, mode_t mode)
 {
 	static int (*creatp)(const char* path, mode_t mode);
 	char buffer[PATH_MAX];
@@ -132,7 +132,7 @@ int creat(const char* path, mode_t mode)
 	return ret;
 }
 
-int close(int fd)
+int __PROBE__close(int fd)
 {
 	static int (*closep)(int fd);
 	DECLARE_VARIABLE_FD;
@@ -157,7 +157,7 @@ int close(int fd)
 	return ret;
 }
 
-off_t lseek(int fd, off_t offset, int whence)
+off_t __PROBE__lseek(int fd, off_t offset, int whence)
 {
 	static int (*lseekp)(int fd, off_t offset, int whence);
 	off_t offret;
@@ -173,7 +173,7 @@ off_t lseek(int fd, off_t offset, int whence)
 	return offret;
 }
 
-int fsync(int fd)
+int __PROBE__fsync(int fd)
 {
 	static int (*fsyncp)(int fd);
 
@@ -187,7 +187,7 @@ int fsync(int fd)
 	return ret;
 }
 
-int fdatasync(int fd)
+int __PROBE__fdatasync(int fd)
 {
 	static int (*fdatasyncp)(int fd);
 
@@ -203,7 +203,7 @@ int fdatasync(int fd)
 
 
 
-int ftruncate(int fd, off_t length)
+int __PROBE__ftruncate(int fd, off_t length)
 {
 	static int (*ftruncatep)(int fd, off_t length);
 
@@ -218,7 +218,7 @@ int ftruncate(int fd, off_t length)
 	return ret;
 }
 
-int fchown(int fd, uid_t owner, gid_t group)
+int __PROBE__fchown(int fd, uid_t owner, gid_t group)
 {
 	static int (*fchownp)(int fd, uid_t owner, gid_t group);
 
@@ -232,7 +232,7 @@ int fchown(int fd, uid_t owner, gid_t group)
 
 
 
-int lockf(int fd, int function, off_t size)
+int __PROBE__lockf(int fd, int function, off_t size)
 {
 	static int (*lockfp)(int fd, int function, off_t size);
 	int api_type = FD_API_PERMISSION;
@@ -258,7 +258,7 @@ int lockf(int fd, int function, off_t size)
 
 
 
-int fchmod(int fd, mode_t mode)
+int __PROBE__fchmod(int fd, mode_t mode)
 {
 	static int (*fchmodp)(int fd, mode_t mode);
 
@@ -273,7 +273,7 @@ int fchmod(int fd, mode_t mode)
 // Read / Write APIs
 // *****************************************************************
 
-ssize_t pread(int fd, void *buf, size_t nbyte, off_t offset)
+ssize_t __PROBE__pread(int fd, void *buf, size_t nbyte, off_t offset)
 {
 	static ssize_t (*preadp)(int fd, void *buf, size_t nbyte, off_t offset);
 	ssize_t sret;
@@ -294,7 +294,7 @@ ssize_t pread(int fd, void *buf, size_t nbyte, off_t offset)
 
 	return sret;
 }
-ssize_t read(int fd, void *buf, size_t nbyte)
+ssize_t __PROBE__read(int fd, void *buf, size_t nbyte)
 {
 	static ssize_t (*readp)(int fildes, void *buf, size_t nbyte);
 	ssize_t sret;
@@ -313,7 +313,7 @@ ssize_t read(int fd, void *buf, size_t nbyte)
 	return sret;
 }
 
-ssize_t pwrite(int fd, const void *buf, size_t nbyte, off_t offset)
+ssize_t __PROBE__pwrite(int fd, const void *buf, size_t nbyte, off_t offset)
 {
 	static ssize_t (*pwritep)(int fd, const void *buf, size_t nbyte, off_t offset);
 	ssize_t sret;
@@ -335,7 +335,7 @@ ssize_t pwrite(int fd, const void *buf, size_t nbyte, off_t offset)
 	return sret;
 }
 
-ssize_t write(int fd, const void *buf, size_t nbyte)
+ssize_t __PROBE__write(int fd, const void *buf, size_t nbyte)
 {
 	static ssize_t (*writep)(int fildes, const void *buf, size_t nbyte);
 	ssize_t sret;
@@ -356,7 +356,7 @@ ssize_t write(int fd, const void *buf, size_t nbyte)
 }
 
 
-ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
+ssize_t __PROBE__readv(int fd, const struct iovec *iov, int iovcnt)
 {
 	static ssize_t (*readvp)(int fd, const struct iovec *iov, int iovcnt);
 	ssize_t sret;
@@ -375,7 +375,7 @@ ssize_t readv(int fd, const struct iovec *iov, int iovcnt)
 
 // why writev is commented ?
 #if 0
-ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
+ssize_t __PROBE__writev(int fd, const struct iovec *iov, int iovcnt)
 {
 	static ssize_t (*writevp)(int fd, const struct iovec *iov, int iovcnt);
 
@@ -397,7 +397,7 @@ ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 // *****************************************************************
 // File Attributes APIs
 // *****************************************************************
-int fcntl(int fd, int cmd, ...)
+int __PROBE__fcntl(int fd, int cmd, ...)
 {
 	static int (*fcntlp)(int fd, int cmd, ...);
 	int arg = 0, api_type = FD_API_OTHER;
@@ -460,7 +460,7 @@ int fcntl(int fd, int cmd, ...)
 	return ret;
 }
 
-int dup(int fd)
+int __PROBE__dup(int fd)
 {
 	static int (*dupp)(int fd);
 
@@ -474,7 +474,7 @@ int dup(int fd)
 	return ret;
 }
 
-int dup2(int fd, int fd2)
+int __PROBE__dup2(int fd, int fd2)
 {
 	static int (*dup2p)(int fd, int fd2);
 
@@ -491,7 +491,7 @@ int dup2(int fd, int fd2)
 //FIXME dlsym error
 // fstat is not in LIBC
 #if 0
-int fstat(int fd, struct stat *buf)
+int __PROBE__fstat(int fd, struct stat *buf)
 {
 	static int (*fstatp)(int fd, struct stat *buf);
 
@@ -503,7 +503,7 @@ int fstat(int fd, struct stat *buf)
 }
 #endif
 
-int futimens(int fd, const struct timespec times[2])
+int __PROBE__futimens(int fd, const struct timespec times[2])
 {
 	static int (*futimensp)(int fd, const struct timespec times[2]);
 

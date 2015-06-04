@@ -67,7 +67,7 @@ bool touch_pressed = false;
 		FLUSH_LOCAL_BUF();														\
 	} while (0)
 
-Eina_Bool ecore_event_evas_key_down(void *data, int type, void *event)
+Eina_Bool __PROBE__ecore_event_evas_key_down(void *data, int type, void *event)
 {
 	static Eina_Bool (*ecore_event_evas_key_downp)(void *data, int type, void *event);
 	probeInfo_t	probeInfo;
@@ -91,7 +91,7 @@ Eina_Bool ecore_event_evas_key_down(void *data, int type, void *event)
 	return ecore_event_evas_key_downp(data, type, event);
 }
 
-Eina_Bool ecore_event_evas_key_up(void *data, int type, void *event)
+Eina_Bool __PROBE__ecore_event_evas_key_up(void *data, int type, void *event)
 {
 	static Eina_Bool (*ecore_event_evas_key_upp)(void *data, int type, void *event);
 	probeInfo_t	probeInfo;
@@ -115,7 +115,7 @@ Eina_Bool ecore_event_evas_key_up(void *data, int type, void *event)
 	return ecore_event_evas_key_upp(data, type, event);
 }
 
-Eina_Bool ecore_event_evas_mouse_button_down(void *data, int type, void *event)
+Eina_Bool __PROBE__ecore_event_evas_mouse_button_down(void *data, int type, void *event)
 {
 	static Eina_Bool (*ecore_event_evas_mouse_button_downp)(void *data, int type, void *event);
 	probeInfo_t	probeInfo;
@@ -137,7 +137,7 @@ Eina_Bool ecore_event_evas_mouse_button_down(void *data, int type, void *event)
 	return ecore_event_evas_mouse_button_downp(data, type, event);
 }
 
-Eina_Bool ecore_event_evas_mouse_button_up(void *data, int type, void *event)
+Eina_Bool __PROBE__ecore_event_evas_mouse_button_up(void *data, int type, void *event)
 {
 	static Eina_Bool (*ecore_event_evas_mouse_button_upp)(void *data, int type, void *event);
 	probeInfo_t	probeInfo;
@@ -159,7 +159,7 @@ Eina_Bool ecore_event_evas_mouse_button_up(void *data, int type, void *event)
 	return ecore_event_evas_mouse_button_upp(data, type, event);
 }
 
-Eina_Bool ecore_event_evas_mouse_move(void *data, int type, void *event)
+Eina_Bool __PROBE__ecore_event_evas_mouse_move(void *data, int type, void *event)
 {
 	static Eina_Bool (*ecore_event_evas_mouse_movep)(void *data, int type, void *event);
 	probeInfo_t	probeInfo;

@@ -95,7 +95,7 @@ int _da_call_original(void *funcp, char *args[], int args_count);
 	va_end(par);					\
 	p += sprintf(p, ">");
 
-int execl(const char *path, const char *arg, ...)
+int __PROBE__execl(const char *path, const char *arg, ...)
 {
 	int res;
 	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
@@ -109,7 +109,7 @@ int execl(const char *path, const char *arg, ...)
 	return res;
 }
 
-int execlp(const char *file, const char *arg, ...)
+int __PROBE__execlp(const char *file, const char *arg, ...)
 {
 	int res;
 	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
@@ -123,7 +123,7 @@ int execlp(const char *file, const char *arg, ...)
 	return res;
 }
 
-int execle(const char *path, const char *arg, ...
+int __PROBE__execle(const char *path, const char *arg, ...
 	/* original func have one more argument but
 	 * i can't leave it in code by compilation reasons
 	 * so it is commented:
@@ -143,7 +143,7 @@ int execle(const char *path, const char *arg, ...
 	return res;
 }
 
-int execv(const char *path, char *const argv[])
+int __PROBE__execv(const char *path, char *const argv[])
 {
 	int res;
 	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
@@ -156,7 +156,7 @@ int execv(const char *path, char *const argv[])
 	return res;
 }
 
-int execvp(const char *file, char *const argv[])
+int __PROBE__execvp(const char *file, char *const argv[])
 {
 	int res;
 	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
@@ -169,7 +169,7 @@ int execvp(const char *file, char *const argv[])
 	return res;
 }
 
-int execve(const char *filename, char *const argv[],char *const envp[])
+int __PROBE__execve(const char *filename, char *const argv[],char *const envp[])
 {
 	int res;
 	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());
@@ -182,7 +182,7 @@ int execve(const char *filename, char *const argv[],char *const envp[])
 	return res;
 }
 
-int execvpe(const char *file, char *const argv[],char *const envp[])
+int __PROBE__execvpe(const char *file, char *const argv[],char *const envp[])
 {
 	int res;
 	PRINTMSG("%s [%d] ", __FUNCTION__, getpid());

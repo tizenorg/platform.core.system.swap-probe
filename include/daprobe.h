@@ -148,9 +148,6 @@ void *rtdl_next(const char *symname);
 			symbol = rtdl_next(sname);	\
 	} while (0)
 
-#define rtdl_next_current_set_once(symbol)	\
-	rtdl_next_set_once(symbol, __func__)
-
 // ========================= print log =====================================
 #define PRINTMSG(...)	print_log_fmt(MSG_MSG, __FUNCTION__, __LINE__, __VA_ARGS__)
 #define PRINTWRN(...)	print_log_fmt(MSG_WARNING, __FUNCTION__, __LINE__, __VA_ARGS__)
