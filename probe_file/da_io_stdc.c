@@ -55,7 +55,7 @@ static inline char *get_abs_path(FILE *file, const char *fname,
 	return path;
 }
 
-FILE* fopen(const char* filename, const char* mode)
+FILE* PROBE_NAME(fopen)(const char* filename, const char* mode)
 {
 	static FILE* (*fopenp)(const char* filename, const char* mode);
 	char buffer[PATH_MAX];
@@ -74,7 +74,7 @@ FILE* fopen(const char* filename, const char* mode)
 	return fret;
 }
 
-FILE* freopen(const char * filename, const char * mode, FILE * stream)
+FILE* PROBE_NAME(freopen)(const char * filename, const char * mode, FILE * stream)
 {
 	static FILE* (*freopenp)(const char *filename, const char *mode,
 				 FILE *stream);
@@ -94,7 +94,7 @@ FILE* freopen(const char * filename, const char * mode, FILE * stream)
 	return fret;
 }
 
-FILE* fdopen(int fildes, const char *mode)
+FILE* PROBE_NAME(fdopen)(int fildes, const char *mode)
 {
 	static FILE* (*fdopenp)(int fildes, const char *mode);
  	FILE* fret;
@@ -109,7 +109,7 @@ FILE* fdopen(int fildes, const char *mode)
 	return fret;
 }
 
-int fflush(FILE* stream)
+int PROBE_NAME(fflush)(FILE* stream)
 {
 	static int (*fflushp)(FILE* stream);
 
@@ -121,7 +121,7 @@ int fflush(FILE* stream)
 	return ret;
 }
 
-int fclose(FILE* stream)
+int PROBE_NAME(fclose)(FILE* stream)
 {
 	static int (*fclosep)(FILE* stream);
 	DECLARE_VARIABLE_FD;
@@ -149,7 +149,7 @@ int fclose(FILE* stream)
 	return ret;
 }
 
-FILE * tmpfile ( void )
+FILE * PROBE_NAME(tmpfile )( void )
 {
 	static FILE* (*tmpfilep) ( void );
 	FILE* fret;
@@ -162,7 +162,7 @@ FILE * tmpfile ( void )
 	return fret;
 }
 
-int fgetpos(FILE* stream, fpos_t* position)
+int PROBE_NAME(fgetpos)(FILE* stream, fpos_t* position)
 {
 	static int (*fgetposp)(FILE* stream, fpos_t* position);
 
@@ -175,7 +175,7 @@ int fgetpos(FILE* stream, fpos_t* position)
 	return ret;
 }
 
-int fseek(FILE* stream, long int offset, int origin)
+int PROBE_NAME(fseek)(FILE* stream, long int offset, int origin)
 {
 	static int (*fseekp)(FILE* stream, long int offset, int origin);
 
@@ -188,7 +188,7 @@ int fseek(FILE* stream, long int offset, int origin)
 	return ret;
 }
 
-int fsetpos(FILE* stream, const fpos_t* pos)
+int PROBE_NAME(fsetpos)(FILE* stream, const fpos_t* pos)
 {
 	static int (*fsetposp)(FILE* stream, const fpos_t* pos);
 
@@ -200,7 +200,7 @@ int fsetpos(FILE* stream, const fpos_t* pos)
 	return ret;
 }
 
-long int ftell(FILE* stream)
+long int PROBE_NAME(ftell)(FILE* stream)
 {
 	static long int (*ftellp)(FILE* stream);
 	long int lret;
@@ -216,7 +216,7 @@ long int ftell(FILE* stream)
 	return lret;
 }
 
-void rewind(FILE* stream)
+void PROBE_NAME(rewind)(FILE* stream)
 {
 	static void (*rewindp)(FILE* stream);
 
@@ -229,7 +229,7 @@ void rewind(FILE* stream)
 				  voidp_to_uint64(stream));
 }
 
-void clearerr(FILE* stream)
+void PROBE_NAME(clearerr)(FILE* stream)
 {
 	static void (*clearerrp)(FILE* stream);
 
@@ -242,7 +242,7 @@ void clearerr(FILE* stream)
 				  voidp_to_uint64(stream));
 }
 
-int feof(FILE* stream)
+int PROBE_NAME(feof)(FILE* stream)
 {
 	static int (*feofp)(FILE* stream);
 
@@ -254,7 +254,7 @@ int feof(FILE* stream)
 	return ret;
 }
 
-int ferror(FILE* stream)
+int PROBE_NAME(ferror)(FILE* stream)
 {
 	static int (*ferrorp)(FILE* stream);
 
@@ -266,7 +266,7 @@ int ferror(FILE* stream)
 	return ret;
 }
 
-int fileno(FILE* stream)
+int PROBE_NAME(fileno)(FILE* stream)
 {
 	static int (*filenop)(FILE* stream);
 
@@ -284,7 +284,7 @@ int fileno(FILE* stream)
 // File read / write APIs
 // *******************************************************************
 
-int vfprintf(FILE* stream, const char* format, va_list arg)
+int PROBE_NAME(vfprintf)(FILE* stream, const char* format, va_list arg)
 {
 	static int (*vfprintfp)(FILE* stream, const char* format, va_list arg);
 
@@ -301,7 +301,7 @@ int vfprintf(FILE* stream, const char* format, va_list arg)
 	return ret;
 }
 
-int vfscanf(FILE* stream, const char* format, va_list arg)
+int PROBE_NAME(vfscanf)(FILE* stream, const char* format, va_list arg)
 {
 	static int (*vfscanfp)(FILE* stream, const char* format, va_list arg);
 
@@ -318,7 +318,7 @@ int vfscanf(FILE* stream, const char* format, va_list arg)
 	return ret;
 }
 
-int fgetc(FILE* stream)
+int PROBE_NAME(fgetc)(FILE* stream)
 {
 	static int (*fgetcp)(FILE* stream);
 
@@ -336,7 +336,7 @@ int fgetc(FILE* stream)
 }
 
 #if 0	// why is this commented?
-char* fgets(char* str, int size, FILE* stream)
+char* PROBE_NAME(fgets)(char* str, int size, FILE* stream)
 {
 	static char* (*fgetsp)(char* str, int num, FILE* stream);
 	char* cret;
@@ -353,7 +353,7 @@ char* fgets(char* str, int size, FILE* stream)
 }
 #endif
 
-int fputc(int character, FILE* stream)
+int PROBE_NAME(fputc)(int character, FILE* stream)
 {
 	static int (*fputcp)(int character, FILE* stream);
 
@@ -370,7 +370,7 @@ int fputc(int character, FILE* stream)
 	return ret;
 }
 
-int fputs(const char* str, FILE* stream)
+int PROBE_NAME(fputs)(const char* str, FILE* stream)
 {
 	static int (*fputsp)(const char* str, FILE* stream);
 
@@ -387,7 +387,7 @@ int fputs(const char* str, FILE* stream)
 	return ret;
 }
 
-int getc(FILE* stream)
+int PROBE_NAME(getc)(FILE* stream)
 {
 	static int (*getcp)(FILE* stream);
 
@@ -404,7 +404,7 @@ int getc(FILE* stream)
 	return ret;
 }
 
-int putc(int character, FILE* stream)
+int PROBE_NAME(putc)(int character, FILE* stream)
 {
 	static int (*putcp)(int character, FILE* stream);
 
@@ -421,7 +421,7 @@ int putc(int character, FILE* stream)
 	return ret;
 }
 
-int ungetc(int character, FILE* stream)
+int PROBE_NAME(ungetc)(int character, FILE* stream)
 {
 	static int (*ungetcp)(int character, FILE* stream);
 
@@ -438,7 +438,7 @@ int ungetc(int character, FILE* stream)
 	return ret;
 }
 
-size_t fread(void* ptr, size_t size, size_t count, FILE* stream)
+size_t PROBE_NAME(fread)(void* ptr, size_t size, size_t count, FILE* stream)
 {
 	static size_t (*freadp)(void* ptr, size_t size, size_t count, FILE* stream);
 	size_t tret;
@@ -462,7 +462,7 @@ size_t fread(void* ptr, size_t size, size_t count, FILE* stream)
 	return tret;
 }
 
-size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream)
+size_t PROBE_NAME(fwrite)(const void* ptr, size_t size, size_t count, FILE* stream)
 {
 	static size_t (*fwritep)(const void* ptr, size_t size, size_t count, FILE* stream);
 	size_t tret;
@@ -489,7 +489,7 @@ size_t fwrite(const void* ptr, size_t size, size_t count, FILE* stream)
 // *********************************************************
 // variable parameter function
 // *********************************************************
-int fprintf(FILE* stream, const char* format, ...)
+int PROBE_NAME(fprintf)(FILE* stream, const char* format, ...)
 {
 	static int (*vfprintfp)(FILE* stream, const char* format, ...);
 
@@ -511,7 +511,7 @@ int fprintf(FILE* stream, const char* format, ...)
 	return ret;
 }
 
-int fscanf(FILE* stream, const char* format, ...)
+int PROBE_NAME(fscanf)(FILE* stream, const char* format, ...)
 {
 	static int (*vfscanfp)(FILE* stream, const char* format, ...);
 
@@ -534,7 +534,7 @@ int fscanf(FILE* stream, const char* format, ...)
 }
 
 #if !defined(DA_DEBUG_LOG) && !defined(PRINT_STDOUT)
-int printf(const char* format, ...)
+int PROBE_NAME(printf)(const char* format, ...)
 {
 	static int (*vprintfp)(const char* format, ...);
 
@@ -554,7 +554,7 @@ int printf(const char* format, ...)
 }
 #endif
 
-int scanf(const char* format, ...)
+int PROBE_NAME(scanf)(const char* format, ...)
 {
 	static int (*vscanfp)(const char* format, ...);
 
@@ -573,7 +573,7 @@ int scanf(const char* format, ...)
 	return ret;
 }
 
-int getchar()
+int PROBE_NAME(getchar)()
 {
 	static int (*getcharp)();
 
@@ -588,7 +588,7 @@ int getchar()
 	return ret;
 }
 
-int putchar(int c)
+int PROBE_NAME(putchar)(int c)
 {
 	static int (*putcharp)(int c);
 
@@ -603,7 +603,7 @@ int putchar(int c)
 	return ret;
 }
 
-char* gets(char* str)
+char* PROBE_NAME(gets)(char* str)
 {
 	static char* (*getsp)(char* str);
 	char* cret;
@@ -620,7 +620,7 @@ char* gets(char* str)
 }
 
 #if !defined(DA_DEBUG_LOG) && !defined(PRINT_STDOUT)
-int puts(const char* str)
+int PROBE_NAME(puts)(const char* str)
 {
 	static int (*putsp)(const char* str);
 
@@ -638,7 +638,7 @@ int puts(const char* str)
 
 
 
-void setbuf(FILE* stream, char* buf)
+void PROBE_NAME(setbuf)(FILE* stream, char* buf)
 {
 	static void (*setbufp)(FILE* stream, char* buf);
 
@@ -652,7 +652,7 @@ void setbuf(FILE* stream, char* buf)
 				  voidp_to_uint64(buf));
 }
 
-void setbuffer(FILE* stream, char* buf, size_t size)
+void PROBE_NAME(setbuffer)(FILE* stream, char* buf, size_t size)
 {
 	static void (*setbufferp)(FILE* stream, char* buf, size_t size);
 
@@ -666,7 +666,7 @@ void setbuffer(FILE* stream, char* buf, size_t size)
 				  voidp_to_uint64(buf), (uint64_t)(size));
 }
 
-void setlinebuf(FILE* stream)
+void PROBE_NAME(setlinebuf)(FILE* stream)
 {
 	static int (*setlinebufp)(FILE* stream);
 
@@ -679,7 +679,7 @@ void setlinebuf(FILE* stream)
 				  voidp_to_uint64(stream));
 }
 
-int setvbuf(FILE* stream, char* buf, int mode, size_t size)
+int PROBE_NAME(setvbuf)(FILE* stream, char* buf, int mode, size_t size)
 {
 	static int (*setvbufp)(FILE* stream, char* buf, int mode, size_t size);
 

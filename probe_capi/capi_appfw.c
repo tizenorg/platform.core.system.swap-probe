@@ -131,7 +131,7 @@ static void _dalc_app_deviceorientationchanged(app_device_orientation_e orientat
 		gAppCallback.device_orientation(orientation, user_data);
 }
 
-int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *user_data)
+int PROBE_NAME(app_efl_main)(int *argc, char ***argv, app_event_callback_s *callback, void *user_data)
 {
 	static int (*app_efl_mainp)(int *argc, char ***argv, app_event_callback_s *callback, void *user_data);
 	Ecore_Event_Handler* handler;
@@ -246,7 +246,7 @@ static void _ui_dalc_app_control(app_control_h handle, void *user_data)
 				 voidp_to_uint64(user_data));
 }
 
-int ui_app_main(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data)
+int PROBE_NAME(ui_app_main)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data)
 {
 	static int (*ui_app_mainp)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data);
 	Ecore_Event_Handler* handler;
