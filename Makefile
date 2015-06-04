@@ -162,6 +162,7 @@ $(GENERATED_CONFIG): ./scripts/gen_api_config.sh
 
 $(API_NAME_LIST):
 	if [ -f $@ ]; then rm $@;fi
+	cat include/api_names_global.h > $@
 	cat */api_names.txt >> $@
 
 $(SOURCE_HEADERS): $(API_NAME_LIST)
