@@ -127,6 +127,7 @@ int __appendTypeLog(log_t* log, int nInput, char* token, ...);
 int getBacktraceString(log_t* log, int bufsize);
 
 void *rtdl_next(const char *symname);
+void *rtld_default(const char *symname);
 
 //char* captureScreenShotX(int* width, int* height);
 //void releaseScreenShotX();
@@ -151,6 +152,12 @@ void *rtdl_next(const char *symname);
 	do {						\
 		if (symbol == NULL)			\
 			symbol = rtdl_next(sname);	\
+	} while (0)
+
+#define rtld_default_set_once(symbol, sname)    \
+	do {					\
+		if (symbol == NULL)		     \
+			symbol = rtld_default(sname);       \
 	} while (0)
 
 // ========================= print log =====================================
@@ -251,6 +258,15 @@ typedef struct {
 
 #define GET_REAL_FUNC_RTLD_NEXT_CPP(FUNCNAME)	\
 		GET_REAL_FUNCP_RTLD_NEXT_CPP(FUNCNAME, FUNCNAME##p)
+
+#define GET_REAL_FUNCP_RTLD_DEFAULT(FUNCNAME, FUNCTIONPOINTER)		\
+		do {														\
+			if(!FUNCTIONPOINTER) {									\
+				FUNCTIONPOINTER = dlsym(RTLD_DEFAULT, #FUNCNAME);	\
+				if(FUNCTIONPOINTER == NULL || dlerror() != NULL)	\
+					probe_terminate_with_err("function not found", #FUNCNAME, LIB_NO);		\
+			}														\
+		} while(0)
 
 // ======================= pre block macro ================================
 

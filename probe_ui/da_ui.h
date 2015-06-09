@@ -55,7 +55,13 @@
 
 #define AFTER_ORIGINAL_SNAPSHOT(EVASOBJECT)							\
 	do {															\
-		evas_event_callback_add(evas_object_evas_get(EVASOBJECT),	\
+		static void (*__evas_event_callback_add_p)(Evas *e, Evas_Callback_Type type, Evas_Event_Cb func, const void *data);	\
+		static Evas *(*__evas_object_evas_get_p)(Evas_Object *obj);\
+		\
+		rtld_default_set_once(__evas_event_callback_add_p, "evas_event_callback_add"); \
+		rtld_default_set_once(__evas_object_evas_get_p, "evas_object_evas_get"); \
+		\
+		__evas_event_callback_add_p(__evas_object_evas_get_p(EVASOBJECT),	\
 			EVAS_CALLBACK_RENDER_FLUSH_POST,						\
 			_cb_render_post, NULL);									\
 	} while(0)

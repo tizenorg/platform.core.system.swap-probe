@@ -488,8 +488,6 @@ void _init_(void)
 
 	initialize_screencapture();
 
-	initialize_event();
-
 	getExecutableMappingAddress();
 
 	gTraceInfo.app.startTime = get_app_start_time();
@@ -916,6 +914,19 @@ void *rtdl_next(const char *symname)
 	symbol = dlsym(RTLD_NEXT, symname);
 	if (symbol == NULL || dlerror() != NULL) {
 		PRINTERR("dlsym failed <%s>\n", symname);
+		exit(41);
+	}
+
+	return symbol;
+}
+
+void *rtld_default(const char *symname)
+{
+	void *symbol;
+
+	symbol = dlsym(RTLD_DEFAULT, symname);
+	if (symbol == NULL || dlerror() != NULL) {
+		PRINTERR("dlsym default failed <%s>\n", symname);
 		exit(41);
 	}
 
