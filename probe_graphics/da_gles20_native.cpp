@@ -35,7 +35,7 @@
 #include "common_probe_init.h"
 
 #ifndef REAL_NAME
-	#define REAL_NAME(func) func
+	#define REAL_NAME(func) PROBE_NAME(func)
 #endif
 
 #ifndef CALL_ORIG

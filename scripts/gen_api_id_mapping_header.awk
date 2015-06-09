@@ -34,21 +34,24 @@ BEGIN {
 		gsub("\*", "\\*", orig)
 		printf "/* %s */\n", orig
 	} else {
-		if (index(orig, "(") != 0) {
-			split(orig, tokens, ")\s\*, ")
+		split(orig, tokens, ";")
+
+		if (length(tokens) != 3) {
+			printf "//#warning %-135s  //bad string \n", orig
 		} else {
-			split(orig, tokens, ",  ")
-		}
-		def = tokens[1]
-		split(def, splited, "###")
-		def = splited[1]
-		gsub(/[,:()*&~\[\] ]/, "_", def)
-		def = macro_prefix def
-		if (find_el_in_array(created_defs, def) == false) {
-			printf "#define %-135s %d // %s\n", def, api_id, tokens[1]
-			api_id++
-			created_defs[created_defs_cnt] = def
-			created_defs_cnt++
+
+			def = tokens[2]
+			split(def, splited, "###")
+			def = splited[1]
+			gsub(/^[ ]*/, "", def)
+			gsub(/[,:()*&~\[\] ]/, "_", def)
+			def = macro_prefix def
+			if (find_el_in_array(created_defs, def) == false) {
+				printf "#define %-135s %d // %s\n", def, api_id, tokens[1]
+				api_id++
+				created_defs[created_defs_cnt] = def
+				created_defs_cnt++
+			}
 		}
 	}
 }
