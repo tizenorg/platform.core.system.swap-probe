@@ -56,12 +56,10 @@ BEGIN {
 			#printf "%s\n", $0
 		} else {
 			api_name = $0
-			split(api_name, splited, "###")
-			if (splited[2] != ""){
-				api_name = splited[2]
-			}
-			split(api_name, splited, ",")
-			api_name = splited[1]
+
+			split(api_name, splited, ";")
+			api_name = splited[2]
+			gsub(/^[ ]*/, "", api_name)
 			if (find_el_in_array(handled_ids, api_name) == false) {
 				printf "X(%d, \"%s\", %s, %s, %s, %s) \\\n", api_id, api_name, cur[1], cur[2], cur[3], cur[4]
 				api_id++
