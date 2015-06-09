@@ -47,6 +47,30 @@
 static int external_angle = 0;
 static int internal_angle = 0;
 
+// ====================================================================
+// initialize and finalize event
+// ====================================================================
+
+int initialize_event()
+{
+	static bool inited = false;
+	static app_device_orientation_e (*__app_get_device_orientation_p)(void);
+
+	if (inited)
+		return 0;
+
+	rtld_default_set_once(__app_get_device_orientation_p, "app_get_device_orientation");
+
+	external_angle = internal_angle = __app_get_device_orientation_p();
+	return 0;
+}
+
+int finalize_event()
+{
+	return 0;
+}
+
+
 // ===================================================================
 // orientation related functions
 // ===================================================================
@@ -80,6 +104,8 @@ void on_orientation_changed(int angle, bool capi)
 {
 	probeInfo_t	probeInfo;
 
+	initialize_event();
+
 	internal_angle = angle;
 	external_angle = internal_angle;
 
@@ -105,22 +131,7 @@ void on_orientation_changed(int angle, bool capi)
 
 int getOrientation()
 {
+	initialize_event();
+
 	return external_angle;
 }
-
-// ====================================================================
-// initialize and finalize event
-// ====================================================================
-
-int initialize_event()
-{
-	external_angle = internal_angle = app_get_device_orientation();
-	return 0;
-}
-
-int finalize_event()
-{
-	return 0;
-}
-
-
