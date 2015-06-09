@@ -85,13 +85,17 @@ def __parse_file(libs_data, file):
                 #print "WARNING: commented code : <" + line + ">"
                 continue
         else:
-            splitted = line.split()
+            splitted = line.split(';')
+
             if len(splitted) < 3:
                 print "WARNING: Wrong string in api_names.txt +" + str(current_line) + ": <" + line + ">"
                 continue
+            for i in range(0, len(splitted)):
+                splitted[i] = re.sub(" ", "", splitted[i])
+                splitted[i] = re.sub("\n", "", splitted[i])
 
-            func = splitted[0][:-1]
-            handler = defines["PROBE_NAME_PREFIX"] + splitted[1][:-1]
+            func = splitted[0]
+            handler = defines["PROBE_NAME_PREFIX"] + splitted[1]
             probe_type = splitted[2]
 
             if len(current_libs) == 1 and (current_libs[0] == "???" or current_libs[0] == "---"):
@@ -121,7 +125,7 @@ def __lib_syms(libname):
     for line in read_probe:
         if line is None:
             continue
-        tokens = re.findall("\d+:\s+([a-f0-9]+)\s+\d+\s+\w+\s+\w+\s+\w+\s+\w+\s+(\w+)", line)
+        tokens = re.findall("\d+:\s+([a-f0-9]+)\s+\d+\s+\w+\s+\w+\s+\w+\s+\w+\s+(.*)", line)
         for t in tokens:
             if all(c in string.hexdigits for c in t[0]) and (int(t[0], 16) != 0):
                 probe_data[t[1]] = t[0]
@@ -134,23 +138,42 @@ def parse_probe_lib(da_lib):
 ####################################################################
 
 ################## Getting function's addresses ####################
-
-def __get_addr_by_funcname(lib_data, funcname):
+def __get_addr_by_funcname_handler(lib_data, funcname):
     if funcname in lib_data:
         return lib_data[funcname]
+    return None
+
+def __get_addr_by_funcname_lib(lib_data, funcname):
+    result = {}
+    if funcname in lib_data:
+        result[funcname] = lib_data[funcname]
     else:
+        funcname = re.sub("\*", ".*", funcname)
+        for i in lib_data:
+            tokens = re.findall("^(" + funcname + ")\n", i + "\n")
+            if tokens != []:
+                result[i] = lib_data[i]
+
+    if result == {}:
         return None
+    else:
+        return result
+
+total_count={}
 
 def iterate_over_libs(data, probe_lib):
     feature_dict = {}
     for libname in data:
         lib_data = __lib_syms(libname)
         for funcname in data[libname]:
-            addr = __get_addr_by_funcname(lib_data, funcname)
+            addr = __get_addr_by_funcname_lib(lib_data, funcname)
+            if funcname not in total_count:
+                total_count[funcname] = 0;
             for feature in data[libname][funcname]:
-                handler_addr = __get_addr_by_funcname(probe_lib, data[libname][funcname][feature][0])
+                handler_addr = __get_addr_by_funcname_handler(probe_lib, data[libname][funcname][feature][0])
                 if addr is not None and handler_addr is not None:
                     feature_dict = __add_item(feature_dict, [feature, [libname, [funcname]]], (addr, handler_addr, data[libname][funcname][feature][1]))
+                    total_count[funcname] = total_count[funcname] + 1;
     return feature_dict
 
 ####################################################################
@@ -230,8 +253,9 @@ def __print_lib_end(file):
     file.write("/* ======================================== */\n")
     file.write("\n")
 
-def __print_probe(file, func, addr, handler, type):
-    file.write("\t\t{0x" + addr + ", 0x" + handler + ", " + type +" /* " + func + " */},\n")
+def __print_probe(file, func, addr_list, handler, type):
+    for lib_func in addr_list:
+        file.write("\t\t{0x" + str(addr_list[lib_func]) + ", 0x" + str(handler) + ", " + str(type) +" /* " + str(lib_func) + " */},\n")
 
 def __print_feature_list(file, features_cnt, features_list_dict):
     file.write("int feature_to_data_count = " + str(features_cnt) + ";\n")
@@ -318,12 +342,12 @@ def __print_types(file):
     file.write("\n")
 
 def __print_probe_lib(file, da_inst_dir, da_lib, probe_lib):
-    get_caller_addr = __get_addr_by_funcname(probe_lib, "get_caller_addr")
+    get_caller_addr = __get_addr_by_funcname_handler(probe_lib, "get_caller_addr")
     if get_caller_addr is None:
         print "WARNING: <get_caller> address is not found!"
         return
 
-    get_call_type_addr = __get_addr_by_funcname(probe_lib, "get_call_type")
+    get_call_type_addr = __get_addr_by_funcname_handler(probe_lib, "get_call_type")
     if get_call_type_addr is None:
         print "WARNING: <get_call_type> address is not found!"
         return
@@ -376,3 +400,7 @@ data = parse_apis(func_list_file)
 probe_lib = parse_probe_lib(da_lib)
 feature_dict = iterate_over_libs(data, probe_lib)
 generate_headers(feature_dict, da_inst_dir, da_lib, probe_lib)
+
+for i in total_count:
+    if total_count[i] == 0:
+        print "ERROR! function not found <%s>" % str(i)
