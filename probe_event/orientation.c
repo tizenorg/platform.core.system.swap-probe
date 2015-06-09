@@ -45,7 +45,10 @@ Ecore_Event_Handler *handler = NULL;
 Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
 				      void *pEvent)
 {
+	static Ecore_X_Atom *__ECORE_X_ATOM_E_WINDOW_ROTATION_CHANGE_PREPARE_P = NULL;
 	Ecore_X_Event_Client_Message *pClientEvent;
+
+	rtld_default_set_once(__ECORE_X_ATOM_E_WINDOW_ROTATION_CHANGE_PREPARE_P, "ECORE_X_ATOM_E_WINDOW_ROTATION_CHANGE_PREPARE");
 
 	pClientEvent = (Ecore_X_Event_Client_Message*)pEvent;
 
@@ -57,7 +60,7 @@ Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
 			return ECORE_CALLBACK_PASS_ON;
 
 		if (pClientEvent->message_type ==
-		    ECORE_X_ATOM_E_WINDOW_ROTATION_CHANGE_PREPARE) {
+		    *__ECORE_X_ATOM_E_WINDOW_ROTATION_CHANGE_PREPARE_P) {
 			int orientation = (int)pClientEvent->data.l[1];
 			on_orientation_changed(orientation, false);
 		}
@@ -68,9 +71,14 @@ Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
 
 Ecore_Event_Handler *register_orientation_event_listener()
 {
+	static Ecore_Event_Handler *(*__ecore_event_handler_add_p)(int type, Ecore_Event_Handler_Cb func, const void *data) = NULL;
+	static int *__ECORE_X_EVENT_CLIENT_MESSAGE_P = NULL;
 	Ecore_Event_Handler *handler;
 
-	handler = ecore_event_handler_add(ECORE_X_EVENT_CLIENT_MESSAGE,
+	rtld_default_set_once(__ecore_event_handler_add_p, "ecore_event_handler_add");
+	rtld_default_set_once(__ECORE_X_EVENT_CLIENT_MESSAGE_P, "ECORE_X_EVENT_CLIENT_MESSAGE");
+
+	handler = __ecore_event_handler_add_p(*__ECORE_X_EVENT_CLIENT_MESSAGE_P,
 					  _da_onclientmessagereceived, NULL);
 
 	return handler;
@@ -78,8 +86,12 @@ Ecore_Event_Handler *register_orientation_event_listener()
 
 void unregister_orientation_event_listener(Ecore_Event_Handler *handler)
 {
+	static void *(*__ecore_event_handler_del_p)(Ecore_Event_Handler *event_handler) = NULL;
+
+	rtld_default_set_once(__ecore_event_handler_del_p, "ecore_event_handler_del");
+
 	if (handler)
-		ecore_event_handler_del(handler);
+		__ecore_event_handler_del_p(handler);
 }
 
 EAPI int ecore_x_init(const char *name)

@@ -163,10 +163,25 @@ CANT_CONVERT:
 
 static char* captureScreenShotX(int* pwidth, int* pheight, screenshot_data* sdata)
 {
+	static Display *(*__XOpenDisplay_p)(_Xconst char *);
+	static Bool (*__XShmGetImage_p)(Display *, Drawable, XImage *, int, int,
+		     unsigned long);
+	static XImage *(*__XShmCreateImage_p)(Display *, Visual *, unsigned int,
+			int, char *, XShmSegmentInfo *, unsigned int, unsigned int);
+	static Bool (*__XShmAttach_p)(Display *, XShmSegmentInfo *);
+	static Bool (*__XShmDetach_p)(Display *, XShmSegmentInfo *);
+	static int (*__XSync_p)(Display *, Bool);
 	Window			root;
 //	Atom			atom_rotation;
 
-	sdata->dpy = XOpenDisplay(NULL);
+	rtld_default_set_once(__XOpenDisplay_p, "XOpenDisplay");
+	rtld_default_set_once(__XShmGetImage_p, "XShmGetImage");
+	rtld_default_set_once(__XShmCreateImage_p, "XShmCreateImage");
+	rtld_default_set_once(__XShmAttach_p, "XShmAttach");
+	rtld_default_set_once(__XShmDetach_p, "XShmDetach");
+	rtld_default_set_once(__XSync_p, "XSync");
+
+	sdata->dpy = __XOpenDisplay_p(NULL);
 	if(unlikely(sdata->dpy == NULL))
 	{
 		// XOpenDisplay failed!
@@ -178,7 +193,7 @@ static char* captureScreenShotX(int* pwidth, int* pheight, screenshot_data* sdat
 
 	root = RootWindow(sdata->dpy, DefaultScreen(sdata->dpy));
 
-	sdata->ximage = XShmCreateImage(sdata->dpy, DefaultVisualOfScreen (DefaultScreenOfDisplay (sdata->dpy)), 24,
+	sdata->ximage = __XShmCreateImage_p(sdata->dpy, DefaultVisualOfScreen (DefaultScreenOfDisplay (sdata->dpy)), 24,
 					ZPixmap, NULL, &sdata->x_shm_info, (unsigned int)*pwidth, (unsigned int)*pheight);
 
 	if(sdata->ximage != NULL)
@@ -187,11 +202,11 @@ static char* captureScreenShotX(int* pwidth, int* pheight, screenshot_data* sdat
 		sdata->x_shm_info.shmaddr = sdata->ximage->data = shmat(sdata->x_shm_info.shmid, 0, 0);
 		sdata->x_shm_info.readOnly = False;
 
-		if(XShmAttach(sdata->dpy, &sdata->x_shm_info))
+		if(__XShmAttach_p(sdata->dpy, &sdata->x_shm_info))
 		{
-			if(XShmGetImage(sdata->dpy, root, sdata->ximage, 0, 0, AllPlanes))
+			if(__XShmGetImage_p(sdata->dpy, root, sdata->ximage, 0, 0, AllPlanes))
 			{
-				XSync (sdata->dpy, False);
+				__XSync_p (sdata->dpy, False);
 				return sdata->ximage->data;
 			}
 			else
@@ -199,7 +214,7 @@ static char* captureScreenShotX(int* pwidth, int* pheight, screenshot_data* sdat
 				; // XShmGetImage failed !
 			}
 
-			XShmDetach (sdata->dpy, &sdata->x_shm_info);
+			__XShmDetach_p(sdata->dpy, &sdata->x_shm_info);
 		}
 		else
 		{
@@ -221,9 +236,15 @@ static char* captureScreenShotX(int* pwidth, int* pheight, screenshot_data* sdat
 
 static void releaseScreenShotX(screenshot_data* sdata)
 {
+	static int (*__XCloseDisplay_p)(Display *);
+	static Bool (*__XShmDetach_p)(Display *, XShmSegmentInfo *);
+
+	rtld_default_set_once(__XCloseDisplay_p, "XCloseDisplay");
+	rtld_default_set_once(__XShmDetach_p, "XShmDetach");
+
 	if(sdata->ximage)
 	{
-		XShmDetach (sdata->dpy, &sdata->x_shm_info);
+		__XShmDetach_p (sdata->dpy, &sdata->x_shm_info);
 		shmdt (sdata->x_shm_info.shmaddr);
 		shmctl (sdata->x_shm_info.shmid, IPC_RMID, NULL);
 		XDestroyImage(sdata->ximage);
@@ -232,40 +253,58 @@ static void releaseScreenShotX(screenshot_data* sdata)
 
 	if(sdata->dpy)
 	{
-		XCloseDisplay(sdata->dpy);
+		__XCloseDisplay_p(sdata->dpy);
 	}
 }
 
 static Evas* create_canvas(int width, int height)
 {
+
+	static void (*__evas_output_method_set_p)(Evas *e, int render_method);
+	static void (*__evas_output_size_set_p)(Evas *e, int w, int h);
+	static void (*__evas_output_viewport_set_p)(Evas *e, Evas_Coord x, Evas_Coord y, Evas_Coord w, Evas_Coord h);
+	static int (*__evas_render_method_lookup_p)(const char *name);
+	static Evas_Engine_Info *(*__evas_engine_info_get_p)(const Evas *e);
+	static Eina_Bool (*__evas_engine_info_set_p)(const Evas *e, Evas_Engine_Info *info);
+	static Evas *(*__evas_new_p)(void);
+	static void (*__evas_free_p)(Evas *e);
 	Evas *canvas;
 	Evas_Engine_Info_Buffer *einfo;
 	int method;
 	void *pixels;
 
-	method = evas_render_method_lookup("buffer");
+	rtld_default_set_once(__evas_output_method_set_p, "evas_output_method_set");
+	rtld_default_set_once(__evas_output_size_set_p, "evas_output_size_set");
+	rtld_default_set_once(__evas_output_viewport_set_p, "evas_output_viewport_set");
+	rtld_default_set_once(__evas_render_method_lookup_p, "evas_render_method_lookup");
+	rtld_default_set_once(__evas_engine_info_get_p, "evas_engine_info_get");
+	rtld_default_set_once(__evas_engine_info_set_p, "evas_engine_info_set");
+	rtld_default_set_once(__evas_new_p, "evas_new");
+	rtld_default_set_once(__evas_free_p, "evas_free");
+
+	method = __evas_render_method_lookup_p("buffer");
 	if (unlikely(method <= 0))
 	{
 		//fputs("ERROR: evas was not compiled with 'buffer' engine!\n", stderr);
 		return NULL;
 	}
 
-	canvas = evas_new();
+	canvas = __evas_new_p();
 	if (unlikely(canvas == NULL))
 	{
 		//fputs("ERROR: could not instantiate new evas canvas.\n", stderr);
 		return NULL;
 	}
 
-	evas_output_method_set(canvas, method);
-	evas_output_size_set(canvas, width, height);
-	evas_output_viewport_set(canvas, 0, 0, width, height);
+	__evas_output_method_set_p(canvas, method);
+	__evas_output_size_set_p(canvas, width, height);
+	__evas_output_viewport_set_p(canvas, 0, 0, width, height);
 
-	einfo = (Evas_Engine_Info_Buffer *)evas_engine_info_get(canvas);
+	einfo = (Evas_Engine_Info_Buffer *)__evas_engine_info_get_p(canvas);
 	if (unlikely(einfo == NULL))
 	{
 		//fputs("ERROR: could not get evas engine info!\n", stderr);
-		evas_free(canvas);
+		__evas_free_p(canvas);
 		return NULL;
 	}
 
@@ -273,7 +312,7 @@ static Evas* create_canvas(int width, int height)
 	pixels = real_malloc(width * height * sizeof(int));
 	if (unlikely(pixels == NULL)) {
 		//fputs("ERROR: could not allocate canvas pixels!\n", stderr);
-		evas_free(canvas);
+		__evas_free_p(canvas);
 		return NULL;
 	}
 
@@ -285,9 +324,9 @@ static Evas* create_canvas(int width, int height)
 	einfo->info.func.new_update_region = NULL;
 	einfo->info.func.free_update_region = NULL;
 
-	if (unlikely(evas_engine_info_set(canvas,(Evas_Engine_Info*)einfo) == EINA_FALSE)) {
+	if (unlikely(__evas_engine_info_set_p(canvas,(Evas_Engine_Info*)einfo) == EINA_FALSE)) {
 		PRINTMSG("ERROR: could not set evas engine info!\n");
-		evas_free(canvas);
+		__evas_free_p(canvas);
 		return NULL;
 	}
 
@@ -296,22 +335,35 @@ static Evas* create_canvas(int width, int height)
 
 static void destroy_canvas(Evas* canvas)
 {
+	static Evas_Engine_Info *(*__evas_engine_info_get_p)(const Evas *e);
+	static void (*__evas_free_p)(Evas *e);
 	Evas_Engine_Info_Buffer *einfo;
 
-	einfo = (Evas_Engine_Info_Buffer *)evas_engine_info_get(canvas);
+	rtld_default_set_once(__evas_engine_info_get_p, "evas_engine_info_get");
+	rtld_default_set_once(__evas_free_p, "evas_free");
+
+	einfo = (Evas_Engine_Info_Buffer *)__evas_engine_info_get_p(canvas);
 	if (unlikely(einfo == NULL))
 	{
 		//fputs("ERROR: could not get evas engine info!\n", stderr);
-		evas_free(canvas);
+		__evas_free_p(canvas);
 		return;
 	}
 
 	free(einfo->info.dest_buffer);
-	evas_free(canvas);
+	__evas_free_p(canvas);
 }
 
 int captureScreen()
 {
+	static void (*__evas_object_resize_p)(Evas_Object *obj, Evas_Coord w, Evas_Coord h);
+	static void (*__evas_object_image_data_set_p)(Evas_Object *obj, void *data);
+	static void (*__evas_object_image_size_set_p)(Evas_Object *obj, int w, int h);
+	static void (*__evas_object_image_fill_set_p)(Evas_Object *obj, Evas_Coord x, Evas_Coord y, Evas_Coord w, Evas_Coord h);
+	static void (*__evas_object_image_data_update_add_p)(Evas_Object *obj, int x, int y, int w, int h);
+	static Eina_Bool (*__evas_object_image_save_p)(Evas_Object *obj, const char *file, const char *key, const char *flags);
+	static Evas_Object *(*__evas_object_image_add_p)(Evas *e);
+	static pthread_mutex_t captureScreenLock = PTHREAD_MUTEX_INITIALIZER;
 	char dstpath[MAX_PATH_LENGTH];
 	char* scrimage;
 	int width, height;
@@ -320,7 +372,14 @@ int captureScreen()
 	screenshot_data sdata;
 	probeInfo_t	probeInfo;
 	int ret = 0;
-	static pthread_mutex_t captureScreenLock = PTHREAD_MUTEX_INITIALIZER;
+
+	rtld_default_set_once(__evas_object_resize_p, "evas_object_resize");
+	rtld_default_set_once(__evas_object_image_data_set_p, "evas_object_image_data_set");
+	rtld_default_set_once(__evas_object_image_size_set_p, "evas_object_image_size_set");
+	rtld_default_set_once(__evas_object_image_fill_set_p, "evas_object_image_fill_set");
+	rtld_default_set_once(__evas_object_image_data_update_add_p, "evas_object_image_data_update_add");
+	rtld_default_set_once(__evas_object_image_save_p, "evas_object_image_save");
+	rtld_default_set_once(__evas_object_image_add_p, "evas_object_image_add");
 
 	pthread_mutex_lock(&captureScreenLock);
 
@@ -337,25 +396,25 @@ int captureScreen()
 				 probeInfo.eventIndex);
 
 			// make image buffer
-			if((img = evas_object_image_add(ev)) != NULL)
+			if((img = __evas_object_image_add_p(ev)) != NULL)
 			{
 				//image buffer set
-				evas_object_image_data_set(img, NULL);
-				evas_object_image_size_set(img, width, height);
-				evas_object_image_data_set(img, scrimage);
+				__evas_object_image_data_set_p(img, NULL);
+				__evas_object_image_size_set_p(img, width, height);
+				__evas_object_image_data_set_p(img, scrimage);
 
 				// resize image
 				if(height > MAX_HEIGHT)
 				{
 					width = width * MAX_HEIGHT / height;
 					height = MAX_HEIGHT;
-					evas_object_resize(img, width, height);
-					evas_object_image_fill_set(img, 0, 0, width, height);
+					__evas_object_resize_p(img, width, height);
+					__evas_object_image_fill_set_p(img, 0, 0, width, height);
 				}
-				evas_object_image_data_update_add(img, 0, 0, width, height);
+				__evas_object_image_data_update_add_p(img, 0, 0, width, height);
 
 				//save file
-				if(evas_object_image_save(img, dstpath, NULL, "compress=5") != 0)
+				if(__evas_object_image_save_p(img, dstpath, NULL, "compress=5") != 0)
 				{
 					chmod(dstpath, 0777);
 
@@ -441,7 +500,11 @@ static Eina_Bool _captureTimer(void __unused * data)
 
 int activateCaptureTimer()
 {
-	ecore_timer_add(CAPTURE_TIMEOUT, _captureTimer, NULL);
+	static Ecore_Timer *(*__ecore_timer_add_p)(double in, Ecore_Task_Cb func, const void *data);
+
+	rtld_default_set_once(__ecore_timer_add_p, "ecore_timer_add");
+
+	__ecore_timer_add_p(CAPTURE_TIMEOUT, _captureTimer, NULL);
 	return 0;
 }
 
