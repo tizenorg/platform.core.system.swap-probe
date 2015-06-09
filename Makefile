@@ -58,18 +58,9 @@ WARN_CFLAGS = -g			\
 ## holds search paths and common libraries.
 
 LDFLAGS = -shared   	\
-	-lX11				\
-	-lXext				\
-	-lcapi-appfw-application	\
-	-lcapi-system-runtime-info	\
-	-ldl				\
-	-lecore				\
-	-lecore_input			\
-	-lecore_x			\
-	-leina				\
-	-levas				\
 	-lpthread			\
 	-lrt				\
+	-ldl				\
 	-Wl,-z,noexecstack
 
 ASMFLAG = -O0 -g
