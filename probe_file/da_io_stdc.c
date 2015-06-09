@@ -63,6 +63,8 @@ FILE* PROBE_NAME(fopen)(const char* filename, const char* mode)
 	char buffer[PATH_MAX];
 	FILE* fret;
 
+	PRINTERR("!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
 	BEFORE_ORIGINAL_FILE(fopen, LIBC);
 
 	fret = fopenp(filename, mode);
@@ -444,6 +446,7 @@ size_t PROBE_NAME(fread)(void* ptr, size_t size, size_t count, FILE* stream)
 {
 	static size_t (*freadp)(void* ptr, size_t size, size_t count, FILE* stream);
 	size_t tret;
+	PRINTERR("!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fread, 'x', fread, LIBC, stream,
 					FD_API_READ_START, "pxxp",
@@ -468,6 +471,7 @@ size_t PROBE_NAME(fwrite)(const void* ptr, size_t size, size_t count, FILE* stre
 {
 	static size_t (*fwritep)(const void* ptr, size_t size, size_t count, FILE* stream);
 	size_t tret;
+	PRINTERR("!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fwrite, 'x', fwrite, LIBC, stream,
 					FD_API_WRITE_START, "pxxp",
