@@ -9,6 +9,7 @@ Source:    %{name}_%{version}.tar.gz
 BuildRequires:  emulator-yagl
 %endif
 BuildRequires:  ecore-devel
+BuildRequires:  ecore-x
 BuildRequires:  elementary-devel
 BuildRequires:  capi-appfw-application-devel
 BuildRequires:  capi-system-runtime-info-devel
