@@ -94,7 +94,7 @@ void unregister_orientation_event_listener(Ecore_Event_Handler *handler)
 		__ecore_event_handler_del_p(handler);
 }
 
-EAPI int ecore_x_init(const char *name)
+EAPI int PROBE_NAME(ecore_x_init)(const char *name)
 {
 	static Ecore_Event_Handler *event_handler = NULL;
 
