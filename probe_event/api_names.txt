@@ -36,6 +36,10 @@ __common_elm_gesture_layer_cb;  __common_elm_gesture_layer_cb; 0
 Ecore_Event_Handler *register_orientation_event_listener();                 Ecore_Event_Handler *register_orientation_event_listener();                 0
 void unregister_orientation_event_listener(Ecore_Event_Handler **handler);  void unregister_orientation_event_listener(Ecore_Event_Handler **handler);  0
 
+#filename "orientation.c"
+#lib "/usr/lib/libecore_x.so.1"
+#feature ---
+ecore_x_init;                ecore_x_init;                      3
 
 #filename "da_event.c"
 #lib "???"

@@ -94,7 +94,7 @@ void unregister_orientation_event_listener(Ecore_Event_Handler *handler)
 		__ecore_event_handler_del_p(handler);
 }
 
-EAPI int ecore_x_init(const char *name)
+EAPI int PROBE_NAME(ecore_x_init)(const char *name)
 {
 	static Ecore_Event_Handler *event_handler = NULL;
 
@@ -102,7 +102,7 @@ EAPI int ecore_x_init(const char *name)
 	static int (*ecore_x_initp)(const char *name);
 	PRINTMSG("(%s)", name);
 
-	GET_REAL_FUNC_RTLD_NEXT(ecore_x_init);
+	rtld_default_set_once(ecore_x_initp, "ecore_x_init");
 	res = ecore_x_initp(name);
 
 	if (event_handler == NULL) {
