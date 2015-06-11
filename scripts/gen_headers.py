@@ -159,7 +159,25 @@ def __get_addr_by_funcname_lib(lib_data, funcname):
     else:
         return result
 
-total_count={}
+ERR_NO = 0
+ERR_HANDLER_NOT_FOUND_IN_LD_LIB = 1
+ERR_HANDLER_NO_FEATURE = 2
+ERR_HANDLER_FOUND_BUT_CANNOT_BE_LINKED = 3
+function_errors={}
+
+def get_function_search_error(function_name):
+    err = function_errors[function_name]
+    err_str = "ERROR Unknown error"
+
+    if err == ERR_HANDLER_FOUND_BUT_CANNOT_BE_LINKED:
+        err_str = "ERROR function not found in libs"
+    elif err == ERR_HANDLER_NO_FEATURE:
+        err_str = "ERROR function cannot be set because no feature"
+    elif err == ERR_HANDLER_NOT_FOUND_IN_LD_LIB:
+        err_str = "ERROR function not found in preload lib"
+
+    err_str = err_str + " func<%s> err#%d"
+    return err_str % (function_name, err)
 
 def iterate_over_libs(data, probe_lib):
     feature_dict = {}
@@ -167,13 +185,22 @@ def iterate_over_libs(data, probe_lib):
         lib_data = __lib_syms(libname)
         for funcname in data[libname]:
             addr = __get_addr_by_funcname_lib(lib_data, funcname)
-            if funcname not in total_count:
-                total_count[funcname] = 0;
+            if funcname not in function_errors:
+                function_errors[funcname] = ERR_HANDLER_NO_FEATURE;
+
             for feature in data[libname][funcname]:
+                if function_errors[funcname] == ERR_HANDLER_NO_FEATURE:
+                    function_errors[funcname] = ERR_HANDLER_FOUND_BUT_CANNOT_BE_LINKED;
+
                 handler_addr = __get_addr_by_funcname_handler(probe_lib, data[libname][funcname][feature][0])
-                if addr is not None and handler_addr is not None:
+
+                if handler_addr is None:
+                    function_errors[funcname] = ERR_HANDLER_NOT_FOUND_IN_LD_LIB
+                    continue
+
+                if addr is not None:
                     feature_dict = __add_item(feature_dict, [feature, [libname, [funcname]]], (addr, handler_addr, data[libname][funcname][feature][1]))
-                    total_count[funcname] = total_count[funcname] + 1;
+                    function_errors[funcname] = ERR_NO;
     return feature_dict
 
 ####################################################################
@@ -401,6 +428,6 @@ probe_lib = parse_probe_lib(da_lib)
 feature_dict = iterate_over_libs(data, probe_lib)
 generate_headers(feature_dict, da_inst_dir, da_lib, probe_lib)
 
-for i in total_count:
-    if total_count[i] == 0:
-        print "ERROR! function not found <%s>" % str(i)
+for i in function_errors:
+    if function_errors[i] != ERR_NO:
+        print "%s" % get_function_search_error(i)
