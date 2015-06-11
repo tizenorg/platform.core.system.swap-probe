@@ -195,9 +195,12 @@ int PROBE_NAME(execvpe)(const char *file, char *const argv[],char *const envp[])
 	return res;
 }
 
-pid_t fork(void)
+pid_t PROBE_NAME(fork)(void)
 {
-	pid_t res = fork_p();
+	pid_t res = 0;
+	PRINTMSG("<fork entry>");
+
+	res = fork_p();
 
 	PRINTMSG("<fork = %d>", res);
 	if (res == 0) {

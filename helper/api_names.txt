@@ -9,6 +9,12 @@ execvp@*;      execvp;     0
 execve@*;      execve;     0
 execvpe@*;     execvpe;    0
 
+
+#filename "daforkexec.c"
+#lib "/lib/*"
+#feature ---
+fork@*;        fork;       0
+
 #filename "dacapture.c"
 #lib "---"
 #feature ---
