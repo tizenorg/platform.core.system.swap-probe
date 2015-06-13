@@ -311,6 +311,9 @@ def __print_features(file, data):
         libs_in_feature = {}
 
         for lib in data[feature]:
+            # skip /emul/*
+            if lib.startswith('/emul/'):
+                continue
             lib_feature_name = re.sub("\.", "_", re.sub("-", "__", os.path.basename(lib)))
             lib_feature_name = write_feature + "_" + lib_feature_name
             __print_lib_begin(file, lib, lib_feature_name)
