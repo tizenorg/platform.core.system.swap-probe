@@ -52,6 +52,7 @@
 
 static char contextValue[MAX_GL_CONTEXT_VALUE_SIZE];
 static __thread GLenum gl_error_external = GL_NO_ERROR;
+static __thread int is_gl_error_external = 1;
 
 static void __ui_array_to_str(char *to, GLuint *arr ,int count, size_t bufsize)
 {
@@ -84,13 +85,13 @@ GLenum REAL_NAME(glGetError)(void)
 	if (gl_error_external == GL_NO_ERROR)
 		gl_error_external = ret;
 
-	if (blockresult) {
+	if (is_gl_error_external && blockresult) {
 		//external call
 		ret = gl_error_external;
 		gl_error_external = GL_NO_ERROR;
-	}
 
-	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
+		AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
+	}
 
 	return ret;
 }
