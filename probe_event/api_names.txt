@@ -30,6 +30,11 @@ void GestureEventListener::OnTapGestureDetected (TouchTapGestureDetector &gestur
 #feature ---
 __common_elm_gesture_layer_cb;  __common_elm_gesture_layer_cb; 0
 
+#filename "gesture.c"
+#lib "/usr/lib/libelementary.so.1"
+#feature FL_USER_EVENT
+elm_gesture_layer_cb_set;         elm_gesture_layer_cb_set;         0
+
 #filename "orientation.c"
 #lib "???"
 #feature ---

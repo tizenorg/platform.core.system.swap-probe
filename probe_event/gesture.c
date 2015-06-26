@@ -215,7 +215,7 @@ Evas_Event_Flags __common_elm_gesture_layer_cb(void *data , void *event_info)
 	return res;
 }
 
-void elm_gesture_layer_cb_set(Evas_Object *obj, Elm_Gesture_Type idx,
+void PROBE_NAME(elm_gesture_layer_cb_set)(Evas_Object *obj, Elm_Gesture_Type idx,
 			      Elm_Gesture_State cb_type, Elm_Gesture_Event_Cb cb,
 			      void *data)
 {
@@ -232,7 +232,7 @@ void elm_gesture_layer_cb_set(Evas_Object *obj, Elm_Gesture_Type idx,
 
 	elm = add_gesture_hash(&d);
 
-	GET_REAL_FUNC_RTLD_NEXT(elm_gesture_layer_cb_set);
+	GET_REAL_FUNCP_RTLD_DEFAULT(elm_gesture_layer_cb_set, elm_gesture_layer_cb_setp);
 
 	elm_gesture_layer_cb_setp(obj, idx, cb_type, __common_elm_gesture_layer_cb, elm);
 	return;
