@@ -341,7 +341,7 @@ char** da_backtrace_symbols (void* const* array, int size)
 				else
 				{
 					int len;
-					if(map->l_origin)
+					if(map->l_origin && strlen(map->l_origin) < FILEPATH_MAX)
 					{
 						strcpy(filepath, map->l_origin);
 						len = strlen(filepath);
