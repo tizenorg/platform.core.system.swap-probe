@@ -340,7 +340,7 @@ char** da_backtrace_symbols (void* const* array, int size)
 				}
 				else
 				{
-					int len;
+					size_t len = 0;
 					if(map->l_origin && strlen(map->l_origin) < FILEPATH_MAX)
 					{
 						strcpy(filepath, map->l_origin);
@@ -349,11 +349,13 @@ char** da_backtrace_symbols (void* const* array, int size)
 						{
 							filepath[len] = '/';
 							filepath[len+1] = '\0';
+							len += 1;
 						}
 					}
 					else
 						filepath[0] = '\0';
-					strcat(filepath, map->l_name);
+					if (strlen(map->l_name) < FILEPATH_MAX - len)
+						strcat(filepath, map->l_name);
 				}
 
 				symdata_t* pdata = _get_symboldata(filepath);
