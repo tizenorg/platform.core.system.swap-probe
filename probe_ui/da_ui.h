@@ -50,7 +50,6 @@
  **********************************************************************/
 
 #define BEFORE_ORIGINAL_SNAPSHOT(FUNCNAME, LIBNAME)		\
-	Evas_Object* ret;									\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME)
 
 #define AFTER_ORIGINAL_SNAPSHOT(EVASOBJECT)							\

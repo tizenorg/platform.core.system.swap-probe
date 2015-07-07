@@ -35,46 +35,11 @@
 #include "probeinfo.h"
 #include "da_ui.h"
 
-Evas_Object *PROBE_NAME(elm_win_add)(Evas_Object *parent, const char* name, Elm_Win_Type type)
+void PROBE_NAME(evas_object_show)(Evas_Object *obj)
 {
-	static Evas_Object * (*elm_win_addp)(Evas_Object *parent, const char* name, Elm_Win_Type type);
+	static void (*evas_object_showp)(Evas_Object *obj);
 
-	BEFORE_ORIGINAL_SNAPSHOT(elm_win_add, LIBELEMENTARY);
-	ret = elm_win_addp(parent, name, type);
-	AFTER_ORIGINAL_SNAPSHOT(ret);
-
-	return ret;
-}
-
-Evas_Object *PROBE_NAME(elm_controlbar_add)(Evas_Object *parent)
-{
-	static Evas_Object * (*elm_controlbar_addp)(Evas_Object *parent);
-
-	BEFORE_ORIGINAL_SNAPSHOT(elm_controlbar_add, LIBELEMENTARY);
-	ret = elm_controlbar_addp(parent);
-	AFTER_ORIGINAL_SNAPSHOT(ret);
-
-	return ret;
-}
-
-Evas_Object *PROBE_NAME(elm_naviframe_add)(Evas_Object *parent)
-{
-	static Evas_Object * (*elm_naviframe_addp)(Evas_Object *parent);
-
-	BEFORE_ORIGINAL_SNAPSHOT(elm_naviframe_add, LIBELEMENTARY);
-	ret = elm_naviframe_addp(parent);
-	AFTER_ORIGINAL_SNAPSHOT(ret);
-
-	return ret;
-}
-
-Evas_Object *PROBE_NAME(elm_pager_add)(Evas_Object *parent)
-{
-	static Evas_Object * (*elm_pager_addp)(Evas_Object *parent);
-
-	BEFORE_ORIGINAL_SNAPSHOT(elm_pager_add, LIBELEMENTARY);
-	ret = elm_pager_addp(parent);
-	AFTER_ORIGINAL_SNAPSHOT(ret);
-
-	return ret;
+	BEFORE_ORIGINAL_SNAPSHOT(evas_object_show, LIBEVAS);
+	evas_object_showp(obj);
+	AFTER_ORIGINAL_SNAPSHOT(obj);
 }
