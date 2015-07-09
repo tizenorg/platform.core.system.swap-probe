@@ -37,6 +37,14 @@ Summary:    SWAP probe library
 SWAP probe is a part of data collection back-end for DA.
 This library will be installed in target.
 
+%package -n swap-probe-elf
+Provides: swap-probe-elf
+Summary:    Swap elf parsing tool
+
+%description -n swap-probe-elf
+SWAP probe is a part of data collection back-end for DA.
+This tool will be installed in target
+
 %prep
 %setup -q -n %{name}_%{version}
 
@@ -51,6 +59,7 @@ rm -rf ${RPM_BUILD_ROOT}
 mkdir -p %{buildroot}/usr/share/license
 cp LICENSE %{buildroot}/usr/share/license/%{name}
 mkdir -p %{buildroot}/usr/local/include
+mkdir -p %{buildroot}/usr/local/bin
 
 %make_install
 
@@ -66,6 +75,9 @@ mkdir -p %{buildroot}/usr/local/include
 /usr/local/include/ld_preload_*.h
 /usr/local/include/x_define_api_id_list.h
 /usr/local/include/app_protocol.h
+
+%files -n swap-probe-elf
+/usr/local/bin/parse_elf
 
 
 %changelog

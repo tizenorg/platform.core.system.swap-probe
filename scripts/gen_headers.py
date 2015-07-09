@@ -120,15 +120,18 @@ def parse_apis(func_list_file):
 
 def __lib_syms(libname):
     probe_data = {}
-    p = subprocess.Popen(["readelf -sW \"" + libname + "\""], shell=True, stdout=subprocess.PIPE)
+    p = subprocess.Popen(["./parse_elf \"" + libname + "\" -sa"], shell=True, stdout=subprocess.PIPE)
     read_probe = p.communicate()
     for line in read_probe:
         if line is None:
             continue
-        tokens = re.findall("\d+:\s+([a-f0-9]+)\s+\d+\s+\w+\s+\w+\s+\w+\s+\w+\s+(.*)", line)
+
+        tokens = line.split('\n')
         for t in tokens:
-            if all(c in string.hexdigits for c in t[0]) and (int(t[0], 16) != 0):
-                probe_data[t[1]] = t[0]
+            parts = t.split(' ')
+            if len(parts) == 2 and int(parts[0], 16) != 0:
+                probe_data[parts[1]] = parts[0]
+
     return probe_data
 
 

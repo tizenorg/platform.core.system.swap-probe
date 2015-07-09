@@ -1,4 +1,5 @@
 INSTALLDIR = usr/lib
+BIN_INSTALLDIR = /usr/local/bin
 HEADER_INSTALLDIR = /usr/local/include/
 
 ## Since include directives do not impose additional dependencies, we can make
@@ -114,16 +115,19 @@ TIZEN_SRCS =	$(COMMON_SRCS) $(CAPI_SRCS)\
 
 ASM_SRC = ./helper/da_call_original.S
 
+PARSE_ELF_SRC = ./elf_parsing/parse_elf.c
+
 ## Totally brain-dead.
 ## FIXME: Rewrite this normally with eval.
 ASM_OBJ = $(patsubst %.S,%.o, $(ASM_SRC))
 CAPI_OBJS = $(patsubst %.c,%.o, $(CAPI_SRCS)) $(ASM_OBJ)
 TIZEN_OBJS = $(patsubst %.cpp,%.o, $(patsubst %.c,%.o, $(TIZEN_SRCS))) $(ASM_OBJ)
 DUMMY_OBJS = $(patsubst %.c,%.o, $(DUMMY_SRCS))
-
+PARSE_ELF_OBJ = $(patsubst %.c,%.o, $(PARSE_ELF_SRC))
 
 TIZEN_TARGET = da_probe_tizen.so
 DUMMY_TARGET = libdaprobe.so
+PARSE_ELF_TARGET = parse_elf
 
 CPPFLAGS = $(INCLUDE_CPPFLAGS) -D_GNU_SOURCE -DSELF_LIB_NAME="\"/$(INSTALLDIR)/$(TIZEN_TARGET)\""
 CFLAGS = $(WARN_CFLAGS) -fPIC
@@ -132,12 +136,17 @@ CXXFLAGS = $(WARN_CFLAGS) -fPIC
 TIZEN_CPPFLAGS = -DTIZENAPP $(SWAP_PROBE_DEFS)
 TIZEN_LDFLAGS = -lstdc++
 
-all:		capi tizen dummy
+
+all:		capi tizen dummy elfparser
 tizen:		headers $(TIZEN_TARGET)
 dummy:		headers $(DUMMY_TARGET)
+elfparser:	$(PARSE_ELF_OBJ) $(PARSE_ELF_TARGET)
 
 $(ASM_OBJ): $(ASM_SRC)
 	$(CC) $(ASMFLAG) -c $^ -o $@
+
+$(PARSE_ELF_OBJ): $(PARSE_ELF_SRC)
+	$(CC) -c $^ -o $@
 
 API_NAME_LIST = scripts/api_names_all.txt
 GENERATED_CONFIG = include/api_config.h
@@ -178,9 +187,12 @@ $(TIZEN_TARGET): $(TIZEN_OBJS)
 $(DUMMY_TARGET): $(DUMMY_OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
+$(PARSE_ELF_TARGET): $(PARSE_ELF_OBJ)
+	$(CC) $^ -o $@
+
 ldheader:	$(SOURCE_HEADERS)
 
-install: install_da install_ld
+install: install_da install_ld install_elf
 
 install_da: all
 	[ -d "$(DESTDIR)/$(INSTALLDIR)" ] || mkdir -p $(DESTDIR)/$(INSTALLDIR)
@@ -194,6 +206,8 @@ install_ld: ldheader # var_addr
 	install -m 644 include/x_define_api_id_list.h $(DESTDIR)/$(HEADER_INSTALLDIR)/x_define_api_id_list.h
 	install -m 644 include/app_protocol.h $(DESTDIR)/$(HEADER_INSTALLDIR)/app_protocol.h
 
+install_elf: elfparser
+	install -m 755 $(PARSE_ELF_TARGET) $(DESTDIR)/$(BIN_INSTALLDIR)/parse_elf
 
 
 clean:
