@@ -1,5 +1,5 @@
 #filename "da_evas_gl.c"
-#lib "???"
+#lib "/usr/lib/libelementary.so.1"
 #feature FL_OPENGL_API_PROBING
 evas_gl_free;                   evas_gl_free;               0
 evas_gl_config_free;            evas_gl_config_free;        0

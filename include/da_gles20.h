@@ -182,13 +182,11 @@ extern EGLContext eglGetCurrentContext(void);
 	PRE_PROBEBLOCK();						\
 	if(blockresult != 0)						\
 		start_nsec = get_current_nsec();			\
-	GET_REAL_FUNC_RTLD_NEXT(FUNCNAME)
+	GET_REAL_FUNCP_RTLD_DEFAULT(FUNCNAME, FUNCNAME##p)
 
 GLenum glGetError(void);
 void glGetIntegerv(GLenum pname, GLint * params);
 extern Evas_GL_API *__gl_api;
-extern void save_orig_gl_api_list(Evas_GL_API *api);
-extern void change_gl_api_list(Evas_GL_API *api);
-
+extern Evas_GL_API *get_gl_api_fake_list(Evas_GL_API *api);
 #endif /* DA_GLES20_H_ */
 

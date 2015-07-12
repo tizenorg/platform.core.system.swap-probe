@@ -33,7 +33,6 @@
 #include "real_functions.h"
 
 //#define EGL_TEST
-Evas_GL_API *__gl_api;
 void (*real_glGetVertexAttribfv)(GLuint index, GLenum pname, GLfloat *params);
 void (*real_glGetIntegerv)(GLenum pname, GLint * params);
 void (*real_glGetProgramiv)(GLuint program, GLenum pname, GLint *params);

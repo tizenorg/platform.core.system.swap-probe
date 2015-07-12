@@ -34,7 +34,7 @@
 
 /* Evas open gl API functions */
 
-void evas_gl_free(Evas_GL *evas_gl)
+void PROBE_NAME(evas_gl_free)(Evas_GL *evas_gl)
 {
 	typedef void (*methodType)(Evas_GL *evas_gl);
 	BEFORE_EVAS_GL(evas_gl_free);
@@ -43,7 +43,7 @@ void evas_gl_free(Evas_GL *evas_gl)
 	      voidp_to_uint64(evas_gl));
 }
 
-void evas_gl_config_free(Evas_GL_Config *cfg)
+void PROBE_NAME(evas_gl_config_free)(Evas_GL_Config *cfg)
 {
 	typedef void (*methodType)(Evas_GL_Config *cfg);
 	BEFORE_EVAS_GL(evas_gl_config_free);
@@ -52,7 +52,7 @@ void evas_gl_config_free(Evas_GL_Config *cfg)
 	      voidp_to_uint64(cfg));
 }
 
-void evas_gl_surface_destroy(Evas_GL *evas_gl, Evas_GL_Surface *surf)
+void PROBE_NAME(evas_gl_surface_destroy)(Evas_GL *evas_gl, Evas_GL_Surface *surf)
 {
 	typedef void (*methodType)(Evas_GL *evas_gl, Evas_GL_Surface *surf);
 	BEFORE_EVAS_GL(evas_gl_surface_destroy);
@@ -61,7 +61,7 @@ void evas_gl_surface_destroy(Evas_GL *evas_gl, Evas_GL_Surface *surf)
 	      voidp_to_uint64(evas_gl), voidp_to_uint64(surf));
 }
 
-void evas_gl_context_destroy(Evas_GL *evas_gl, Evas_GL_Context *ctx)
+void PROBE_NAME(evas_gl_context_destroy)(Evas_GL *evas_gl, Evas_GL_Context *ctx)
 {
 	typedef void (*methodType)(Evas_GL *evas_gl, Evas_GL_Context *ctx);
 	BEFORE_EVAS_GL(evas_gl_context_destroy);
@@ -70,7 +70,7 @@ void evas_gl_context_destroy(Evas_GL *evas_gl, Evas_GL_Context *ctx)
 	      voidp_to_uint64(evas_gl), voidp_to_uint64(ctx));
 }
 
-Evas_GL *evas_gl_new(Evas *e)
+Evas_GL *PROBE_NAME(evas_gl_new)(Evas *e)
 {
 	typedef Evas_GL *(*methodType)(Evas *e);
 	BEFORE_EVAS_GL(evas_gl_new);
@@ -80,7 +80,7 @@ Evas_GL *evas_gl_new(Evas *e)
 	return res;
 }
 
-Evas_GL_Config *evas_gl_config_new(void)
+Evas_GL_Config *PROBE_NAME(evas_gl_config_new)(void)
 {
 	typedef Evas_GL_Config *(*methodType)(void);
 	BEFORE_EVAS_GL(evas_gl_config_new);
@@ -89,7 +89,7 @@ Evas_GL_Config *evas_gl_config_new(void)
 	return res;
 }
 
-Evas_GL_Surface *evas_gl_surface_create(Evas_GL *evas_gl, Evas_GL_Config *cfg,
+Evas_GL_Surface *PROBE_NAME(evas_gl_surface_create)(Evas_GL *evas_gl, Evas_GL_Config *cfg,
 					int w, int h)
 {
 	typedef Evas_GL_Surface *(*methodType)(Evas_GL *evas_gl,
@@ -102,7 +102,7 @@ Evas_GL_Surface *evas_gl_surface_create(Evas_GL *evas_gl, Evas_GL_Config *cfg,
 	return res;
 }
 
-Evas_GL_Context *evas_gl_context_create(Evas_GL *evas_gl,
+Evas_GL_Context *PROBE_NAME(evas_gl_context_create)(Evas_GL *evas_gl,
 					Evas_GL_Context *share_ctx)
 {
 	typedef Evas_GL_Context *(*methodType)(Evas_GL *evas_gl,
@@ -114,7 +114,7 @@ Evas_GL_Context *evas_gl_context_create(Evas_GL *evas_gl,
 	return res;
 }
 
-Eina_Bool evas_gl_make_current(Evas_GL *evas_gl, Evas_GL_Surface *surf,
+Eina_Bool PROBE_NAME(evas_gl_make_current)(Evas_GL *evas_gl, Evas_GL_Surface *surf,
 			       Evas_GL_Context *ctx)
 {
 	typedef Eina_Bool (*methodType)(Evas_GL *evas_gl, Evas_GL_Surface *surf,
@@ -126,7 +126,7 @@ Eina_Bool evas_gl_make_current(Evas_GL *evas_gl, Evas_GL_Surface *surf,
 	return res;
 }
 
-const char *evas_gl_string_query(Evas_GL *evas_gl, int name)
+const char *PROBE_NAME(evas_gl_string_query)(Evas_GL *evas_gl, int name)
 {
 	typedef const char *(*methodType)(Evas_GL *evas_gl, int name);
 	BEFORE_EVAS_GL(evas_gl_string_query);
@@ -136,7 +136,7 @@ const char *evas_gl_string_query(Evas_GL *evas_gl, int name)
 	return res;
 }
 
-Evas_GL_Func evas_gl_proc_address_get(Evas_GL *evas_gl, const char *name)
+Evas_GL_Func PROBE_NAME(evas_gl_proc_address_get)(Evas_GL *evas_gl, const char *name)
 {
 	typedef Evas_GL_Func(*methodType)(Evas_GL *evas_gl, const char *name);
 	BEFORE_EVAS_GL(evas_gl_proc_address_get);
@@ -146,7 +146,7 @@ Evas_GL_Func evas_gl_proc_address_get(Evas_GL *evas_gl, const char *name)
 	return res;
 }
 
-Eina_Bool evas_gl_native_surface_get(Evas_GL *evas_gl, Evas_GL_Surface *surf,
+Eina_Bool PROBE_NAME(evas_gl_native_surface_get)(Evas_GL *evas_gl, Evas_GL_Surface *surf,
 				     Evas_Native_Surface *ns)
 {
 	typedef Eina_Bool(*methodType)(Evas_GL *evas_gl, Evas_GL_Surface *surf,
@@ -160,17 +160,16 @@ Eina_Bool evas_gl_native_surface_get(Evas_GL *evas_gl, Evas_GL_Surface *surf,
 
 /* ----------------- api get functions -------------- */
 
-Evas_GL_API *evas_gl_api_get(Evas_GL *evas_gl)
+Evas_GL_API *PROBE_NAME(evas_gl_api_get)(Evas_GL *evas_gl)
 {
 	typedef Evas_GL_API *(*methodType)(Evas_GL *evas_gl);
 	BEFORE_EVAS_GL(evas_gl_api_get);
 	Evas_GL_API *res = evas_gl_api_getp(evas_gl);
 
 	/* save original api functions and rewrite it by probes */
-	if (res != NULL) {
-		save_orig_gl_api_list(res);
-		change_gl_api_list(res);
-	}
+	res = get_gl_api_fake_list(res);
+	if (res == NULL)
+		PRINTERR("evas_gl_api_get returns NULL");
 
 	AFTER('p', res, APITYPE_CONTEXT, "", "p",
 	      voidp_to_uint64(evas_gl));
@@ -178,20 +177,20 @@ Evas_GL_API *evas_gl_api_get(Evas_GL *evas_gl)
 	return res;
 }
 
-Evas_GL_API* elm_glview_gl_api_get(const Evas_Object *obj)
+Evas_GL_API* PROBE_NAME(elm_glview_gl_api_get)(const Evas_Object *obj)
 {
 	typedef Evas_GL_API *(*methodType)(const Evas_Object *obj);
 	BEFORE_EVAS_GL(elm_glview_gl_api_get);
 	Evas_GL_API *res = elm_glview_gl_api_getp(obj);
 
 	/* save original api functions and rewrite it by probes */
-	if (res != NULL) {
-		save_orig_gl_api_list(res);
-		change_gl_api_list(res);
-	}
+	res = get_gl_api_fake_list(res);
+	if (res != NULL)
+		/*clean error code*/
+		res->glGetError();
+	else
+		PRINTERR("evas_gl_api_get returns NULL");
 
-	/*clean error code*/
-	__gl_api->glGetError();
 
 	AFTER('p', res, APITYPE_CONTEXT, "", "p",
 	      voidp_to_uint64(obj));
@@ -199,7 +198,7 @@ Evas_GL_API* elm_glview_gl_api_get(const Evas_Object *obj)
 	return res;
 }
 
-Evas_GL_API *evas_gl_context_api_get(Evas_GL *evas_gl, Evas_GL_Context *ctx)
+Evas_GL_API *PROBE_NAME(evas_gl_context_api_get)(Evas_GL *evas_gl, Evas_GL_Context *ctx)
 {
 	typedef Evas_GL_API *(*methodType)(Evas_GL *evas_gl, Evas_GL_Context *ctx);
 	static methodType evas_gl_context_api_getp = 0;
@@ -209,10 +208,9 @@ Evas_GL_API *evas_gl_context_api_get(Evas_GL *evas_gl, Evas_GL_Context *ctx)
 	Evas_GL_API *res = evas_gl_context_api_getp(evas_gl, ctx);
 
 	/* save original api functions and rewrite it by probes */
-	if (res != NULL) {
-		save_orig_gl_api_list(res);
-		change_gl_api_list(res);
-	}
+	res = get_gl_api_fake_list(res);
+	if (res == NULL)
+		PRINTERR("evas_gl_api_get returns NULL");
 
 	return res;
 }

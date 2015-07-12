@@ -39,24 +39,12 @@
 #undef X
 /* --------------------------------- */
 
-
-static bool __gl_api_initialized = 0;
 Evas_GL_API *__gl_api = NULL;
+static Evas_GL_API __gl_api_fake;
 
 void __init_gl_api__(void)
 {
-	if (__gl_api == NULL)
-		__gl_api = real_malloc(sizeof(*__gl_api));
-	memset(__gl_api, 0, sizeof(*__gl_api));
-}
-
-void save_orig_gl_api_list(Evas_GL_API *api)
-{
-	/* TODO make this check more pretty */
-	if (__gl_api_initialized == 0) {
-		memcpy(__gl_api, api, sizeof(*api));
-		__gl_api_initialized = 1;
-	}
+	memset(&__gl_api_fake, 0, sizeof(__gl_api_fake));
 }
 
 /* IMPORTANT this code must be right before change_gl_api_list function!
@@ -65,18 +53,30 @@ void save_orig_gl_api_list(Evas_GL_API *api)
  *
  */
 #define X(func) \
-	do {							\
-		api->func = (typeof(api->func)) __local_##func;	\
-		if (api->func == NULL)				\
-			PRINTWRN("api->%s not setted", #func);	\
+	do {									\
+		__gl_api_fake.func = (typeof(api->func)) __local_##func;	\
+		if (__gl_api_fake.func == NULL)					\
+			PRINTWRN("api->%s not setted", #func);			\
 	} while(0);
 #include "da_gl_api_func_list.h"
 /* --------------------------------------------------------------------- */
 
-void change_gl_api_list(Evas_GL_API *api)
+Evas_GL_API *get_gl_api_fake_list(Evas_GL_API *api)
 {
 	/* change links */
+
+	if (api == NULL)
+		return NULL;
+
+	__gl_api = api;
+
+	/* clone api to fake */
+	memcpy(&__gl_api_fake, api, sizeof(*api));
+
+	/* replace by our functions */
 	GL_ALL_FUNCTIONS;
+
+	return &__gl_api_fake;
 }
 
 #undef X
