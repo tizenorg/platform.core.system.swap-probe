@@ -18,7 +18,7 @@ elm_glview_gl_api_get;          elm_glview_gl_api_get;      0
 
 
 #filename "da_evas_gl.c"
-#lib "???"
+#lib "/usr/lib/libelementary.so.1"
 #feature_always FL_OPENGL_API_ALWAYS_PROBING
 evas_gl_free;                   evas_gl_free;               1
 evas_gl_config_free;            evas_gl_config_free;        1
