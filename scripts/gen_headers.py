@@ -309,8 +309,6 @@ def __print_features(file, data):
 
     for feature in data:
         write_feature = feature
-        if write_feature == "---":
-            write_feature = "NOFEATURE"
         feature_lib_list = write_feature + "_lib_list"
         feature_list = write_feature + "_list"
         if features_list_dict is None:
@@ -372,7 +370,6 @@ def __print_feature_list_t(file):
     file.write("};\n")
 
 def __print_types(file):
-    file.write("#define NOFEATURE 0xFFFFFFFF\n")
     file.write("\n")
     __print_probe_el_t(file)
     file.write("\n")

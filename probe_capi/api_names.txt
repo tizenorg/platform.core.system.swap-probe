@@ -1,6 +1,6 @@
 #filename "capi_appfw.c"
 #lib "/usr/lib/libcapi-appfw-application.so.0"
-#feature ---
+#feature FL_UNCONDITIONAL
 app_efl_main;           app_efl_main;           2
 ui_app_main;            ui_app_main;            2
 _dalc_app_create;       _dalc_app_create;       2

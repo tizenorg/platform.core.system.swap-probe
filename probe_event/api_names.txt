@@ -1,6 +1,6 @@
 #filename "gesture.cpp"
 #lib "???"
-#feature ---
+#feature FL_UNCONDITIONAL
 void GestureEventListener::OnCustomGestureCanceled (TouchGestureDetector &gestureDetector);                 void GestureEventListener::OnCustomGestureCanceled (TouchGestureDetector &gestureDetector);                 0
 void GestureEventListener::OnCustomGestureChanged (TouchGestureDetector &gestureDetector);                  void GestureEventListener::OnCustomGestureChanged (TouchGestureDetector &gestureDetector);                  0
 void GestureEventListener::OnCustomGestureFinished (TouchGestureDetector &gestureDetector);                 void GestureEventListener::OnCustomGestureFinished (TouchGestureDetector &gestureDetector);                 0
@@ -27,7 +27,7 @@ void GestureEventListener::OnTapGestureDetected (TouchTapGestureDetector &gestur
 
 #filename "gesture.c"
 #lib "???"
-#feature ---
+#feature FL_UNCONDITIONAL
 __common_elm_gesture_layer_cb;  __common_elm_gesture_layer_cb; 0
 
 #filename "gesture.c"
@@ -37,18 +37,18 @@ elm_gesture_layer_cb_set;         elm_gesture_layer_cb_set;         0
 
 #filename "orientation.c"
 #lib "???"
-#feature ---
+#feature FL_UNCONDITIONAL
 Ecore_Event_Handler *register_orientation_event_listener();                 Ecore_Event_Handler *register_orientation_event_listener();                 0
 void unregister_orientation_event_listener(Ecore_Event_Handler **handler);  void unregister_orientation_event_listener(Ecore_Event_Handler **handler);  0
 
 #filename "orientation.c"
 #lib "/usr/lib/libecore_x.so.1"
-#feature ---
+#feature FL_UNCONDITIONAL
 ecore_x_init;                ecore_x_init;                      3
 
 #filename "da_event.c"
 #lib "???"
-#feature ---
+#feature FL_UNCONDITIONAL
 on_orientation_changed;     on_orientation_changed;     0
 
 #filename "keytouch.c"
