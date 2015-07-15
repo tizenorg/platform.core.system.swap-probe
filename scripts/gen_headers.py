@@ -305,7 +305,7 @@ def __print_probes(file, func, addr_list, handler, type):
     for lib_func in addr_list:
         for func_addr in addr_list[lib_func]:
             probes_cnt += 1
-            file.write("\t\t{0x" + str(func_addr) + ", 0x" + str(handler[0]) + ", " + str(type) +" /* " + str(lib_func) + " */},\n")
+            file.write("\t\t{0x" + str(func_addr) + ", 0x" + str(handler[0]) + ", " + str(type) +", \"" + str(lib_func) + "\"},\n")
 
     return probes_cnt
 
@@ -362,6 +362,7 @@ def __print_probe_el_t(file):
     file.write("\tuint64_t orig_addr;\n")
     file.write("\tuint64_t handler_addr;\n")
     file.write("\tuint8_t probe_type;\n")
+    file.write("\tconst char *name;\n")
     file.write("};")
 
 def __print_lib_list_el_t(file):
