@@ -282,7 +282,7 @@ def __print_lib_end(file):
 
 def __print_probe(file, func, addr_list, handler, type):
     for lib_func in addr_list:
-        file.write("\t\t{0x" + str(addr_list[lib_func]) + ", 0x" + str(handler) + ", " + str(type) +" /* " + str(lib_func) + " */},\n")
+        file.write("\t\t{0x" + str(addr_list[lib_func]) + ", 0x" + str(handler) + ", " + str(type) +", \"" + str(lib_func) + "\"},\n")
 
 def __print_feature_list(file, features_cnt, features_list_dict):
     file.write("int feature_to_data_count = " + str(features_cnt) + ";\n")
@@ -338,6 +338,7 @@ def __print_probe_el_t(file):
     file.write("\tuint64_t orig_addr;\n")
     file.write("\tuint64_t handler_addr;\n")
     file.write("\tuint8_t probe_type;\n")
+    file.write("\tconst char *name;\n")
     file.write("};")
 
 def __print_lib_list_el_t(file):
