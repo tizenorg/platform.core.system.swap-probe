@@ -8,6 +8,12 @@ Source:    %{name}_%{version}.tar.gz
 %ifarch %{ix86}
 BuildRequires:  emulator-yagl
 %endif
+# opengl-es-virtual-drv is installed as a dependency. On a real device coregl
+# is actually used.
+%ifarch %{arm}
+BuildConflicts: opengl-es-virtual-drv
+BuildRequires: coregl
+%endif
 BuildRequires:  ecore-devel
 BuildRequires:  elementary-devel
 BuildRequires:  capi-appfw-application-devel
