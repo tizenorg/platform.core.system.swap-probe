@@ -1,4 +1,4 @@
 #filename "libdaemon.c"
 #lib "???"
-#feature ---
+#feature FL_UNCONDITIONAL
 daemon_close_allv;  daemon_close_allv;  0

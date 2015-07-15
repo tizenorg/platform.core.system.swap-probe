@@ -1,6 +1,6 @@
 #filename "da_chart.c"
 #lib "???"
-#feature ---
+#feature FL_UNCONDITIONAL
 _chart_timerThread;         _chart_timerThread;         0
 da_mark;                    da_mark;                    0
 da_create_chart;            da_create_chart;            0
@@ -11,4 +11,4 @@ da_set_callback;            da_set_callback;            0
 
 #filename "da_chart_dummy.c"
 #lib "???"
-#feature ---
+#feature FL_UNCONDITIONAL
