@@ -5,6 +5,7 @@ import sys
 import subprocess
 import re
 import os
+import hashlib
 
 defines={}
 
@@ -177,6 +178,32 @@ ERR_HANDLER_NOT_FOUND_IN_LD_LIB = 1
 ERR_HANDLER_NO_FEATURE = 2
 ERR_HANDLER_FOUND_BUT_CANNOT_BE_LINKED = 3
 function_errors={}
+md5_libs={}
+
+def hashfile(afile, hasher, blocksize=65536):
+    buf = afile.read(blocksize)
+    while len(buf) > 0:
+        hasher.update(buf)
+        buf = afile.read(blocksize)
+    return hasher.digest()
+
+
+def add_lib_md5_check(lib_name):
+    if lib_name not in md5_libs:
+        hash = str( hashlib.md5(open(lib_name, 'rb').read()).hexdigest() )
+        md5_libs[lib_name] = {"md5_sum": hash}
+
+def get_md5_struct_pointer(lib_name):
+    if lib_name not in md5_libs:
+        return "NULL"
+
+    num = 0
+    for lib in md5_libs:
+        if lib == lib_name:
+            break
+        num = num + 1
+
+    return "&ld_lib_md5_list[%d]" % num
 
 def get_function_search_error(function_name):
     err = function_errors[function_name]
@@ -215,6 +242,7 @@ def iterate_over_libs(data, probe_lib):
                 if addr is not None:
                     feature_dict = __add_item(feature_dict, [feature, [libname, [funcname]]], (addr, handler_addr, data[libname][funcname][feature][1]))
                     function_errors[funcname] = ERR_NO;
+                    add_lib_md5_check(libname)
     return feature_dict
 
 ####################################################################
@@ -276,7 +304,7 @@ def __print_feature_end(file, libs_in_feature, feature_lib_list, feature_list):
     file.write("struct ld_lib_list_el_t " + feature_lib_list + "[] = {\n")
     for lib in libs_in_feature:
         libs_cnt += 1
-        file.write("\t{\"" + lib + "\", " + str(libs_in_feature[lib][0]) + ", " + libs_in_feature[lib][1] + "},\n")
+        file.write("\t{\"" + lib + "\", " + str(libs_in_feature[lib][0]) + ", " + libs_in_feature[lib][1]  + ", " + get_md5_struct_pointer(lib) + "},\n")
 
     file.write("}; /* " + feature_lib_list + " */\n")
     file.write("\n")
@@ -351,6 +379,22 @@ def __print_features(file, data):
 
     __print_feature_list(file, features_cnt, features_list_dict)
 
+def __print_md5_check(file, md5_libs):
+    file.write("\n");
+    file.write("struct ld_lib_md5_check_t ld_lib_md5_list[] = {\n");
+    ind = 0
+    for lib_name in md5_libs:
+        file.write("\t/*%02d*/ {LIB_MD5_NOT_CHECKED, \"%s\", \"%s\"},\n" % (ind, str(md5_libs[lib_name]["md5_sum"]), str(lib_name)));
+        ind = ind + 1
+    file.write("};\n");
+
+def __print_ld_lib_md5_check_t(file):
+    file.write("struct ld_lib_md5_check_t {\n")
+    file.write("\tuint8_t is_checked;\n")
+    file.write("\tchar md5_sum[32];\n")
+    file.write("\tconst char *lib_name;\n")
+    file.write("};")
+
 def __print_probe_el_t(file):
     file.write("struct ld_probe_el_t {\n")
     file.write("\tuint64_t orig_addr;\n")
@@ -364,6 +408,7 @@ def __print_lib_list_el_t(file):
     file.write("\tchar *lib_name;\n")
     file.write("\tuint32_t probe_count;\n")
     file.write("\tstruct ld_probe_el_t *probes;\n")
+    file.write("\tstruct ld_lib_md5_check_t *md5;\n")
     file.write("};\n")
 
 def __print_feature_list_el_t(file):
@@ -381,6 +426,12 @@ def __print_feature_list_t(file):
 
 def __print_types(file):
     file.write("#define NOFEATURE 0xFFFFFFFF\n")
+    file.write("/* MD5 checking */\n")
+    file.write("#define LIB_MD5_NOT_CHECKED 0\n")
+    file.write("#define LIB_MD5_OK 1\n")
+    file.write("#define LIB_MD5_CHECK_FAIL 2\n")
+    file.write("\n")
+    __print_ld_lib_md5_check_t(file)
     file.write("\n")
     __print_probe_el_t(file)
     file.write("\n")
@@ -430,6 +481,7 @@ def generate_headers(dict, da_inst_dir, da_lib, probe_lib):
         __print_license(file)
         __print_include_guard_top(file, "__LD_PRELOAD_PROBES__")
         __print_includes(file, (os.path.basename(c_output_types),))
+        __print_md5_check(file, md5_libs)
         __print_features(file, dict)
         __print_include_guard_bottom(file, "__LD_PRELOAD_PROBES__")
 
