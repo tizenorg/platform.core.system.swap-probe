@@ -168,7 +168,10 @@ Evas_GL_API *PROBE_NAME(evas_gl_api_get)(Evas_GL *evas_gl)
 
 	/* save original api functions and rewrite it by probes */
 	res = get_gl_api_fake_list(res);
-	if (res == NULL)
+	if (res != NULL)
+		/*clean error code*/
+		res->glGetError();
+	else
 		PRINTERR("evas_gl_api_get returns NULL");
 
 	AFTER('p', res, APITYPE_CONTEXT, "", "p",
@@ -189,8 +192,7 @@ Evas_GL_API* PROBE_NAME(elm_glview_gl_api_get)(const Evas_Object *obj)
 		/*clean error code*/
 		res->glGetError();
 	else
-		PRINTERR("evas_gl_api_get returns NULL");
-
+		PRINTERR("elm_glview_gl_api_get returns NULL");
 
 	AFTER('p', res, APITYPE_CONTEXT, "", "p",
 	      voidp_to_uint64(obj));
@@ -201,16 +203,19 @@ Evas_GL_API* PROBE_NAME(elm_glview_gl_api_get)(const Evas_Object *obj)
 Evas_GL_API *PROBE_NAME(evas_gl_context_api_get)(Evas_GL *evas_gl, Evas_GL_Context *ctx)
 {
 	typedef Evas_GL_API *(*methodType)(Evas_GL *evas_gl, Evas_GL_Context *ctx);
-	static methodType evas_gl_context_api_getp = 0;
-
-	GET_REAL_FUNC_RTLD_NEXT(evas_gl_context_api_get);
-
+	BEFORE_EVAS_GL(evas_gl_context_api_get);
 	Evas_GL_API *res = evas_gl_context_api_getp(evas_gl, ctx);
 
 	/* save original api functions and rewrite it by probes */
 	res = get_gl_api_fake_list(res);
-	if (res == NULL)
-		PRINTERR("evas_gl_api_get returns NULL");
+	if (res != NULL)
+		/*clean error code*/
+		res->glGetError();
+	else
+		PRINTERR("evas_gl_context_api_get returns NULL");
+
+	AFTER('p', res, APITYPE_CONTEXT, "", "pp",
+	      voidp_to_uint64(evas_gl), voidp_to_uint64(ctx));
 
 	return res;
 }

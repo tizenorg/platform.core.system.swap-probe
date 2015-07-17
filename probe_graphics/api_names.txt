@@ -1,5 +1,5 @@
 #filename "da_evas_gl.c"
-#lib "/usr/lib/libelementary.so.1"
+#lib "/usr/lib/libevas.so.1"
 #feature FL_OPENGL_API_PROBING
 evas_gl_free;                   evas_gl_free;               0
 evas_gl_config_free;            evas_gl_config_free;        0
@@ -14,11 +14,11 @@ evas_gl_string_query;           evas_gl_string_query;       0
 evas_gl_proc_address_get;       evas_gl_proc_address_get;   0
 evas_gl_native_surface_get;     evas_gl_native_surface_get; 0
 evas_gl_api_get;                evas_gl_api_get;            0
-elm_glview_gl_api_get;          elm_glview_gl_api_get;      0
+evas_gl_context_api_get;        evas_gl_context_api_get;    0
 
 
 #filename "da_evas_gl.c"
-#lib "/usr/lib/libelementary.so.1"
+#lib "/usr/lib/libevas.so.1"
 #feature_always FL_OPENGL_API_ALWAYS_PROBING
 evas_gl_free;                   evas_gl_free;               1
 evas_gl_config_free;            evas_gl_config_free;        1
@@ -33,6 +33,17 @@ evas_gl_string_query;           evas_gl_string_query;       1
 evas_gl_proc_address_get;       evas_gl_proc_address_get;   1
 evas_gl_native_surface_get;     evas_gl_native_surface_get; 1
 evas_gl_api_get;                evas_gl_api_get;            1
+evas_gl_context_api_get;        evas_gl_context_api_get;    1
+
+#filename "da_evas_gl.c"
+#lib "/usr/lib/libelementary.so.1"
+#feature FL_OPENGL_API_PROBING
+elm_glview_gl_api_get;          elm_glview_gl_api_get;      0
+
+
+#filename "da_evas_gl.c"
+#lib "/usr/lib/libelementary.so.1"
+#feature_always FL_OPENGL_API_ALWAYS_PROBING
 elm_glview_gl_api_get;          elm_glview_gl_api_get;      1
 
 
