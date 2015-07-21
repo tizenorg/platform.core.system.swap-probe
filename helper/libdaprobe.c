@@ -869,13 +869,13 @@ unsigned char get_call_type(unsigned char call_type)
 }
 
 void write_msg(unsigned long __unused msg_buf,
-		size_t __unused len,
-		unsigned long __unused call_type_p,
-		unsigned long __unused caller_p)
+	       size_t __unused len,
+	       unsigned long __unused call_type_p,
+	       unsigned long __unused caller_p,
+	       unsigned long __unused caller_address)
 {
 	return;
 }
-
 
 /************************************************************************
  * probe functions
