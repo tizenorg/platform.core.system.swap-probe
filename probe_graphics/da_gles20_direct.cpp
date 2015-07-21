@@ -40,7 +40,7 @@ extern "C" {
 #define CALL_ORIG(func, ...) func##p(__VA_ARGS__)
 #define TYPEDEF(type) typedef type
 
-#include "da_gles20_native.cpp"
+#include "da_gles20.inc"
 
 #ifdef __cplusplus
 } /* extern C */

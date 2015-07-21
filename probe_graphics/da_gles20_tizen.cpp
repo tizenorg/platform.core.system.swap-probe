@@ -40,16 +40,25 @@ extern "C" {
 #define CALL_ORIG(func, ...) __gl_api->func(__VA_ARGS__)
 #define TYPEDEF(type)
 
+#ifdef WRITE_MSG_CALLER_ADDR
+#undef WRITE_MSG_CALLER_ADDR
+#endif
+
+#define WRITE_MSG_CALLER_ADDR __builtin_return_address(0)
+
+
 /*
  * this include to make tizen open gl api functions
  * probe prototypes
  *
  */
-#include "da_gles20_native.cpp"
+#include "da_gles20.inc"
 
 #ifdef __cplusplus
 } /* extern C */
 #endif
+
+#undef WRITE_MSG_CALLER_ADDR
 
 #undef _GL2_MACRO_H_
 #undef _GL_MACRO_H_
