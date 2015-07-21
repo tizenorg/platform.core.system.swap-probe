@@ -70,6 +70,10 @@
 #define MAX_LOCAL_BUF_SIZE (MAX_SHADER_LEN + ADD_LOCAL_BUF_SIZE)
 #define LOCAL_BUF msg_buf
 
+#ifndef WRITE_MSG_CALLER_ADDR
+#define WRITE_MSG_CALLER_ADDR 0
+#endif
+
 static inline uint64_t voidp_to_uint64(const void *p)
 {
 	return (uint64_t)(uintptr_t)p;
@@ -531,7 +535,7 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 #define FLUSH_LOCAL_BUF()						\
 		SET_MSG_LEN();						\
-		WRITE_MSG(msg_buf, (p - msg_buf), CALL_TYPE_PTR, CALLER_PTR); \
+		WRITE_MSG(msg_buf, (p - msg_buf), CALL_TYPE_PTR, CALLER_PTR, WRITE_MSG_CALLER_ADDR); \
 		free(LOCAL_BUF);					\
 		LOCAL_BUF = NULL
 
