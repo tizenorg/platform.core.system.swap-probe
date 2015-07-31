@@ -3,7 +3,7 @@ Summary:    SWAP probe library
 Version:    3.0
 Release:    1
 Group:      System/Libraries
-License:	GNU Lesser General Public License, Version 2.1
+License:    LGPL-2.1+ and MIT
 Source:    %{name}_%{version}.tar.gz
 %ifarch %{ix86}
 BuildRequires:  emulator-yagl
@@ -55,7 +55,9 @@ make ldheader
 %install
 rm -rf ${RPM_BUILD_ROOT}
 mkdir -p %{buildroot}/usr/share/license
-cp LICENSE %{buildroot}/usr/share/license/%{name}
+cp LICENSE.MIT %{buildroot}/usr/share/license/%{name}
+cat LICENSE.LGPLv2.1+ >> %{buildroot}/usr/share/license/%{name}
+
 mkdir -p %{buildroot}/usr/local/include
 
 %make_install
