@@ -39,7 +39,6 @@
 #include "binproto.h"
 #include "real_functions.h"
 #include "common_probe_init.h"
-#include "api_config.h"
 
 Ecore_Event_Handler *register_orientation_event_listener();
 void unregister_orientation_event_listener(Ecore_Event_Handler *handler);

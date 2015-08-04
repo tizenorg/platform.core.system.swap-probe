@@ -140,16 +140,12 @@ $(ASM_OBJ): $(ASM_SRC)
 	$(CC) $(ASMFLAG) -c $^ -o $@
 
 API_NAME_LIST = scripts/api_names_all.txt
-GENERATED_CONFIG = include/api_config.h
 GENERATED_HEADERS = include/api_id_mapping.h include/x_define_api_id_list.h
 SOURCE_HEADERS = include/api_ld_mapping.h
 
-headers: $(API_NAME_LIST) $(GENERATED_CONFIG) $(GENERATED_HEADERS)
+headers: $(API_NAME_LIST) $(GENERATED_HEADERS)
 rmheaders:
-	rm -f $(API_NAME_LIST) $(GENERATED_CONFIG) $(GENERATED_HEADERS) $(SOURCE_HEADERS)
-
-$(GENERATED_CONFIG): ./scripts/gen_api_config.sh
-	sh $< > $@
+	rm -f $(API_NAME_LIST) $(GENERATED_HEADERS) $(SOURCE_HEADERS)
 
 $(API_NAME_LIST):
 	if [ -f $@ ]; then rm $@;fi
