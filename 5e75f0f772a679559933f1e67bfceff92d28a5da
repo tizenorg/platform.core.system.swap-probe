@@ -1,0 +1,7 @@
+Code-Review+2: Vyacheslav Cherkashin <v.cherkashin@samsung.com>
+Verified+1: Alexander Aksenov <a.aksenov@samsung.com>
+Submitted-by: Vyacheslav Cherkashin <v.cherkashin@samsung.com>
+Submitted-at: Tue, 04 Aug 2015 02:05:37 -0700
+Reviewed-on: https://review.tizen.org/gerrit/45273
+Project: platform/core/system/swap-probe
+Branch: refs/heads/tizen_2.4
