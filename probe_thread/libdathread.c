@@ -45,90 +45,8 @@ typedef struct thread_routine_call_t {
 	void *argument;
 } thread_routine_call;
 
-// called when pthread_exit, pthread_cancel is called
-void _da_cleanup_handler(void *data)
-{
-	pthread_t pSelf;
-
-	probeInfo_t	probeInfo;
-
-	// unlock socket mutex to prevent deadlock
-	// in case of cancellation happened while log sending
-	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
-
-	PRE_UNCONDITIONAL_BLOCK_BEGIN();
-
-	pSelf = pthread_self();
-
-	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
-			  API_ID__da_cleanup_handler,
-			  "p", voidp_to_uint64(data));
-	PACK_COMMON_END('v', 0, 0, 1);
-	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP, THREAD_CLASS_BLANK);
-	FLUSH_LOCAL_BUF();
-
-	PRE_UNCONDITIONAL_BLOCK_END();
-
-	return;
-}
-
-void *_da_ThreadProc(void *params)
-{
-	void *ret;
-	thread_routine_call *ptrc;
-	ptrc = (thread_routine_call *) params;
-	pthread_t pSelf;
-	int old_state;
-	int new_state = PTHREAD_CANCEL_DISABLE;
-
-	probeInfo_t	probeInfo;
-
-	// disable cancellation to prevent deadlock
-	real_pthread_setcancelstate(new_state, &old_state);
-
-	PRE_UNCONDITIONAL_BLOCK_BEGIN();
-
-	pSelf = pthread_self();
-
-	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
-			  API_ID__da_ThreadProc,
-			  "p", voidp_to_uint64(params));
-	PACK_COMMON_END('p', 0, 0, 1);
-	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_START, THREAD_CLASS_BLANK);
-	FLUSH_LOCAL_BUF();
-
-	PRE_UNCONDITIONAL_BLOCK_END();
-
-	// restore cancellation state
-	real_pthread_setcancelstate(old_state, NULL);
-
-	pthread_cleanup_push(_da_cleanup_handler, NULL);
-	// call user-defined thread routine
-	ret = ptrc->thread_routine(ptrc->argument);
-	pthread_cleanup_pop(0);
-
-	// disable cancellation to prevent deadlock
-	real_pthread_setcancelstate(new_state, &old_state);
-
-	PRE_UNCONDITIONAL_BLOCK_BEGIN();
-
-	pSelf = pthread_self();
-
-	PREPARE_LOCAL_BUF();
-	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
-			  API_ID__da_ThreadProc,
-			  "p", voidp_to_uint64(params));
-	PACK_COMMON_END('p', ret, 0, 1);
-	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP, THREAD_CLASS_BLANK);
-	FLUSH_LOCAL_BUF();
-
-	PRE_UNCONDITIONAL_BLOCK_END();
-
-	free(ptrc);
-	return ret;
-}
+void _da_cleanup_handler(void *data);
+void *_da_ThreadProc(void *params);
 
 int PROBE_NAME(pthread_create)(pthread_t *thread, const pthread_attr_t *attr,
 		void *(*start_routine) (void*), void *arg)
@@ -735,3 +653,95 @@ int pthread_atfork(void (*prepare)(void), void (*parent)(void),
 		void (*child)(void));
 */
 
+#ifdef WRITE_MSG_CALLER_ADDR
+#undef WRITE_MSG_CALLER_ADDR
+#endif /* WRITE_MSG_CALLER_ADDR */
+
+#define WRITE_MSG_CALLER_ADDR __builtin_return_address(0)
+
+// called when pthread_exit, pthread_cancel is called
+void _da_cleanup_handler(void *data)
+{
+	pthread_t pSelf;
+
+	probeInfo_t	probeInfo;
+
+	// unlock socket mutex to prevent deadlock
+	// in case of cancellation happened while log sending
+	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
+
+	PRE_UNCONDITIONAL_BLOCK_BEGIN();
+
+	pSelf = pthread_self();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
+			  API_ID__da_cleanup_handler,
+			  "p", voidp_to_uint64(data));
+	PACK_COMMON_END('v', 0, 0, 1);
+	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP, THREAD_CLASS_BLANK);
+	FLUSH_LOCAL_BUF();
+
+	PRE_UNCONDITIONAL_BLOCK_END();
+
+	return;
+}
+
+void *_da_ThreadProc(void *params)
+{
+	void *ret;
+	thread_routine_call *ptrc;
+	ptrc = (thread_routine_call *) params;
+	pthread_t pSelf;
+	int old_state;
+	int new_state = PTHREAD_CANCEL_DISABLE;
+
+	probeInfo_t	probeInfo;
+
+	// disable cancellation to prevent deadlock
+	real_pthread_setcancelstate(new_state, &old_state);
+
+	PRE_UNCONDITIONAL_BLOCK_BEGIN();
+
+	pSelf = pthread_self();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
+			  API_ID__da_ThreadProc,
+			  "p", voidp_to_uint64(params));
+	PACK_COMMON_END('p', 0, 0, 1);
+	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_START, THREAD_CLASS_BLANK);
+	FLUSH_LOCAL_BUF();
+
+	PRE_UNCONDITIONAL_BLOCK_END();
+
+	// restore cancellation state
+	real_pthread_setcancelstate(old_state, NULL);
+
+	pthread_cleanup_push(_da_cleanup_handler, NULL);
+	// call user-defined thread routine
+	ret = ptrc->thread_routine(ptrc->argument);
+	pthread_cleanup_pop(0);
+
+	// disable cancellation to prevent deadlock
+	real_pthread_setcancelstate(new_state, &old_state);
+
+	PRE_UNCONDITIONAL_BLOCK_BEGIN();
+
+	pSelf = pthread_self();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
+			  API_ID__da_ThreadProc,
+			  "p", voidp_to_uint64(params));
+	PACK_COMMON_END('p', ret, 0, 1);
+	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP, THREAD_CLASS_BLANK);
+	FLUSH_LOCAL_BUF();
+
+	PRE_UNCONDITIONAL_BLOCK_END();
+
+	free(ptrc);
+	return ret;
+}
+
+#undef WRITE_MSG_CALLER_ADDR
