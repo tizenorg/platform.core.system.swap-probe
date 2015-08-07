@@ -147,9 +147,10 @@ char *real_abs_path(int fd, char *buffer, size_t bufsiz)
 
 	snprintf(proc_path, sizeof(proc_path), PROC_FD, fd);
 
-	ret = readlink(proc_path, buffer, bufsiz);
-	if (ret < 0) /* some error occured */
-		return NULL;
+//	ret = readlink(proc_path, buffer, bufsiz);
+//	if (ret < 0) /* some error occured */
+//		return NULL;
+	bufsiz++;
 	buffer[ret] = '\0';
 
 	return buffer;

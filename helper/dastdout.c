@@ -55,6 +55,7 @@ int __redirect_std(void)
 #ifdef STDTOFILE
 	char STDOUT[MAX_PATH_LENGTH];
 	snprintf(STDOUT,sizeof(STDOUT), "/tmp/da_preloaded_%d_%d.log", getppid(), getpid());
+	//snprintf(STDOUT,sizeof(STDOUT), "/home/developer/da_preloaded_%d_%d.log", getppid(), getpid());
 #else
 	#define STDOUT		"/dev/null"
 #endif
