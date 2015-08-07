@@ -6,7 +6,7 @@ HEADER_INSTALLDIR = /usr/local/include/
 ## Makefile more clear, simply putting all includes we ever need in single
 ## variable. Keep it alphabetic, please.
 DEBUG_FLAGS=					\
-#		-DSTDTOFILE				\#
+		-DSTDTOFILE				\
 
 INCLUDE_CPPFLAGS =				\
 		-I./include			\
@@ -213,8 +213,8 @@ install_ld: ldheader # var_addr
 	install -m 644 include/app_protocol.h $(DESTDIR)/$(HEADER_INSTALLDIR)/app_protocol.h
 
 install_elf: elflib elfparser
-	install $(PARSE_ELF_LIB_TARGET) $(DESTDIR)/$(INSTALLDIR)/libparserelf.so
-	install $(PARSE_ELF_BIN_TARGET) $(DESTDIR)/$(BIN_INSTALLDIR)/parse_elf
+	install -m 755 $(PARSE_ELF_LIB_TARGET) $(DESTDIR)/$(INSTALLDIR)/libparserelf.so
+	install -m 755 $(PARSE_ELF_BIN_TARGET) $(DESTDIR)/$(BIN_INSTALLDIR)/parse_elf
 	install -m 644 elf_parsing/parse_elf.h $(DESTDIR)/$(HEADER_INSTALLDIR)/parse_elf.h
 
 
