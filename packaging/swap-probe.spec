@@ -94,6 +94,7 @@ mkdir -p %{buildroot}/usr/local/bin
 
 %files -n swap-probe-elf
 %manifest swap-probe-elf.manifest
+
 %defattr(-,root,root,-)
 /usr/local/bin/parse_elf
 /usr/local/include/parse_elf.h

@@ -56,6 +56,8 @@
 static inline char *get_abs_path(int fd, const char *fname,
 				 char *buf, size_t bufsiz)
 {
+	sprintf(buf, "%s", "/");
+	return buf;
 	char *path = real_abs_path(fd, buf, bufsiz);
 
 	if (!path)
