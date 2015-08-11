@@ -392,6 +392,18 @@ static void *recvThread(void __unused * data)
 					} else {
 						PRINTERR("WRONG APP_MSG_MAPS_INST_LIST");
 					}
+				} else if(log.type == APP_MSG_GET_UI_HIERARCHY) {
+					PRINTMSG("APP_MSG_GET_UI_HIERARCHY");
+					// do nothing
+					continue;
+				} else if(log.type == APP_MSG_GET_UI_PROPERTIES) {
+					PRINTMSG("APP_MSG_GET_UI_PROPERTIES");
+					// do nothing
+					continue;
+				} else if(log.type == APP_MSG_GET_UI_RENDERING_TIME) {
+					PRINTMSG("APP_MSG_GET_UI_RENDERING_TIME");
+					// do nothing
+					continue;
 				} else {
 					PRINTERR("recv unknown message. id = (%d)", log.type);
 				}
