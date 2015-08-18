@@ -1,13 +1,11 @@
 /*
  *  DA probe
  *
- * Copyright (c) 2000 - 2014 Samsung Electronics Co., Ltd. All rights reserved.
+ * Copyright (c) 2015 Samsung Electronics Co., Ltd. All rights reserved.
  *
- * Contact:
+ * Contact:Yurchenko Darya<d.urchenko@partner.samsung.com>
  *
- * Sanghyun Lee <sanghyunnim.lee@samsung.com>
- * Juyoung Kim <j0.kim@samsung.com>
- * Vitaliy Cherepanov <v.cherepanov@samsung.com>
+ *
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the
@@ -24,47 +22,32 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  * Contributors:
- * - S-Core Co., Ltd
  * - Samsung RnD Institute Russia
  *
  */
+
+#include "da_gles20.h"
 #include "common_probe_init.h"
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 
-#ifndef REAL_NAME
-	#define REAL_NAME(func) func
-#endif
+void __get_context_buf_data(GLenum target, char *buf, int buf_size)
+{
+	GLint n_buffer_size, n_buffer_usage_size;
+	int print_size;
 
-#ifndef CALL_ORIG
-	#define CALL_ORIG(func, ...) func##p(__VA_ARGS__)
-#endif
+	if (buf == NULL)
+		return;
 
-#ifndef BEFORE
-	#define BEFORE BEFORE_GL_ORIG
-#endif
+	real_glGetBufferParameteriv(target, GL_BUFFER_SIZE,
+				    &n_buffer_size);
+	real_glGetBufferParameteriv(target, GL_BUFFER_USAGE,
+				    &n_buffer_usage_size);
 
-#ifndef DECLAR
-	#define DECLAR FUNC_DECLAR
-#endif
+	print_size = snprintf(buf, buf_size, "%u,%u,%u",
+			      target, n_buffer_size, n_buffer_usage_size);
 
-#ifndef DECLAR_NOARGS
-	#define DECLAR_NOARGS FUNC_DECLAR_NOARGS
-#endif
-
-#ifndef TYPEDEF
-	#define TYPEDEF(type) typedef type
-#endif
-
-#include "da_gles20.inc"
-
-
-#undef CALL_ORIG
-#undef BEFORE
-
-
-#ifdef __cplusplus
- } /* extern "C" */
-#endif
+	if (print_size >= buf_size) {
+		/* data was truncated. so data is invalid */
+		buf[0]='\0';
+	}
+}
