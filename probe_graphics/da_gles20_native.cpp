@@ -40,11 +40,9 @@ extern "C" {
 #define DECLARE_NOARGS FUNC_DECLAR_NOARGS
 
 #define REAL_NAME(func) PROBE_NAME(func)
-#define BEFORE BEFORE_GL_ORIG
+#define BEFORE BEFORE_GL2_ORIG
 #define CALL_ORIG(func, ...) func##p(__VA_ARGS__)
 #define TYPEDEF(type) typedef type
-
-
 
 
 #include "da_gles20.inc"
