@@ -120,7 +120,7 @@ def parse_apis(func_list_file):
 
 def __lib_syms(libname):
     probe_data = {}
-    p = subprocess.Popen(["./parse_elf \"" + libname + "\" -sa"], shell=True, stdout=subprocess.PIPE)
+    p = subprocess.Popen(["LD_LIBRARY_PATH=./ ./parse_elf \"" + libname + "\" -sa"], shell=True, stdout=subprocess.PIPE)
     read_probe = p.communicate()
     for line in read_probe:
         if line is None:

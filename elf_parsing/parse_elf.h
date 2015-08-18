@@ -1,6 +1,10 @@
 #ifndef _PARSE_ELF_
 #define _PARSE_ELF_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <elf.h>
 
 #define SIZEOF_VOID_P 4
@@ -30,8 +34,23 @@ typedef Elf32_Rel Elf_Rel;
 
 
 struct sym_table_entry {
-	const char* name;
-	const Elf_Sym *entry;
+	struct sym_table_entry *next;
+	struct sym_table_entry *prev;
+	char* name;
+	Elf_Addr addr;
 };
+
+int get_interp(const char *filename, char **interp_p);
+int get_all_symbols(const char *filename, struct sym_table_entry **syms);
+int get_symbols_by_names(const char *filename, const char **names, size_t n, struct sym_table_entry **syms, bool is_only);
+int get_plt_addrs(const char *filename, const char **names, size_t n, Elf_Addr **addrs_p);
+
+void free_sym_entry(struct sym_table_entry *entry);
+
+const char *get_str_error(int err);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _PARSE_ELF_ */

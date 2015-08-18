@@ -115,7 +115,8 @@ TIZEN_SRCS =	$(COMMON_SRCS) $(CAPI_SRCS)\
 
 ASM_SRC = ./helper/da_call_original.S
 
-PARSE_ELF_SRC = ./elf_parsing/parse_elf.c
+PARSE_ELF_LIB_SRC = ./elf_parsing/lib_parse_elf.c
+PARSE_ELF_BIN_SRC = ./elf_parsing/parse_elf.c
 
 ## Totally brain-dead.
 ## FIXME: Rewrite this normally with eval.
@@ -123,11 +124,13 @@ ASM_OBJ = $(patsubst %.S,%.o, $(ASM_SRC))
 CAPI_OBJS = $(patsubst %.c,%.o, $(CAPI_SRCS)) $(ASM_OBJ)
 TIZEN_OBJS = $(patsubst %.cpp,%.o, $(patsubst %.c,%.o, $(TIZEN_SRCS))) $(ASM_OBJ)
 DUMMY_OBJS = $(patsubst %.c,%.o, $(DUMMY_SRCS))
-PARSE_ELF_OBJ = $(patsubst %.c,%.o, $(PARSE_ELF_SRC))
+PARSE_ELF_LIB_OBJ = $(patsubst %.c,%.o, $(PARSE_ELF_LIB_SRC))
+PARSE_ELF_BIN_OBJ = $(patsubst %.c,%.o, $(PARSE_ELF_BIN_SRC))
 
 TIZEN_TARGET = da_probe_tizen.so
 DUMMY_TARGET = libdaprobe.so
-PARSE_ELF_TARGET = parse_elf
+PARSE_ELF_LIB_TARGET = libparserelf.so
+PARSE_ELF_BIN_TARGET = parse_elf
 
 CPPFLAGS = $(INCLUDE_CPPFLAGS) -D_GNU_SOURCE -DSELF_LIB_NAME="\"/$(INSTALLDIR)/$(TIZEN_TARGET)\""
 CFLAGS = $(WARN_CFLAGS) -fPIC
@@ -137,15 +140,19 @@ TIZEN_CPPFLAGS = -DTIZENAPP $(SWAP_PROBE_DEFS)
 TIZEN_LDFLAGS = -lstdc++
 
 
-all:		capi tizen dummy elfparser
+all:		elflib capi tizen dummy elfparser
 tizen:		headers $(TIZEN_TARGET)
 dummy:		headers $(DUMMY_TARGET)
-elfparser:	$(PARSE_ELF_OBJ) $(PARSE_ELF_TARGET)
+elflib:		$(PARSE_ELF_LIB_OBJ) $(PARSE_ELF_LIB_TARGET)
+elfparser:	elflib $(PARSE_ELF_BIN_OBJ) $(PARSE_ELF_BIN_TARGET)
 
 $(ASM_OBJ): $(ASM_SRC)
 	$(CC) $(ASMFLAG) -c $^ -o $@
 
-$(PARSE_ELF_OBJ): $(PARSE_ELF_SRC)
+$(PARSE_ELF_LIB_OBJ): $(PARSE_ELF_LIB_SRC)
+	$(CC) -fPIC -c $^ -o $@
+
+$(PARSE_ELF_BIN_OBJ): $(PARSE_ELF_BIN_SRC)
 	$(CC) -c $^ -o $@
 
 API_NAME_LIST = scripts/api_names_all.txt
@@ -183,8 +190,11 @@ $(TIZEN_TARGET): $(TIZEN_OBJS)
 $(DUMMY_TARGET): $(DUMMY_OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
-$(PARSE_ELF_TARGET): $(PARSE_ELF_OBJ)
-	$(CC) $^ -o $@
+$(PARSE_ELF_LIB_TARGET): $(PARSE_ELF_LIB_OBJ)
+	$(CC) $^ -shared -o $@
+
+$(PARSE_ELF_BIN_TARGET): $(PARSE_ELF_BIN_OBJ)
+	$(CC) $^ -o $@ -L. -lparserelf
 
 ldheader:	$(SOURCE_HEADERS)
 
@@ -202,11 +212,13 @@ install_ld: ldheader # var_addr
 	install -m 644 include/x_define_api_id_list.h $(DESTDIR)/$(HEADER_INSTALLDIR)/x_define_api_id_list.h
 	install -m 644 include/app_protocol.h $(DESTDIR)/$(HEADER_INSTALLDIR)/app_protocol.h
 
-install_elf: elfparser
-	install -m 755 $(PARSE_ELF_TARGET) $(DESTDIR)/$(BIN_INSTALLDIR)/parse_elf
+install_elf: elflib elfparser
+	install $(PARSE_ELF_LIB_TARGET) $(DESTDIR)/$(INSTALLDIR)/libparserelf.so
+	install $(PARSE_ELF_BIN_TARGET) $(DESTDIR)/$(BIN_INSTALLDIR)/parse_elf
+	install -m 644 elf_parsing/parse_elf.h $(DESTDIR)/$(HEADER_INSTALLDIR)/parse_elf.h
 
 
 clean:
 	rm -f *.so $(TIZEN_OBJS) $(GENERATED_HEADERS) $(API_NAME_LIST) $(SOURCE_HEADERS)
 
-.PHONY: all capi tizen dummy clean install_ld install_da install headers
+.PHONY: all capi tizen dummy clean install_ld install_da install_elf install headers
