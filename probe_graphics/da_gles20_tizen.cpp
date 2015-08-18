@@ -47,6 +47,8 @@ extern "C" {
 #define WRITE_MSG_CALLER_ADDR __builtin_return_address(0)
 
 
+#define DECLAR(type, func, ...) type REAL_NAME(func)(__VA_ARGS__)
+#define DECLAR_NOARGS DECLAR
 /*
  * this include to make tizen open gl api functions
  * probe prototypes
