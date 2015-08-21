@@ -219,6 +219,6 @@ install_elf: elflib elfparser
 
 
 clean:
-	rm -f *.so $(TIZEN_OBJS) $(GENERATED_HEADERS) $(API_NAME_LIST) $(SOURCE_HEADERS)
+	rm -f *.so $(TIZEN_OBJS) $(PARSE_ELF_LIB_OBJ) $(PARSE_ELF_BIN_OBJ) $(GENERATED_HEADERS) $(API_NAME_LIST) $(SOURCE_HEADERS)
 
 .PHONY: all capi tizen dummy clean install_ld install_da install_elf install headers

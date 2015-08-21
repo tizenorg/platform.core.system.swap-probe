@@ -70,6 +70,32 @@ exit:
 	return ret;
 }
 
+static Elf_Half get_machine_type(const void *elf)
+{
+	const Elf_Ehdr *elf_header = elf;
+
+	return elf_header->e_machine;
+}
+
+static const char *get_plt_section_name(const void *elf)
+{
+	Elf_Half machine = get_machine_type(elf);
+	const char *sec_name;
+
+	switch (machine) {
+	case EM_ARM:
+		sec_name = ".plt";
+		break;
+	case EM_386:
+		sec_name = ".got.plt";
+		break;
+	default:
+		sec_name = NULL;
+	}
+
+	return sec_name;
+}
+
 static const Elf_Shdr *get_section_by_index(const void *elf, unsigned int index)
 {
 	const Elf_Ehdr *elf_header = elf;
@@ -299,7 +325,14 @@ static int __do_get_plt_addrs(const void *elf, const char* func_names[], Elf_Add
 	if (ret)
 		goto exit;
 
-	const Elf_Shdr *got_plt_shdr = get_section_by_name(elf, ".got.plt");
+	const char *sec_name = get_plt_section_name(elf);
+
+	if (sec_name == NULL) {
+		ret = -1;
+		goto exit;
+	}
+
+	const Elf_Shdr *got_plt_shdr = get_section_by_name(elf, sec_name);
 	if (!got_plt_shdr || got_plt_shdr->sh_type == SHT_NOBITS) {
 		ret = -1;
 		goto exit;
@@ -444,14 +477,13 @@ int get_plt_addrs(const char *filename, const char **names, size_t n, Elf_Addr *
 		goto get_plt_fail;
 
 	addrs = (Elf_Addr *)calloc(n, sizeof(Elf_Addr));
-	if (addrs) {
-		if (!__do_get_plt_addrs(elf, names, addrs, n)) {
-			*addrs_p = addrs;
-		}
-	} else {
+	if (addrs == NULL) {
 		ret = ELF_PARSE_NO_MEM;
 		goto get_plt_fail;
 	}
+
+	if (!__do_get_plt_addrs(elf, names, addrs, n))
+		*addrs_p = addrs;
 
 	ret = munmap_file(elf, &elf_len);
 

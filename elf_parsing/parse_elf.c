@@ -130,14 +130,13 @@ int main(int argc, char **argv)
 				Elf_Addr *addrs = NULL;
 
 				ret = get_plt_addrs(filename, names, entries_num, &addrs);
-				if (ret == 0) {
-					for (i = 0; i < entries_num; i++)
-						printf("%08x\n", addrs[i]);
-                    free(addrs);
-				} else {
+				if (ret != 0) {
 					printf("Error: %s\n", get_str_error(ret));
 					ret = -1;
 				}
+				for (i = 0; i < entries_num; i++)
+					printf("%08x\n", addrs[i]);
+				free(addrs);
 			} else {
 				ret = -1;
 				goto print_usage_exit;

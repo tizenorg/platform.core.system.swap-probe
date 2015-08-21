@@ -9,6 +9,7 @@ extern "C" {
 
 #define SIZEOF_VOID_P 4
 #if SIZEOF_VOID_P == 8
+typedef Elf64_Half Elf_Half;
 typedef Elf64_Ehdr Elf_Ehdr;
 typedef Elf64_Shdr Elf_Shdr;
 typedef Elf64_Sym  Elf_Sym;
@@ -19,6 +20,7 @@ typedef Elf64_Rel Elf_Rel;
 #define ELF_R_SYM(x) ELF64_R_SYM(x)
 #define ELF_ST_TYPE(x) ELF64_ST_TYPE(x)
 #elif SIZEOF_VOID_P == 4
+typedef Elf32_Half Elf_Half;
 typedef Elf32_Ehdr Elf_Ehdr;
 typedef Elf32_Shdr Elf_Shdr;
 typedef Elf32_Sym  Elf_Sym;
