@@ -151,9 +151,15 @@ def __get_addr_by_funcname_lib(lib_data, funcname):
     if funcname in lib_data:
         result[funcname] = lib_data[funcname]
     else:
-        funcname = re.sub("\*", ".*", funcname)
+        funcname_short = re.sub("@\*", "$", funcname)
+        funcname_postfix = re.sub("\*", ".*", funcname)
         for i in lib_data:
-            tokens = re.findall("^(" + funcname + ")\n", i + "\n")
+            tokens = re.findall("^(" + funcname_short + ")\n", i + "\n")
+            if tokens != []:
+                result[i] = lib_data[i]
+                continue
+
+            tokens = re.findall("^(" + funcname_postfix + ")\n", i + "\n")
             if tokens != []:
                 result[i] = lib_data[i]
 
