@@ -11,8 +11,16 @@ BuildRequires:  emulator-yagl
 # opengl-es-virtual-drv is installed as a dependency. On a real device coregl
 # is actually used.
 %ifarch %{arm}
+
+%if "%{sec_product_feature_profile_wearable}" == "1"
+BuildRequires: -opengl-es-virtual-drv
+BuildRequires: evas
+BuildRequires: opengl-es-mali400mp
+%else
 BuildConflicts: opengl-es-virtual-drv
 BuildRequires: coregl
+%endif
+
 %endif
 BuildRequires:  ecore-devel
 BuildRequires:  elementary-devel
