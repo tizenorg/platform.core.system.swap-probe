@@ -485,6 +485,11 @@ int get_plt_addrs(const char *filename, const char **names, size_t n, Elf_Addr *
 	if (!__do_get_plt_addrs(elf, names, addrs, n))
 		*addrs_p = addrs;
 
+	if (ret == ELF_PARSE_MUNMAP_ERROR) {
+		free(addrs);
+		*addrs_p = NULL;
+	}
+
 	ret = munmap_file(elf, &elf_len);
 
 	return ret;
