@@ -94,7 +94,6 @@ PROBE_SRCS =	   				\
 	./probe_third/libdaemon.c		\
 	./probe_thread/libdathread.c		\
 	./probe_thread/libdasync.c		\
-	./probe_userfunc/libdauserfunc.c	\
 	./probe_file/da_io_posix.c		\
 	./probe_file/da_io_stdc.c		\
 

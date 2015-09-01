@@ -154,10 +154,9 @@ static int read_mapping_line(FILE *mapfile, struct map_t *m)
 		m->filename[len] = '\0';
 
 		return 1;
-	} else
+	} else {
 		return 0;
-
-	return (ret != 0 && ret != EOF);
+	}
 }
 
 static struct data_list_t *new_data(void)
@@ -194,7 +193,7 @@ static int add_to_map_list(struct map_t **m)
 	return 0;
 }
 
-static void print_list_sorted(struct map_t **list)
+static void __attribute__((used)) print_list_sorted(struct map_t **list)
 {
 	struct map_t *m = NULL;
 	uint32_t i = 0;
@@ -230,6 +229,10 @@ static int realloc_array(struct map_t ***p, uint32_t *count_total,
 		if (sections_list.count > *count_total) {
 			/* not enaught space in hash */
 			*p = realloc(*p, sizeof(**p) * sections_list.count);
+			if (*p == NULL) {
+				PRINTERR("cannot realloc");
+				return -ENOMEM;
+			}
 			*count_total = sections_list.count;
 		}
 	}
@@ -393,8 +396,11 @@ static int update_is_instrument_lib_attr_nolock()
 		}
 	}
 
+	/* Use for debug:
+	 * print_list_sorted(name_hash_table);
+	 */
+
 	return 0;
-	print_list_sorted(name_hash_table);
 }
 
 static void maps_reader_lock_all()
@@ -492,11 +498,19 @@ int maps_make()
 	int res = 0;
 	maps_writer_lock();
 	maps_reader_lock_all();
-	FILE *f = fopen("/proc/self/maps", "r");
+	FILE *f = NULL;
 	struct map_t *map = NULL;
+	struct data_list_t *cur = NULL;
+	static const char *proc_self_maps = "/proc/self/maps";
+
+	f = fopen(proc_self_maps, "r");
+	if (f == NULL) {
+		PRINTERR("cannot open file <%s>", proc_self_maps);
+		goto unlock_exit;
+	}
 
 	/* read to exists locations */
-	struct data_list_t *cur = get_first_el(&sections_list);
+	cur = get_first_el(&sections_list);
 	sections_list.count = 0;
 	while (cur != NULL) {
 		map = (struct map_t *)cur->data;
@@ -515,7 +529,7 @@ int maps_make()
 	if (map == NULL) {
 		PRINTERR("Can not alloc data for map\n");
 		res = -1;
-		goto unlock_exit;
+		goto unlock_exit_close_f;
 	}
 	while (read_mapping_line(f, map)) {
 		if (map->permissions[2] == 'x') {
@@ -534,9 +548,9 @@ int maps_make()
 
 	update_is_instrument_lib_attr_nolock();
 
-unlock_exit:
+unlock_exit_close_f:
 	fclose(f);
-
+unlock_exit:
 	maps_reader_unlock_all();
 	maps_writer_unlock();
 

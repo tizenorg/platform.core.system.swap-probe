@@ -82,6 +82,7 @@ int main(int argc, char **argv)
 	int i;
 	int ret = 0;
 
+	/* TODO fix coding style */
 	if (argc >= 3) {
 		if (argc == 3) {
 			if (!strcmp(argv[2], "-i")) {
@@ -141,9 +142,6 @@ int main(int argc, char **argv)
 				ret = -1;
 				goto print_usage_exit;
 			}
-		} else {
-			ret = -1;
-			goto print_usage_exit;
 		}
 	} else {
 		ret = -1;
