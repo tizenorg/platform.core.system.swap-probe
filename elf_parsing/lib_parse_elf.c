@@ -293,6 +293,11 @@ get_got_plt_addrs(const void *elf, const char* entry_names[], Elf_Addr addrs[],
 	const Elf_Rel *plt_table = elf + shdr->sh_offset;
 
 	const Elf_Shdr* tmp_shdr = get_section_by_index(elf, shdr->sh_link);
+	if (!tmp_shdr) {
+		ret = -1;
+		goto exit;
+	}
+
 	sym_table = elf + tmp_shdr->sh_offset;
 	tmp_shdr = get_section_by_index(elf, tmp_shdr->sh_link);
 	if (!tmp_shdr) {

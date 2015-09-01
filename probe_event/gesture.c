@@ -62,7 +62,6 @@ static inline char *__n_finger_tap_pack(char *to, void *event_info)
 	PACK_UIEVENT_INFO2(ev->n);
 
 	return p;
-	to++;
 }
 
 /*
