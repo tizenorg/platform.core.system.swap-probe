@@ -130,7 +130,9 @@ def __lib_syms(libname):
         for t in tokens:
             parts = t.split(' ')
             if len(parts) == 2 and int(parts[0], 16) != 0:
-                probe_data[parts[1]] = parts[0]
+                if parts[1] not in probe_data:
+                    probe_data[parts[1]] = ()
+                probe_data[parts[1]] += (parts[0], )
 
     return probe_data
 
@@ -291,7 +293,8 @@ def __print_lib_end(file):
 
 def __print_probe(file, func, addr_list, handler, type):
     for lib_func in addr_list:
-        file.write("\t\t{0x" + str(addr_list[lib_func]) + ", 0x" + str(handler) + ", " + str(type) +" /* " + str(lib_func) + " */},\n")
+        for func_addr in addr_list[lib_func]:
+            file.write("\t\t{0x" + str(func_addr) + ", 0x" + str(handler[0]) + ", " + str(type) +" /* " + str(lib_func) + " */},\n")
 
 def __print_feature_list(file, features_cnt, features_list_dict):
     file.write("int feature_to_data_count = " + str(features_cnt) + ";\n")
@@ -397,9 +400,9 @@ def __print_probe_lib(file, da_inst_dir, da_lib, probe_lib):
         return
 
     file.write("static const char *probe_lib = \"" + da_inst_dir + "/" + da_lib + "\";\n")
-    file.write("static unsigned long get_caller_addr = 0x" + get_caller_addr + ";\n")
-    file.write("static unsigned long get_call_type_addr = 0x" + get_call_type_addr + ";\n")
-    file.write("static unsigned long write_msg_addr = 0x" + write_msg_addr + ";\n")
+    file.write("static unsigned long get_caller_addr = 0x" + get_caller_addr[0] + ";\n")
+    file.write("static unsigned long get_call_type_addr = 0x" + get_call_type_addr[0] + ";\n")
+    file.write("static unsigned long write_msg_addr = 0x" + write_msg_addr[0] + ";\n")
 
 
 def generate_headers(dict, da_inst_dir, da_lib, probe_lib):
