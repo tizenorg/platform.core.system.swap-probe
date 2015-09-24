@@ -114,10 +114,9 @@ void application_exit()
 	snprintf(buf, sizeof(buf), "/proc/%d/cmdline", gpid);
 	f = fopen(buf, "r");
 	if (f != NULL) {
-		fscanf(f, "%s", buf);
+		fread(buf, strlen(manager_name), 1, f);
 		fclose(f);
-		if (strlen(buf) == strlen(manager_name) &&
-		    strncmp(buf, manager_name, sizeof(manager_name)) == 0) {
+		if (!memcmp(buf, manager_name, strlen(manager_name))) {
 			/* Luke, I am your father
 			 * da_manager is our parent
 			 * looks like we are common applicaton
