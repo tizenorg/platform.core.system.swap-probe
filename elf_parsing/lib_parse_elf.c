@@ -16,6 +16,7 @@ enum {
 	ELF_PARSE_INVALID_CLASS,
 	ELF_PARSE_MMAP_ERROR,
 	ELF_PARSE_MUNMAP_ERROR,
+	ELF_PARSE_UNKNOWN_ERROR,
 	ELF_PARSE_NO_MEM
 };
 
@@ -487,8 +488,12 @@ int get_plt_addrs(const char *filename, const char **names, size_t n, Elf_Addr *
 		goto get_plt_fail;
 	}
 
-	if (!__do_get_plt_addrs(elf, names, addrs, n))
-		*addrs_p = addrs;
+	if (__do_get_plt_addrs(elf, names, addrs, n) != 0) {
+		ret = ELF_PARSE_UNKNOWN_ERROR;
+		goto free_data;
+	}
+
+	*addrs_p = addrs;
 
 	ret = munmap_file(elf, &elf_len);
 
@@ -498,7 +503,9 @@ int get_plt_addrs(const char *filename, const char **names, size_t n, Elf_Addr *
 	}
 
 	return ret;
-
+free_data:
+	free(addrs);
+	*addrs_p = NULL;
 get_plt_fail:
 	/* ignore unmap error */
 	munmap_file(elf, &elf_len);
