@@ -240,7 +240,9 @@ char** cached_backtrace_symbols (void* const* array, int size)
 	}
 
 	/* Allocate memory for the result.  */
-	result = (char **) malloc (size * sizeof (char *) + total);
+	uint32_t allocated_size = size * sizeof (char *) + total;
+	uint32_t tail_size;
+	result = (char **) malloc (allocated_size);
 	if (result != NULL)
 	{
 		char *last = (char *) (result + size);
@@ -251,7 +253,8 @@ char** cached_backtrace_symbols (void* const* array, int size)
 
 			if(chararr[cnt] != NULL)		// there is a cache
 			{
-				last += (1 + sprintf(last, "%s", chararr[cnt]));
+				tail_size = allocated_size - ((void *)last - (void *)result);
+				last += (1 + snprintf(last, tail_size, "%s", chararr[cnt]));
 			}
 			else		// there is no cache
 			{
@@ -264,7 +267,8 @@ char** cached_backtrace_symbols (void* const* array, int size)
 
 					if (info[cnt].dli_sname == NULL && info[cnt].dli_saddr == 0)
 					{
-						tstrlen = sprintf (last, "%s(%s) [%p]", info[cnt].dli_fname ?: "", info[cnt].dli_sname ?: "", array[cnt]);
+						tail_size = allocated_size - ((void *)last - (void *)result);
+						tstrlen = snprintf (last, tail_size, "%s(%s) [%p]", info[cnt].dli_fname ?: "", info[cnt].dli_sname ?: "", array[cnt]);
 					}
 					else
 					{
@@ -281,7 +285,8 @@ char** cached_backtrace_symbols (void* const* array, int size)
 							offset = info[cnt].dli_saddr - array[cnt];
 						}
 
-						tstrlen = sprintf (last, "%s(%s%c%#tx) [%p]",
+						tail_size = allocated_size - ((void *)last - (void *)result);
+						tstrlen = snprintf (last, tail_size, "%s(%s%c%#tx) [%p]",
 								info[cnt].dli_fname ?: "",
 								info[cnt].dli_sname ?: "",
 								sign, offset, array[cnt]);
@@ -289,7 +294,8 @@ char** cached_backtrace_symbols (void* const* array, int size)
 				}
 				else
 				{
-					tstrlen = sprintf (last, "[%p]", array[cnt]);
+					tail_size = allocated_size - ((void *)last - (void *)result);
+					tstrlen = snprintf (last, tail_size, "[%p]", array[cnt]);
 				}
 				tstrlen++;
 
@@ -343,7 +349,7 @@ char** da_backtrace_symbols (void* const* array, int size)
 					size_t len = 0;
 					if(map->l_origin && strlen(map->l_origin) < FILEPATH_MAX)
 					{
-						strcpy(filepath, map->l_origin);
+						strncpy(filepath, map->l_origin, sizeof(filepath));
 						len = strlen(filepath);
 						if(len > 0 && filepath[len-1] != '/')
 						{
@@ -355,7 +361,7 @@ char** da_backtrace_symbols (void* const* array, int size)
 					else
 						filepath[0] = '\0';
 					if (strlen(map->l_name) < FILEPATH_MAX - len)
-						strcat(filepath, map->l_name);
+						strncat(filepath, map->l_name, sizeof(filepath));
 				}
 
 				symdata_t* pdata = _get_symboldata(filepath);
@@ -412,7 +418,9 @@ char** da_backtrace_symbols (void* const* array, int size)
 	}
 
 	/* Allocate memory for the result.  */
-	result = (char **) malloc (size * sizeof (char *) + total);
+	uint32_t allocated_size = size * sizeof (char *) + total;
+	uint32_t tail_size;
+	result = (char **) malloc (allocated_size);
 	if (result != NULL)
 	{
 		char *last = (char *) (result + size);
@@ -423,7 +431,8 @@ char** da_backtrace_symbols (void* const* array, int size)
 
 			if(chararr[cnt] != NULL)		// there is a cache
 			{
-				last += (1 + sprintf(last, "%s", chararr[cnt]));
+				tail_size = allocated_size - ((void *)last - (void *)result);
+				last += (1 + snprintf(last, tail_size, "%s", chararr[cnt]));
 			}
 			else		// there is no cache
 			{
@@ -436,7 +445,8 @@ char** da_backtrace_symbols (void* const* array, int size)
 
 					if (info[cnt].dli_sname == NULL && info[cnt].dli_saddr == 0)
 					{
-						tstrlen = sprintf (last, "%s(%s) [%p]", info[cnt].dli_fname ?: "", info[cnt].dli_sname ?: "", array[cnt]);
+						tail_size = allocated_size - ((void *)last - (void *)result);
+						tstrlen = snprintf (last, tail_size, "%s(%s) [%p]", info[cnt].dli_fname ?: "", info[cnt].dli_sname ?: "", array[cnt]);
 					}
 					else
 					{
@@ -453,7 +463,8 @@ char** da_backtrace_symbols (void* const* array, int size)
 							offset = info[cnt].dli_saddr - array[cnt];
 						}
 
-						tstrlen = sprintf (last, "%s(%s%c%#tx) [%p]",
+						tail_size = allocated_size - ((void *)last - (void *)result);
+						tstrlen = snprintf (last, tail_size, "%s(%s%c%#tx) [%p]",
 								info[cnt].dli_fname ?: "",
 								info[cnt].dli_sname ?: "",
 								sign, offset, array[cnt]);
@@ -461,7 +472,9 @@ char** da_backtrace_symbols (void* const* array, int size)
 				}
 				else
 				{
-					tstrlen = sprintf (last, "[%p]", array[cnt]);
+
+					tail_size = allocated_size - ((void *)last - (void *)result);
+					tstrlen = snprintf (last, tail_size, "[%p]", array[cnt]);
 				}
 				tstrlen++;
 

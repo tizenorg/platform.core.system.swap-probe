@@ -712,69 +712,6 @@ bool print_log_fmt(int msgType, const char *func_name, int line, ...)
 	return (res == len);
 }
 
-// get backtrace string
-// return stack depth if succeed, otherwise return 0
-// parameter 'log' cannot be null
-/* TODO remove unused code (getBacktraceString)*/
-int getBacktraceString(log_t* log, int bufsize)
-{
-	void* array[MAX_STACK_DEPTH];
-	char** strings = NULL;
-	size_t i, size;
-	int initsize;
-	int curlen;
-	int stringlen;
-
-	if(log == NULL)
-		return 0;
-
-	initsize = log->length;
-	curlen = initsize;
-	log->data[curlen] = '\0';	// is this necessary ?
-	size = backtrace(array, MAX_STACK_DEPTH);
-	if(likely(size > TRIM_STACK_DEPTH))
-	{
-		strings = BACKTRACE_SYMBOLS(array + TRIM_STACK_DEPTH, size - TRIM_STACK_DEPTH);
-
-		if(likely(strings != NULL))
-		{
-			for(i = TRIM_STACK_DEPTH; i < size; i++)
-			{
-				stringlen = strlen(strings[i - TRIM_STACK_DEPTH]) + 14;
-				if(curlen + stringlen >= bufsize + initsize)
-					break;
-
-				curlen += snprintf(log->data + curlen, bufsize - curlen, "%010u`,%s`,", (unsigned int)(array[i]), strings[i - TRIM_STACK_DEPTH]);
-			}
-			curlen -= 2;
-			log->data[curlen] = '\0';
-			log->length = curlen;
-			free(strings);
-		}
-		else	// failed to get backtrace symbols
-		{
-			// just print trace address
-			for(i = TRIM_STACK_DEPTH; i < size; i++)
-			{
-				stringlen = 23;
-				if(curlen + stringlen >= bufsize + initsize)
-					break;
-
-				curlen += snprintf(log->data + curlen, bufsize - curlen, "%010u`,(unknown)`,", (unsigned int)(array[i]));
-			}
-			curlen -= 2;
-			log->data[curlen] = '\0';
-			log->length = curlen;
-		}
-
-		return (int)(size - TRIM_STACK_DEPTH);
-	}
-	else
-	{
-		return 0;
-	}
-}
-
 /*************************************************************************
  * probe block control functions
  *************************************************************************/

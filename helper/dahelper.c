@@ -154,3 +154,14 @@ char *real_abs_path(int fd, char *buffer, size_t bufsiz)
 
 	return buffer;
 }
+
+void swap_usleep(useconds_t usec)
+{
+	struct timespec req;
+	struct timespec rem;
+	req.tv_sec = usec / 1000000;
+	req.tv_nsec = (usec % 1000000) * 1000;
+	if (nanosleep(&req, &rem) == -1) {
+		PRINTWRN("sleep was terminated by signal\n");
+	}
+}

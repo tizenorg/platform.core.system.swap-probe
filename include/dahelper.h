@@ -230,6 +230,7 @@ int getOrientation();
 void on_orientation_changed(int angle, bool capi);
 
 int remove_indir(const char* dirname);
+void swap_usleep(useconds_t usec);
 
 // query functions
 #define isOptionEnabled(OPT)	((gTraceInfo.optionflag & OPT) != 0)

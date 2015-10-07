@@ -207,7 +207,7 @@ static void __attribute__((used)) print_list_sorted(struct map_t **list)
 			 m->hash,
 			 m->is_instrument,
 			 m->filename);
-		usleep(500);
+		swap_usleep(500);
 	}
 }
 
