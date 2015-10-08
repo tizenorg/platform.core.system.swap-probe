@@ -342,14 +342,14 @@ char** da_backtrace_symbols (void* const* array, int size)
 				/* If this is the main program the information is incomplete.  */
 				if (map->l_name[0] == '\0' && map->l_type == lt_executable)
 				{
-					strncpy(filepath, program_invocation_name, FILEPATH_MAX - 1);
+					strncpy(filepath, program_invocation_name, sizeof(filepath) - 1);
 				}
 				else
 				{
 					size_t len = 0;
-					if(map->l_origin && strlen(map->l_origin) < FILEPATH_MAX)
+					if(map->l_origin && strlen(map->l_origin) < (sizeof(filepath) - 1))
 					{
-						strncpy(filepath, map->l_origin, sizeof(filepath));
+						strncpy(filepath, map->l_origin, sizeof(filepath) - 1);
 						len = strlen(filepath);
 						if(len > 0 && filepath[len-1] != '/')
 						{
@@ -361,7 +361,7 @@ char** da_backtrace_symbols (void* const* array, int size)
 					else
 						filepath[0] = '\0';
 					if (strlen(map->l_name) < FILEPATH_MAX - len)
-						strncat(filepath, map->l_name, sizeof(filepath));
+						strncat(filepath, map->l_name, sizeof(filepath) - len - 1);
 				}
 
 				symdata_t* pdata = _get_symboldata(filepath);
