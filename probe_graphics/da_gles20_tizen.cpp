@@ -35,6 +35,11 @@
 extern "C" {
 #endif
 
+#include "da_gles20.h"
+
+#define DECLARE(TYPE, FUNCNAME, ...)   TYPE REAL_NAME(FUNCNAME)(__VA_ARGS__)
+#define DECLARE_NOARGS(TYPE, FUNCNAME)   TYPE REAL_NAME(FUNCNAME)()
+
 #define REAL_NAME(func) __local_##func
 #define BEFORE BEFORE_GL_API
 #define CALL_ORIG(func, ...) __gl_api->func(__VA_ARGS__)

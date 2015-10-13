@@ -30,14 +30,30 @@
  */
 #include "common_probe_init.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+#include "da_gles20.h"
+
+#define DECLARE FUNC_DECLAR
+#define DECLARE_NOARGS FUNC_DECLAR_NOARGS
 
 #define REAL_NAME(func) PROBE_NAME(func)
 #define BEFORE BEFORE_GL_ORIG
 #define CALL_ORIG(func, ...) func##p(__VA_ARGS__)
 #define TYPEDEF(type) typedef type
 
+
+
+
 #include "da_gles20.inc"
+
+#ifdef __cplusplus
+}
+#endif
+
+
 
 
 #undef CALL_ORIG

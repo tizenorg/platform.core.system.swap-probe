@@ -115,7 +115,7 @@ extern EGLContext eglGetCurrentContext(void);
 #define INIT_LIB_ID_STR(LIB_ID, LIB_STR, KEYS)							\
 		if (lib_handle[LIB_ID] == ((void *) 0)) {		\
 			lib_handle[LIB_ID] = dlopen(LIB_STR, RTLD_LAZY | RTLD_GLOBAL); \
-			if (lib_handle[LIB_ID] == ((void *) 0)) {       \
+			if (lib_handle[LIB_ID] == ((void *) 0)) {	\
 				char perror_msg[128];			\
 				sprintf(perror_msg, "dlopen failed : [%s],%s", \
 					__FUNCTION__, LIB_STR);			\
@@ -173,6 +173,32 @@ extern EGLContext eglGetCurrentContext(void);
 	FLUSH_LOCAL_BUF();							\
 	POST_PACK_PROBEBLOCK_END()
 
+#define _ALIAS(NEW_FUNC, FUNCNAME, TYPE, ...)					\
+	TYPE NEW_FUNC(__VA_ARGS__) __attribute__ ((				\
+						   alias(FUNCSTR(FUNCNAME))	\
+						 ))
+
+#define FUNC_DECLAR(TYPE, FUNCNAME, ...)					\
+	/* alias for C function prototype */					\
+	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE);			\
+	}									\
+	/* alias for C++ function prototype */					\
+	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE, __VA_ARGS__);	\
+	extern "C"								\
+	{									\
+	TYPE REAL_NAME(FUNCNAME)(__VA_ARGS__)					\
+
+#define FUNC_DECLAR_NOARGS(TYPE, FUNCNAME)					\
+	/* alias for C function prototype */					\
+	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE, int);		\
+	}									\
+	/* alias for C++ function prototype */					\
+	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE);			\
+	extern "C"								\
+	{									\
+	TYPE REAL_NAME(FUNCNAME)()						\
+
+
 #define BEFORE_EVAS_GL(FUNCNAME)					\
 	DECLARE_VARIABLE_STANDARD_NORET;				\
 	GLenum error = GL_NO_ERROR;					\
@@ -184,8 +210,6 @@ extern EGLContext eglGetCurrentContext(void);
 		start_nsec = get_current_nsec();			\
 	GET_REAL_FUNCP_RTLD_DEFAULT(FUNCNAME, FUNCNAME##p)
 
-GLenum glGetError(void);
-void glGetIntegerv(GLenum pname, GLint * params);
 extern Evas_GL_API *__gl_api;
 extern Evas_GL_API *get_gl_api_fake_list(Evas_GL_API *api);
 #endif /* DA_GLES20_H_ */
