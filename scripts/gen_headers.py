@@ -291,10 +291,14 @@ def __print_lib_end(file):
     file.write("/* ======================================== */\n")
     file.write("\n")
 
-def __print_probe(file, func, addr_list, handler, type):
+def __print_probes(file, func, addr_list, handler, type):
+    probes_cnt = 0
     for lib_func in addr_list:
         for func_addr in addr_list[lib_func]:
+            probes_cnt += 1
             file.write("\t\t{0x" + str(func_addr) + ", 0x" + str(handler[0]) + ", " + str(type) +" /* " + str(lib_func) + " */},\n")
+
+    return probes_cnt
 
 def __print_feature_list(file, features_cnt, features_list_dict):
     file.write("int feature_to_data_count = " + str(features_cnt) + ";\n")
@@ -332,8 +336,7 @@ def __print_features(file, data):
             probes_in_feature = 0
 
             for func in data[feature][lib]:
-                probes_in_feature += 1
-                __print_probe(file, func, data[feature][lib][func][0], data[feature][lib][func][1], data[feature][lib][func][2])
+                probes_in_feature += __print_probes(file, func, data[feature][lib][func][0], data[feature][lib][func][1], data[feature][lib][func][2])
 
             if libs_in_feature is None:
                 libs_in_feature = {lib : (probes_in_feature, lib_feature_name)}
