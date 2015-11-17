@@ -5,30 +5,35 @@ Release:    1
 Group:      System/Libraries
 License:    LGPL-2.1+ and MIT
 Source:    %{name}_%{version}.tar.gz
-%ifarch %{ix86}
-BuildRequires:  emulator-yagl
-%endif
-# opengl-es-virtual-drv is installed as a dependency. On a real device coregl
-# is actually used.
-%ifarch %{arm}
 
-%if "%{sec_product_feature_profile_wearable}" == "1"
-BuildRequires: -opengl-es-virtual-drv
-BuildRequires: evas
-BuildRequires: opengl-es-mali400mp
-%else
-BuildConflicts: opengl-es-virtual-drv
-BuildRequires: coregl
-%endif
 
-%endif
-BuildRequires:  ecore-devel
-BuildRequires:  elementary-devel
-BuildRequires:  capi-appfw-application-devel
-BuildRequires:  capi-system-runtime-info-devel
-BuildRequires:  libXext-devel
-BuildRequires:  python
+# setup config
+%define X11_SUPPORT 0
+
+%if "%{_with_x}" == "1"
+%define X11_SUPPORT 1
+%endif # _with_x
+
+
+# common requires
+BuildRequires: ecore-devel
+BuildRequires: elementary-devel
+BuildRequires: capi-appfw-application-devel
+BuildRequires: capi-system-runtime-info-devel
+BuildRequires: python
+
+
+# graphic support
+BuildRequires: mesa-libGLESv2
+BuildRequires: mesa-libEGL
+
+%if %{X11_SUPPORT}
+BuildRequires: libXext-devel
+%endif # X11_SUPPORT
+
+
 Provides:  swap-probe
+
 
 %description
 SWAP probe is a part of data collection back-end for DA.
@@ -63,6 +68,10 @@ This tool will be installed in target
 %setup -q -n %{name}_%{version}
 
 %build
+%if %{X11_SUPPORT}
+export X11_SUPPORT=y
+%endif
+
 make rmheaders
 make headers
 make -j

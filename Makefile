@@ -1,4 +1,4 @@
-INSTALLDIR = usr/lib
+INSTALLDIR = /usr/lib
 BIN_INSTALLDIR = /usr/local/bin
 HEADER_INSTALLDIR = /usr/local/include/
 
@@ -77,7 +77,6 @@ UTILITY_SRCS =				\
 	./helper/dahelper.c		\
 	./helper/btsym.c		\
 	./helper/dacollection.c		\
-	./helper/dacapture.c		\
 	./helper/daforkexec.c		\
 	./helper/damaps.c			\
 	./helper/dastdout.c			\
@@ -90,12 +89,16 @@ PROBE_SRCS =	   				\
 	./probe_event/gesture.c			\
 	./probe_event/da_event.c		\
 	./probe_event/keytouch.c		\
-	./probe_event/orientation.c		\
 	./probe_third/libdaemon.c		\
 	./probe_thread/libdathread.c		\
 	./probe_thread/libdasync.c		\
 	./probe_file/da_io_posix.c		\
 	./probe_file/da_io_stdc.c		\
+
+ifeq ($(X11_SUPPORT),y)
+UTILITY_SRCS += ./helper/dacapture.c
+PROBE_SRCS += ./probe_event/orientation.c
+endif # X11_SUPPORT
 
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
 CAPI_SRCS = 	$(COMMON_SRCS)			\
