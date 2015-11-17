@@ -103,6 +103,7 @@ static void _configure(char* configstr)
 void application_exit()
 {
 	pid_t gpid;
+	size_t readed = 0;
 	FILE *f = NULL;
 	char buf[MAX_PATH_LENGTH];
 	const char manager_name[] = "da_manager";
@@ -114,9 +115,9 @@ void application_exit()
 	snprintf(buf, sizeof(buf), "/proc/%d/cmdline", gpid);
 	f = fopen(buf, "r");
 	if (f != NULL) {
-		fread(buf, strlen(manager_name), 1, f);
+		readed = fread(buf, strlen(manager_name), 1, f);
 		fclose(f);
-		if (!memcmp(buf, manager_name, strlen(manager_name))) {
+		if ((readed != 0) && (!memcmp(buf, manager_name, strlen(manager_name)))) {
 			/* Luke, I am your father
 			 * da_manager is our parent
 			 * looks like we are common applicaton
