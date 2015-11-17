@@ -35,7 +35,6 @@
 
 #include <Ecore.h>
 #include <Eina.h>
-#include <Ecore_X.h>
 
 #include "daprobe.h"
 #include "dahelper.h"
