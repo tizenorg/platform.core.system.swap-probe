@@ -32,6 +32,7 @@ INCLUDE_CPPFLAGS =				\
 		-I/usr/include/ethumb-1		\
 		-I/usr/include/ethumb-client-1	\
 		-I/usr/include/evas-1		\
+		-I/usr/include/emile-1		\
 		-I/usr/include/pixman-1		\
 		-I/usr/include/system		\
 		-I/usr/include/capi-system-runtime-info	\
