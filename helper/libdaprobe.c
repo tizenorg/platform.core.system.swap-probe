@@ -375,13 +375,15 @@ static void *recvThread(void __unused * data)
 					captureScreen();
 				} else if (log.type == APP_MSG_CONFIG) {
 					_configure(data_buf);
-				} else if(log.type == APP_MSG_STOP) {
-					PRINTMSG("APP_MSG_STOP");
+				} else if ((log.type == APP_MSG_STOP) ||
+					   (log.type == APP_MSG_STOP_WITHOUT_KILL)) {
+					PRINTMSG("APP_MSG_STOP (%d)", log.type);
 					if (data_buf) {
 						free(data_buf);
 						data_buf = NULL;
 					}
-					application_exit();
+					if (log.type != APP_MSG_STOP_WITHOUT_KILL)
+						application_exit();
 					break;
 				} else if(log.type == APP_MSG_MAPS_INST_LIST) {
 					if(log.length > 0) {
