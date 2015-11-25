@@ -611,7 +611,7 @@ bool printLog(log_t *log, int msgType)
 	len = sizeof(log->type) + sizeof(log->length) + log->length;
 
 	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
-	res = send(gTraceInfo.socket.daemonSock, log, len, 0);
+	res = send(gTraceInfo.socket.daemonSock, log, len, MSG_NOSIGNAL);
 	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 
 	return (res == len);
@@ -645,7 +645,7 @@ bool print_log_str(int msgType, char *str)
 
 	/* lock socket and send */
 	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
-	res = send(gTraceInfo.socket.daemonSock, &log, len, 0);
+	res = send(gTraceInfo.socket.daemonSock, &log, len, MSG_NOSIGNAL);
 	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
 
 	return (res == len);
@@ -702,7 +702,8 @@ bool print_log_fmt(int msgType, const char *func_name, int line, ...)
 	real_pthread_mutex_lock(&(gTraceInfo.socket.sockMutex));
 
 	if(unlikely(gTraceInfo.socket.daemonSock != -1)) {
-		res = send(gTraceInfo.socket.daemonSock, &log, len, MSG_DONTWAIT);
+		res = send(gTraceInfo.socket.daemonSock, &log, len,
+			   MSG_DONTWAIT | MSG_NOSIGNAL);
 	} else {
 		/* if socket is not connected, out to stderr */
 		fprintf(stderr, "%s %s\n", msg_code_to_srt(msgType), log.data);
