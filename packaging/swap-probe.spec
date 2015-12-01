@@ -27,6 +27,16 @@ BuildRequires: capi-system-runtime-info-devel
 BuildRequires: python
 
 
+# Applied python acceleration
+%ifarch armv7l
+BuildRequires: python-accel-armv7l-cross-arm
+%endif # arm7l
+
+%ifarch aarch64
+BuildRequires: python-accel-aarch64-cross-aarch64
+%endif # aarch64
+
+
 # graphic support
 BuildRequires: mesa-libGLESv2
 BuildRequires: mesa-libEGL
