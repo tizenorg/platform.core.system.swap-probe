@@ -81,6 +81,13 @@ DECLARE(void, glUniformBlockBinding, GLuint program, GLuint UniformBlockIndex,
 	      UniformBlockIndex, uniformBlockBinding);
 }
 
+DECLARE_DEFAULT_VOID(void, glUniformMatrix2x3fv, "dxbp", GLint, location, GLsizei, count, GLboolean, transpose, const GLfloat *, value)
+DECLARE_DEFAULT_VOID(void, glUniformMatrix3x2fv, "dxbp", GLint, location, GLsizei, count, GLboolean, transpose, const GLfloat *, value)
+DECLARE_DEFAULT_VOID(void, glUniformMatrix2x4fv, "dxbp", GLint, location, GLsizei, count, GLboolean, transpose, const GLfloat *, value)
+DECLARE_DEFAULT_VOID(void, glUniformMatrix4x2fv, "dxbp", GLint, location, GLsizei, count, GLboolean, transpose, const GLfloat *, value)
+DECLARE_DEFAULT_VOID(void, glUniformMatrix3x4fv, "dxbp", GLint, location, GLsizei, count, GLboolean, transpose, const GLfloat *, value)
+DECLARE_DEFAULT_VOID(void, glUniformMatrix4x3fv, "dxbp", GLint, location, GLsizei, count, GLboolean, transpose, const GLfloat *, value)
+
 DECLARE(void, glVertexAttribI2ui, GLuint index, GLuint x, GLuint y)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint, GLuint));
@@ -463,6 +470,12 @@ DECLARE(void, glClearColorIui, GLint r, GLint g, GLint b, GLint a)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd", r, g, b, a);
 }
 
+DECLARE_DEFAULT_VOID(void, glClearBufferiv, "xdp", GLenum, buffer, GLint, drawBuffer, const GLuint *, value)
+DECLARE_DEFAULT_VOID(void, glClearBufferuiv, "xdp", GLenum, buffer, GLint, drawBuffer, const GLuint *, value)
+DECLARE_DEFAULT_VOID(void, glClearBufferfv, "xdp", GLenum, buffer, GLint, drawBuffer, const GLfloat *, value)
+DECLARE_DEFAULT_VOID(void, glClearBufferfi, "xdpd", GLenum, buffer, GLint, drawBuffer, GLfloat, depth, GLint, stencil)
+
+
 DECLARE(void, glTexParameterIiv, GLenum target, GLenum pname, GLint *params)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint*));
@@ -536,6 +549,10 @@ DECLARE(void, glGetBooleanIndexedv, GLenum value, GLint index, GLboolean *data)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdp", value, index,
 	      data);
 }
+
+//!!!DECLARE_DEFAULT_VOID(void, glGetInteger64i_v, "xdp", GLenum, target, GLuint, index, GLint64 *, data)
+//!!!DECLARE_DEFAULT_VOID(void, glGetInteger64v, "xp", GLenum, pname, GLint64 *, data)
+DECLARE_DEFAULT_VOID(void, glGetIntegeri_v, "xdp", GLenum, target, GLuint, index, GLint *, data)
 
 DECLARE(void, glGetIntegerIndexedv, GLenum value, GLint index, GLboolean *data)
 {
@@ -1318,6 +1335,9 @@ DECLARE(GLboolean, glIsQuery, GLuint id)
 	return ret;
 }
 
+DECLARE_DEFAULT_VOID(void, glGetSamplerParameterfv, "dxp", GLuint, sampler, GLenum, pname, GLfloat *, params)
+DECLARE_DEFAULT_VOID(void, glGetSamplerParameteriv, "dxp", GLuint, sampler, GLenum, pname, GLint *, params)
+
 DECLARE(void, glGetSynciv, GLsync sync, GLenum pname, GLsizei bufSize,
        GLsizei *length, GLint *values)
 {
@@ -1350,6 +1370,8 @@ DECLARE(void, glGetInternalformativ, GLenum target, GLenum internalformat,
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxdp",
 	      target, internalformat, pname, bufSize, params);
 }
+
+DECLARE_DEFAULT_VOID(void, glGetBufferParameteri64v, "xxp", GLenum, target, GLenum, value, GLint64 *, data)
 
 DECLARE(void, glGetBufferPointerv, GLenum target, GLenum pname,
        GLvoid ** params)
