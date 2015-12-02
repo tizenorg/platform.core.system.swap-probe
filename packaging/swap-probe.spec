@@ -35,6 +35,13 @@ BuildRequires: mesa-libEGL
 BuildRequires: libXext-devel
 %endif # X11_SUPPORT
 
+# Applied python acceleration
+%ifarch armv7l
+BuildRequires: python-accel-armv7l-cross-arm
+%endif
+%ifarch aarch64
+BuildRequires: python-accel-aarch64-cross-aarch64
+%endif
 
 Provides:  swap-probe
 
