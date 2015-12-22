@@ -52,7 +52,7 @@
 
 #define MAX_TITLE_LENGTH		16
 #define MAX_CHART_HANDLE		10		// cannot be exceeded 10
-#define MAX_SERIES_PER_CHART	4		// cannot be exceeded 10
+#define MAX_SERIES_PER_CHART	10		// cannot be exceeded 10
 // chart handle is  from 1 to 9
 // series handle is from 11 to 99
 // series handle 32 means that the series is 2nd series in 3rd chart.

@@ -125,7 +125,9 @@
 do {												\
 	POST_PACK_PROBEBLOCK_BEGIN();								\
 	_fstatret = fstat(FD, &_statbuf);							\
-	if (stat_regular_or_socket_p(&_statbuf)) {						\
+	if (_fstatret == -1) {									\
+		PRINTWRN("fstat returns error\n");						\
+	} else if (stat_regular_or_socket_p(&_statbuf)) {					\
 		PREPARE_LOCAL_BUF();								\
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
 		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);				\
@@ -138,7 +140,9 @@ do {												\
 do {												\
 	POST_PACK_PROBEBLOCK_BEGIN();								\
 	_fstatret = fstat(FD, &_statbuf);							\
-	if (stat_regular_or_socket_p(&_statbuf)) {						\
+	if (_fstatret == -1) {									\
+		PRINTWRN("fstat returns error\n");						\
+	} else if (stat_regular_or_socket_p(&_statbuf)) {					\
 		PREPARE_LOCAL_BUF();								\
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
 		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);				\
@@ -186,7 +190,9 @@ static inline bool stat_regular_or_socket_p(struct stat *buf)
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);							\
 	PRE_PROBEBLOCK_BEGIN();									\
 	_fstatret = fstat(FD, &_statbuf);							\
-	if (stat_regular_or_socket_p(&_statbuf)) {						\
+	if (_fstatret == -1) {									\
+		PRINTWRN("fstat returns error\n");						\
+	} else if (stat_regular_or_socket_p(&_statbuf)) {					\
 		DEFINE_FILESIZE_FD(fd);								\
 		PREPARE_LOCAL_BUF();								\
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
@@ -201,7 +207,9 @@ do {									\
 	POST_PACK_PROBEBLOCK_BEGIN();					\
 	setProbePoint(&probeInfo);					\
 	_fstatret = fstat(FD, &_statbuf);				\
-	if (stat_regular_or_socket_p(&_statbuf)) {			\
+	if (_fstatret == -1) {									\
+		PRINTWRN("fstat returns error\n");						\
+	} else if (stat_regular_or_socket_p(&_statbuf)) {					\
 		PREPARE_LOCAL_BUF();								\
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__); \
 		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);		\
