@@ -121,7 +121,7 @@ static int read_mapping_line(FILE *mapfile, struct map_t *m)
 		return 0;
 	}
 
-	ret = fscanf(mapfile, "%p-%p %s %llx %s %llx%c%c",
+	ret = fscanf(mapfile, "%p-%p %20s %llx %s %llx%c%c",
 		     &m->addr,
 		     &m->endaddr,
 		     (char *)m->permissions,

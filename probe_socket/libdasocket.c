@@ -370,31 +370,11 @@ ssize_t PROBE_NAME(recvmsg)(int socket, struct msghdr *message, int flags) {
 						 flags);
 
 	sret = recvmsgp(socket, message, flags);
-	if (sret <= 0) {
-		memset(&message, 0, sizeof(message));
-	}
-
-	int sendMaxSize = SOCKET_SEND_SIZE;
-	char* out = (char*) real_malloc(sendMaxSize + 5);
-	if (sret <= 0) {
-		out[0] = '\0';
-	} else {
-		memcpy(out, message, sendMaxSize + 5);
-		if (sret > sendMaxSize + 5) {
-			out[sendMaxSize] = '.';
-			out[sendMaxSize + 1] = '.';
-			out[sendMaxSize + 2] = '.';
-			out[sendMaxSize + 3] = '\0';
-		} else {
-			out[sret] = '\0';
-		}
-	}
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
 					       SOCKET_API_RECV_END, info, "dpd",
 					       socket, voidp_to_uint64(bufferP),
 					       flags);
-	free(out);
 	return sret;
 }
 
@@ -414,30 +394,11 @@ ssize_t PROBE_NAME(sendmsg)(int socket, const struct msghdr *message, int flags)
 						 flags);
 
 	sret = sendmsgp(socket, message, flags);
-	if (sret <= 0) {
-		memset(&message, 0, sizeof(message));
-	}
-	int sendMaxSize = SOCKET_SEND_SIZE;
-	char* out = (char*) real_malloc(sendMaxSize + 5);
-	if (sret <= 0) {
-		out[0] = '\0';
-	} else {
-		memcpy(out, message, sendMaxSize + 5);
-		if (sret > sendMaxSize + 5) {
-			out[sendMaxSize] = '.';
-			out[sendMaxSize + 1] = '.';
-			out[sendMaxSize + 2] = '.';
-			out[sendMaxSize + 3] = '\0';
-		} else {
-			out[sret] = '\0';
-		}
-	}
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
 					       SOCKET_API_SEND_END, info, "dpd",
 					       socket, voidp_to_uint64(bufferP),
 					       flags);
-	free(out);
 	return sret;
 }
 
