@@ -38,8 +38,9 @@ BuildRequires: python-accel-aarch64-cross-aarch64
 
 
 # graphic support
-BuildRequires: mesa-libGLESv2
-BuildRequires: mesa-libEGL
+BuildRequires: pkgconfig(gles20)
+BuildRequires: pkgconfig(wayland-egl)
+BuildRequires: pkgconfig(egl)
 
 %if %{X11_SUPPORT}
 BuildRequires: libXext-devel
