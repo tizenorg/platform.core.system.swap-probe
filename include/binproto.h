@@ -61,7 +61,7 @@
 #define MSG_PROBE_NETWORK 0x0111
 #define MSG_PROBE_GL 0x0112
 
-#define SCREENSHOT_DIRECTORY	"/tmp/da"
+#define SCREENSHOT_DIRECTORY	"/tmp"
 
 #define MAX_PACK_FILENAME_LEN (4 * 1024)
 #define MAX_SHADER_LEN (4 * 1024)

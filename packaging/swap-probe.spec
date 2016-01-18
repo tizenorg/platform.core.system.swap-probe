@@ -34,7 +34,13 @@ cp LICENSE %{buildroot}/usr/share/license/%{name}
 /usr/share/license/%{name}
 
 %manifest swap-probe.manifest
+
+%ifarch %{ix86}
 %defattr(-,root,root,-)
+%else
+%defattr(-,developer,developer,-)
+%endif
+
 %{_prefix}/lib/da_probe_tizen.so
 %{_prefix}/lib/libdaprobe.so
 %{_prefix}/lib/da_api_map

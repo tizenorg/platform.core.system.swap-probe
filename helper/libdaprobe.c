@@ -375,6 +375,7 @@ static void *recvThread(void __unused * data)
 				}
 
 				if (log.type == MSG_CAPTURE_SCREEN) {
+					PRINTMSG("MSG_CAPTURE_SCREEN");
 					captureScreen();
 				} else if (log.type == MSG_CONFIG) {
 					_configure(data_buf);

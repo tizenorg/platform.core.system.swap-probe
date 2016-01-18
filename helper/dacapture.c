@@ -359,7 +359,8 @@ int captureScreen()
 				//save file
 				if(evas_object_image_save(img, dstpath, NULL, "compress=5") != 0)
 				{
-					chmod(dstpath, 0777);
+					if (chmod(dstpath, 0777) == -1)
+						PRINTWRN("cannot chmod -R777 <%s>", dstpath);
 
 					/* welcome to the hell */
 					log_t log;
@@ -384,24 +385,29 @@ int captureScreen()
 				else
 				{
 					// captureScreen : evas_object_image_save failed
+
+					PRINTMSG("evas_object_image_save failed");
 					ret = -1;
 				}
 			}
 			else
 			{
 				// captureScreen : evas_object_image_add failed
+				PRINTMSG("evas_object_image_add failed");
 				ret = -1;
 			}
 		}
 		else
 		{
 			// captureScreen : create canvas failed
+			PRINTMSG("create canvas failed");
 			ret = -1;
 		}
 	}
 	else
 	{
 		// captureScreen : captureScreenShotX failed
+		PRINTMSG("captureScreenShotX failed");
 		ret = -1;
 	}
 
