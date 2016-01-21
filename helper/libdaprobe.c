@@ -43,6 +43,7 @@
 #include <pthread.h>		// for pthread_mutex_lock
 #include <signal.h>
 #include <stdint.h>
+#include <dlfcn.h>		// for dlopen
 
 #include <sys/syscall.h>	// for syscall
 #include <sys/time.h>		// for gettimeofday
@@ -395,6 +396,16 @@ static void *recvThread(void __unused * data)
 					} else {
 						PRINTERR("WRONG MSG_MAPS_INST_LIST");
 					}
+				} else if(log.type ==  MSG_DL_OPEN) {
+						struct stat sb;
+
+						PRINTMSG("MSG_DL_OPEN <%s>", (char *)data_buf);
+						if (stat(data_buf, &sb) == 0) {
+							dlopen(data_buf, RTLD_NOW);
+							PRINTMSG("MSG_DL_OPEN <%s> DONE", (char *)data_buf);
+						} else {
+							PRINTERR("MSG_DL_OPEN <%s> file not found", (char *)data_buf);
+						}
 				} else {
 					PRINTERR("recv unknown message. id = (%d)", log.type);
 				}
