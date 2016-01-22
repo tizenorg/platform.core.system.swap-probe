@@ -370,9 +370,8 @@ ssize_t PROBE_NAME(recvmsg)(int socket, struct msghdr *message, int flags) {
 						 flags);
 
 	sret = recvmsgp(socket, message, flags);
-	if (sret <= 0) {
-		memset(&message, 0, sizeof(message));
-	}
+	if (sret <= 0)
+		memset(message, 0, sizeof(*message));
 
 	int sendMaxSize = SOCKET_SEND_SIZE;
 	char* out = (char*) real_malloc(sendMaxSize + 5);
