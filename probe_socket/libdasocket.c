@@ -413,9 +413,7 @@ ssize_t PROBE_NAME(sendmsg)(int socket, const struct msghdr *message, int flags)
 						 flags);
 
 	sret = sendmsgp(socket, message, flags);
-	if (sret <= 0) {
-		memset(&message, 0, sizeof(message));
-	}
+
 	int sendMaxSize = SOCKET_SEND_SIZE;
 	char* out = (char*) real_malloc(sendMaxSize + 5);
 	if (sret <= 0) {
