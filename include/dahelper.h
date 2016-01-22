@@ -192,6 +192,7 @@ typedef struct
 	int					init_complete;
 	int					custom_chart_callback_count;
 	uint64_t		optionflag;
+
 } __traceInfo;
 
 extern __traceInfo gTraceInfo;
@@ -229,6 +230,9 @@ int getOrientation();
 void on_orientation_changed(int angle, bool capi);
 
 int remove_indir(const char* dirname);
+
+int load_uihv_lib(void);
+char *get_uihv_load_error(void);
 
 // query functions
 #define isOptionEnabled(OPT)	((gTraceInfo.optionflag & OPT) != 0)
