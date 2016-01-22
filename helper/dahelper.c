@@ -50,6 +50,10 @@ const char *lib_string[NUM_ORIGINAL_LIBRARY] = {
 };
 void *lib_handle[NUM_ORIGINAL_LIBRARY];
 
+const char *uihv_lib_path = "/usr/lib/da_ui_viewer.so";
+void *uihv_lib;
+char *uihv_error = NULL;
+
 /* trace info global variable */
 __traceInfo gTraceInfo =
 {
@@ -152,4 +156,24 @@ char *real_abs_path(int fd, char *buffer, size_t bufsiz)
 	buffer[ret] = '\0';
 
 	return buffer;
+}
+
+int load_uihv_lib(void)
+{
+	void *lib_handle;
+
+	lib_handle = dlopen(uihv_lib_path, RTLD_NOW);
+	if (lib_handle == NULL) {
+		uihv_error = dlerror();
+		return -1;
+	}
+
+	uihv_lib = lib_handle;
+
+	return 0;
+}
+
+char *get_uihv_load_error(void)
+{
+	return uihv_error;
 }

@@ -140,6 +140,11 @@ int app_efl_main(int *argc, char ***argv, app_event_callback_s *callback, void *
 
 	GET_REAL_FUNCP_RTLD_NEXT(app_efl_main, app_efl_mainp);
 
+	if (isOptionEnabled(OPT_UI_VIEWER))
+		if (load_uihv_lib() != 0)
+			PRINTERR("UIHV library has not been loaded! Error: %s",
+				 get_uihv_load_error());
+
 	probeBlockStart();
 	handler = register_orientation_event_listener();
 	gAppCallback.create = callback->create;
@@ -258,6 +263,11 @@ int ui_app_main(int argc, char **argv, ui_app_lifecycle_callback_s *callback, vo
 	int ret;
 
 	GET_REAL_FUNCP_RTLD_NEXT(ui_app_main, ui_app_mainp);
+
+	if (isOptionEnabled(OPT_UI_VIEWER))
+		if (load_uihv_lib() != 0)
+			PRINTERR("UIHV library has not been loaded! Error: %s",
+				 get_uihv_load_error());
 
 	probeBlockStart();
 	handler = register_orientation_event_listener();
