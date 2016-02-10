@@ -33,6 +33,7 @@
 
 #include "daprobe.h"
 #include "dahelper.h"
+#include "dacapture.h"
 
 /********************************************************************
  * SNAPSHOT PROBE MACRO

@@ -37,11 +37,10 @@
 #include "dahelper.h"
 #include "probeinfo.h"
 #include "binproto.h"
+#include "orientation.h"
 #include "real_functions.h"
 #include "common_probe_init.h"
 
-Ecore_Event_Handler *register_orientation_event_listener();
-void unregister_orientation_event_listener(Ecore_Event_Handler *handler);
 
 ui_app_lifecycle_callback_s uiAppCallback;
 

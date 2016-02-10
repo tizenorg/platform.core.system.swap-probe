@@ -37,6 +37,7 @@
 #include <Evas.h>
 
 #include "daprobe.h"
+#include "dacapture.h"
 
 #ifdef __cplusplus
 extern "C"{
@@ -198,9 +199,6 @@ typedef struct
 
 extern __traceInfo gTraceInfo;
 
-int get_map_address(void* symbol, void** map_start, void** map_end);
-char** da_backtrace_symbols (void* const* array, int size);
-char** cached_backtrace_symbols (void* const* array, int size);
 
 /* pid/tid values */
 pid_t _getpid();
@@ -216,13 +214,6 @@ char *absolutize_filepath(const char *fname, char *buf, size_t bufsiz);
 
 /* returns the real absolute file path (resolves symlinks) */
 char *real_abs_path(int fd, char *buffer, size_t bufsiz);
-
-// screen capture functions
-int initialize_screencapture();
-int finalize_screencapture();
-int captureScreen();
-int activateCaptureTimer();
-void _cb_render_post(void* data, Evas* e, void* eventinfo);
 
 // event related functions
 int initialize_event();

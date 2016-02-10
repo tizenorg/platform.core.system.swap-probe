@@ -38,6 +38,7 @@
 #include <stdbool.h>
 #include <dlfcn.h>
 #include <stdint.h>
+#include "btsym.h"
 #include "probeinfo.h"
 #include "api_names_global.h"
 

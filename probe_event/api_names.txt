@@ -39,7 +39,7 @@ elm_gesture_layer_cb_set;         elm_gesture_layer_cb_set;         0
 #lib "???"
 #feature ---
 Ecore_Event_Handler *register_orientation_event_listener();                 Ecore_Event_Handler *register_orientation_event_listener();                 0
-void unregister_orientation_event_listener(Ecore_Event_Handler **handler);  void unregister_orientation_event_listener(Ecore_Event_Handler **handler);  0
+void unregister_orientation_event_listener(Ecore_Event_Handler *handler);  void unregister_orientation_event_listener(Ecore_Event_Handler *handler);    0
 
 #filename "orientation.c"
 #lib "/usr/lib/libecore_x.so.1"

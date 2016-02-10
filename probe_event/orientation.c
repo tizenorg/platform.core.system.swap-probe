@@ -36,14 +36,9 @@
 #include "common_probe_init.h"
 
 
-Ecore_Event_Handler *register_orientation_event_listener();
-void unregister_orientation_event_listener(Ecore_Event_Handler *handler);
-
-Ecore_Event_Handler *handler = NULL;
-
-
-Eina_Bool _da_onclientmessagereceived(void __unused *pData, int __unused type,
-				      void *pEvent)
+static Eina_Bool _da_onclientmessagereceived(void __unused *pData,
+					     int __unused type,
+					     void *pEvent)
 {
 	static Ecore_X_Atom *__ECORE_X_ATOM_E_WINDOW_ROTATION_CHANGE_PREPARE_P = NULL;
 	Ecore_X_Event_Client_Message *pClientEvent;
