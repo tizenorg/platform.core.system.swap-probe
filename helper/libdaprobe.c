@@ -53,6 +53,7 @@
 #include "probeinfo.h"
 #include "dautil.h"
 #include "dahelper.h"
+#include "dacapture.h"
 #include "dacollection.h"
 #include "da_sync.h"
 #include "daprobe.h"

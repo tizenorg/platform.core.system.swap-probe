@@ -33,8 +33,7 @@
 #include <dlfcn.h>
 #include "daprobe.h"
 #include "dahelper.h"
-
-int get_map_address(void* sym, void** start, void** end);
+#include "btsym.h"
 
 int getExecutableMappingAddress()
 {

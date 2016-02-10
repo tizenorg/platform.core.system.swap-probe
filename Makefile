@@ -2,6 +2,11 @@ INSTALLDIR = /usr/lib
 BIN_INSTALLDIR = /usr/local/bin
 HEADER_INSTALLDIR = /usr/local/include/
 
+TIZEN_TARGET = da_probe_tizen.so
+DUMMY_TARGET = libdaprobe.so
+PARSE_ELF_LIB_TARGET = libparserelf.so
+PARSE_ELF_BIN_TARGET = parse_elf
+
 ## Since include directives do not impose additional dependencies, we can make
 ## Makefile more clear, simply putting all includes we ever need in single
 ## variable. Keep it alphabetic, please.
@@ -67,6 +72,14 @@ LDFLAGS = -shared   	\
 
 ASMFLAG = -O0 -g
 
+CFLAGS = $(WARN_CFLAGS) -fPIC
+CXXFLAGS = $(WARN_CFLAGS) -fPIC
+CPPFLAGS = $(INCLUDE_CPPFLAGS) -D_GNU_SOURCE -DSELF_LIB_NAME="\"/$(INSTALLDIR)/$(TIZEN_TARGET)\""
+
+TIZEN_CPPFLAGS = -DTIZENAPP $(SWAP_PROBE_DEFS)
+TIZEN_LDFLAGS = -lstdc++
+
+
 ## FIXME: Ideally, UTILITY_SRCS is sources for probe infrastructure and
 ## PROBE_SRCS is sources for actual replacement functions.  Unfortunatelly,
 ## it is not so easy and UTILITY_SRCS do not link alone.
@@ -99,6 +112,7 @@ PROBE_SRCS =	   				\
 ifeq ($(X11_SUPPORT),y)
 UTILITY_SRCS += ./helper/dacapture.c
 PROBE_SRCS += ./probe_event/orientation.c
+CFLAGS += -DX11_SUPPORT
 endif # X11_SUPPORT
 
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
@@ -129,18 +143,6 @@ TIZEN_OBJS = $(patsubst %.cpp,%.o, $(patsubst %.c,%.o, $(TIZEN_SRCS))) $(ASM_OBJ
 DUMMY_OBJS = $(patsubst %.c,%.o, $(DUMMY_SRCS))
 PARSE_ELF_LIB_OBJ = $(patsubst %.c,%.o, $(PARSE_ELF_LIB_SRC))
 PARSE_ELF_BIN_OBJ = $(patsubst %.c,%.o, $(PARSE_ELF_BIN_SRC))
-
-TIZEN_TARGET = da_probe_tizen.so
-DUMMY_TARGET = libdaprobe.so
-PARSE_ELF_LIB_TARGET = libparserelf.so
-PARSE_ELF_BIN_TARGET = parse_elf
-
-CPPFLAGS = $(INCLUDE_CPPFLAGS) -D_GNU_SOURCE -DSELF_LIB_NAME="\"/$(INSTALLDIR)/$(TIZEN_TARGET)\""
-CFLAGS = $(WARN_CFLAGS) -fPIC
-CXXFLAGS = $(WARN_CFLAGS) -fPIC
-
-TIZEN_CPPFLAGS = -DTIZENAPP $(SWAP_PROBE_DEFS)
-TIZEN_LDFLAGS = -lstdc++
 
 
 all:		elflib capi tizen dummy elfparser
