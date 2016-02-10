@@ -191,7 +191,8 @@ extern EGLContext eglGetCurrentContext(void);
 #define FUNC_DECLAR(TYPE, FUNCNAME, ...)					\
 	/* alias for C function prototype */					\
 	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE);			\
-	}									\
+	}/* extern C*/								\
+	\
 	/* alias for C++ function prototype */					\
 	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE, __VA_ARGS__);	\
 	extern "C"								\
@@ -219,6 +220,50 @@ extern EGLContext eglGetCurrentContext(void);
 	if(blockresult != 0)						\
 		start_nsec = get_current_nsec();			\
 	GET_REAL_FUNCP_RTLD_DEFAULT(FUNCNAME, FUNCNAME##p)
+
+/* FIXME fixed arguments num. increase if neccessary */
+#define PP_RSEQ_N() 10,9,8,7,6,5,4,3,2,1,0
+#define PP_ARG_N( _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N,...) N
+#define PP_NARG_(...) PP_ARG_N(__VA_ARGS__)
+#define GET_ARGS_NUM(...) PP_NARG_(__VA_ARGS__, PP_RSEQ_N())
+
+#define GET_FIRST_2(a, b) a
+#define GET_FIRST_4(a, b, ...) a, GET_FIRST_2(__VA_ARGS__)
+#define GET_FIRST_6(a, b, ...) a, GET_FIRST_4(__VA_ARGS__)
+#define GET_FIRST_8(a, b, ...) a, GET_FIRST_6(__VA_ARGS__)
+
+#define GET_ALL_2(a, b) a b
+#define GET_ALL_4(a, b, ...) a b, GET_ALL_2(__VA_ARGS__)
+#define GET_ALL_6(a, b, ...) a b, GET_ALL_4(__VA_ARGS__)
+#define GET_ALL_8(a, b, ...) a b, GET_ALL_6(__VA_ARGS__)
+
+
+#define NUM(...) GET_ARGS_NUM(__VA_ARGS__)
+
+#define GET2(a,b) a ## b
+#define GET1(a,b) GET2(a,b)
+#define GET0(a,b) GET1(a,b)
+#define GET_FIRST_(...)  GET0(GET_FIRST_, NUM(__VA_ARGS__))
+
+#define GET_ALL_(...)  GET0(GET_ALL_, NUM(__VA_ARGS__))
+
+
+#define GET_ARGS(type1, ...) GET_FIRST_(type1, __VA_ARGS__)(__VA_ARGS__, type1)
+#define GET_TYPES(...) GET_FIRST_(__VA_ARGS__)(__VA_ARGS__)
+
+#define GET_TYPES_AND_ARGS(...) GET_ALL_(__VA_ARGS__)(__VA_ARGS__)
+
+#define DECLARE_GL_DEFAULT_VOID(TYPE, FUNCNAME, PACK_ARGS, ...)			\
+	DECLARE(TYPE, FUNCNAME, GET_TYPES_AND_ARGS(__VA_ARGS__))		\
+	{									\
+		TYPEDEF(void (*methodType)(GET_TYPES(__VA_ARGS__)));		\
+		BEFORE(FUNCNAME);						\
+		CALL_ORIG(FUNCNAME, GET_ARGS(__VA_ARGS__));			\
+		GL_GET_ERROR();							\
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", PACK_ARGS,	\
+			GET_ARGS(__VA_ARGS__));					\
+	}
+
 
 extern Evas_GL_API *__gl_api;
 extern Evas_GL_API *get_gl_api_fake_list(Evas_GL_API *api);

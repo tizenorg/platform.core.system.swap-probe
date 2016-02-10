@@ -239,7 +239,7 @@ ssize_t PROBE_NAME(send)(int socket, const void *message, size_t length, int fla
 	result = sret;
 	if (result < 0)
 		result = 0;
-	info.msg_total_size = result;
+	info.msg_total_size = (uint64_t)result;
 	info.msg_pack_size = result>SOCKET_SEND_SIZE?SOCKET_SEND_SIZE:result;
 	info.msg_buf = messagP;
 
@@ -269,7 +269,7 @@ ssize_t PROBE_NAME(recv)(int socket, void *buffer, size_t length, int flags) {
 	result = sret;
 	if (result < 0)
 		result = 0;
-	info.msg_total_size = result;
+	info.msg_total_size = (uint64_t)result;
 	info.msg_pack_size = result>SOCKET_SEND_SIZE?SOCKET_SEND_SIZE:result;
 	info.msg_buf = bufferP;
 
@@ -304,7 +304,7 @@ ssize_t PROBE_NAME(sendto)(int socket, const void *message, size_t length, int f
 	result = sret;
 	if (result < 0)
 		result = 0;
-	info.msg_total_size = result;
+	info.msg_total_size = (uint64_t)result;
 	info.msg_pack_size = result>SOCKET_SEND_SIZE?SOCKET_SEND_SIZE:result;
 	info.msg_buf = bufferP;
 
@@ -341,7 +341,7 @@ ssize_t PROBE_NAME(recvfrom)(int socket, void *buffer, size_t length, int flags,
 	result = sret;
 	if (result < 0)
 		result = 0;
-	info.msg_total_size = result;
+	info.msg_total_size = (uint64_t)result;
 	info.msg_pack_size = result>SOCKET_SEND_SIZE?SOCKET_SEND_SIZE:result;
 	info.msg_buf = bufferP;
 

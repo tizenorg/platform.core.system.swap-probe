@@ -416,7 +416,8 @@ int captureScreen()
 				//save file
 				if(__evas_object_image_save_p(img, dstpath, NULL, "compress=5") != 0)
 				{
-					chmod(dstpath, 0777);
+					if (chmod(dstpath, 0777) == -1)
+						PRINTWRN("cannot chmod -R777 <%s>", dstpath);
 
 					/* welcome to the hell */
 					log_t log;
