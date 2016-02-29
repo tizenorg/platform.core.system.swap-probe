@@ -26,13 +26,19 @@
  *
  */
 
-#include <stdint.h>			// fot uint32_t,uint64_t
+#include <errno.h>
 #include "daprobe.h"
 
-void *(*real_malloc)(size_t) = NULL;
+void *(*real_malloc)(size_t);
+void (*real_free)(void *);
 
 int _init_real_functions()
 {
 	rtdl_next_set_once(real_malloc, "malloc");
+	rtdl_next_set_once(real_free, "free");
+
+	if ((real_malloc == NULL) || (real_free == NULL))
+		return -ESRCH;
+
 	return 0;
 }

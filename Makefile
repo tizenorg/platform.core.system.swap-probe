@@ -86,6 +86,7 @@ UTILITY_SRCS =				\
 PROBE_SRCS =	   				\
 	./probe_memory/libdamemalloc.c		\
 	./probe_memory/libdamemmanage.c		\
+	./probe_memory/memory_prof.c		\
 	./probe_socket/libdasocket.c		\
 	./probe_event/gesture.c			\
 	./probe_event/da_event.c		\

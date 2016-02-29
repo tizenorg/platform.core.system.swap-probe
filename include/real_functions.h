@@ -29,8 +29,12 @@
 #ifndef _REAL_FUNCTIONS_H_
 #define _REAL_FUNCTIONS_H_
 
-/* real malloc function pointer */
-extern void *(*real_malloc)(size_t);
 
-extern int _init_real_functions();
+/* real functions pointer */
+extern void *(*real_malloc)(size_t);
+extern void (*real_free)(void *);
+
+int _init_real_functions();
+
+
 #endif /* _REAL_FUNCTIONS_H_ */
