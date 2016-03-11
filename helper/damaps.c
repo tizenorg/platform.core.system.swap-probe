@@ -115,6 +115,8 @@ static int read_mapping_line(FILE *mapfile, struct map_t *m)
 {
 	char ch1, ch2;
 	int ret = 0;
+	size_t device_str_len = 0;
+	char tmp_path[PATH_MAX + 1];
 
 	if (m == NULL) {
 		PRINTERR("map_t param is NULL\n");
@@ -126,9 +128,16 @@ static int read_mapping_line(FILE *mapfile, struct map_t *m)
 		     &m->endaddr,
 		     (char *)m->permissions,
 		     &m->offset,
-		     (char *)m->device,
+		     (char *)tmp_path,
 		     &m->inode,
 		     &ch1, &ch2);
+
+	strncpy(m->device, tmp_path, sizeof(m->device));
+	device_str_len = strnlen(tmp_path, sizeof(m->device));
+	if (device_str_len >= sizeof(m->device))
+		PRINTERR("device string is greater (%zu) than m->device size (%zu). Truncate.\n",
+			 device_str_len, sizeof(m->device));
+	m->device[sizeof(m->device) - 1] = '\0';
 
 	m->is_instrument = 0;
 	if (ret > 0 && ret != EOF) {
