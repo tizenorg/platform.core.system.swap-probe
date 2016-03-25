@@ -132,6 +132,7 @@ static struct hlist_node *find_prev(unsigned long addr,
 }
 
 
+void print_bt(void);
 
 // interface
 int mp_add(void *ptr, size_t size)
@@ -160,6 +161,8 @@ int mp_add(void *ptr, size_t size)
 	hlist_add(head, &info->node);
 	htable_w_unlock();
 
+	print_bt();
+
 	return 0;
 }
 
@@ -183,6 +186,8 @@ int mp_del(void *ptr)
 
 	info = alloc_info_by_node(node);
 	alloc_info_put(info);
+
+	print_bt();
 
 	return 0;
 }
@@ -219,11 +224,58 @@ int mp_export(void (*flog)(const char *fmt, ...))
 
 	hlist_table_for_each(node, i, alloc_info_htable, AI_TABLE_SIZE) {
 		info = alloc_info_by_node(node);
-		printf("memleak: addr=%lx size=%lu\n", info->addr, info->size);
-		flog("memleak: addr=%lx size=%lu\n", info->addr, info->size);
+		printf("memleak: addr=%lx size=%lu\n", info->addr, (unsigned long)info->size);
+		flog("memleak: addr=%lx size=%lu\n", info->addr, (unsigned long)info->size);
 	}
 
 	printf("EXPRT E:\n");
 
 	return 0;
 }
+
+
+
+/* ===== GET BT ===== */
+#include <libunwind.h>
+
+void print_bt_1(void)
+{
+	char name[256];
+	unw_cursor_t cursor; unw_context_t uc;
+	unw_word_t ip, sp, offp;
+
+	printf("BT B\n");
+
+	unw_getcontext(&uc);
+	unw_init_local(&cursor, &uc);
+
+	while (unw_step(&cursor) > 0) {
+		name[0] = '\0';
+		unw_get_proc_name(&cursor, name, sizeof(name), &offp);
+		unw_get_reg(&cursor, UNW_REG_IP, &ip);
+		unw_get_reg(&cursor, UNW_REG_SP, &sp);
+
+		printf("ip=%08lx sp=%08lx %s\n", (long) ip, (long) sp, name);
+	}
+
+	printf("BT E\n");
+}
+
+void print_bt_2(void)
+{
+	int i, n;
+	unsigned long buf[64];
+
+	n = unw_backtrace((void **)&buf, sizeof(buf));
+
+	for (i = 0; i < n; ++i) {
+		printf("ip=%08lx sp=%08lx\n", buf[i], (long)0);
+	}
+}
+
+void print_bt(void)
+{
+	print_bt_1();
+	print_bt_2();
+}
+/* ===== GET BT ===== */

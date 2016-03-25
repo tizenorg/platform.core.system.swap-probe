@@ -45,6 +45,10 @@
 #include "dautil.h"
 #include "da_memory.h"
 #include "binproto.h"
+#include "memory_prof.h"
+
+#undef PROBE_NAME
+#define PROBE_NAME(func) func
 
 void *PROBE_NAME(malloc)(size_t size)
 {
@@ -58,8 +62,12 @@ void *PROBE_NAME(malloc)(size_t size)
 
 	pret = (*mallocp)(size);
 
-	if(pret != NULL)
+	if(pret != NULL) {
 		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
+		mp_add(pret, size);
+	}
+
+	return pret;
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -84,10 +92,14 @@ void PROBE_NAME(free)(void *ptr)
 
 	PRE_PROBEBLOCK();
 
-	if(ptr != NULL)
+	if(ptr != NULL) {
 		del_memory_hash(ptr, MEMTYPE_FREE, NULL);
+		mp_del(ptr);
+	}
 
 	(*freep)(ptr);
+
+	return;
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -117,6 +129,19 @@ void *PROBE_NAME(realloc)(void *memblock, size_t size)
 
 	if(pret != NULL)
 		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
+
+	else if (memblock == pret) {
+		mp_resize(pret, size);
+	} else if (memblock == NULL) {
+		/* equivalent call malloc() */
+		mp_add(pret, size);
+	} else if (memblock != pret) {
+		mp_del(memblock);
+		mp_add(pret, size);
+	} else if (size == 0 && memblock) {
+		/* equivalent call free() */
+		mp_del(memblock);
+	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -161,8 +186,12 @@ void *PROBE_NAME(calloc)(size_t nelem, size_t elsize)
 
 	pret = (*callocp)(nelem, elsize);
 
-	if(pret != NULL)
-		add_memory_hash(pret, nelem * elsize, MEMTYPE_ALLOC, CALL_TYPE);
+	if(pret != NULL) {
+		size_t size = nelem * elsize;
+
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
+		mp_add(pret, size);
+	}
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -178,3 +207,9 @@ void *PROBE_NAME(calloc)(size_t nelem, size_t elsize)
 
 	return pret;
 }
+
+
+//void __attribute__((destructor)) _tttt()
+//{
+//	mp_export();
+//}

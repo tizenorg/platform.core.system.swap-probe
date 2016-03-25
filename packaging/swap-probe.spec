@@ -27,6 +27,7 @@ BuildRequires:  elementary-devel
 BuildRequires:  capi-appfw-application-devel
 BuildRequires:  capi-system-runtime-info-devel
 BuildRequires:  libXext-devel
+BuildRequires: libunwind-devel
 BuildRequires:  python
 Provides:  swap-probe
 

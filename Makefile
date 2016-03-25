@@ -59,6 +59,7 @@ WARN_CFLAGS = -g			\
 ## holds search paths and common libraries.
 
 LDFLAGS = -shared   	\
+	-lunwind-generic	\
 	-lpthread			\
 	-lrt				\
 	-ldl				\
