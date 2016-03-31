@@ -385,26 +385,6 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)addr);	/* alloc addr */\
 	} while (0)
 
-#define PACK_UICONTROL(control)						\
-	do {								\
-		if (unlikely(control == NULL)) {			\
-			BUF_PTR = pack_string(BUF_PTR, "");		\
-			BUF_PTR = pack_string(BUF_PTR, "");		\
-			BUF_PTR = pack_int64(BUF_PTR, 0);		\
-		} else {						\
-			char *type = NULL, *name = NULL;		\
-			if (find_uiobject_hash((void*)(control),	\
-					     &type, &name) == 1) {	\
-				BUF_PTR = pack_string(BUF_PTR, type);	\
-				BUF_PTR = pack_string(BUF_PTR, name);	\
-			} else {					\
-				BUF_PTR = pack_string(BUF_PTR, "");	\
-				BUF_PTR = pack_string(BUF_PTR, "");	\
-			}						\
-			BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(control)); \
-		}							\
-	} while(0)
-
 #define PACK_UIEVENT_HEAD(event_type, detail_type)			\
 		BUF_PTR = pack_int32(BUF_PTR, event_type);		\
 		BUF_PTR = pack_int32(BUF_PTR, detail_type);		\
@@ -444,37 +424,6 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 			  BUF_PTR = pack_string(BUF_PTR, image_file_path); 	\
 			  BUF_PTR = pack_int32(BUF_PTR, orientation);		\
 		} while (0)
-
-#define PACK_SCENE(scene_name, formid, pform, panelid, ppanel, transition, user)	\
-	do {										\
-		BUF_PTR = pack_string(BUF_PTR,  scene_name);				\
-		if (unlikely(pform == NULL)) {						\
-			BUF_PTR = pack_string(BUF_PTR, "");				\
-			BUF_PTR = pack_int64(BUF_PTR, 0);				\
-		} else {								\
-			char *type = NULL, *name = NULL;				\
-			if (find_uiobject_hash((void*)(pform), &type, &name) == 1) {	\
-				BUF_PTR = pack_string(BUF_PTR, name);			\
-			} else {							\
-				BUF_PTR = pack_string(BUF_PTR, "");			\
-			}								\
-			BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)pform); 		\
-		}									\
-		if (unlikely(ppanel == NULL)) {						\
-			BUF_PTR = pack_string(BUF_PTR, "");				\
-			BUF_PTR = pack_int64(BUF_PTR, 0);				\
-		} else {								\
-			char *type = NULL, *name = NULL;				\
-			if (find_uiobject_hash((void*)(ppanel), &type, &name) == 1) {	\
-				BUF_PTR = pack_string(BUF_PTR, name);			\
-			} else {							\
-				BUF_PTR = pack_string(BUF_PTR, "");			\
-			}								\
-			BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)(ppanel)); 		\
-		}									\
-		BUF_PTR = pack_int64(BUF_PTR, transition);				\
-		BUF_PTR = pack_int64(BUF_PTR, user);					\
-	} while(0)
 
 #define PACK_THREAD(thread_id, thread_type, api_type, class_name)	\
 	 do {								\
