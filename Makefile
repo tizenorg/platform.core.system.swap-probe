@@ -75,11 +75,9 @@ UTILITY_SRCS =				\
 	./helper/real_functions.c	\
 	./helper/libdaprobe.c		\
 	./helper/dahelper.c		\
-	./helper/btsym.c		\
 	./helper/dacollection.c		\
 	./helper/dacapture.c		\
 	./helper/daforkexec.c		\
-	./helper/damaps.c			\
 	./helper/dastdout.c			\
 	./custom_chart/da_chart.c	\
 
@@ -103,7 +101,6 @@ CAPI_SRCS = 	$(COMMON_SRCS)			\
 		./probe_ui/capi_capture.c
 
 TIZEN_SRCS =	$(COMMON_SRCS) $(CAPI_SRCS)\
-		./helper/addr-tizen.c						\
 		./helper/common_probe_init.c				\
 		./probe_memory/libdanew.cpp					\
 		./probe_graphics/da_evas_gl.c				\

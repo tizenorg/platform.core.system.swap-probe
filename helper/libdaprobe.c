@@ -59,7 +59,6 @@
 
 #include "binproto.h"
 #include "daforkexec.h"
-#include "damaps.h"
 #include "dastdout.h"
 #include "common_probe_init.h"
 #include "real_functions.h"
@@ -78,8 +77,6 @@ long		g_total_alloc_size = 0;
 pthread_t	g_recvthread_id;
 
 int log_fd = 0;
-
-int getExecutableMappingAddress();
 
 bool printLog(log_t* log, int msgType);
 
@@ -201,7 +198,7 @@ static int createSocket(void)
 						recved |= MSG_CONFIG_RECV;
 					} else if(log.type ==  APP_MSG_MAPS_INST_LIST) {
 						PRINTMSG("APP_MSG_MAPS_INST_LIST <%u>", *((uint32_t *)data_buf));
-						set_map_inst_list(&data_buf, *((uint32_t *)data_buf));
+//						set_map_inst_list(&data_buf, *((uint32_t *)data_buf));
 						recved |= MSG_MAPS_INST_LIST_RECV;
 					} else {
 						// unexpected case
@@ -251,30 +248,6 @@ free_data_buf:
 	return ret;
 }
 
-
-// parse backtrace string and find out the caller of probed api function
-// return 0 if caller is user binary, otherwise return 1
-static int determineCaller(char* tracestring)
-{
-	char *substr;
-
-	// determine whether saveptr (caller binary name) is user binary or not
-	substr = strstr(tracestring, APP_INSTALL_PATH);
-
-	if(substr == NULL)	// not user binary
-	{
-		return 1;
-	}
-	else				// user binary
-	{
-#ifdef TISENAPP
-		substr = strstr(tracestring, TISEN_APP_POSTFIX);
-		if(substr == NULL)
-			return 1;
-#endif
-		return 0;
-	}
-}
 
 void reset_pid_tid()
 {
@@ -389,7 +362,7 @@ static void *recvThread(void __unused * data)
 					if(log.length > 0) {
 						tmp = *((uint32_t *)data_buf);
 						PRINTMSG("APP_MSG_MAPS_INST_LIST <%u>", tmp);
-						set_map_inst_list(&data_buf, tmp);
+//						set_map_inst_list(&data_buf, tmp);
 						continue;
 					} else {
 						PRINTERR("WRONG APP_MSG_MAPS_INST_LIST");
@@ -460,15 +433,6 @@ static int init_timerfd(void)
 	return timer;
 }
 
-static uint64_t get_app_start_time(void)
-{
-	enum {nsecs_in_sec = 1000 * 1000};
-	struct timeval time;
-
-	gettimeofday(&time, NULL);
-	return nsecs_in_sec * (uint64_t) time.tv_sec + time.tv_usec;
-}
-
 static int create_recv_thread()
 {
 	int err = pthread_create(&g_recvthread_id, NULL, recvThread, NULL);
@@ -488,12 +452,6 @@ void _init_(void)
 	init_exec_fork();
 	initialize_hash_table();
 
-	initialize_screencapture();
-
-	getExecutableMappingAddress();
-
-	gTraceInfo.app.startTime = get_app_start_time();
-
 	// create socket for communication with da_daemon
 	if (createSocket() == 0) {
 		g_timerfd = init_timerfd();
@@ -506,7 +464,6 @@ void _init_(void)
 		 getpid());
 
 	gTraceInfo.init_complete = 1;
-	maps_make();
 }
 
 void __attribute__((constructor)) _init_probe()
@@ -517,12 +474,6 @@ void __attribute__((constructor)) _init_probe()
 		exit(1);
 	}
 	rtdl_next_set_once(real_malloc, "malloc");
-
-	 /* init maps */
-	if (maps_init()!=0){
-		perror("cannot init readers semaphores\n");
-		exit(0);
-	};
 
 	/* init library */
 	_init_();
@@ -556,8 +507,6 @@ void _uninit_(void)
 	}
 
 	finalize_event();
-
-	finalize_screencapture();
 
 	finalize_hash_table();
 
@@ -734,27 +683,6 @@ static inline bool isNoFiltOptionEnabled(enum DaOptions option)
 		    && isOptionEnabled(OPT_NETWORK_ALWAYS))
 		|| ((option == OPT_GLES)
 		    && isOptionEnabled(OPT_GLES_ALWAYS));
-}
-
-static inline bool is_user_call(const void *caller)
-{
-	bool user = false;
-	char **strings;
-
-	if (gTraceInfo.exec_map.map_start != NULL) {
-		if (caller >= gTraceInfo.exec_map.map_start &&
-		    caller <= gTraceInfo.exec_map.map_end)
-			user = true;
-	} else {
-		strings = BACKTRACE_SYMBOLS((void * const *)caller, 1);
-		if (strings != NULL) {
-			if (determineCaller(strings[0]) == 0)
-				user = true;
-			free(strings);
-		}
-	}
-
-	return user;
 }
 
 int preBlockBegin(void)
