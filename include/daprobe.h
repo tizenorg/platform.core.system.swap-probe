@@ -79,8 +79,6 @@ void write_msg(unsigned long msg_buf, size_t len, unsigned long call_type_p,
 			  (unsigned long)caller_address);			\
 	} while(0)
 
-#define BACKTRACE_SYMBOLS cached_backtrace_symbols
-
 typedef enum
 {
 	MT_MEMORY,

@@ -42,8 +42,6 @@
 extern "C"{
 #endif
 
-extern int app_efl_main_flg;
-
 #define MAX_PATH_LENGTH		256
 #define MAX_STACK_DEPTH		128
 #define TRIM_STACK_DEPTH	2
@@ -57,30 +55,6 @@ extern int app_efl_main_flg;
 
 #define SNAPSHOT_WAIT_TIME_MAX 10000
 */
-
-#define ENABLE_INTERNAL_MALLOC		0x0001
-#define ENABLE_SNAPSHOT				0x0002
-
-#define SCREENSHOT_LOCK()										\
-	do {														\
-		int old;												\
-		pthread_mutex_lock(&(gTraceInfo.screenshot.ssMutex));	\
-		old = gTraceInfo.screenshot.state;						\
-		gTraceInfo.screenshot.state = -1;						\
-		pthread_mutex_unlock(&(gTraceInfo.screenshot.ssMutex));	\
-		if(old > 0) {											\
-			if(isOptionEnabled(OPT_SNAPSHOT))					\
-				captureScreen();								\
-		}														\
-	} while(0)
-
-#define SCREENSHOT_UNLOCK()										\
-	do {														\
-		pthread_mutex_lock(&(gTraceInfo.screenshot.ssMutex));	\
-		if(gTraceInfo.screenshot.state < 0)						\
-			gTraceInfo.screenshot.state = 1;					\
-		pthread_mutex_unlock(&(gTraceInfo.screenshot.ssMutex));	\
-	} while(0)
 
 #define SCREENSHOT_SET()										\
 	do {														\
@@ -168,7 +142,6 @@ typedef struct
 typedef struct
 {
 	char appName[128];
-	uint64_t startTime;
 } __appInfo;
 
 typedef struct
@@ -179,17 +152,10 @@ typedef struct
 
 typedef struct
 {
-	void* map_start;
-	void* map_end;
-} __mapInfo;
-
-typedef struct
-{
 	__indexInfo			index;
 	__socketInfo		socket;
 	__appInfo			app;
 	__screenshotInfo	screenshot;
-	__mapInfo			exec_map;
 	int					stateTouch;
 	int					init_complete;
 	int					custom_chart_callback_count;
@@ -198,28 +164,18 @@ typedef struct
 
 extern __traceInfo gTraceInfo;
 
-int get_map_address(void* symbol, void** map_start, void** map_end);
-char** da_backtrace_symbols (void* const* array, int size);
-char** cached_backtrace_symbols (void* const* array, int size);
-
 /* pid/tid values */
 pid_t _getpid();
 pid_t _gettid();
 extern void reset_pid_tid();
 
-// profil turned on
-int __profil(int mode);
-
 //wchar_t* -> char*
-void WcharToChar(char* pstrDest, const wchar_t* pwstrSrc);
 char *absolutize_filepath(const char *fname, char *buf, size_t bufsiz);
 
 /* returns the real absolute file path (resolves symlinks) */
 char *real_abs_path(int fd, char *buffer, size_t bufsiz);
 
 // screen capture functions
-int initialize_screencapture();
-int finalize_screencapture();
 int captureScreen();
 int activateCaptureTimer();
 void _cb_render_post(void* data, Evas* e, void* eventinfo);
@@ -229,9 +185,6 @@ int initialize_event();
 int finalize_event();
 int getOrientation();
 void on_orientation_changed(int angle, bool capi);
-
-int remove_indir(const char* dirname);
-void swap_usleep(useconds_t usec);
 
 // query functions
 #define isOptionEnabled(OPT)	((gTraceInfo.optionflag & OPT) != 0)
