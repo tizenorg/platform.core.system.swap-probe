@@ -97,7 +97,7 @@
 #define POST_PROBEBLOCK_FUNC_END_BEGIN(LCTYPE, RTYPE, RETVALUE, INPUTFORMAT, ...)	\
 	newerrno = errno;														\
 	do {														\
-		setProbePoint(&probeInfo);										\
+		inc_current_event_index();										\
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
 		PACK_COMMON_END(RTYPE, RETVALUE, errno, blockresult)
@@ -141,11 +141,6 @@
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
 		PACK_COMMON_END(RTYPE, RETVALUE, errno, blockresult)
 
-#define APPEND_NETWORK_LOG_BASIC(LCTYPE, APINAME)								\
-	log.length = sprintf(log.data, "%d`,%d`,%s`,%lu`,%d`,%d",	\
-			LCTYPE, probeInfo.eventIndex, APINAME,				\
-			probeInfo.currentTime, probeInfo.pID, probeInfo.tID)
-
 #define POST_PROBEBLOCK_TIZEN_FUNC_START_BEGIN(APINAME, LCTYPE, RTYPE, RETVALUE, INPUTFORMAT, ...)	\
 			do { \
 				PREPARE_LOCAL_BUF(); \
@@ -154,7 +149,7 @@
 
 #define POST_PROBEBLOCK_TIZEN_FUNC_END_BEGIN(APINAME, LCTYPE, RTYPE, RETVALUE, INPUTFORMAT, ...)	\
 	do { \
-		setProbePoint(&probeInfo);										\
+		inc_current_event_index();										\
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
 		PACK_COMMON_END(RTYPE, RETVALUE, errno, blockresult)

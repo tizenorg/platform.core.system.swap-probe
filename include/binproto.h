@@ -495,7 +495,6 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 	do {
 
 #define POST_PACK_PROBEBLOCK_END() 					\
-		postBlockEnd();						\
 	} while (0);							\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
