@@ -63,7 +63,7 @@ extern "C" {
 #define PRE_PROBEBLOCK_TIZEN(FILTER)												\
 	do {																		\
 		if((blockresult = preBlockBegin()) != 0) {	\
-			setProbePoint(&probeInfo);					\
+			inc_current_event_index();					\
 		}									\
 	} while(0)
 

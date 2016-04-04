@@ -35,7 +35,6 @@
 #include <dlfcn.h>
 #include "daprobe.h"
 #include "probeinfo.h"
-#include "dautil.h"
 #include "dahelper.h"
 #include "da_io.h"
 

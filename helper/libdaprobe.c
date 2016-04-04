@@ -51,7 +51,6 @@
 #include <sys/timerfd.h>	// for timerfd
 
 #include "probeinfo.h"
-#include "dautil.h"
 #include "dahelper.h"
 #include "dacollection.h"
 #include "da_sync.h"
@@ -63,12 +62,9 @@
 #include "common_probe_init.h"
 #include "real_functions.h"
 
-#define APP_INSTALL_PATH		"/opt/apps"
-#define TISEN_APP_POSTFIX			".exe"
 #define UDS_NAME				"/tmp/da.socket"
 #define TIMERFD_INTERVAL		100000000		// 0.1 sec
 
-__thread int		gProbeDepth = 0;
 pid_t gPid = -1;
 __thread pid_t		gTid = -1;
 
@@ -690,33 +686,21 @@ int preBlockBegin(void)
 	if(gTraceInfo.init_complete <= 0)
 		return 0;
 
-	probingStart();
-
 	return 1;
-}
-
-void postBlockEnd()
-{
-	probingEnd();
 }
 
 /*************************************************************************
  * helper info getter functions
  *************************************************************************/
 
-// return current time in 1/10000 sec unit
-unsigned long getCurrentTime()
-{
-	struct timeval cTime;
-
-	gettimeofday(&cTime, NULL);
-
-	return (unsigned long)((cTime.tv_sec * 10000 + (cTime.tv_usec/100)));
-}
-
 unsigned int getCurrentEventIndex()
 {
 	return gTraceInfo.index.eventIndex;
+}
+
+void inc_current_event_index(void)
+{
+	__sync_add_and_fetch(&gTraceInfo.index.eventIndex, 1);
 }
 
 uint64_t get_current_nsec(void)
@@ -748,24 +732,6 @@ void write_msg(unsigned long __unused msg_buf,
 /************************************************************************
  * probe functions
  ************************************************************************/
-bool setProbePoint(probeInfo_t* iProbe)
-{
-	if(unlikely(iProbe == NULL))
-	{
-		return false;
-	}
-
-	// atomic operaion(gcc builtin) is more expensive then pthread_mutex
-	// ...but it leads to a great workaround when using with the new preload.
-	iProbe->eventIndex = __sync_add_and_fetch(&gTraceInfo.index.eventIndex, 1);
-	iProbe->currentTime = getCurrentTime();
-	iProbe->pID = _getpid();
-	iProbe->tID = _gettid();
-	iProbe->callDepth = gProbeDepth;
-
-	return true;
-}
-
 // update heap memory size through socket
 // return 0 if size is updated through socket
 // return 1 if size is updated into global variable
