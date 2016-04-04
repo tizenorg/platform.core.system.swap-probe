@@ -195,13 +195,12 @@ static inline enum __event_type __get_event_type_code(Elm_Gesture_Type idx)
 /* Callbacks */
 Evas_Event_Flags __common_elm_gesture_layer_cb(void *data , void *event_info)
 {
-	probeInfo_t	probeInfo;
 	struct __elm_gesture_layer_cb_set_data *d = data;
 	Evas_Event_Flags res;
 
 	res = d->cb(d->data, event_info);
 
-	setProbePoint(&probeInfo);
+	inc_current_event_index();
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID___common_elm_gesture_layer_cb, "p", CALLER_ADDRESS);
 	PACK_COMMON_END('d', res, 0, 0);

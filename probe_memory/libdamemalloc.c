@@ -42,7 +42,6 @@
 #include "daprobe.h"
 #include "probeinfo.h"
 #include "dacollection.h"
-#include "dautil.h"
 #include "da_memory.h"
 #include "binproto.h"
 

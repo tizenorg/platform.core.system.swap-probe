@@ -104,7 +104,7 @@ int PROBE_NAME(pthread_join)(pthread_t thread, void **retval)
 
 	// send WAIT_END log
 	newerrno = errno;
-	setProbePoint(&probeInfo);
+	inc_current_event_index();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
@@ -115,8 +115,6 @@ int PROBE_NAME(pthread_join)(pthread_t thread, void **retval)
 	PACK_COMMON_END('d', ret, errno, blockresult);
 	PACK_THREAD(thread, THREAD_PTHREAD, THREAD_API_WAIT_END, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
-
-	postBlockEnd();
 
 	errno = (newerrno != 0) ? newerrno : olderrno;
 
@@ -664,8 +662,6 @@ void _da_cleanup_handler(void *data)
 {
 	pthread_t pSelf;
 
-	probeInfo_t	probeInfo;
-
 	// unlock socket mutex to prevent deadlock
 	// in case of cancellation happened while log sending
 	real_pthread_mutex_unlock(&(gTraceInfo.socket.sockMutex));
@@ -695,8 +691,6 @@ void *_da_ThreadProc(void *params)
 	pthread_t pSelf;
 	int old_state;
 	int new_state = PTHREAD_CANCEL_DISABLE;
-
-	probeInfo_t	probeInfo;
 
 	// disable cancellation to prevent deadlock
 	real_pthread_setcancelstate(new_state, &old_state);
