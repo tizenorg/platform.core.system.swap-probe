@@ -119,9 +119,8 @@ void operator delete(void *ptr) throw()
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
 		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
 		{
-			setProbePoint(&probeInfo);
+			inc_current_event_index();
 			blockresult = 2;
-			probingStart();
 		}
 	}
 
@@ -155,9 +154,8 @@ void operator delete[](void *ptr) throw()
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
 		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
 		{
-			setProbePoint(&probeInfo);
+			inc_current_event_index();
 			blockresult = 2;
-			probingStart();
 		}
 	}
 
@@ -251,9 +249,8 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
 		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
 		{
-			setProbePoint(&probeInfo);
+			inc_current_event_index();
 			blockresult = 2;
-			probingStart();
 		}
 	}
 
@@ -287,9 +284,8 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
 		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
 		{
-			setProbePoint(&probeInfo);
+			inc_current_event_index();
 			blockresult = 2;
-			probingStart();
 		}
 	}
 

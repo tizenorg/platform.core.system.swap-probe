@@ -199,7 +199,7 @@ static inline bool stat_regular_or_socket_p(struct stat *buf)
 #define AFTER_ORIGINAL_START_END_FD(API_ID, RTYPE, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)		\
 do {									\
 	POST_PACK_PROBEBLOCK_BEGIN();					\
-	setProbePoint(&probeInfo);					\
+	inc_current_event_index();					\
 	_fstatret = fstat(FD, &_statbuf);				\
 	if (stat_regular_or_socket_p(&_statbuf)) {			\
 		PREPARE_LOCAL_BUF();								\
@@ -241,7 +241,7 @@ do {									\
 #define AFTER_ORIGINAL_START_END_NOFD(API_ID, RTYPE, RVAL, SIZE, APITYPE, INPUTFORMAT, ...)	\
 do {												\
 	POST_PACK_PROBEBLOCK_BEGIN();								\
-	setProbePoint(&probeInfo);								\
+	inc_current_event_index();								\
 	PREPARE_LOCAL_BUF();									\
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
 	PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);					\
@@ -252,7 +252,7 @@ do {												\
 #define AFTER_ORIGINAL_START_END_FILEP(API_ID, RTYPE, RVAL, SIZE, FILEP, APITYPE, INPUTFORMAT, ...)	\
 do {												\
 	POST_PACK_PROBEBLOCK_BEGIN();								\
-	setProbePoint(&probeInfo);								\
+	inc_current_event_index();								\
 	GET_FD_FROM_FILEP(FILEP);								\
 	if(_fd != -1) { 									\
 		_fstatret = fstat(_fd, &_statbuf);						\

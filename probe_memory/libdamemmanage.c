@@ -39,7 +39,6 @@
 #include <errno.h>
 #include "daprobe.h"
 #include "probeinfo.h"
-#include "dautil.h"
 #include "da_memory.h"
 #include "binproto.h"
 #include "common_probe_init.h"
