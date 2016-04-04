@@ -79,19 +79,6 @@ void write_msg(unsigned long msg_buf, size_t len, unsigned long call_type_p,
 			  (unsigned long)caller_address);			\
 	} while(0)
 
-typedef enum
-{
-	MT_MEMORY,
-	MT_FILE,
-	MT_SOCKET,
-} MonitorType;
-
-enum BlockLocation
-{
-	BL_PRE,
-	BL_POST,
-};
-
 typedef struct
 {
 	int type;
@@ -99,55 +86,23 @@ typedef struct
 	char data[DA_LOG_MAX];
 } log_t;
 
-typedef struct
-{
-	int				eventIndex;
-	int				pID;
-	int				tID;
-	unsigned long	currentTime;
-	unsigned int	callDepth;
-} probeInfo_t;
-
-extern __thread int	gProbeDepth;
-
-#define probingStart()		(gProbeDepth++)
-#define probingEnd()		(gProbeDepth--)
-
 /***************************************************************************
  * helper apis
  ***************************************************************************/
 
 int preBlockBegin(void);
-void postBlockEnd();
 
+void inc_current_event_index();
 unsigned int getCurrentEventIndex();
-unsigned long getCurrentTime();
 uint64_t get_current_nsec(void);
-bool setProbePoint(probeInfo_t * iProbe);
 int update_heap_memory_size(bool isAdd, size_t size);
 
 bool print_log_fmt(int msgType, const char *func_name, int line, ...);
 bool print_log_str(int msgType, char *st);
 bool printLog(log_t* log, int msgType);
 
-int __appendTypeLog(log_t* log, int nInput, char* token, ...);
-int getBacktraceString(log_t* log, int bufsize);
-
 void *rtdl_next(const char *symname);
 void *rtld_default(const char *symname);
-
-//char* captureScreenShotX(int* width, int* height);
-//void releaseScreenShotX();
-
-//int printSamplingLog(void);
-
-//bool captureScreen(unsigned int logNum);
-//void captureProbe();
-//int registeScreenChange(int renderID);
-//void detectTouchEvent(int touchID);
-//int getTouchState();
-//int isPossibleCapture();
-
 
 /***************************************************************************
  * helper macros
@@ -200,14 +155,12 @@ typedef struct {
 
 // declare variable for standard api (not tizen related api)
 #define DECLARE_VARIABLE_STANDARD	\
-	probeInfo_t probeInfo;		\
 	int blockresult = 0;		\
 	DECLARE_ERRNO_VARS;		\
 	int __attribute__((unused)) ret = 0
 
 // declare variable for standard api (not tizen related api) without ret
 #define DECLARE_VARIABLE_STANDARD_NORET		\
-		probeInfo_t	probeInfo; 			\
 		int blockresult;				\
 		int olderrno, newerrno;			\
 
@@ -279,7 +232,7 @@ typedef struct {
 
 #define PRE_PROBEBLOCK_BEGIN()					\
 	if((blockresult = preBlockBegin()) != 0) {	\
-		setProbePoint(&probeInfo)
+		inc_current_event_index()
 
 #define PRE_PROBEBLOCK_END()							\
 	}									\
@@ -294,7 +247,7 @@ typedef struct {
 
 #define PRE_UNCONDITIONAL_BLOCK_BEGIN()	\
 	do {								\
-		setProbePoint(&probeInfo)
+		inc_current_event_index()
 
 #define PRE_UNCONDITIONAL_BLOCK_END()	\
 	} while(0)
@@ -310,12 +263,10 @@ typedef struct {
 
 #define POST_PROBEBLOCK_END() 						\
 		FLUSH_LOCAL_BUF();						\
-		postBlockEnd();								\
 	} while(0);												\
 	errno = (newerrno != 0) ? newerrno : olderrno
 
 #define POST_PROBEBLOCK_FUNC_START_END()					\
-		postBlockEnd();							\
 	} while(0);								\
 	olderrno = errno;							\
 	errno = 0

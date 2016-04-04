@@ -47,7 +47,6 @@
 #include "daprobe.h"
 #include "dahelper.h"
 #include "probeinfo.h"
-//#include "dautil.h"
 #include "da_event.h"
 
 #include "binproto.h"
@@ -58,7 +57,7 @@ bool touch_pressed = false;
 #define PACK_HW_EVENT(API_ID, _EVENTTYPE, _DETAILTYPE, _X, _Y, _KEYCODE, _EXTRA, \
 	_ARGDATA, _ARGTYPE, _ARGEVENT)												\
 	do {																		\
-		setProbePoint(&probeInfo);												\
+		inc_current_event_index();												\
 		PREPARE_LOCAL_BUF();													\
 		PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID, "pdp",					\
 				  voidp_to_uint64(_ARGDATA), _ARGTYPE,	\
@@ -71,7 +70,6 @@ bool touch_pressed = false;
 Eina_Bool PROBE_NAME(ecore_event_evas_key_down)(void *data, int type, void *event)
 {
 	static Eina_Bool (*ecore_event_evas_key_downp)(void *data, int type, void *event);
-	probeInfo_t	probeInfo;
 
 	GET_REAL_FUNC(ecore_event_evas_key_down, LIBECORE_INPUT_EVAS);
 
@@ -95,7 +93,6 @@ Eina_Bool PROBE_NAME(ecore_event_evas_key_down)(void *data, int type, void *even
 Eina_Bool PROBE_NAME(ecore_event_evas_key_up)(void *data, int type, void *event)
 {
 	static Eina_Bool (*ecore_event_evas_key_upp)(void *data, int type, void *event);
-	probeInfo_t	probeInfo;
 
 	GET_REAL_FUNC(ecore_event_evas_key_up, LIBECORE_INPUT_EVAS);
 
@@ -119,7 +116,6 @@ Eina_Bool PROBE_NAME(ecore_event_evas_key_up)(void *data, int type, void *event)
 Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_down)(void *data, int type, void *event)
 {
 	static Eina_Bool (*ecore_event_evas_mouse_button_downp)(void *data, int type, void *event);
-	probeInfo_t	probeInfo;
 
 	GET_REAL_FUNC(ecore_event_evas_mouse_button_down, LIBECORE_INPUT_EVAS);
 
@@ -141,7 +137,6 @@ Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_down)(void *data, int type, v
 Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_up)(void *data, int type, void *event)
 {
 	static Eina_Bool (*ecore_event_evas_mouse_button_upp)(void *data, int type, void *event);
-	probeInfo_t	probeInfo;
 
 	GET_REAL_FUNC(ecore_event_evas_mouse_button_up, LIBECORE_INPUT_EVAS);
 
@@ -163,7 +158,6 @@ Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_up)(void *data, int type, voi
 Eina_Bool PROBE_NAME(ecore_event_evas_mouse_move)(void *data, int type, void *event)
 {
 	static Eina_Bool (*ecore_event_evas_mouse_movep)(void *data, int type, void *event);
-	probeInfo_t	probeInfo;
 
 	GET_REAL_FUNC(ecore_event_evas_mouse_move, LIBECORE_INPUT_EVAS);
 
