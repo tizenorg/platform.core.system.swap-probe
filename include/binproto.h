@@ -512,6 +512,13 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 /* TODO maloc/free for each event turns out expensive: think of buffer
  * allocator implementation */
+#define PREPARE_LOCAL_BUF_ONSTACK()			\
+		char LOCAL_BUF[MAX_LOCAL_BUF_SIZE];	\
+		char *BUF_PTR = LOCAL_BUF;		\
+		char *RET_PTR = NULL;			\
+		char *CALL_TYPE_PTR = NULL;		\
+		char *CALLER_PTR = NULL
+
 #define PREPARE_LOCAL_BUF()			\
 		char *LOCAL_BUF = (char *)(*real_malloc)(MAX_LOCAL_BUF_SIZE);	\
 		char *BUF_PTR = LOCAL_BUF;			\
@@ -532,6 +539,10 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 #define GET_MSG_LEN()							\
 		(p - msg_buf) - MSG_HDR_LEN
+
+#define FLUSH_LOCAL_BUF_ONSTACK()					\
+		SET_MSG_LEN();						\
+		WRITE_MSG(LOCAL_BUF, (BUF_PTR - LOCAL_BUF), CALL_TYPE_PTR, CALLER_PTR, WRITE_MSG_CALLER_ADDR); \
 
 #define FLUSH_LOCAL_BUF()						\
 		SET_MSG_LEN();						\
