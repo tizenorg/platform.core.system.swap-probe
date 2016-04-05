@@ -63,12 +63,12 @@ void *PROBE_NAME(malloc)(size_t size)
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
-	PREPARE_LOCAL_BUF();
+	PREPARE_LOCAL_BUF_ONSTACK();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_malloc,
 			  "x", (int64_t) size);
 	PACK_COMMON_END('p', pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
-	FLUSH_LOCAL_BUF();
+	FLUSH_LOCAL_BUF_ONSTACK();
 
 	POST_PACK_PROBEBLOCK_END();
 
@@ -91,12 +91,12 @@ void PROBE_NAME(free)(void *ptr)
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
-	PREPARE_LOCAL_BUF();
+	PREPARE_LOCAL_BUF_ONSTACK();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_free,
 			  "p", (int64_t)(int) ptr);
 	PACK_COMMON_END('v', 0, newerrno, blockresult);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
-	FLUSH_LOCAL_BUF();
+	FLUSH_LOCAL_BUF_ONSTACK();
 
 	POST_PACK_PROBEBLOCK_END();
 }
@@ -120,12 +120,12 @@ void *PROBE_NAME(realloc)(void *memblock, size_t size)
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
-	PREPARE_LOCAL_BUF();
+	PREPARE_LOCAL_BUF_ONSTACK();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_realloc,
 			  "px", voidp_to_uint64(memblock), (uint64_t) size);
 	PACK_COMMON_END('p', pret, newerrno, blockresult);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
-	FLUSH_LOCAL_BUF();
+	FLUSH_LOCAL_BUF_ONSTACK();
 
 	POST_PACK_PROBEBLOCK_END();
 
@@ -166,12 +166,12 @@ void *PROBE_NAME(calloc)(size_t nelem, size_t elsize)
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
-	PREPARE_LOCAL_BUF();
+	PREPARE_LOCAL_BUF_ONSTACK();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_calloc,
 			  "xx", (uint64_t)nelem, (uint64_t)elsize);
 	PACK_COMMON_END('p', pret, newerrno, blockresult);
 	PACK_MEMORY(nelem * elsize, MEMORY_API_ALLOC, pret);
-	FLUSH_LOCAL_BUF();
+	FLUSH_LOCAL_BUF_ONSTACK();
 
 	POST_PACK_PROBEBLOCK_END();
 
