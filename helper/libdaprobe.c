@@ -131,24 +131,24 @@ void application_exit()
 
 // create socket to daemon and connect
 #define MSG_CONFIG_RECV 0x01
-static int createSocket(void)
+static int create_socket(void)
 {
 	char strerr_buf[MAX_PATH_LENGTH];
 	ssize_t recvlen;
-	int clientLen, ret = 0;
-	struct sockaddr_un clientAddr;
+	int client_len, ret = 0;
+	struct sockaddr_un client_addr;
 	log_t log;
 
 	gTraceInfo.socket.daemonSock =
 	  socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
 	if (gTraceInfo.socket.daemonSock != -1)	{
-		memset(&clientAddr, '\0', sizeof(clientAddr));
-		clientAddr.sun_family = AF_UNIX;
-		snprintf(clientAddr.sun_path, sizeof(UDS_NAME), "%s", UDS_NAME);
+		memset(&client_addr, '\0', sizeof(client_addr));
+		client_addr.sun_family = AF_UNIX;
+		snprintf(client_addr.sun_path, sizeof(UDS_NAME), "%s", UDS_NAME);
 
-		clientLen = sizeof(clientAddr);
+		client_len = sizeof(client_addr);
 		if (connect(gTraceInfo.socket.daemonSock,
-			    (struct sockaddr *)&clientAddr, clientLen) >= 0)
+			    (struct sockaddr *)&client_addr, client_len) >= 0)
 		{
 			char buf[64];
 			int recved = 0;
@@ -219,7 +219,7 @@ free_data_buf:
 
 			}
 
-			PRINTMSG("createSocket connect() success\n");
+			PRINTMSG("create_socket connect() success\n");
 		} else {
 			close(gTraceInfo.socket.daemonSock);
 			gTraceInfo.socket.daemonSock = -1;
@@ -445,7 +445,7 @@ void _init_(void)
 	initialize_hash_table();
 
 	// create socket for communication with da_daemon
-	if (createSocket() == 0) {
+	if (create_socket() == 0) {
 		g_timerfd = init_timerfd();
 		create_recv_thread();
 		update_heap_memory_size(true, 0);
