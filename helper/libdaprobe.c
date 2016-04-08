@@ -261,7 +261,7 @@ pid_t _gettid()
 	return gTid;
 }
 
-static void *recvThread(void __unused * data)
+static void *recv_thread(void __unused * data)
 {
 	fd_set readfds, workfds;
 	int maxfd = 0, rc;
@@ -427,7 +427,7 @@ static int init_timerfd(void)
 
 static int create_recv_thread()
 {
-	int err = pthread_create(&g_recvthread_id, NULL, recvThread, NULL);
+	int err = pthread_create(&g_recvthread_id, NULL, recv_thread, NULL);
 
 	if (err)
 		PRINTMSG("failed to crate recv thread\n");
