@@ -51,6 +51,10 @@
 
 #include "binproto.h"
 #include "real_functions.h"
+#include "file_probes_list.h"
+#include "probe_file.h"
+
+
 
 static inline char *get_abs_path(int fd, const char *fname,
 				 char *buf, size_t bufsiz)
@@ -63,21 +67,55 @@ static inline char *get_abs_path(int fd, const char *fname,
 	return path;
 }
 
-int PROBE_NAME(open)(const char* path, int oflag, ...)
+DEF_H(int, open, const char*, path, int, oflag, va_list, args);
+
+DEF_WV(int, open, const char*, path, int, oflag, ...)
+{ 
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, oflag);
+	ret = open_handler(INTERNAL_CALL, caller, path, oflag, args);
+	va_end(args);
+
+	return ret;
+}
+
+DEF_WAV(int, open, const char*, path, int, oflag, ...)
 {
-	static int (*openp)(const char* path, int oflag, ...);
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, oflag);
+	ret = open_handler(EXTERNAL_CALL, caller, path, oflag, args);
+	va_end(args);
+
+	return ret;
+}
+
+DEF_H(int, open, const char*, path, int, oflag, va_list, args)
+{
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*openp)(const char* path, int oflag, ...);
+	int (*openp)(const char* path, int oflag, ...);
 	char buffer[PATH_MAX];
 	int mode = 0;
 
 	BEFORE_ORIGINAL_FILE(open, LIBC);
 
+	openp = (void *)GET_ORIG_FUNC(file_feature, open);
+
 	if(oflag & O_CREAT)
-	{
-		va_list arg;
-		va_start(arg, oflag);
-		mode = va_arg(arg, int);
-		va_end(arg);
-	}
+		mode = va_arg(args, int);
 
 	ret = openp(path, oflag, mode);
 
@@ -89,21 +127,56 @@ int PROBE_NAME(open)(const char* path, int oflag, ...)
 	return ret;
 }
 
-int PROBE_NAME(openat)(int fd, const char* path, int oflag, ...)
+
+DEF_H(int, openat, int, fd, const char*, path, int, oflag, va_list, args);
+
+DEF_WV(int, openat, int, fd, const char*, path, int, oflag, ...)
 {
-	static int (*openatp)(int fd, const char* path, int oflag, ...);
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, oflag);
+	ret = openat_handler(INTERNAL_CALL, caller, fd, path, oflag, args);
+	va_end(args);
+
+	return ret;
+}
+
+DEF_WAV(int, openat, int, fd, const char*, path, int, oflag, ...)
+{
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, oflag);
+	ret = openat_handler(EXTERNAL_CALL, caller, fd, path, oflag, args);
+	va_end(args);
+
+	return ret;
+}
+
+DEF_H(int, openat, int, fd, const char*, path, int, oflag, va_list, args)
+{
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*openatp)(int fd, const char* path, int oflag, ...);
+	int (*openatp)(int fd, const char* path, int oflag, ...);
 	char buffer[PATH_MAX];
 	int mode = 0;
 
 	BEFORE_ORIGINAL_FILE(openat, LIBC);
 
+	openatp = (void *)GET_ORIG_FUNC(file_feature, openat);
+
 	if(oflag & O_CREAT)
-	{
-		va_list arg;
-		va_start(arg, oflag);
-		mode = va_arg(arg, int);
-		va_end(arg);
-	}
+		mode = va_arg(args, int);
 
 	ret = openatp(fd, path, oflag, mode);
 
@@ -115,12 +188,17 @@ int PROBE_NAME(openat)(int fd, const char* path, int oflag, ...)
 	return ret;
 }
 
-int PROBE_NAME(creat)(const char* path, mode_t mode)
+HANDLER_WRAPPERS(int, creat, const char*, path, mode_t, mode)
 {
-	static int (*creatp)(const char* path, mode_t mode);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*creatp)(const char* path, mode_t mode);
+	int (*creatp)(const char* path, mode_t mode);
 	char buffer[PATH_MAX];
 
 	BEFORE_ORIGINAL_FILE(creat, LIBC);
+
+	creatp = (void *)GET_ORIG_FUNC(file_feature, creat);
 
 	ret = creatp(path, mode);
 
@@ -132,12 +210,16 @@ int PROBE_NAME(creat)(const char* path, mode_t mode)
 	return ret;
 }
 
-int PROBE_NAME(close)(int fd)
+HANDLER_WRAPPERS(int, close, int, fd)
 {
-	static int (*closep)(int fd);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*closep)(int fd);
+	int (*closep)(int fd);
 	DECLARE_VARIABLE_FD;
 
-	GET_REAL_FUNC(close, LIBC);
+//	GET_REAL_FUNC(close, LIBC);
+	closep = (void *)GET_ORIG_FUNC(file_feature, close);
 
 	PRE_PROBEBLOCK_BEGIN();
 	_fstatret = fstat(fd, &_statbuf);
@@ -150,19 +232,23 @@ int PROBE_NAME(close)(int fd)
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 			  API_ID_close,
 			  "d", fd);
-	PACK_COMMON_END('d', ret, newerrno, blockresult);
+	PACK_COMMON_END('d', ret, newerrno, call_type, caller);
 	POST_PACK_PROBEBLOCK_MIDDLE_FD(0, fd, FD_API_CLOSE);
 	POST_PACK_PROBEBLOCK_END();
 
 	return ret;
 }
 
-off_t PROBE_NAME(lseek)(int fd, off_t offset, int whence)
+HANDLER_WRAPPERS(off_t, lseek, int, fd, off_t, offset, int, whence)
 {
-	static int (*lseekp)(int fd, off_t offset, int whence);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*lseekp)(int fd, off_t offset, int whence);
+	int (*lseekp)(int fd, off_t offset, int whence);
 	off_t offret;
 
 	BEFORE_ORIGINAL_FILE(lseek, LIBC);
+	lseekp = (void *)GET_ORIG_FUNC(file_feature, lseek);
 
 	offret = lseekp(fd, offset, whence);
 
@@ -173,11 +259,15 @@ off_t PROBE_NAME(lseek)(int fd, off_t offset, int whence)
 	return offret;
 }
 
-int PROBE_NAME(fsync)(int fd)
+HANDLER_WRAPPERS(int, fsync, int, fd)
 {
-	static int (*fsyncp)(int fd);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*fsyncp)(int fd);
+	int (*fsyncp)(int fd);
 
 	BEFORE_ORIGINAL_FILE(fsync, LIBC);
+	fsyncp = (void *)GET_ORIG_FUNC(file_feature, fsync);
 
 	ret = fsyncp(fd);
 
@@ -187,11 +277,15 @@ int PROBE_NAME(fsync)(int fd)
 	return ret;
 }
 
-int PROBE_NAME(fdatasync)(int fd)
+HANDLER_WRAPPERS(int, fdatasync, int, fd)
 {
-	static int (*fdatasyncp)(int fd);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*fdatasyncp)(int fd);
+	int (*fdatasyncp)(int fd);
 
 	BEFORE_ORIGINAL_FILE(fdatasync, LIBC);
+	fdatasyncp = (void *)GET_ORIG_FUNC(file_feature, fdatasync);
 
 	ret = fdatasyncp(fd);
 
@@ -201,43 +295,52 @@ int PROBE_NAME(fdatasync)(int fd)
 	return ret;
 }
 
-
-
-int PROBE_NAME(ftruncate)(int fd, off_t length)
+HANDLER_WRAPPERS(int, ftruncate, int, fd, off_t, length)
 {
-	static int (*ftruncatep)(int fd, off_t length);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*ftruncatep)(int fd, off_t length);
+	int (*ftruncatep)(int fd, off_t length);
 
 	BEFORE_ORIGINAL_FILE(ftruncate, LIBC);
+	ftruncatep = (void *)GET_ORIG_FUNC(file_feature, ftruncate);
 
 	ret = ftruncatep(fd, length);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_ftruncate,
 			       'd', ret, (unsigned int)length, fd,
-			       FD_API_DIRECTORY, "dx", fd, (uint64_t)(length));
+			       FD_API_DIRECTORY,
+			       "dx", fd, (uint64_t)(length));
 
 	return ret;
 }
 
-int PROBE_NAME(fchown)(int fd, uid_t owner, gid_t group)
+HANDLER_WRAPPERS(int, fchown, int, fd, uid_t, owner, gid_t, group)
 {
-	static int (*fchownp)(int fd, uid_t owner, gid_t group);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*fchownp)(int fd, uid_t owner, gid_t group);
+	int (*fchownp)(int fd, uid_t owner, gid_t group);
 
 	BEFORE_ORIGINAL_FILE(fchown, LIBC);
+	fchownp = (void *)GET_ORIG_FUNC(file_feature, fchown);
+
 	ret = fchownp(fd, owner, group);
 	AFTER_PACK_ORIGINAL_FD(API_ID_fchown, 'd', ret, 0, fd, FD_API_PERMISSION,
 			  "ddd", fd, owner, group);
 	return ret;
 }
 
-
-
-
-int PROBE_NAME(lockf)(int fd, int function, off_t size)
+HANDLER_WRAPPERS(int, lockf, int, fd, int, function, off_t, size)
 {
-	static int (*lockfp)(int fd, int function, off_t size);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*lockfp)(int fd, int function, off_t size);
+	int (*lockfp)(int fd, int function, off_t size);
 	int api_type = FD_API_PERMISSION;
 
 	BEFORE_ORIGINAL_FILE(lockf, LIBC);
+	lockfp = (void *)GET_ORIG_FUNC(file_feature, lockf);
 	ret = lockfp(fd, function, size);
 
 	switch (function) {
@@ -256,16 +359,19 @@ int PROBE_NAME(lockf)(int fd, int function, off_t size)
 	return ret;
 }
 
-
-
-int PROBE_NAME(fchmod)(int fd, mode_t mode)
+HANDLER_WRAPPERS(int, fchmod, int, fd, mode_t, mode)
 {
-	static int (*fchmodp)(int fd, mode_t mode);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*fchmodp)(int fd, mode_t mode);
+	int (*fchmodp)(int fd, mode_t mode);
 
 	BEFORE_ORIGINAL_FILE(fchmod, LIBC);
+	fchmodp = (void *)GET_ORIG_FUNC(file_feature, fchmod);
 	ret = fchmodp(fd, mode);
 	AFTER_PACK_ORIGINAL_FD(API_ID_fchmod,
-				   'd', ret, 0, fd, FD_API_PERMISSION, "dd", fd, mode);
+				   'd', ret, 0, fd, FD_API_PERMISSION,
+				   "dd", fd, mode);
 	return ret;
 }
 
@@ -273,9 +379,13 @@ int PROBE_NAME(fchmod)(int fd, mode_t mode)
 // Read / Write APIs
 // *****************************************************************
 
-ssize_t PROBE_NAME(pread)(int fd, void *buf, size_t nbyte, off_t offset)
+HANDLER_WRAPPERS(ssize_t, pread, int, fd, void *, buf, size_t, nbyte,
+		 off_t, offset)
 {
-	static ssize_t (*preadp)(int fd, void *buf, size_t nbyte, off_t offset);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static ssize_t (*preadp)(int fd, void *buf, size_t nbyte, off_t offset);
+	ssize_t (*preadp)(int fd, void *buf, size_t nbyte, off_t offset);
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_pread, 'x', pread, LIBC, fd,
@@ -284,6 +394,7 @@ ssize_t PROBE_NAME(pread)(int fd, void *buf, size_t nbyte, off_t offset)
 				     (uint64_t)(nbyte),
 				     (uint64_t)(offset));
 
+	preadp = (void *)GET_ORIG_FUNC(file_feature, pread);
 	sret = preadp(fd, buf, nbyte, offset);
 
 	AFTER_ORIGINAL_START_END_FD(API_ID_pread, 'x', sret, (unsigned int)sret, fd,
@@ -294,14 +405,20 @@ ssize_t PROBE_NAME(pread)(int fd, void *buf, size_t nbyte, off_t offset)
 
 	return sret;
 }
-ssize_t PROBE_NAME(read)(int fd, void *buf, size_t nbyte)
+
+HANDLER_WRAPPERS(ssize_t, read, int, fd, void *, buf, size_t, nbyte)
 {
-	static ssize_t (*readp)(int fildes, void *buf, size_t nbyte);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static ssize_t (*readp)(int fildes, void *buf, size_t nbyte);
+	ssize_t (*readp)(int fildes, void *buf, size_t nbyte);
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_read, 'x', read, LIBC, fd, FD_API_READ_START,
 				     "dpx", fd, voidp_to_uint64(buf),
 				     (uint64_t)(nbyte));
+
+	readp = (void *)GET_ORIG_FUNC(file_feature, read);
 
 	sret = readp(fd, buf, nbyte);
 
@@ -313,15 +430,21 @@ ssize_t PROBE_NAME(read)(int fd, void *buf, size_t nbyte)
 	return sret;
 }
 
-ssize_t PROBE_NAME(pwrite)(int fd, const void *buf, size_t nbyte, off_t offset)
+HANDLER_WRAPPERS(ssize_t, pwrite, int, fd, const void *, buf, size_t, nbyte,
+		 off_t, offset)
 {
-	static ssize_t (*pwritep)(int fd, const void *buf, size_t nbyte, off_t offset);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static ssize_t (*pwritep)(int fd, const void *buf, size_t nbyte, off_t offset);
+	ssize_t (*pwritep)(int fd, const void *buf, size_t nbyte, off_t offset);
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_pwrite, 'x', pwrite, LIBC, fd, FD_API_WRITE_START,
 				     "dpxx", fd, voidp_to_uint64(buf),
 				     (uint64_t)(nbyte),
 				     (uint64_t)(offset));
+
+	pwritep = (void *)GET_ORIG_FUNC(file_feature, pwrite);
 
 	sret = pwritep(fd, buf, nbyte, offset);
 
@@ -335,14 +458,18 @@ ssize_t PROBE_NAME(pwrite)(int fd, const void *buf, size_t nbyte, off_t offset)
 	return sret;
 }
 
-ssize_t PROBE_NAME(write)(int fd, const void *buf, size_t nbyte)
+HANDLER_WRAPPERS(ssize_t, write, int, fd, const void *, buf, size_t, nbyte)
 {
-	static ssize_t (*writep)(int fildes, const void *buf, size_t nbyte);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static ssize_t (*writep)(int fildes, const void *buf, size_t nbyte);
+	ssize_t (*writep)(int fildes, const void *buf, size_t nbyte);
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_write, 'x', write, LIBC, fd, FD_API_WRITE_START,
 				     "dpx", fd, voidp_to_uint64(buf),
 				     (uint64_t)(nbyte));
+	writep = (void *)GET_ORIG_FUNC(file_feature, write);
 
 	sret = writep(fd, buf, nbyte);
 
@@ -356,14 +483,18 @@ ssize_t PROBE_NAME(write)(int fd, const void *buf, size_t nbyte)
 }
 
 
-ssize_t PROBE_NAME(readv)(int fd, const struct iovec *iov, int iovcnt)
+HANDLER_WRAPPERS(ssize_t, readv, int, fd, const struct iovec *, iov, int, iovcnt)
 {
-	static ssize_t (*readvp)(int fd, const struct iovec *iov, int iovcnt);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static ssize_t (*readvp)(int fd, const struct iovec *iov, int iovcnt);
+	ssize_t (*readvp)(int fd, const struct iovec *iov, int iovcnt);
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_readv, 'x', readv, LIBC, fd, FD_API_READ_START,
 				     "dpd", fd, voidp_to_uint64(iov), iovcnt);
 
+	readvp = (void *)GET_ORIG_FUNC(file_feature, readv);
 	sret = readvp(fd,iov,iovcnt);
 
 	AFTER_ORIGINAL_START_END_FD(API_ID_readv, 'x', sret, (unsigned int)sret, fd,
@@ -375,12 +506,16 @@ ssize_t PROBE_NAME(readv)(int fd, const struct iovec *iov, int iovcnt)
 
 // why writev is commented ?
 #if 0
-ssize_t PROBE_NAME(writev)(int fd, const struct iovec *iov, int iovcnt)
+HANDLER_WRAPPERS(ssize_t, writev, int, fd, const struct iovec *, iov, int, iovcnt)
 {
-	static ssize_t (*writevp)(int fd, const struct iovec *iov, int iovcnt);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static ssize_t (*writevp)(int fd, const struct iovec *iov, int iovcnt);
+	ssize_t (*writevp)(int fd, const struct iovec *iov, int iovcnt);
 
 	MAKE_RESOURCE_PREBLOCK(writev, LIBC,3,VT_INT,fd,VT_PTR,iov,VT_INT,iovcnt);
 	ssize_t ret;
+	writevp = (void *)GET_ORIG_FUNC(file_feature, writev);
 	ret = writevp(fd,iov,iovcnt);
 	MAKE_RESOURCE_POSTBLOCK(VT_SSIZE_T,ret,VT_SSIZE_T,ret,VT_INT,fd, FD_API_WRITE);
 	return ret;
@@ -397,9 +532,46 @@ ssize_t PROBE_NAME(writev)(int fd, const struct iovec *iov, int iovcnt)
 // *****************************************************************
 // File Attributes APIs
 // *****************************************************************
-int PROBE_NAME(fcntl)(int fd, int cmd, ...)
+DEF_H(int, fcntl, int, fd, int, cmd, va_list, args);
+
+DEF_WV(int, fcntl, int, fd, int, cmd, ...)
 {
-	static int (*fcntlp)(int fd, int cmd, ...);
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, cmd);
+	ret = fcntl_handler(INTERNAL_CALL, caller, fd, cmd, args);
+	va_end(args);
+
+	return ret;
+}
+
+DEF_WAV(int, fcntl, int, fd, int, cmd, ...)
+{
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, cmd);
+	ret = fcntl_handler(EXTERNAL_CALL, caller, fd, cmd, args);
+	va_end(args);
+
+	return ret;
+}
+
+DEF_H(int, fcntl, int, fd, int, cmd, va_list, args)
+{
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*fcntlp)(int fd, int cmd, ...);
+	int (*fcntlp)(int fd, int cmd, ...);
 	int arg = 0, api_type = FD_API_OTHER;
 	int64_t start = 0;
 	int64_t len = 0;
@@ -407,11 +579,9 @@ int PROBE_NAME(fcntl)(int fd, int cmd, ...)
 	int whence = 0;
 
 	BEFORE_ORIGINAL_FILE(fcntl, LIBC);
+	fcntlp = (void *)GET_ORIG_FUNC(file_feature, fcntl);
 
-	va_list argl;
-	va_start(argl, cmd);
-	arg = va_arg(argl, int);
-	va_end(argl);
+	arg = va_arg(args, int);
 
 	if (cmd == F_SETLK || cmd == F_SETLKW) {
 		struct flock *flock = (struct flock *)arg;
@@ -460,12 +630,15 @@ int PROBE_NAME(fcntl)(int fd, int cmd, ...)
 	return ret;
 }
 
-int PROBE_NAME(dup)(int fd)
+HANDLER_WRAPPERS(int, dup, int, fd)
 {
-	static int (*dupp)(int fd);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*dupp)(int fd);
+	int (*dupp)(int fd);
 
 	BEFORE_ORIGINAL_FILE(dup, LIBC);
-
+	dupp = (void *)GET_ORIG_FUNC(file_feature, dup);
 	ret = dupp(fd);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_dup,
@@ -474,12 +647,15 @@ int PROBE_NAME(dup)(int fd)
 	return ret;
 }
 
-int PROBE_NAME(dup2)(int fd, int fd2)
+HANDLER_WRAPPERS(int, dup2, int, fd, int, fd2)
 {
-	static int (*dup2p)(int fd, int fd2);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*dup2p)(int fd, int fd2);
+	int (*dup2p)(int fd, int fd2);
 
 	BEFORE_ORIGINAL_FILE(dup2, LIBC);
-
+	dup2p = (void *)GET_ORIG_FUNC(file_feature, dup2);
 	ret = dup2p(fd, fd2);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_dup2,
@@ -491,11 +667,15 @@ int PROBE_NAME(dup2)(int fd, int fd2)
 //FIXME dlsym error
 // fstat is not in LIBC
 #if 0
-int PROBE_NAME(fstat)(int fd, struct stat *buf)
+HANDLER_WRAPPERS(int, fstat, int, fd, struct stat *, buf)
 {
-	static int (*fstatp)(int fd, struct stat *buf);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*fstatp)(int fd, struct stat *buf);
+	int (*fstatp)(int fd, struct stat *buf);
 
 	BEFORE_ORIGINAL_FILE(fstat, LIBC);
+	fstatp = (void *)GET_ORIG_FUNC(file_feature, fstat);
 	ret = fstatp(fd, buf);
 	AFTER_PACK_ORIGINAL_FD(ret, 0, fd, FD_API_OTHER, "dp", fd,
 			       voidp_to_uint64(buf));
@@ -503,11 +683,15 @@ int PROBE_NAME(fstat)(int fd, struct stat *buf)
 }
 #endif
 
-int PROBE_NAME(futimens)(int fd, const struct timespec times[2])
+HANDLER_WRAPPERS(int, futimens, int, fd, const struct timespec *, times)
 {
-	static int (*futimensp)(int fd, const struct timespec times[2]);
+	/* TODO Support old preload */
+	/* TODO Support different orig funcs for different bins */
+//	static int (*futimensp)(int fd, const struct timespec times[2]);
+	int (*futimensp)(int fd, const struct timespec times[2]);
 
 	BEFORE_ORIGINAL_FILE(futimens, LIBC);
+	futimensp = (void *)GET_ORIG_FUNC(file_feature, futimens);
 	ret = futimensp(fd, times);
 	AFTER_PACK_ORIGINAL_FD(API_ID_futimens,
 			       'd', ret, 0, fd, FD_API_OTHER, "dp", fd,

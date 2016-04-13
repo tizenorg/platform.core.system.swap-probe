@@ -34,6 +34,8 @@
 #include "daprobe.h"
 #include "dahelper.h"
 #include "common_probe_init.h"
+#include "event_probes_list.h"
+#include "probe_event.h"
 
 
 Ecore_Event_Handler *register_orientation_event_listener();
@@ -96,13 +98,17 @@ void unregister_orientation_event_listener(Ecore_Event_Handler *handler)
 
 EAPI int PROBE_NAME(ecore_x_init)(const char *name)
 {
+	/* TODO Support old preload */
 	static Ecore_Event_Handler *event_handler = NULL;
 
 	int res = 0;
-	static int (*ecore_x_initp)(const char *name);
+//	static int (*ecore_x_initp)(const char *name);
+	int (*ecore_x_initp)(const char *name);
 	PRINTMSG("(%s)", name);
 
-	rtld_default_set_once(ecore_x_initp, "ecore_x_init");
+	ecore_x_initp = (void *)GET_ORIG_FUNC(event_feature, ecore_x_init);
+
+//	rtld_default_set_once(ecore_x_initp, "ecore_x_init");
 	res = ecore_x_initp(name);
 
 	if (event_handler == NULL) {

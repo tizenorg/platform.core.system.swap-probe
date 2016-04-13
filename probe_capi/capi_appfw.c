@@ -38,6 +38,9 @@
 #include "binproto.h"
 #include "real_functions.h"
 #include "common_probe_init.h"
+#include "capi_probes_list.h"
+#include "probe_capi.h"
+
 
 Ecore_Event_Handler *register_orientation_event_listener();
 void unregister_orientation_event_listener(Ecore_Event_Handler *handler);
@@ -49,7 +52,8 @@ ui_app_lifecycle_callback_s uiAppCallback;
 	do {									\
 		PREPARE_LOCAL_BUF();					\
 		PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);	\
+		/* TODO Check address */							\
+		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult, (uint64_t)0xffffffff);	\
 		FLUSH_LOCAL_BUF();					\
 	} while(0);								\
 	errno = (newerrno != 0) ? newerrno : olderrno
@@ -59,7 +63,7 @@ static bool _ui_dalc_app_create(void *user_data)
 {
 	bool bret = false;
 	DECLARE_ERRNO_VARS;
-//	int blockresult = 1;
+	int blockresult = 1;
 
 	bret = uiAppCallback.create(user_data);
 
@@ -72,7 +76,7 @@ static bool _ui_dalc_app_create(void *user_data)
 static void _ui_dalc_app_terminate(void *user_data)
 {
 	DECLARE_ERRNO_VARS;
-//	int blockresult = 1;
+	int blockresult = 1;
 
 	uiAppCallback.terminate(user_data);
 
@@ -83,7 +87,7 @@ static void _ui_dalc_app_terminate(void *user_data)
 static void _ui_dalc_app_pause(void *user_data)
 {
 	DECLARE_ERRNO_VARS;
-//	int blockresult = 1;
+	int blockresult = 1;
 
 	uiAppCallback.pause(user_data);
 
@@ -94,7 +98,7 @@ static void _ui_dalc_app_pause(void *user_data)
 static void _ui_dalc_app_resume(void *user_data)
 {
 	DECLARE_ERRNO_VARS;
-//	int blockresult = 1;
+	int blockresult = 1;
 
 	uiAppCallback.resume(user_data);
 
@@ -105,7 +109,7 @@ static void _ui_dalc_app_resume(void *user_data)
 static void _ui_dalc_app_control(app_control_h handle, void *user_data)
 {
 	DECLARE_ERRNO_VARS;
-//	int blockresult = 1;
+	int blockresult = 1;
 
 	uiAppCallback.app_control(handle, user_data);
 
@@ -116,11 +120,14 @@ static void _ui_dalc_app_control(app_control_h handle, void *user_data)
 
 int PROBE_NAME(ui_app_main)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data)
 {
-	static int (*ui_app_mainp)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data);
+	/* TODO Support old preload */
+//	static int (*ui_app_mainp)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data);
+	int (*ui_app_mainp)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data);
 	Ecore_Event_Handler* handler;
 	int ret;
 
-	GET_REAL_FUNCP_RTLD_DEFAULT(ui_app_main, ui_app_mainp);
+//	GET_REAL_FUNCP_RTLD_DEFAULT(ui_app_main, ui_app_mainp);
+	ui_app_mainp = (void *)GET_ORIG_FUNC(capi_feature, ui_app_main);
 
 	handler = register_orientation_event_listener();
 	uiAppCallback.create = callback->create;

@@ -135,7 +135,6 @@ extern EGLContext eglGetCurrentContext(void);
 #define INIT_LIB(LIB_ID, KEYS)						\
 	INIT_LIB_ID_STR(LIB_ID, lib_string[LIB_ID], KEYS)
 
-
 #define BEFORE_EGL_NATIVE(FUNCNAME)					\
 	DECLARE_VARIABLE_STANDARD_NORET;				\
 	GLenum error = EGL_SUCCESS;					\
@@ -158,7 +157,7 @@ extern EGLContext eglGetCurrentContext(void);
 	POST_PACK_PROBEBLOCK_BEGIN();						\
 	PREPARE_LOCAL_BUF();							\
 	PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, INPUTFORMAT, __VA_ARGS__);	\
-	PACK_COMMON_END(RET_TYPE, RET_VAL, error, blockresult);			\
+	PACK_COMMON_END(RET_TYPE, RET_VAL, error, call_type, caller);		\
 	PACK_GL_ADD(APITYPE, get_current_nsec() - start_nsec, CONTEXT_VAL);	\
 	FLUSH_LOCAL_BUF();							\
 	POST_PACK_PROBEBLOCK_END()
@@ -170,15 +169,16 @@ extern EGLContext eglGetCurrentContext(void);
 	/* GL_GET_ERROR */						\
 	if (blockresult != 0) {						\
 		is_gl_error_external = 0;				\
-		error = REAL_NAME(glGetError)();			\
+		error = glGetError_internal();				\
 		is_gl_error_external = 1;				\
 	}
 
-#define AFTER_SHADER(RET_TYPE, RET_VAL, APITYPE, CONTEXT_VAL, CONTEXT_SIZE, INPUTFORMAT, ...)	\
+#define AFTER_SHADER(RET_TYPE, RET_VAL, APITYPE, CONTEXT_VAL,	       \
+		     CONTEXT_SIZE, INPUTFORMAT, ...)	\
 	POST_PACK_PROBEBLOCK_BEGIN();						\
 	PREPARE_LOCAL_BUF();							\
 	PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, INPUTFORMAT, __VA_ARGS__);	\
-	PACK_COMMON_END(RET_TYPE, RET_VAL, error, blockresult);			\
+	PACK_COMMON_END(RET_TYPE, RET_VAL, error, call_type, caller);		\
 	PACK_GL_SHADER(APITYPE, get_current_nsec() - start_nsec, CONTEXT_VAL, CONTEXT_SIZE);	\
 	FLUSH_LOCAL_BUF();							\
 	POST_PACK_PROBEBLOCK_END()
@@ -188,7 +188,11 @@ extern EGLContext eglGetCurrentContext(void);
 						   alias(FUNCSTR(FUNCNAME))	\
 						 ))
 
-#define FUNC_DECLAR(TYPE, FUNCNAME, ...)					\
+
+/* NOTIFY: uncomment to use with LD_PRELOAD */
+#if 0
+
+#define PUT_ALIASES(TYPE, FUNCNAME, ...)			    \
 	/* alias for C function prototype */					\
 	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE);			\
 	}/* extern C*/								\
@@ -196,19 +200,28 @@ extern EGLContext eglGetCurrentContext(void);
 	/* alias for C++ function prototype */					\
 	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE, __VA_ARGS__);	\
 	extern "C"								\
-	{									\
-	TYPE REAL_NAME(FUNCNAME)(__VA_ARGS__)					\
+	{
+
+#else
+
+#define PUT_ALIASES(TYPE, FUNCNAME, ...)
+
+#endif
+
+
+
+#define FUNC_DECLAR(TYPE, FUNCNAME, ...)					\
+	PUT_ALIASES(TYPE, FUNCNAME, __VA_ARGS__)			\
+	HANDLER_WRAPPERS(TYPE, FUNCNAME, __VA_ARGS__)
+//	HANDLER_DEF(TYPE, REAL_NAME(FUNCNAME), __VA_ARGS__)
 
 #define FUNC_DECLAR_NOARGS(TYPE, FUNCNAME)					\
-	/* alias for C function prototype */					\
-	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE, int);		\
-	}									\
-	/* alias for C++ function prototype */					\
-	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE);			\
-	extern "C"								\
-	{									\
-	TYPE REAL_NAME(FUNCNAME)()						\
+	PUT_ALIASES(TYPE, FUNCNAME)							\
+	HANDLER_WRAPPERS(TYPE, FUNCNAME)
+//	HANDLER_DEF(TYPE, REAL_NAME(FUNCNAME))
 
+
+#if 0 /* TODO Support old preload */
 
 #define BEFORE_EVAS_GL(FUNCNAME)					\
 	DECLARE_VARIABLE_STANDARD_NORET;				\
@@ -220,6 +233,21 @@ extern EGLContext eglGetCurrentContext(void);
 	if(blockresult != 0)						\
 		start_nsec = get_current_nsec();			\
 	GET_REAL_FUNCP_RTLD_DEFAULT(FUNCNAME, FUNCNAME##p)
+
+#else
+
+#define BEFORE_EVAS_GL(FUNCNAME)					\
+	DECLARE_VARIABLE_STANDARD_NORET;				\
+	GLenum error = GL_NO_ERROR;					\
+	methodType FUNCNAME ## p = 0;				\
+	int32_t vAPI_ID = API_ID_ ## FUNCNAME;				\
+	uint64_t start_nsec = 0;					\
+	PRE_PROBEBLOCK();						\
+	if(blockresult != 0)						\
+		start_nsec = get_current_nsec();			\
+	FUNCNAME ## p = (void *)GET_ORIG_FUNC(graphics_feature, FUNCNAME);
+
+#endif
 
 /* FIXME fixed arguments num. increase if neccessary */
 #define PP_RSEQ_N() 10,9,8,7,6,5,4,3,2,1,0
@@ -245,23 +273,19 @@ extern EGLContext eglGetCurrentContext(void);
 #define GET0(a,b) GET1(a,b)
 #define GET_FIRST_(...)  GET0(GET_FIRST_, NUM(__VA_ARGS__))
 
-#define GET_ALL_(...)  GET0(GET_ALL_, NUM(__VA_ARGS__))
-
 
 #define GET_ARGS(type1, ...) GET_FIRST_(type1, __VA_ARGS__)(__VA_ARGS__, type1)
 #define GET_TYPES(...) GET_FIRST_(__VA_ARGS__)(__VA_ARGS__)
 
-#define GET_TYPES_AND_ARGS(...) GET_ALL_(__VA_ARGS__)(__VA_ARGS__)
-
 #define DECLARE_GL_DEFAULT_VOID(TYPE, FUNCNAME, PACK_ARGS, ...)			\
-	DECLARE(TYPE, FUNCNAME, GET_TYPES_AND_ARGS(__VA_ARGS__))		\
+	DECLARE(TYPE, FUNCNAME, __VA_ARGS__)		\
 	{									\
 		TYPEDEF(void (*methodType)(GET_TYPES(__VA_ARGS__)));		\
 		BEFORE(FUNCNAME);						\
 		CALL_ORIG(FUNCNAME, GET_ARGS(__VA_ARGS__));			\
 		GL_GET_ERROR();							\
-		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", PACK_ARGS,	\
-			GET_ARGS(__VA_ARGS__));					\
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT,		      \
+		      "", PACK_ARGS, GET_ARGS(__VA_ARGS__));					\
 	}
 
 

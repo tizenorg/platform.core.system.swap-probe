@@ -44,28 +44,33 @@
 #include "dacollection.h"
 #include "da_memory.h"
 #include "binproto.h"
+#include "memory_probes_list.h"
+#include "probe_memory.h"
 
-void *PROBE_NAME(malloc)(size_t size)
+
+HANDLER_WRAPPERS(void *, malloc, size_t, size)
 {
-	static void* (*mallocp)(size_t);
+//	static void* (*mallocp)(size_t);
+	void* (*mallocp)(size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	rtdl_next_set_once(mallocp, "malloc");
+//	rtdl_next_set_once(mallocp, "malloc");
+	mallocp = (void *)GET_ORIG_FUNC(memory_feature, malloc);
 
 	PRE_PROBEBLOCK();
 
 	pret = (*mallocp)(size);
 
 	if(pret != NULL)
-		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, call_type);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_malloc,
 			  "x", (int64_t) size);
-	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_COMMON_END('p', pret, newerrno, call_type, caller);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 
@@ -74,12 +79,14 @@ void *PROBE_NAME(malloc)(size_t size)
 	return pret;
 }
 
-void PROBE_NAME(free)(void *ptr)
+HANDLER_WRAPPERS_VOID(void, free, void*, ptr)
 {
-	static void (*freep)(void *);
+//	static void (*freep)(void *);
+	void (*freep)(void *);
 	DECLARE_VARIABLE_STANDARD;
 
-	rtdl_next_set_once(freep, "free");
+//	rtdl_next_set_once(freep, "free");
+	freep = (void *)GET_ORIG_FUNC(memory_feature, free);
 
 	PRE_PROBEBLOCK();
 
@@ -93,20 +100,23 @@ void PROBE_NAME(free)(void *ptr)
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_free,
 			  "p", (int64_t)(int) ptr);
-	PACK_COMMON_END('v', 0, newerrno, blockresult);
+	PACK_COMMON_END('v', 0, newerrno, call_type, caller);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
 
 	POST_PACK_PROBEBLOCK_END();
 }
 
-void *PROBE_NAME(realloc)(void *memblock, size_t size)
+
+HANDLER_WRAPPERS(void *, realloc, void *, memblock, size_t, size)
 {
-	static void* (*reallocp)(void*, size_t);
+//	static void* (*reallocp)(void*, size_t);
+	void* (*reallocp)(void*, size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	rtdl_next_set_once(reallocp, "realloc");
+//	rtdl_next_set_once(reallocp, "realloc");
+	reallocp = (void *)GET_ORIG_FUNC(memory_feature, realloc);
 	PRE_PROBEBLOCK();
 
 	if(memblock != NULL)
@@ -115,14 +125,14 @@ void *PROBE_NAME(realloc)(void *memblock, size_t size)
 	pret = (*reallocp)(memblock, size);
 
 	if(pret != NULL)
-		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, call_type);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_realloc,
 			  "px", voidp_to_uint64(memblock), (uint64_t) size);
-	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_COMMON_END('p', pret, newerrno, call_type, caller);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 
@@ -131,44 +141,48 @@ void *PROBE_NAME(realloc)(void *memblock, size_t size)
 	return pret;
 }
 
+/* TODO Support old preload */
 
-void *temp_calloc(size_t nelem, size_t elsize)
-{
-	/* Magic number, but somewhy it is sufficent */
-	static char extra_mem[20] = {0};
-	return (nelem * elsize > sizeof(extra_mem))
-		? extra_mem
-		: NULL;
-}
+//void *temp_calloc(size_t nelem, size_t elsize)
+//{
+//	/* Magic number, but somewhy it is sufficent */
+//	static char extra_mem[20] = {0};
+//	return (nelem * elsize > sizeof(extra_mem))
+//		? extra_mem
+//		: NULL;
+//}
 
-void *PROBE_NAME(calloc)(size_t nelem, size_t elsize)
+HANDLER_WRAPPERS(void *, calloc, size_t, nelem, size_t, elsize)
 {
-	static void* (*callocp)(size_t, size_t);
+//	static void* (*callocp)(size_t, size_t);
+	void* (*callocp)(size_t, size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	if (!callocp) {
-		/**
-		 * Calloc is called by `dlsym`, so we provide small amount
-		 * of static memory via `temp_calloc`.
-		 */
-		callocp = temp_calloc;
-		callocp = rtdl_next("calloc");
-	}
+	/* TODO Support old preload */
+//	if (!callocp) {
+//		/**
+//		 * Calloc is called by `dlsym`, so we provide small amount
+//		 * of static memory via `temp_calloc`.
+//		 */
+//		callocp = temp_calloc;
+//		callocp = rtdl_next("calloc");
+//	}
 
 	PRE_PROBEBLOCK();
 
+	callocp = (void *)GET_ORIG_FUNC(memory_feature, calloc);
 	pret = (*callocp)(nelem, elsize);
 
 	if(pret != NULL)
-		add_memory_hash(pret, nelem * elsize, MEMTYPE_ALLOC, CALL_TYPE);
+		add_memory_hash(pret, nelem * elsize, MEMTYPE_ALLOC, call_type);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_calloc,
 			  "xx", (uint64_t)nelem, (uint64_t)elsize);
-	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_COMMON_END('p', pret, newerrno, call_type, caller);
 	PACK_MEMORY(nelem * elsize, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 
@@ -177,3 +191,4 @@ void *PROBE_NAME(calloc)(size_t nelem, size_t elsize)
 
 	return pret;
 }
+

@@ -41,7 +41,7 @@
 static enum DaOptions _sopt = OPT_GLES;
 static __thread EGLint egl_error_external = EGL_SUCCESS;
 
-EGLint eglGetError(void)
+HANDLER_WRAPPERS(EGLint, eglGetError, void)
 {
 	typedef EGLint (*methodType)(void);
 	BEFORE_EGL(eglGetError);
@@ -61,7 +61,7 @@ EGLint eglGetError(void)
 	return ret;
 }
 
-EGLDisplay eglGetDisplay(EGLNativeDisplayType display_id)
+HANDLED_WRAPPERS(EGLDisplay, eglGetDisplay, EGLNativeDisplayType, display_id)
 {
 	typedef EGLDisplay (*methodType)(EGLNativeDisplayType display_id);
 	/* probe prepare */
@@ -76,7 +76,8 @@ EGLDisplay eglGetDisplay(EGLNativeDisplayType display_id)
 	return ret;
 }
 
-EGLBoolean eglInitialize(EGLDisplay dpy, EGLint *major, EGLint *minor)
+HANDLER_WRAPPERS(EGLBoolean, eglInitialize, EGLDisplay, dpy, EGLint *, major,
+		 EGLint *, minor)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLint *major,
 					 EGLint *minor);
@@ -92,7 +93,7 @@ EGLBoolean eglInitialize(EGLDisplay dpy, EGLint *major, EGLint *minor)
 	return ret;
 }
 
-EGLBoolean eglTerminate(EGLDisplay dpy)
+HANDLER_WRAPPERS(EGLBoolean, eglTerminate, EGLDisplay, dpy)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy);
 	/* probe prepare */
@@ -106,7 +107,7 @@ EGLBoolean eglTerminate(EGLDisplay dpy)
 	return ret;
 }
 
-const char *eglQueryString(EGLDisplay dpy, EGLint name)
+HANDLER_WRAPPERS(const char *, eglQueryString, EGLDisplay, dpy, EGLint, name)
 {
 	typedef const char *(*methodType)(EGLDisplay dpy, EGLint name);
 	/* probe prepare */
@@ -120,8 +121,9 @@ const char *eglQueryString(EGLDisplay dpy, EGLint name)
 	return ret;
 }
 
-EGLBoolean eglGetConfigs(EGLDisplay dpy, EGLConfig *configs, EGLint config_size,
-			 EGLint *num_config)
+HANDLER_WRAPPERS(EGLBoolean, eglGetConfigs, EGLDisplay, dpy,
+		 EGLConfig *, configs, EGLint, config_size,
+		 EGLint *, num_config)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLConfig *configs,
 					 EGLint config_size,
@@ -139,9 +141,9 @@ EGLBoolean eglGetConfigs(EGLDisplay dpy, EGLConfig *configs, EGLint config_size,
 	return ret;
 }
 
-EGLBoolean eglChooseConfig(EGLDisplay dpy, const EGLint *attrib_list,
-			   EGLConfig *configs, EGLint config_size,
-			   EGLint *num_config)
+HANDLER_WRAPPERS(EGLBoolean, eglChooseConfig, EGLDisplay, dpy,
+		 const EGLint *, attrib_list, EGLConfig *, configs,
+		 EGLint, config_size, EGLint *, num_config)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy,
 					 const EGLint *attrib_list,
@@ -162,8 +164,8 @@ EGLBoolean eglChooseConfig(EGLDisplay dpy, const EGLint *attrib_list,
 	return ret;
 }
 
-EGLBoolean eglGetConfigAttrib(EGLDisplay dpy, EGLConfig config,
-			      EGLint attribute, EGLint *value)
+HANDLER_WRAPPERS(EGLBoolean, eglGetConfigAttrib, EGLDisplay, dpy,
+		 EGLConfig, config, EGLint, attribute, EGLint *, value)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLConfig config,
 					 EGLint attribute, EGLint *value);
@@ -180,9 +182,9 @@ EGLBoolean eglGetConfigAttrib(EGLDisplay dpy, EGLConfig config,
 	return ret;
 }
 
-EGLSurface eglCreateWindowSurface(EGLDisplay dpy, EGLConfig config,
-				  EGLNativeWindowType win,
-				  const EGLint *attrib_list)
+HANDLER_WRAPPERS(EGLSurface, eglCreateWindowSurface, EGLDisplay, dpy,
+		 EGLConfig, config, EGLNativeWindowType, win,
+		 const EGLint *, attrib_list)
 {
 	typedef EGLSurface (*methodType)(EGLDisplay dpy, EGLConfig config,
 					 EGLNativeWindowType win,
@@ -201,8 +203,8 @@ EGLSurface eglCreateWindowSurface(EGLDisplay dpy, EGLConfig config,
 	return ret;
 }
 
-EGLSurface eglCreatePbufferSurface(EGLDisplay dpy, EGLConfig config,
-				   const EGLint *attrib_list)
+HANLDER_WRAPPERS(EGLSurface, eglCreatePbufferSurface, EGLDisplay, dpy,
+		 EGLConfig, config, const EGLint *, attrib_list)
 {
 	typedef EGLSurface (*methodType)(EGLDisplay dpy, EGLConfig config,
 					 const EGLint *attrib_list);
@@ -219,9 +221,9 @@ EGLSurface eglCreatePbufferSurface(EGLDisplay dpy, EGLConfig config,
 	return ret;
 }
 
-EGLSurface eglCreatePixmapSurface(EGLDisplay dpy, EGLConfig config,
-				  EGLNativePixmapType pixmap,
-				  const EGLint *attrib_list)
+HANDLER_WRAPPERS(EGLSurface, eglCreatePixmapSurface, EGLDisplay, dpy,
+		 EGLConfig, config, EGLNativePixmapType, pixmap,
+		 const EGLint *, attrib_list)
 {
 	typedef EGLSurface (*methodType)(EGLDisplay dpy, EGLConfig config,
 					 EGLNativePixmapType pixmap,
@@ -240,7 +242,8 @@ EGLSurface eglCreatePixmapSurface(EGLDisplay dpy, EGLConfig config,
 	return ret;
 }
 
-EGLBoolean eglDestroySurface(EGLDisplay dpy, EGLSurface surface)
+HANDLER_WRAPPERS(EGLBoolean, eglDestroySurface, EGLDisplay, dpy,
+		 EGLSurface, surface)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface);
 	/* probe prepare */
@@ -255,8 +258,8 @@ EGLBoolean eglDestroySurface(EGLDisplay dpy, EGLSurface surface)
 	return ret;
 }
 
-EGLBoolean eglQuerySurface(EGLDisplay dpy, EGLSurface surface, EGLint attribute,
-			   EGLint *value)
+HANDLER_WRAPPERS(EGLBoolean, eglQuerySurface, EGLDisplay, dpy,
+		 EGLSurface, surface, EGLint, attribute, EGLint *, value)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface,
 					 EGLint attribute, EGLint *value);
@@ -273,7 +276,7 @@ EGLBoolean eglQuerySurface(EGLDisplay dpy, EGLSurface surface, EGLint attribute,
 	return ret;
 }
 
-EGLBoolean eglBindAPI(EGLenum api)
+HANDLER_WRAPPERS(EGLBoolean, eglBindAPI, EGLenum, api)
 {
 	typedef EGLBoolean (*methodType)(EGLenum api);
 	/* probe prepare */
@@ -288,7 +291,7 @@ EGLBoolean eglBindAPI(EGLenum api)
 	return ret;
 }
 
-EGLenum eglQueryAPI(void)
+HANDLER_WRAPPERS(EGLenum, eglQueryAPI, void)
 {
 	typedef EGLenum (*methodType)(void);
 	/* probe prepare */
@@ -302,7 +305,7 @@ EGLenum eglQueryAPI(void)
 	return ret;
 }
 
-EGLBoolean eglWaitClient(void)
+HANDLER_WRAPPERS(EGLBoolean, eglWaitClient, void)
 {
 	typedef EGLBoolean (*methodType)(void);
 	/* probe prepare */
@@ -316,7 +319,7 @@ EGLBoolean eglWaitClient(void)
 	return ret;
 }
 
-EGLBoolean eglReleaseThread(void)
+HANDLER_WRAPPERS(EGLBoolean, eglReleaseThread, void)
 {
 	typedef EGLBoolean (*methodType)(void);
 	/* probe prepare */
@@ -330,10 +333,9 @@ EGLBoolean eglReleaseThread(void)
 	return ret;
 }
 
-EGLSurface eglCreatePbufferFromClientBuffer(EGLDisplay dpy, EGLenum buftype,
-					    EGLClientBuffer buffer,
-					    EGLConfig config,
-					    const EGLint *attrib_list)
+HANDLER_WRAPPERS(EGLSurface, eglCreatePbufferFromClientBuffer, EGLDisplay, dpy,
+		 EGLenum, buftype, EGLClientBuffer, buffer, EGLConfig, config,
+		 const EGLint *, attrib_list)
 {
 	typedef EGLSurface (*methodType)(EGLDisplay dpy, EGLenum buftype,
 					 EGLClientBuffer buffer,
@@ -353,8 +355,8 @@ EGLSurface eglCreatePbufferFromClientBuffer(EGLDisplay dpy, EGLenum buftype,
 	return ret;
 }
 
-EGLBoolean eglSurfaceAttrib(EGLDisplay dpy, EGLSurface surface,
-			    EGLint attribute, EGLint value)
+HANDLER_WRAPPERS(EGLBoolean, eglSurfaceAttrib, EGLDisplay, dpy,
+		 EGLSurface, surface, EGLint, attribute, EGLint, value)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface,
 					 EGLint attribute, EGLint value);
@@ -371,7 +373,8 @@ EGLBoolean eglSurfaceAttrib(EGLDisplay dpy, EGLSurface surface,
 	return ret;
 }
 
-EGLBoolean eglBindTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
+HANDLER_WRAPPERS(EGLBoolean, eglBindTexImage, EGLDisplay, dpy,
+		 EGLSurface, surface, EGLint, buffer)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface,
 					 EGLint buffer);
@@ -387,7 +390,8 @@ EGLBoolean eglBindTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
 	return ret;
 }
 
-EGLBoolean eglReleaseTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
+HANDLER_WRAPPERS(EGLBoolean, eglReleaseTexImage, EGLDisplay, dpy,
+		 EGLSurface, surface, EGLint, buffer)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface,
 					 EGLint buffer);
@@ -403,7 +407,7 @@ EGLBoolean eglReleaseTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
 	return ret;
 }
 
-EGLBoolean eglSwapInterval(EGLDisplay dpy, EGLint interval)
+HANDLER_WRAPPERS(EGLBoolean, eglSwapInterval, EGLDisplay, dpy, EGLint, interval)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLint interval);
 	/* probe prepare */
@@ -418,8 +422,9 @@ EGLBoolean eglSwapInterval(EGLDisplay dpy, EGLint interval)
 	return ret;
 }
 
-EGLContext eglCreateContext(EGLDisplay dpy, EGLConfig config,
-			    EGLContext share_context, const EGLint *attrib_list)
+HANDLER_WRAPPERS(EGLContext, eglCreateContext, EGLDisplay, dpy,
+		 EGLConfig, config, EGLContext, share_context,
+		 const EGLint *, attrib_list)
 {
 	typedef EGLContext (*methodType)(EGLDisplay dpy, EGLConfig config,
 					 EGLContext share_context,
@@ -439,7 +444,8 @@ EGLContext eglCreateContext(EGLDisplay dpy, EGLConfig config,
 	return ret;
 }
 
-EGLBoolean eglDestroyContext(EGLDisplay dpy, EGLContext ctx)
+HANDLER_WRAPPERS(EGLBoolean, eglDestroyContext, EGLDisplay, dpy,
+		 EGLContext, ctx)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLContext ctx);
 	/* probe prepare */
@@ -455,8 +461,8 @@ EGLBoolean eglDestroyContext(EGLDisplay dpy, EGLContext ctx)
 	return ret;
 }
 
-EGLBoolean eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read,
-			  EGLContext ctx)
+HANDLER_WRAPPERS(EGLBoolean, eglMakeCurrent, EGLDisplay, dpy, EGLSurface, draw,
+		 EGLSurface, read, EGLContext, ctx)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface draw,
 					 EGLSurface read, EGLContext ctx);
@@ -473,7 +479,7 @@ EGLBoolean eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read,
 	return ret;
 }
 
-EGLContext eglGetCurrentContext(void)
+HANDLER_WRAPPERS(EGLContext, eglGetCurrentContext, void)
 {
 	typedef EGLContext (*methodType)(void);
 	/* probe prepare */
@@ -488,7 +494,7 @@ EGLContext eglGetCurrentContext(void)
 	return ret;
 }
 
-EGLSurface eglGetCurrentSurface(EGLint readdraw)
+HANDLER_WRAPPERS(EGLSurface, eglGetCurrentSurface, EGLint, readdraw)
 {
 	typedef EGLSurface (*methodType)(EGLint readdraw);
 	/* probe prepare */
@@ -503,7 +509,7 @@ EGLSurface eglGetCurrentSurface(EGLint readdraw)
 	return ret;
 }
 
-EGLDisplay eglGetCurrentDisplay(void)
+HANDLER_WRAPPERS(EGLDisplay, eglGetCurrentDisplay, void)
 {
 	typedef EGLDisplay (*methodType)(void);
 	/* probe prepare */
@@ -517,8 +523,8 @@ EGLDisplay eglGetCurrentDisplay(void)
 	return ret;
 }
 
-EGLBoolean eglQueryContext(EGLDisplay dpy, EGLContext ctx, EGLint attribute,
-			   EGLint *value)
+HANLDER_WRAPPERS(EGLBoolean, eglQueryContext, EGLDisplay, dpy, EGLContext, ctx,
+		 EGLint, attribute, EGLint *, value)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLContext ctx,
 					 EGLint attribute, EGLint *value);
@@ -535,7 +541,7 @@ EGLBoolean eglQueryContext(EGLDisplay dpy, EGLContext ctx, EGLint attribute,
 	return ret;
 }
 
-EGLBoolean eglWaitGL(void)
+HANDLER_WRAPPERS(EGLBoolean, eglWaitGL, void)
 {
 	typedef EGLBoolean (*methodType)(void);
 	/* probe prepare */
@@ -549,7 +555,7 @@ EGLBoolean eglWaitGL(void)
 	return ret;
 }
 
-EGLBoolean eglWaitNative(EGLint engine)
+HANDLER_WRAPPERS(EGLBoolean, eglWaitNative, EGLint, engine)
 {
 	typedef EGLBoolean (*methodType)(EGLint engine);
 	/* probe prepare */
@@ -564,7 +570,8 @@ EGLBoolean eglWaitNative(EGLint engine)
 	return ret;
 }
 
-EGLBoolean eglSwapBuffers(EGLDisplay dpy, EGLSurface surface)
+HANDLER_WRAPPERS(EGLBoolean, eglSwapBuffers, EGLDisplay, dpy,
+		 EGLSurface, surface)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface);
 	BEFORE_EGL(eglSwapBuffers);
@@ -575,8 +582,8 @@ EGLBoolean eglSwapBuffers(EGLDisplay dpy, EGLSurface surface)
 	return ret;
 }
 
-EGLBoolean eglCopyBuffers(EGLDisplay dpy, EGLSurface surface,
-			  EGLNativePixmapType target)
+HANDLER_WRAPPERS(EGLBoolean, eglCopyBuffers, EGLDisplay, dpy,
+		 EGLSurface, surface, EGLNativePixmapType, target)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface,
 					 EGLNativePixmapType target);
@@ -594,7 +601,8 @@ EGLBoolean eglCopyBuffers(EGLDisplay dpy, EGLSurface surface,
 }
 
 #define __eglGetProcAddress_t __eglMustCastToProperFunctionPointerType
-EGLAPI __eglGetProcAddress_t eglGetProcAddress(const char *procname)
+HANDLER_WRAPPERS(EGLAPI __eglGetProcAddress_t, eglGetProcAddress,
+		 const char *, procname)
 {
 	typedef EGLAPI __eglGetProcAddress_t(*methodType)(const char *procname);
 	/* probe prepare */
@@ -608,4 +616,3 @@ EGLAPI __eglGetProcAddress_t eglGetProcAddress(const char *procname)
 	      "s", procname);
 	return ret;
 }
-
