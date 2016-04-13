@@ -70,7 +70,11 @@ __traceInfo gTraceInfo =
 	-1,								// int stateTouch
 	0,								// int init_complete
 	0,								// int custom_chart_callback_count
-	0								// unsigned long optionflag
+	0,								// unsigned long optionflag
+	{
+		PTHREAD_MUTEX_INITIALIZER,	// pthread_mutex_t bins_mutex
+		SLIST_HEAD_INITIALIZER(bins_list) // struct head = NULL
+	}		// bins_info_t
 };
 
 // return 0 if succeed
@@ -151,4 +155,147 @@ void swap_usleep(useconds_t usec)
 	if (nanosleep(&req, &rem) == -1) {
 		PRINTWRN("sleep was terminated by signal\n");
 	}
+}
+
+
+/*****************************************************************************
+ *                                  BINARIES LIST                            *
+ *****************************************************************************/
+
+static struct bin_info_t *_find_binary_no_lock(char *path)
+{
+	struct bin_info_t *bin_info;
+
+	SLIST_FOREACH(bin_info, &gTraceInfo.bins_info.bins_list, list) {
+		if (strncmp(bin_info->path, path, PATH_MAX) == 0)
+			return bin_info;
+	}
+
+	return NULL;
+}
+
+
+/* Returns 0 on success, -errcode on fail */
+int add_binary(char *path)
+{
+	struct bin_info_t *bin_info;
+	int ret = 0;
+
+	pthread_mutex_lock(&gTraceInfo.bins_info.bins_mutex);
+
+	if (!SLIST_EMPTY(&gTraceInfo.bins_info.bins_list) &&
+		(_find_binary_no_lock(path) != NULL)) {
+		ret = -EALREADY;
+		goto add_bin_unlock;
+	}
+
+	bin_info = malloc(sizeof(*bin_info));
+	if (bin_info == NULL) {
+		ret = -ENOMEM;
+		goto add_bin_unlock;
+	}
+
+	// TODO Slow copy / cleanup of memory allocated somewhere else?
+	bin_info->path = path;
+	SLIST_INSERT_HEAD(&gTraceInfo.bins_info.bins_list, bin_info, list);
+
+add_bin_unlock:
+	pthread_mutex_unlock(&gTraceInfo.bins_info.bins_mutex);
+
+	return ret;
+}
+
+/* Returns 0 on success, -errcode on fail */
+int remove_binary(char *path)
+{
+	struct bin_info_t *bin_info;
+	int ret = 0;
+
+	pthread_mutex_lock(&gTraceInfo.bins_info.bins_mutex);
+
+	if (SLIST_EMPTY(&gTraceInfo.bins_info.bins_list)) {
+		ret = -EINVAL;
+		goto remove_bin_unlock;
+	}
+
+	bin_info = _find_binary_no_lock(path);
+	if (bin_info == NULL) {
+		ret = -EINVAL;
+		goto remove_bin_unlock;
+	}
+
+	SLIST_REMOVE(&gTraceInfo.bins_info.bins_list, bin_info, bin_info_t, list);
+
+remove_bin_unlock:
+	pthread_mutex_unlock(&gTraceInfo.bins_info.bins_mutex);
+
+	return ret;
+}
+
+/* Checks if binary is a target one */
+bool check_binary(char *path)
+{
+	struct bin_info_t *bin_info;
+	bool ret = false;
+
+	pthread_mutex_lock(&gTraceInfo.bins_info.bins_mutex);
+
+	if (SLIST_EMPTY(&gTraceInfo.bins_info.bins_list))
+		goto check_bin_unlock;
+
+	bin_info = _find_binary_no_lock(path);
+	if (bin_info != NULL)
+		ret = true;
+
+check_bin_unlock:
+	pthread_mutex_unlock(&gTraceInfo.bins_info.bins_mutex);
+
+	return ret;
+}
+
+void cleanup_binaries(void)
+{
+	struct bin_info_t *bin_info, *tmp;
+
+	pthread_mutex_lock(&gTraceInfo.bins_info.bins_mutex);
+
+	if (SLIST_EMPTY(&gTraceInfo.bins_info.bins_list))
+		goto cleanup_unlock;
+
+	/* There is no FOREACH_SAFE in queue.h */
+	for (bin_info = SLIST_FIRST(&gTraceInfo.bins_info.bins_list);
+	     bin_info;
+	     bin_info = tmp) {
+
+		tmp = SLIST_NEXT(bin_info, list);
+
+		SLIST_REMOVE_HEAD(&gTraceInfo.bins_info.bins_list, list);
+		if (bin_info->path != NULL)
+			free(bin_info->path);
+
+		free(bin_info);
+	}
+
+cleanup_unlock:
+	pthread_mutex_unlock(&gTraceInfo.bins_info.bins_mutex);
+}
+
+int do_for_each_binary(bin_cb_t cb, void *data)
+{
+	struct bin_info_t *bin_info;
+	int ret = 0;
+
+	pthread_mutex_lock(&gTraceInfo.bins_info.bins_mutex);
+
+	SLIST_FOREACH(bin_info, &gTraceInfo.bins_info.bins_list, list) {
+		ret = cb(bin_info->path, data);
+		if (ret != 0)
+			goto for_each_unlock;
+	}
+
+for_each_unlock:
+
+	pthread_mutex_unlock(&gTraceInfo.bins_info.bins_mutex);
+
+	return ret;
 }
