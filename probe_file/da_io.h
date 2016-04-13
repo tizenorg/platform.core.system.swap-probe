@@ -99,12 +99,10 @@
 
 #define BEFORE_ORIGINAL_FILE(FUNCNAME, LIBNAME)		\
 	DECLARE_VARIABLE_FD;				\
-	GET_REAL_FUNC(FUNCNAME, LIBNAME);		\
 	PRE_PROBEBLOCK();
 
 #define BEFORE_ORIGINAL_FILE_NOFILTER(FUNCNAME, LIBNAME)	\
 	DECLARE_VARIABLE_FD;					\
-	GET_REAL_FUNC(FUNCNAME, LIBNAME);			\
 	bfiltering = false;					\
 	PRE_PROBEBLOCK()
 
@@ -183,7 +181,6 @@ static inline bool stat_regular_or_socket_p(struct stat *buf)
 }
 #define BEFORE_ORIGINAL_START_END_FD(API_ID, RTYPE, FUNCNAME, LIBNAME, FD, APITYPE, INPUTFORMAT, ...)	\
 	DECLARE_VARIABLE_FD;									\
-	GET_REAL_FUNC(FUNCNAME, LIBNAME);							\
 	PRE_PROBEBLOCK_BEGIN();									\
 	_fstatret = fstat(FD, &_statbuf);							\
 	if (stat_regular_or_socket_p(&_statbuf)) {						\
@@ -215,7 +212,6 @@ do {									\
 
 #define BEFORE_ORIGINAL_START_END_NOFD(API_ID, RTYPE, FUNCNAME, LIBNAME, APITYPE, INPUTFORMAT, ...)	\
 	DECLARE_VARIABLE_FD;								\
-	GET_REAL_FUNC(FUNCNAME, LIBNAME);						\
 	PRE_PROBEBLOCK_BEGIN();								\
 	DEFINE_FILESIZE_0();								\
 	PREPARE_LOCAL_BUF();								\
@@ -226,7 +222,6 @@ do {									\
 
 #define BEFORE_ORIGINAL_START_END_FILEP(API_ID, RTYPE, FUNCNAME, LIBNAME, FILEP, APITYPE, INPUTFORMAT, ...)	\
 	DECLARE_VARIABLE_FD;									\
-	GET_REAL_FUNC(FUNCNAME, LIBNAME);							\
 	PRE_PROBEBLOCK_BEGIN();									\
 	GET_FD_FROM_FILEP(FILEP);								\
 	if(_fd != -1) { 									\

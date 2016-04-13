@@ -162,6 +162,7 @@ typedef struct {
 
 // ========================== get function pointer =========================
 
+
 #define GET_REAL_FUNCP(FUNCNAME, SONAME, FUNCTIONPOINTER)			\
 	GET_REAL_FUNCP_STR(#FUNCNAME, SONAME, FUNCTIONPOINTER)
 
@@ -223,6 +224,23 @@ typedef struct {
 					probe_terminate_with_err("function not found", #FUNCNAME, LIB_NO);		\
 			}														\
 		} while(0)
+
+
+
+/* TODO Handle not inited original address */
+/* TODO Think of static IDs for each probe */
+/*
+#define GET_PROBE_PTR(feature_ptr, func_addr, probe_ptr)					\
+		do {																\
+			unsigned int i;													\
+			for (i = 0; i < feature_ptr->cnt; i++) {						\
+				if (feature_ptr->probes[i].handler_ptr == func_addr) {		\
+					probe_ptr = &feature_ptr->probes[i];					\
+					break;													\
+				}															\
+			}																\
+		} while (0)
+*/
 
 // ======================= pre block macro ================================
 
