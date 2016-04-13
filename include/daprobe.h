@@ -163,6 +163,7 @@ typedef struct {
 
 // ========================== get function pointer =========================
 
+
 #define GET_REAL_FUNCP(FUNCNAME, SONAME, FUNCTIONPOINTER)			\
 	GET_REAL_FUNCP_STR(#FUNCNAME, SONAME, FUNCTIONPOINTER)
 
@@ -225,6 +226,22 @@ typedef struct {
 			}														\
 		} while(0)
 
+
+/* TODO Handle not inited original address */
+/* TODO Think of static IDs for each probe */
+/*
+#define GET_PROBE_PTR(feature_ptr, func_addr, probe_ptr)					\
+		do {																\
+			unsigned int i;													\
+			for (i = 0; i < feature_ptr->cnt; i++) {						\
+				if (feature_ptr->probes[i].handler_ptr == func_addr) {		\
+					probe_ptr = &feature_ptr->probes[i];					\
+					break;													\
+				}															\
+			}																\
+		} while (0)
+*/
+
 // ======================= pre block macro ================================
 
 #define PRE_PROBEBLOCK_BEGIN()					\
@@ -251,12 +268,13 @@ typedef struct {
 
 // =========================== post block macro ===========================
 
-#define POST_PROBEBLOCK_BEGIN(LCTYPE, RETTYPE, RETVALUE, INPUTFORMAT, ...)	\
+#define POST_PROBEBLOCK_BEGIN(LCTYPE, RETTYPE, RETVALUE, CALL_TYPE, CALLER, \
+			       INPUTFORMAT, ...)			     \
 	newerrno = errno;														\
 	do {																	\
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
-		PACK_COMMON_END(RETTYPE, RETVALUE, errno, blockresult);
+		PACK_COMMON_END(RETTYPE, RETVALUE, errno, CALL_TYPE, CALLER);
 
 #define POST_PROBEBLOCK_END() 						\
 		FLUSH_LOCAL_BUF();						\
@@ -279,6 +297,12 @@ typedef struct {
 	DECLARE_VARIABLE_STANDARD;						\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);				\
 	PRE_PROBEBLOCK()
+
+#define GET_FUNC_ID(func_name)					  \
+	CONCAT(func_name, _ID)
+
+#define GET_ORIG_FUNC(feature_desc, func_name)			        \
+	feature_desc . probes[get_ ## feature_desc ## _id((void *)& PROBE_NAME( func_name ) )] . orig_ptr
 
 #ifdef __cplusplus
 }

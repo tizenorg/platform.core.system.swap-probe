@@ -51,8 +51,12 @@
 
 #include "binproto.h"
 #include "real_functions.h"
+#include "event_probes_list.h"
+#include "probe_event.h"
+
 
 bool touch_pressed = false;
+static Ecore_Event_Handler *ecore_event_evas_handlers[5];
 
 #define PACK_HW_EVENT(API_ID, _EVENTTYPE, _DETAILTYPE, _X, _Y, _KEYCODE, _EXTRA, \
 	_ARGDATA, _ARGTYPE, _ARGEVENT)												\
@@ -62,16 +66,22 @@ bool touch_pressed = false;
 		PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID, "pdp",					\
 				  voidp_to_uint64(_ARGDATA), _ARGTYPE,	\
 				  voidp_to_uint64(_ARGEVENT));		\
-		PACK_COMMON_END('c', 0, 0, 0);												\
+		/* TODO Check if address is really unused here */					   \
+		PACK_COMMON_END('c', 0, 0, 0, (uint64_t)0xffffffff);							\
 		PACK_UIEVENT(_EVENTTYPE, _DETAILTYPE, _X, _Y, _KEYCODE, _EXTRA);		\
 		FLUSH_LOCAL_BUF();														\
 	} while (0)
 
 Eina_Bool PROBE_NAME(ecore_event_evas_key_down)(void *data, int type, void *event)
 {
-	static Eina_Bool (*ecore_event_evas_key_downp)(void *data, int type, void *event);
+	/* TODO Support old preload */
+//	static Eina_Bool (*ecore_event_evas_key_downp)(void *data, int type, void *event);
+//	Eina_Bool (*ecore_event_evas_key_downp)(void *data, int type, void *event);
 
-	GET_REAL_FUNC(ecore_event_evas_key_down, LIBECORE_INPUT_EVAS);
+//	GET_REAL_FUNC(ecore_event_evas_key_down, LIBECORE_INPUT_EVAS);
+
+//	ecore_event_evas_key_downp = (void *)GET_ORIG_FUNC(event_feature,
+//						     ecore_event_evas_key_down);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -87,14 +97,20 @@ Eina_Bool PROBE_NAME(ecore_event_evas_key_down)(void *data, int type, void *even
 		}
 	}
 
-	return ecore_event_evas_key_downp(data, type, event);
+//	return ecore_event_evas_key_downp(data, type, event);
+	return ECORE_CALLBACK_PASS_ON;
 }
 
 Eina_Bool PROBE_NAME(ecore_event_evas_key_up)(void *data, int type, void *event)
 {
-	static Eina_Bool (*ecore_event_evas_key_upp)(void *data, int type, void *event);
+	/* TODO Support old preload */
+//	static Eina_Bool (*ecore_event_evas_key_upp)(void *data, int type, void *event);
+//	Eina_Bool (*ecore_event_evas_key_upp)(void *data, int type, void *event);
 
-	GET_REAL_FUNC(ecore_event_evas_key_up, LIBECORE_INPUT_EVAS);
+//	GET_REAL_FUNC(ecore_event_evas_key_up, LIBECORE_INPUT_EVAS);
+
+//	ecore_event_evas_key_upp = (void *)GET_ORIG_FUNC(event_feature,
+//						       ecore_event_evas_key_up);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -110,14 +126,20 @@ Eina_Bool PROBE_NAME(ecore_event_evas_key_up)(void *data, int type, void *event)
 		}
 	}
 
-	return ecore_event_evas_key_upp(data, type, event);
+//	return ecore_event_evas_key_upp(data, type, event);
+	return ECORE_CALLBACK_PASS_ON;
 }
 
 Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_down)(void *data, int type, void *event)
 {
-	static Eina_Bool (*ecore_event_evas_mouse_button_downp)(void *data, int type, void *event);
+	/* TODO Support old preload */
+//	static Eina_Bool (*ecore_event_evas_mouse_button_downp)(void *data, int type, void *event);
+//	Eina_Bool (*ecore_event_evas_mouse_button_downp)(void *data, int type, void *event);
 
-	GET_REAL_FUNC(ecore_event_evas_mouse_button_down, LIBECORE_INPUT_EVAS);
+//	GET_REAL_FUNC(ecore_event_evas_mouse_button_down, LIBECORE_INPUT_EVAS);
+//	ecore_event_evas_mouse_button_downp = (void *)GET_ORIG_FUNC(
+//					    event_feature,
+//					    ecore_event_evas_mouse_button_down);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -131,14 +153,20 @@ Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_down)(void *data, int type, v
 		}
 	}
 
-	return ecore_event_evas_mouse_button_downp(data, type, event);
+//	return ecore_event_evas_mouse_button_downp(data, type, event);
+	return ECORE_CALLBACK_PASS_ON;
 }
 
 Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_up)(void *data, int type, void *event)
 {
-	static Eina_Bool (*ecore_event_evas_mouse_button_upp)(void *data, int type, void *event);
+	/* TODO Support old preload */
+//	static Eina_Bool (*ecore_event_evas_mouse_button_upp)(void *data, int type, void *event);
+//	Eina_Bool (*ecore_event_evas_mouse_button_upp)(void *data, int type, void *event);
 
-	GET_REAL_FUNC(ecore_event_evas_mouse_button_up, LIBECORE_INPUT_EVAS);
+//	GET_REAL_FUNC(ecore_event_evas_mouse_button_up, LIBECORE_INPUT_EVAS);
+
+//	ecore_event_evas_mouse_button_upp = (void *)GET_ORIG_FUNC(event_feature,
+//					      ecore_event_evas_mouse_button_up);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -152,14 +180,20 @@ Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_up)(void *data, int type, voi
 		}
 	}
 
-	return ecore_event_evas_mouse_button_upp(data, type, event);
+//	return ecore_event_evas_mouse_button_upp(data, type, event);
+	return ECORE_CALLBACK_PASS_ON;
 }
 
 Eina_Bool PROBE_NAME(ecore_event_evas_mouse_move)(void *data, int type, void *event)
 {
-	static Eina_Bool (*ecore_event_evas_mouse_movep)(void *data, int type, void *event);
+	/* TODO Support old preload */
+//	static Eina_Bool (*ecore_event_evas_mouse_movep)(void *data, int type, void *event);
+//	Eina_Bool (*ecore_event_evas_mouse_movep)(void *data, int type, void *event);
 
-	GET_REAL_FUNC(ecore_event_evas_mouse_move, LIBECORE_INPUT_EVAS);
+//	GET_REAL_FUNC(ecore_event_evas_mouse_move, LIBECORE_INPUT_EVAS);
+
+//	ecore_event_evas_mouse_movep = (void *)GET_ORIG_FUNC(event_feature,
+//						   ecore_event_evas_mouse_move);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -175,5 +209,30 @@ Eina_Bool PROBE_NAME(ecore_event_evas_mouse_move)(void *data, int type, void *ev
 		}
 	}
 
-	return ecore_event_evas_mouse_movep(data, type, event);
+//	return ecore_event_evas_mouse_movep(data, type, event);
+	return ECORE_CALLBACK_PASS_ON;
+}
+
+void mouse_key_init(void)
+{
+	ecore_event_evas_handlers[0] = ecore_event_handler_add(
+					ECORE_EVENT_KEY_DOWN,
+					PROBE_NAME(ecore_event_evas_key_down),
+					NULL);
+	ecore_event_evas_handlers[1] = ecore_event_handler_add(
+					ECORE_EVENT_KEY_UP,
+					PROBE_NAME(ecore_event_evas_key_up),
+					NULL);
+	ecore_event_evas_handlers[2] = ecore_event_handler_add(
+					ECORE_EVENT_MOUSE_BUTTON_DOWN,
+					PROBE_NAME(ecore_event_evas_mouse_button_down),
+					NULL);
+	ecore_event_evas_handlers[3] = ecore_event_handler_add(
+					ECORE_EVENT_MOUSE_BUTTON_UP,
+					PROBE_NAME(ecore_event_evas_mouse_button_up),
+					NULL);
+	ecore_event_evas_handlers[4] = ecore_event_handler_add(
+					ECORE_EVENT_MOUSE_MOVE,
+					PROBE_NAME(ecore_event_evas_mouse_move),
+					NULL);
 }

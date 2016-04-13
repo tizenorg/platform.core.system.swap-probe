@@ -43,16 +43,27 @@ int real_pthread_mutex_lock(pthread_mutex_t *mutex);
 int real_pthread_mutex_unlock(pthread_mutex_t *mutex);
 int real_pthread_setcancelstate(int state, int *oldstate);
 
+#if 0 /* TODO Support old preload */
+
 #define BEFORE_ORIGINAL_SYNC(FUNCNAME, LIBNAME) 	\
 	DECLARE_VARIABLE_STANDARD;						\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME);				\
 	PRE_PROBEBLOCK()
 
+#else
+
+#define BEFORE_ORIGINAL_SYNC(FUNCNAME, LIBNAME) 	\
+	DECLARE_VARIABLE_STANDARD;						\
+	FUNCNAME ## p = (void *)orig;               \
+	PRE_PROBEBLOCK()
+
+#endif
+
 #define AFTER_PACK_ORIGINAL_SYNC(API_ID, RTYPE, RVAL, SYNCVAL, SYNCTYPE, APITYPE, INPUTFORMAT, ...) 	\
 	POST_PACK_PROBEBLOCK_BEGIN();									\
 	PREPARE_LOCAL_BUF();										\
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, API_ID, INPUTFORMAT, __VA_ARGS__);				\
-	PACK_COMMON_END(RTYPE, RVAL, errno, blockresult);						\
+	PACK_COMMON_END(RTYPE, RVAL, errno, call_type, caller);						\
 	PACK_SYNC(SYNCVAL, SYNCTYPE, APITYPE);								\
 	FLUSH_LOCAL_BUF();										\
 	POST_PACK_PROBEBLOCK_END()
