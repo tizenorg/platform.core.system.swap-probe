@@ -45,10 +45,6 @@
 extern "C"{
 #endif
 
-#define GET_VALUE_2(x,y) x##y
-#define GET_VALUE_1(x,y) GET_VALUE_2(x, y)
-#define PROBE_NAME(func) GET_VALUE_1(PROBE_NAME_PREFIX, func)
-
 #ifndef likely
 #define likely(x)       __builtin_expect((x),1)
 #define unlikely(x)     __builtin_expect((x),0)
