@@ -61,6 +61,7 @@
 #include "dastdout.h"
 #include "common_probe_init.h"
 #include "real_functions.h"
+#include "got_patching.h"
 
 #define UDS_NAME				"/tmp/da.socket"
 #define TIMERFD_INTERVAL		100000000		// 0.1 sec
@@ -75,6 +76,11 @@ pthread_t	g_recvthread_id;
 int log_fd = 0;
 
 bool printLog(log_t* log, int msgType);
+
+enum {
+	SWAP_PRELOAD = 0x0,
+	SWAP_GOT_PATCHER = 0x1
+};
 
 /******************************************************************************
  * internal functions
@@ -91,6 +97,27 @@ static void _configure(char* configstr)
 	else
 		SCREENSHOT_UNSET();
 	PRINTMSG("configure in probe : %s, %llx\n", configstr, gTraceInfo.optionflag);
+}
+
+static void _process_type(char *data_buf)
+{
+	uint8_t type;
+	char *ptr = data_buf;
+
+	type = *(uint8_t *)ptr;
+	ptr += sizeof(type);
+
+	switch (type) {
+	case SWAP_PRELOAD:
+		/* Old preload doesn't require anything */
+		/* TODO Orly? */
+		break;
+	case SWAP_GOT_PATCHER:
+		process_got_patching(ptr);
+		break;
+	default:
+		PRINTERR("Error type of SWAP library usage!\n");
+	}
 }
 
 void application_exit()
@@ -131,6 +158,7 @@ void application_exit()
 
 // create socket to daemon and connect
 #define MSG_CONFIG_RECV 0x01
+#define MSG_TYPE_AND_INFO 0x02
 static int create_socket(void)
 {
 	char strerr_buf[MAX_PATH_LENGTH];
@@ -158,7 +186,8 @@ static int create_socket(void)
 			print_log_str(APP_MSG_PID, buf);
 
 			/* we need recv this messages right now! */
-			while ((recved & MSG_CONFIG_RECV) == 0)
+			while (((recved & MSG_CONFIG_RECV) == 0) ||
+			       ((recved & MSG_TYPE_AND_INFO) == 0))
 			{
 				PRINTMSG("wait incoming message %d\n",
 					 gTraceInfo.socket.daemonSock);
@@ -190,6 +219,10 @@ static int create_socket(void)
 						PRINTMSG("APP_MSG_CONFIG");
 						_configure(data_buf);
 						recved |= MSG_CONFIG_RECV;
+					} else if (log.type == APP_MSG_TYPE_AND_INFO) {
+						PRINTMSG("APP_MSG_TYPE_AND_INFO");
+						_process_type(data_buf);
+						recved |= MSG_TYPE_AND_INFO;
 					} else {
 						// unexpected case
 						PRINTERR("unknown message! %d", log.type);

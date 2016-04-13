@@ -211,6 +211,18 @@ enum DaOptions
 };
 
 
+struct probe_desc_t {
+	void *handler_ptr;
+	const char *orig_name;
+};
+
+
+struct feature_desc_t {
+	enum DaOptions feature;
+	unsigned int cnt;
+	struct probe_desc_t *probes;
+};
+
 #ifdef __cplusplus
 }
 #endif
