@@ -33,6 +33,7 @@
 
 #include <stdbool.h>
 #include <pthread.h>			// for pthread_mutex_t
+#include <sys/queue.h>			// for LIST_ENTRY, LIST_HEAD etc.;
 
 #include <Evas.h>
 
@@ -150,6 +151,17 @@ typedef struct
 	pthread_mutex_t ssMutex;
 } __screenshotInfo;
 
+struct bin_info_t {
+	SLIST_ENTRY(bin_info_t) list;
+	char *path;
+};
+
+struct bins_info_t {
+	pthread_mutex_t bins_mutex;
+	SLIST_HEAD(head, bin_info_t) bins_list;
+};
+
+
 typedef struct
 {
 	__indexInfo			index;
@@ -160,6 +172,7 @@ typedef struct
 	int					init_complete;
 	int					custom_chart_callback_count;
 	uint64_t		optionflag;
+	struct bins_info_t bins_info;
 } __traceInfo;
 
 extern __traceInfo gTraceInfo;
@@ -188,6 +201,12 @@ void on_orientation_changed(int angle, bool capi);
 
 // query functions
 #define isOptionEnabled(OPT)	((gTraceInfo.optionflag & OPT) != 0)
+
+/* Binaries list functions */
+int add_binary(char *path);
+bool check_binary(const char *path);
+int remove_binary(char *path);
+void cleanup_binaries(void);
 
 #ifdef __cplusplus
 }
