@@ -52,7 +52,7 @@ int real_pthread_setcancelstate(int state, int *oldstate);
 	POST_PACK_PROBEBLOCK_BEGIN();									\
 	PREPARE_LOCAL_BUF();										\
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC, API_ID, INPUTFORMAT, __VA_ARGS__);				\
-	PACK_COMMON_END(RTYPE, RVAL, errno, blockresult);						\
+	PACK_COMMON_END(RTYPE, RVAL, errno, call_type, caller);						\
 	PACK_SYNC(SYNCVAL, SYNCTYPE, APITYPE);								\
 	FLUSH_LOCAL_BUF();										\
 	POST_PACK_PROBEBLOCK_END()
