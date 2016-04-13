@@ -37,7 +37,13 @@
 extern "C"{
 #endif
 
+#include <link.h>
 #include "app_protocol.h"
+
+
+#define CONCAT2(a, b)               a ## b
+#define CONCAT(a, b)                CONCAT2(a, b)
+
 
 #define		VT_INT			'd'
 #define		VT_UINT			'd'
@@ -210,6 +216,37 @@ enum DaOptions
 	OPT_GLES_ALWAYS		= FL_OPENGL_API_ALWAYS_PROBING
 };
 
+
+/* Probe flags:
+ *        0 - probe is executed for target/not target binaries
+ *        1 - probe is executed for all binaries
+ *       0  - probe is executed for target/all binaries
+ *       1  - probe is inverted (executed for non-target binaries)
+ *
+ * Probe flags checking is done flag by flag. Next flag on means that previous
+ * flag is opposite way.
+ */
+
+enum {
+	GT_TARGET_PROBE = 0,
+	GT_ALWAYS_PROBE = 1,
+	GT_STRAIGHT_PROBE = 0,
+	GT_INVERTED_PROBE = 2
+};
+
+struct probe_desc_t {
+	ElfW(Addr) handler_ptr;
+	const char *orig_name;
+	unsigned char flags;
+	ElfW(Addr) orig_ptr;
+};
+
+
+struct feature_desc_t {
+	enum DaOptions feature;
+	unsigned int cnt;
+	struct probe_desc_t *probes;
+};
 
 #ifdef __cplusplus
 }

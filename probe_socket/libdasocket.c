@@ -52,6 +52,10 @@
 #include "api_id_mapping.h"
 #include "binproto.h"
 #include "real_functions.h"
+#include "socket_probes_list.h"
+#include "probe_socket.h"
+
+
 
 #define OBJ_DUMMY 0
 
@@ -92,21 +96,27 @@ void getAddress(const struct sockaddr *sa, char *address) {
 }
 
 //FD
-int PROBE_NAME(socket)(int domain, int type, int protocol) {
-	static int (*socketp)(int domain, int type, int protocol);
+HANDLER_WRAPPERS(network_feature, int , socket, int, domain, int, type, int, protocol)
+{
+//	static int (*socketp)(int domain, int type, int protocol);
+	int (*socketp)(int domain, int type, int protocol);
 	BEFORE_ORIGINAL_SOCK(socket, LIBC);
 	ret = socketp(domain, type, protocol);
 
-	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
-				 "ddd", domain, type, protocol);
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN,
+				 info, "ddd", domain, type, protocol);
 
 	return ret;
 }
 
-int PROBE_NAME(accept)(int socket, struct sockaddr *address, socklen_t *address_len) {
+HANDLER_WRAPPERS(network_feature, int, accept, int, socket, struct sockaddr *, address,
+		 socklen_t *, address_len)
+{
 
-	static int (*acceptp)(int socket, struct sockaddr *address,
-			socklen_t *address_len);
+//	static int (*acceptp)(int socket, struct sockaddr *address,
+//			socklen_t *address_len);
+	int (*acceptp)(int socket, struct sockaddr *address,
+		       socklen_t *address_len);
 
 	BEFORE_ORIGINAL_SOCK(accept, LIBC);
 
@@ -131,8 +141,12 @@ int PROBE_NAME(accept)(int socket, struct sockaddr *address, socklen_t *address_
 	return ret;
 }
 
-int PROBE_NAME(accept4)(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags) {
-	static int (*accept4p)(int sockfd, struct sockaddr *addr,
+HANDLER_WRAPPERS(network_feature, int, accept4, int, sockfd, struct sockaddr *, addr,
+		 socklen_t *, addrlen, int, flags)
+{
+//	static int (*accept4p)(int sockfd, struct sockaddr *addr,
+//			socklen_t *addrlen, int flags);
+	int (*accept4p)(int sockfd, struct sockaddr *addr,
 			socklen_t *addrlen, int flags);
 
 	BEFORE_ORIGINAL_SOCK(accept4, LIBC);
@@ -159,8 +173,12 @@ int PROBE_NAME(accept4)(int sockfd, struct sockaddr *addr, socklen_t *addrlen, i
 	return ret;
 }
 
-int PROBE_NAME(connect)(int socket, const struct sockaddr *address, socklen_t address_len) {
-	static int (*connectp)(int socket, const struct sockaddr *address,
+HANDLER_WRAPPERS(network_feature, int, connect, int, socket, const struct sockaddr *, address,
+		 socklen_t, address_len)
+{
+//	static int (*connectp)(int socket, const struct sockaddr *address,
+//			socklen_t address_len);
+	int (*connectp)(int socket, const struct sockaddr *address,
 			socklen_t address_len);
 
 	BEFORE_ORIGINAL_SOCK(connect, LIBC);
@@ -178,8 +196,10 @@ int PROBE_NAME(connect)(int socket, const struct sockaddr *address, socklen_t ad
 	return ret;
 }
 
-int PROBE_NAME(shutdown)(int socket, int how) {
-	static int (*shutdownp)(int socket, int how);
+HANDLER_WRAPPERS(network_feature, int, shutdown, int, socket, int, how)
+{
+//	static int (*shutdownp)(int socket, int how);
+	int (*shutdownp)(int socket, int how);
 
 	BEFORE_ORIGINAL_SOCK(shutdown, LIBC);
 
@@ -191,9 +211,13 @@ int PROBE_NAME(shutdown)(int socket, int how) {
 	return ret;
 }
 
-int PROBE_NAME(bind)(int socket, const struct sockaddr *address, socklen_t address_len) {
-	static int (*bindp)(int socket, const struct sockaddr *address,
-			socklen_t address_len);
+HANDLER_WRAPPERS(network_feature, int, bind, int, socket, const struct sockaddr *, address,
+		 socklen_t, address_len)
+{
+//	static int (*bindp)(int socket, const struct sockaddr *address,
+//			socklen_t address_len);
+	int (*bindp)(int socket, const struct sockaddr *address,
+		     socklen_t address_len);
 
 	BEFORE_ORIGINAL_SOCK(bind, LIBC);
 
@@ -209,8 +233,10 @@ int PROBE_NAME(bind)(int socket, const struct sockaddr *address, socklen_t addre
 	return ret;
 }
 
-int PROBE_NAME(listen)(int socket, int backlog) {
-	static int (*listenp)(int socket, int backlog);
+HANDLER_WRAPPERS(network_feature, int, listen, int, socket, int, backlog)
+{
+//	static int (*listenp)(int socket, int backlog);
+	int (*listenp)(int socket, int backlog);
 	BEFORE_ORIGINAL_SOCK(listen, LIBC);
 	ret = listenp(socket, backlog);
 
@@ -220,9 +246,13 @@ int PROBE_NAME(listen)(int socket, int backlog) {
 	return ret;
 }
 
-ssize_t PROBE_NAME(send)(int socket, const void *message, size_t length, int flags) {
-	static ssize_t (*sendp)(int socket, const void *message, size_t length,
-			int flags);
+HANDLER_WRAPPERS(network_feature, ssize_t, send, int, socket, const void *, message,
+		 size_t, length, int, flags)
+{
+//	static ssize_t (*sendp)(int socket, const void *message, size_t length,
+//			int flags);
+	ssize_t (*sendp)(int socket, const void *message, size_t length,
+			 int flags);
 	ssize_t sret, result;
 	BEFORE_ORIGINAL_SOCK(send, LIBC);
 
@@ -250,8 +280,11 @@ ssize_t PROBE_NAME(send)(int socket, const void *message, size_t length, int fla
 	return sret;
 }
 
-ssize_t PROBE_NAME(recv)(int socket, void *buffer, size_t length, int flags) {
-	static ssize_t (*recvp)(int socket, void *buffer, size_t length, int flags);
+HANDLER_WRAPPERS(network_feature, ssize_t, recv, int, socket, void *, buffer, size_t, length,
+		 int, flags)
+{
+//	static ssize_t (*recvp)(int socket, void *buffer, size_t length, int flags);
+	ssize_t (*recvp)(int socket, void *buffer, size_t length, int flags);
 	ssize_t sret, result;
 
 	BEFORE_ORIGINAL_SOCK(recv, LIBC);
@@ -280,10 +313,14 @@ ssize_t PROBE_NAME(recv)(int socket, void *buffer, size_t length, int flags) {
 	return sret;
 }
 
-ssize_t PROBE_NAME(sendto)(int socket, const void *message, size_t length, int flags,
-		const struct sockaddr *dest_addr, socklen_t dest_len) {
-	static ssize_t (*sendtop)(int socket, const void *message, size_t length,
-			int flags, const struct sockaddr *dest_addr, socklen_t dest_len);
+HANDLER_WRAPPERS(network_feature, ssize_t, sendto, int, socket, const void *, message,
+		 size_t, length, int, flags, const struct sockaddr *, dest_addr,
+		 socklen_t, dest_len)
+{
+//	static ssize_t (*sendtop)(int socket, const void *message, size_t length,
+//			int flags, const struct sockaddr *dest_addr, socklen_t dest_len);
+	ssize_t (*sendtop)(int socket, const void *message, size_t length,
+			   int flags, const struct sockaddr *dest_addr, socklen_t dest_len);
 	ssize_t sret, result;
 
 	BEFORE_ORIGINAL_SOCK(sendto, LIBC);
@@ -316,10 +353,14 @@ ssize_t PROBE_NAME(sendto)(int socket, const void *message, size_t length, int f
 	return sret;
 }
 
-ssize_t PROBE_NAME(recvfrom)(int socket, void *buffer, size_t length, int flags,
-		struct sockaddr *address, socklen_t *address_len) {
-	static ssize_t (*recvfromp)(int socket, void *buffer, size_t length,
-			int flags, struct sockaddr *address, socklen_t *address_len);
+HANDLER_WRAPPERS(network_feature, ssize_t, recvfrom, int, socket, void *, buffer, size_t, length,
+		 int, flags, struct sockaddr *, address,
+		 socklen_t *, address_len)
+{
+//	static ssize_t (*recvfromp)(int socket, void *buffer, size_t length,
+//			int flags, struct sockaddr *address, socklen_t *address_len);
+	ssize_t (*recvfromp)(int socket, void *buffer, size_t length,
+			     int flags, struct sockaddr *address, socklen_t *address_len);
 	ssize_t sret, result;
 
 	BEFORE_ORIGINAL_SOCK(recvfrom, LIBC);
@@ -354,8 +395,11 @@ ssize_t PROBE_NAME(recvfrom)(int socket, void *buffer, size_t length, int flags,
 	return sret;
 }
 
-ssize_t PROBE_NAME(recvmsg)(int socket, struct msghdr *message, int flags) {
-	static ssize_t (*recvmsgp)(int socket, struct msghdr *message, int flags);
+HANDLER_WRAPPERS(network_feature, ssize_t, recvmsg, int, socket, struct msghdr *,message,
+		 int, flags)
+{
+//	static ssize_t (*recvmsgp)(int socket, struct msghdr *message, int flags);
+	ssize_t (*recvmsgp)(int socket, struct msghdr *message, int flags);
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_SOCK(recvmsg, LIBC);
@@ -377,9 +421,13 @@ ssize_t PROBE_NAME(recvmsg)(int socket, struct msghdr *message, int flags) {
 	return sret;
 }
 
-ssize_t PROBE_NAME(sendmsg)(int socket, const struct msghdr *message, int flags) {
-	static ssize_t (*sendmsgp)(int socket, const struct msghdr *message,
-			int flags);
+HANDLER_WRAPPERS(network_feature, ssize_t, sendmsg, int, socket, const struct msghdr *, message,
+		 int, flags)
+{
+//	static ssize_t (*sendmsgp)(int socket, const struct msghdr *message,
+//			int flags);
+	ssize_t (*sendmsgp)(int socket, const struct msghdr *message,
+			    int flags);
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_SOCK(sendmsg, LIBC);
@@ -401,41 +449,50 @@ ssize_t PROBE_NAME(sendmsg)(int socket, const struct msghdr *message, int flags)
 	return sret;
 }
 
-int PROBE_NAME(getsockopt)(int socket, int level, int option_name, void *option_value,
-		socklen_t *option_len) {
-	static int (*getsockoptp)(int socket, int level, int option_name,
-			void *option_value, socklen_t *option_len);
+HANDLER_WRAPPERS(network_feature, int, getsockopt, int, socket, int, level, int, option_name,
+		 void *, option_value, socklen_t *, option_len)
+{
+//	static int (*getsockoptp)(int socket, int level, int option_name,
+//			void *option_value, socklen_t *option_len);
+	int (*getsockoptp)(int socket, int level, int option_name,
+			   void *option_value, socklen_t *option_len);
 
 	BEFORE_ORIGINAL_SOCK(getsockopt, LIBC);
 
 	ret = getsockoptp(socket, level, option_name, option_value, option_len);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_OTHER,
-				 info, "dddpp", socket, level, option_name,
+				  info, "dddpp", socket, level, option_name,
 				 voidp_to_uint64(option_value),
 				 voidp_to_uint64(option_len));
 
 	return ret;
 }
 
-int PROBE_NAME(setsockopt)(int socket, int level, int option_name, const void *option_value,
-		socklen_t option_len) {
-	static int (*setsockoptp)(int socket, int level, int option_name,
-			const void *option_value, socklen_t option_len);
+HANDLER_WRAPPERS(network_feature, int, setsockopt, int, socket, int, level, int, option_name,
+		 const void *, option_value, socklen_t, option_len)
+{
+//	static int (*setsockoptp)(int socket, int level, int option_name,
+//			const void *option_value, socklen_t option_len);
+	int (*setsockoptp)(int socket, int level, int option_name,
+			   const void *option_value, socklen_t option_len);
 
 	BEFORE_ORIGINAL_SOCK(setsockopt, LIBC);
 
 	ret = setsockoptp(socket, level, option_name, option_value, option_len);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_OTHER,
-				 info, "dddpd", socket, level, option_name,
+				  info, "dddpd", socket, level, option_name,
 				 voidp_to_uint64(option_value), option_len);
 
 	return ret;
 }
 
-int PROBE_NAME(getpeername)(int fd, struct sockaddr *addr, socklen_t *len) {
-	static int (*getpeernamep)(int s, struct sockaddr *addr, socklen_t *len);
+HANDLER_WRAPPERS(network_feature, int, getpeername, int, fd, struct sockaddr *, addr,
+		 socklen_t *, len)
+{
+//	static int (*getpeernamep)(int s, struct sockaddr *addr, socklen_t *len);
+	int (*getpeernamep)(int s, struct sockaddr *addr, socklen_t *len);
 
 	BEFORE_ORIGINAL_SOCK(getpeername, LIBC);
 
@@ -446,14 +503,18 @@ int PROBE_NAME(getpeername)(int fd, struct sockaddr *addr, socklen_t *len) {
 	getAddress(addr, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, fd, SOCKET_API_OTHER,
-				 info, "dsp", fd, callAddress,
+				  info, "dsp", fd, callAddress,
 				 voidp_to_uint64(len));
 	return ret;
 }
 
-int PROBE_NAME(getsockname)(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
-	static int (*getsocknamep)(int sockfd, struct sockaddr *addr,
-			socklen_t *addrlen);
+HANDLER_WRAPPERS(network_feature, int, getsockname, int, sockfd, struct sockaddr *, addr,
+		 socklen_t *, addrlen)
+{
+//	static int (*getsocknamep)(int sockfd, struct sockaddr *addr,
+//			socklen_t *addrlen);
+	int (*getsocknamep)(int sockfd, struct sockaddr *addr,
+			    socklen_t *addrlen);
 
 	BEFORE_ORIGINAL_SOCK(getsockname, LIBC);
 
@@ -464,15 +525,19 @@ int PROBE_NAME(getsockname)(int sockfd, struct sockaddr *addr, socklen_t *addrle
 	getAddress(addr, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, sockfd, SOCKET_API_OTHER,
-				 info, "dsp", sockfd, callAddress,
+				  info, "dsp", sockfd, callAddress,
 				 voidp_to_uint64(addrlen));
 
 	return ret;
 }
 
-int PROBE_NAME(socketpair)(int domain, int type, int protocol, int socket_vector[2]) {
-	static int (*socketpairp)(int domain, int type, int protocol,
-			int socket_vector[2]);
+HANDLER_WRAPPERS(network_feature, int, socketpair, int, domain, int, type, int, protocol,
+		 int *, socket_vector)
+{
+//	static int (*socketpairp)(int domain, int type, int protocol,
+//			int socket_vector[2]);
+	int (*socketpairp)(int domain, int type, int protocol,
+			   int socket_vector[2]);
 
 	BEFORE_ORIGINAL_SOCK(socketpair, LIBC);
 
@@ -485,8 +550,10 @@ int PROBE_NAME(socketpair)(int domain, int type, int protocol, int socket_vector
 	return ret;
 }
 
-int PROBE_NAME(sockatmark)(int __fd) {
-	static int (*sockatmarkp)(int __fd);
+HANDLER_WRAPPERS(network_feature, int, sockatmark, int, __fd)
+{
+//	static int (*sockatmarkp)(int __fd);
+	int (*sockatmarkp)(int __fd);
 
 	BEFORE_ORIGINAL_SOCK(sockatmark, LIBC);
 
@@ -497,22 +564,27 @@ int PROBE_NAME(sockatmark)(int __fd) {
 	return ret;
 }
 
-int PROBE_NAME(isfdtype)(int __fd, int __fdtype) {
-	static int (*isfdtypep)(int __fd, int __fdtype);
+HANDLER_WRAPPERS(network_feature, int, isfdtype, int, __fd, int, __fdtype)
+{
+//	static int (*isfdtypep)(int __fd, int __fdtype);
+	int (*isfdtypep)(int __fd, int __fdtype);
 
 	BEFORE_ORIGINAL_SOCK(isfdtype, LIBC);
 
 	ret = isfdtypep(__fd, __fdtype);
 
-	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, __fd, SOCKET_API_OTHER, info,
-				 "dd", __fd, __fdtype);
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, __fd, SOCKET_API_OTHER, 
+			     info, "dd", __fd, __fdtype);
 	return ret;
 }
 
-int PROBE_NAME(select)(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-		struct timeval *timeout) {
-	static int (*selectp)(int nfds, fd_set *readfds, fd_set *writefds,
-			fd_set *exceptfds, struct timeval *timeout);
+HANDLER_WRAPPERS(network_feature, int, select, int, nfds, fd_set *, readfds, fd_set *, writefds,
+		 fd_set *, exceptfds, struct timeval *, timeout)
+{
+//	static int (*selectp)(int nfds, fd_set *readfds, fd_set *writefds,
+//			fd_set *exceptfds, struct timeval *timeout);
+	int (*selectp)(int nfds, fd_set *readfds, fd_set *writefds,
+		       fd_set *exceptfds, struct timeval *timeout);
 
 	BEFORE_ORIGINAL_SOCK(select, LIBC);
 
@@ -537,9 +609,14 @@ int PROBE_NAME(select)(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exce
 	return ret;
 }
 
-int PROBE_NAME(pselect)(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-		const struct timespec *ntimeout, const sigset_t *sigmask) {
-	static int (*pselectp)(int nfds, fd_set *readfds, fd_set *writefds,
+HANDLER_WRAPPERS(network_feature, int, pselect, int, nfds, fd_set *, readfds, fd_set *, writefds,
+		 fd_set *, exceptfds, const struct timespec *, ntimeout,
+		 const sigset_t *, sigmask)
+{
+//	static int (*pselectp)(int nfds, fd_set *readfds, fd_set *writefds,
+//			fd_set *exceptfds, const struct timespec *ntimeout,
+//			const sigset_t *sigmask);
+	int (*pselectp)(int nfds, fd_set *readfds, fd_set *writefds,
 			fd_set *exceptfds, const struct timespec *ntimeout,
 			const sigset_t *sigmask);
 
@@ -568,8 +645,10 @@ int PROBE_NAME(pselect)(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exc
 	return ret;
 }
 
-int PROBE_NAME(poll)(struct pollfd *fds, nfds_t nfds, int timeout) {
-	static int (*pollp)(struct pollfd *ufds, unsigned int nfds, int timeout);
+HANDLER_WRAPPERS(network_feature, int, poll, struct pollfd *, fds, nfds_t, nfds, int, timeout)
+{
+//	static int (*pollp)(struct pollfd *ufds, unsigned int nfds, int timeout);
+	int (*pollp)(struct pollfd *ufds, unsigned int nfds, int timeout);
 
 	BEFORE_ORIGINAL_SOCK(poll, LIBC);
 
@@ -588,10 +667,13 @@ int PROBE_NAME(poll)(struct pollfd *fds, nfds_t nfds, int timeout) {
 	return ret;
 }
 
-int PROBE_NAME(ppoll)(struct pollfd *fds, nfds_t nfds, const struct timespec *timeout_ts,
-		const sigset_t *sigmask) {
-	static int (*ppollp)(struct pollfd *fds, nfds_t nfds,
-			const struct timespec *timeout_ts, const sigset_t *sigmask);
+HANDLER_WRAPPERS(network_feature, int, ppoll, struct pollfd *, fds, nfds_t, nfds,
+		 const struct timespec *, timeout_ts, const sigset_t *,sigmask)
+{
+//	static int (*ppollp)(struct pollfd *fds, nfds_t nfds,
+//			const struct timespec *timeout_ts, const sigset_t *sigmask);
+	int (*ppollp)(struct pollfd *fds, nfds_t nfds,
+		      const struct timespec *timeout_ts, const sigset_t *sigmask);
 
 	BEFORE_ORIGINAL_SOCK(ppoll, LIBC);
 
@@ -616,32 +698,39 @@ int PROBE_NAME(ppoll)(struct pollfd *fds, nfds_t nfds, const struct timespec *ti
 	return ret;
 }
 
-int PROBE_NAME(epoll_create)(int __size) {
-	static int (*epoll_createp)(int __size);
+HANDLER_WRAPPERS(network_feature, int, epoll_create, int, __size)
+{
+//	static int (*epoll_createp)(int __size);
+	int (*epoll_createp)(int __size);
 	BEFORE_ORIGINAL_SOCK(epoll_create, LIBC);
 
 	ret = epoll_createp(__size);
 
-	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
-				 "d", __size);
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN,
+			     info, "d", __size);
 	return ret;
 }
 
-int PROBE_NAME(epoll_create1)(int __flags) {
-	static int (*epoll_create1p)(int __size);
+HANDLER_WRAPPERS(network_feature, int, epoll_create1, int, __flags)
+{
+//	static int (*epoll_create1p)(int __size);
+	int (*epoll_create1p)(int __size);
 	BEFORE_ORIGINAL_SOCK(epoll_create1, LIBC);
 
 	ret = epoll_create1p(__flags);
 
-	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
-				 "d", __flags);
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN,
+			      info, "d", __flags);
 	return ret;
 }
 
-int PROBE_NAME(epoll_wait)(int __epfd, struct epoll_event *__events, int __maxevents,
-		int __timeout) {
-	static int (*epoll_waitp)(int __epfd, struct epoll_event *__events,
-			int __maxevents, int __timeout);
+HANDLER_WRAPPERS(network_feature, int, epoll_wait, int, __epfd, struct epoll_event *, __events,
+		 int, __maxevents, int, __timeout)
+{
+//	static int (*epoll_waitp)(int __epfd, struct epoll_event *__events,
+//			int __maxevents, int __timeout);
+	int (*epoll_waitp)(int __epfd, struct epoll_event *__events,
+			   int __maxevents, int __timeout);
 	BEFORE_ORIGINAL_SOCK(epoll_wait, LIBC);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, __epfd,
@@ -661,10 +750,13 @@ int PROBE_NAME(epoll_wait)(int __epfd, struct epoll_event *__events, int __maxev
 	return ret;
 }
 
-int PROBE_NAME(epoll_pwait)(int __epfd, struct epoll_event *__events, int __maxevents,
-		int __timeout, __const                          __sigset_t *__ss) {
-	static int (*epoll_pwaitp)(int __epfd, struct epoll_event *__events,
-			int __maxevents, int __timeout, __const                          __sigset_t *__ss);
+HANDLER_WRAPPERS(network_feature, int, epoll_pwait, int, __epfd, struct epoll_event *, __events,
+		 int, __maxevents, int, __timeout, __const __sigset_t *, __ss)
+{
+//	static int (*epoll_pwaitp)(int __epfd, struct epoll_event *__events,
+//			int __maxevents, int __timeout, __const __sigset_t *__ss);
+	int (*epoll_pwaitp)(int __epfd, struct epoll_event *__events,
+			    int __maxevents, int __timeout, __const __sigset_t *__ss);
 	BEFORE_ORIGINAL_SOCK(epoll_pwait, LIBC);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, __epfd,
@@ -686,9 +778,13 @@ int PROBE_NAME(epoll_pwait)(int __epfd, struct epoll_event *__events, int __maxe
 	return ret;
 }
 
-int PROBE_NAME(epoll_ctl)(int __epfd, int __op, int __fd, struct epoll_event *__event) {
-	static int (*epoll_ctlp)(int __epfd, int __op, int __fd,
-			struct epoll_event *__event);
+HANDLER_WRAPPERS(network_feature, int, epoll_ctl, int, __epfd, int, __op, int, __fd,
+		 struct epoll_event *, __event)
+{
+//	static int (*epoll_ctlp)(int __epfd, int __op, int __fd,
+//			struct epoll_event *__event);
+	int (*epoll_ctlp)(int __epfd, int __op, int __fd,
+			  struct epoll_event *__event);
 
 	BEFORE_ORIGINAL_SOCK(epoll_ctl, LIBC);
 
@@ -703,7 +799,8 @@ int PROBE_NAME(epoll_ctl)(int __epfd, int __op, int __fd, struct epoll_event *__
 #if 0
 //OPTION _//NO FD
 
-uint32_t PROBE_NAME(htonl)(uint32_t hostlong) {
+HANDLER_WRAPPERS(network_feature, uint32_t, htonl, uint32_t, hostlong)
+{
 	static uint32_t (*htonlp)(uint32_t hostlong);
 	uint32_t uret;
 
@@ -717,7 +814,8 @@ uint32_t PROBE_NAME(htonl)(uint32_t hostlong) {
 	return uret;
 }
 
-uint16_t PROBE_NAME(htons)(uint16_t hostshort) {
+HANDLER_WRAPPERS(network_feature, uint16_t , htons, uint16_t, hostshort)
+{
 	static uint16_t (*htonsp)(uint16_t hostshort);
 	uint16_t uret;
 
@@ -731,7 +829,8 @@ uint16_t PROBE_NAME(htons)(uint16_t hostshort) {
 	return uret;
 }
 
-int PROBE_NAME(inet_aton)(const char *cp, struct in_addr *inp) {
+HANDLER_WRAPPERS(network_feature, int , inet_aton, const char *, cp, struct in_addr *, inp)
+{
 	static int (*inet_atonp)(const char *cp, struct in_addr *inp);
 
 	BEFORE_ORIGINAL_SOCK(inet_aton, LIBC);
@@ -739,13 +838,14 @@ int PROBE_NAME(inet_aton)(const char *cp, struct in_addr *inp) {
 	ret = inet_atonp(cp, inp);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pp", voidp_to_uint64(cp),
+				  info, "pp", voidp_to_uint64(cp),
 				 voidp_to_uint64(inp));
 
 	return ret;
 }
 
-in_addr_t PROBE_NAME(inet_addr)(const char *cp) {
+HANDLER_WRAPPERS(network_feature, in_addr_t , inet_addr, const char *, cp)
+{
 	static in_addr_t (*inet_addrp)(const char *cp);
 	in_addr_t iret;
 
@@ -759,7 +859,8 @@ in_addr_t PROBE_NAME(inet_addr)(const char *cp) {
 	return iret;
 }
 
-in_addr_t PROBE_NAME(inet_network)(const char *cp) {
+HANDLER_WRAPPERS(network_feature, in_addr_t , inet_network, const char *, cp)
+{
 	static in_addr_t (*inet_networkp)(const char *cp);
 	in_addr_t iret;
 
@@ -773,7 +874,8 @@ in_addr_t PROBE_NAME(inet_network)(const char *cp) {
 	return iret;
 }
 
-char *PROBE_NAME(inet_ntoa)(struct in_addr in) {
+HANDLER_WRAPPERS(network_feature, char *, inet_ntoa, struct in_addr, in)
+{
 	static char * (*inet_ntoap)(struct in_addr in);
 	char* sret;
 
@@ -787,7 +889,8 @@ char *PROBE_NAME(inet_ntoa)(struct in_addr in) {
 	return sret;
 }
 
-uint32_t PROBE_NAME(ntohl)(uint32_t netlong) {
+HANDLER_WRAPPERS(network_feature, uint32_t , ntohl, uint32_t, netlong)
+{
 	static uint32_t (*ntohlp)(uint32_t netlong);
 	uint32_t uret;
 
@@ -801,7 +904,8 @@ uint32_t PROBE_NAME(ntohl)(uint32_t netlong) {
 	return uret;
 }
 
-uint16_t PROBE_NAME(ntohs)(uint16_t netshort) {
+HANDLER_WRAPPERS(network_feature, uint16_t , ntohs, uint16_t, netshort)
+{
 	static uint16_t (*ntohsp)(uint16_t netshort);
 	uint16_t uret;
 
@@ -815,7 +919,8 @@ uint16_t PROBE_NAME(ntohs)(uint16_t netshort) {
 	return uret;
 }
 
-in_addr_t PROBE_NAME(inet_lnaof)(struct in_addr in) {
+HANDLER_WRAPPERS(network_feature, in_addr_t , inet_lnaof, struct in_addr, in)
+{
 	static in_addr_t (*inet_lnaofp)(struct in_addr in);
 	in_addr_t iret;
 
@@ -829,7 +934,8 @@ in_addr_t PROBE_NAME(inet_lnaof)(struct in_addr in) {
 	return iret;
 }
 
-in_addr_t PROBE_NAME(inet_netof)(struct in_addr in) {
+HANDLER_WRAPPERS(network_feature, in_addr_t , inet_netof, struct in_addr, in)
+{
 	static in_addr_t (*inet_netofp)(struct in_addr in);
 	in_addr_t iret;
 
@@ -843,7 +949,9 @@ in_addr_t PROBE_NAME(inet_netof)(struct in_addr in) {
 	return iret;
 }
 
-const char *PROBE_NAME(inet_ntop)(int af, const void *src, char *dst, socklen_t size) {
+HANDLER_WRAPPERS(network_feature, const char *, inet_ntop, int, af, const void *, src,
+		 char *, dst, socklen_t, size)
+{
 	static const char* (*inet_ntopp)(int af, const void *src, char *dst,
 			socklen_t size);
 	const char* cret;
@@ -858,7 +966,8 @@ const char *PROBE_NAME(inet_ntop)(int af, const void *src, char *dst, socklen_t 
 	return cret;
 }
 
-int PROBE_NAME(inet_pton)(int af, const char *src, void *dst) {
+HANDLER_WRAPPERS(network_feature, int , inet_pton, int, af, const char *, src, void *, dst)
+{
 	static int (*inet_ptonp)(int af, const char *src, void *dst);
 
 	BEFORE_ORIGINAL_SOCK(inet_pton, LIBC);
@@ -871,8 +980,9 @@ int PROBE_NAME(inet_pton)(int af, const char *src, void *dst) {
 	return ret;
 }
 
-int PROBE_NAME(getaddrinfo)(const char *node, const char *service,
-		const struct addrinfo *hints, struct addrinfo **res) {
+HANDLER_WRAPPERS(network_feature, int, getaddrinfo, const char *, node, const char *, service,
+		 const struct addrinfo *, hints, struct addrinfo **, res)
+{
 	static int (*getaddrinfop)(const char *node, const char *service,
 			const struct addrinfo *hints, struct addrinfo **res);
 
@@ -886,7 +996,8 @@ int PROBE_NAME(getaddrinfo)(const char *node, const char *service,
 	return ret;
 }
 
-void PROBE_NAME(freeaddrinfo)(struct addrinfo *res) {
+HANDLER_WRAPPERS(network_feature, void , freeaddrinfo, struct addrinfo *, res)
+{
 	static void (*freeaddrinfop)(struct addrinfo *res);
 
 	BEFORE_ORIGINAL_NOFILTER(freeaddrinfo, LIBC);
@@ -897,7 +1008,8 @@ void PROBE_NAME(freeaddrinfo)(struct addrinfo *res) {
 				 info, "p", voidp_to_uint64(res));
 }
 
-const char *PROBE_NAME(gai_strerror)(int errcode) {
+HANDLER_WRAPPERS(network_feature, const char *, gai_strerror, int, errcode)
+{
 	static const char * (*gai_strerrorp)(int errcode);
 	const char * cret;
 
@@ -911,8 +1023,9 @@ const char *PROBE_NAME(gai_strerror)(int errcode) {
 	return cret;
 }
 
-int PROBE_NAME(gai_suspend)(const struct gaicb* const list[], int nitems,
-		const struct timespec *timeout) {
+HANDLER_WRAPPERS(network_feature, int, gai_suspend, const struct gaicb** const, list,
+		 int, nitems, const struct timespec *, timeout)
+{
 	static int (*gai_suspendp)(const struct gaicb* const list[], int nitems,
 			const struct timespec *timeout);
 
@@ -926,7 +1039,8 @@ int PROBE_NAME(gai_suspend)(const struct gaicb* const list[], int nitems,
 	return ret;
 }
 
-int PROBE_NAME(gai_error)(struct gaicb *req) {
+HANDLER_WRAPPERS(network_feature, int , gai_error, struct gaicb *, req)
+{
 	static int (*gai_errorp)(struct gaicb *req);
 
 	BEFORE_ORIGINAL_SOCK(gai_error, LIBC);
@@ -939,7 +1053,8 @@ int PROBE_NAME(gai_error)(struct gaicb *req) {
 	return ret;
 }
 
-int PROBE_NAME(gai_cancel)(struct gaicb *req) {
+HANDLER_WRAPPERS(network_feature, int , gai_cancel, struct gaicb *, req)
+{
 	static int (*gai_cancelp)(struct gaicb *req);
 
 	BEFORE_ORIGINAL_SOCK(gai_cancel, LIBC);
@@ -952,8 +1067,9 @@ int PROBE_NAME(gai_cancel)(struct gaicb *req) {
 	return ret;
 }
 
-int PROBE_NAME(getaddrinfo_a)(int mode, struct gaicb *list[], int nitems,
-		struct sigevent *sevp) {
+HANDLER_WRAPPERS(network_feature, int, getaddrinfo_a, int, mode, struct gaicb **, list,
+		 int, nitems, struct sigevent *, sevp)
+{
 	static int (*getaddrinfo_ap)(int mode, struct gaicb *list[], int nitems,
 			struct sigevent *sevp);
 
@@ -967,7 +1083,8 @@ int PROBE_NAME(getaddrinfo_a)(int mode, struct gaicb *list[], int nitems,
 	return ret;
 }
 
-int PROBE_NAME(getdomainname)(char *name, size_t len) {
+HANDLER_WRAPPERS(network_feature, int , getdomainname, char *, name, size_t, len)
+{
 	static int (*getdomainnamep)(char *name, size_t len);
 
 	BEFORE_ORIGINAL_SOCK(getdomainname, LIBC);
@@ -982,7 +1099,8 @@ int PROBE_NAME(getdomainname)(char *name, size_t len) {
 	return ret;
 }
 
-int PROBE_NAME(setdomainname)(const char *name, size_t len) {
+HANDLER_WRAPPERS(network_feature, int , setdomainname, const char *, name, size_t, len)
+{
 	static int (*setdomainnamep)(const char *name, size_t len);
 
 	BEFORE_ORIGINAL_SOCK(setdomainname, LIBC);
@@ -995,7 +1113,8 @@ int PROBE_NAME(setdomainname)(const char *name, size_t len) {
 	return ret;
 }
 
-int PROBE_NAME(gethostname)(char *name, size_t len) {
+HANDLER_WRAPPERS(network_feature, int , gethostname, char *, name, size_t, len)
+{
 	static int (*gethostnamep)(char *name, size_t len);
 
 	BEFORE_ORIGINAL_SOCK(gethostname, LIBC);
@@ -1008,7 +1127,8 @@ int PROBE_NAME(gethostname)(char *name, size_t len) {
 	return ret;
 }
 
-int PROBE_NAME(sethostname)(const char *name, size_t len) {
+HANDLER_WRAPPERS(network_feature, int , sethostname, const char *, name, size_t, len)
+{
 	static int (*sethostnamep)(const char *name, size_t len);
 
 	BEFORE_ORIGINAL_SOCK(sethostname, LIBC);
@@ -1021,8 +1141,10 @@ int PROBE_NAME(sethostname)(const char *name, size_t len) {
 	return ret;
 }
 
-int PROBE_NAME(getnameinfo)(const struct sockaddr *sa, socklen_t salen, char *host,
-		socklen_t hostlen, char *serv, socklen_t servlen, unsigned int flags) {
+HANDLER_WRAPPERS(network_feature, int, getnameinfo, const struct sockaddr *, sa,
+		 socklen_t, salen, char *, host, socklen_t, hostlen,
+		 char *, serv, socklen_t, servlen, unsigned int, flags)
+{
 	static int (*getnameinfop)(const struct sockaddr *sa, socklen_t salen,
 			char *host, socklen_t hostlen, char *serv, socklen_t servlen,
 			unsigned int flags);
@@ -1039,7 +1161,8 @@ int PROBE_NAME(getnameinfo)(const struct sockaddr *sa, socklen_t salen, char *ho
 	return ret;
 }
 
-struct hostent *PROBE_NAME(gethostbyname)(const char *name) {
+HANDLER_WRAPPERS(network_feature, struct hostent *, gethostbyname, const char *, name)
+{
 	static struct hostent * (*gethostbynamep)(const char *name);
 	struct hostent* pret;
 
@@ -1053,7 +1176,9 @@ struct hostent *PROBE_NAME(gethostbyname)(const char *name) {
 	return pret;
 }
 
-struct hostent *PROBE_NAME(gethostbyaddr)(const void *addr, socklen_t len, int type) {
+HANDLER_WRAPPERS(network_feature, struct hostent *, gethostbyaddr, const void *, addr,
+		 socklen_t, len, int, type)
+{
 	static struct hostent * (*gethostbyaddrp)(const void *addr, socklen_t len,
 			int type);
 	struct hostent* pret;
@@ -1068,7 +1193,8 @@ struct hostent *PROBE_NAME(gethostbyaddr)(const void *addr, socklen_t len, int t
 	return pret;
 }
 
-void PROBE_NAME(sethostent)(int stayopen) {
+HANDLER_WRAPPERS(network_feature, void , sethostent, int, stayopen)
+{
 	static void (*sethostentp)(int stayopen);
 
 	BEFORE_ORIGINAL_SOCK(sethostent, LIBC);
@@ -1079,7 +1205,8 @@ void PROBE_NAME(sethostent)(int stayopen) {
 			info, "d", stayopen);
 }
 
-void PROBE_NAME(endhostent)(void) {
+HANDLER_WRAPPERS(network_feature, void , endhostent, void)
+{
 	static void (*endhostentp)(void);
 
 	BEFORE_ORIGINAL_SOCK(endhostent, LIBC);
@@ -1092,7 +1219,8 @@ void PROBE_NAME(endhostent)(void) {
 			info, "s", "");
 }
 
-void PROBE_NAME(herror)(const char *s) {
+HANDLER_WRAPPERS(network_feature, void , herror, const char *, s)
+{
 	static void (*herrorp)(const char *s);
 
 	BEFORE_ORIGINAL_SOCK(herror, LIBC);
@@ -1103,7 +1231,8 @@ void PROBE_NAME(herror)(const char *s) {
 				 info, "p", voidp_to_uint64(s));
 }
 
-const char *PROBE_NAME(hstrerror)(int err) {
+HANDLER_WRAPPERS(network_feature, const char *, hstrerror, int, err)
+{
 	static const char* (*hstrerrorp)(int err);
 	const char* cret;
 
@@ -1117,7 +1246,8 @@ const char *PROBE_NAME(hstrerror)(int err) {
 	return cret;
 }
 
-struct hostent *PROBE_NAME(gethostent)(void) {
+HANDLER_WRAPPERS(network_feature, struct hostent *, gethostent, void)
+{
 	static struct hostent* (*gethostentp)(void);
 	struct hostent* pret;
 
@@ -1131,7 +1261,8 @@ struct hostent *PROBE_NAME(gethostent)(void) {
 	return pret;
 }
 
-struct hostent *PROBE_NAME(gethostbyname2)(const char *name, int af) {
+HANDLER_WRAPPERS(network_feature, struct hostent *, gethostbyname2, const char *, name, int, af)
+{
 	static struct hostent * (*gethostbyname2p)(const char *name, int af);
 	struct hostent* pret;
 
@@ -1145,8 +1276,9 @@ struct hostent *PROBE_NAME(gethostbyname2)(const char *name, int af) {
 	return pret;
 }
 
-int PROBE_NAME(gethostent_r)(struct hostent *rret, char *buf, size_t buflen,
-		struct hostent **result, int *h_errnop) {
+HANDLER_WRAPPERS(network_feature, int, gethostent_r, struct hostent *, rret, char *, buf,
+		 size_t, buflen, struct hostent **, result, int *, h_errnop)
+{
 	static int (*gethostent_rp)(struct hostent *rret, char *buf, size_t buflen,
 			struct hostent **result, int *h_errnop);
 
@@ -1163,9 +1295,10 @@ int PROBE_NAME(gethostent_r)(struct hostent *rret, char *buf, size_t buflen,
 	return ret;
 }
 
-int PROBE_NAME(gethostbyaddr_r)(const void *addr, socklen_t len, int type,
-		struct hostent *rret, char *buf, size_t buflen, struct hostent **result,
-		int *h_errnop) {
+HANDLER_WRAPPERS(network_feature, int, gethostbyaddr_r, const void *, addr, socklen_t, len,
+		 int, type, struct hostent *, rret, char *, buf, size_t, buflen,
+		 struct hostent **, result, int *, h_errnop)
+{
 	static int (*gethostbyaddr_rp)(const void *addr, socklen_t len, int type,
 			struct hostent *rret, char *buf, size_t buflen,
 			struct hostent **result, int *h_errnop);
@@ -1185,8 +1318,10 @@ int PROBE_NAME(gethostbyaddr_r)(const void *addr, socklen_t len, int type,
 	return ret;
 }
 
-int PROBE_NAME(gethostbyname_r)(const char *name, struct hostent *rret, char *buf,
-		size_t buflen, struct hostent **result, int *h_errnop) {
+HANDLER_WRAPPERS(network_feature, int, gethostbyname_r, const char *, name,
+		 struct hostent *, rret, char *, buf, size_t, buflen,
+		 struct hostent **, result, int *, h_errnop)
+{
 	static int (*gethostbyname_rp)(const char *name, struct hostent *rret,
 			char *buf, size_t buflen, struct hostent **result, int *h_errnop);
 
@@ -1203,8 +1338,10 @@ int PROBE_NAME(gethostbyname_r)(const char *name, struct hostent *rret, char *bu
 	return ret;
 }
 
-int PROBE_NAME(gethostbyname2_r)(const char *name, int af, struct hostent *rret, char *buf,
-		size_t buflen, struct hostent **result, int *h_errnop) {
+HANDLER_WRAPPERS(network_feature, int, gethostbyname2_r, const char *, name, int, af,
+		 struct hostent *, rret, char *, buf, size_t, buflen,
+		 struct hostent **, result, int *, h_errnop)
+{
 	static int (*gethostbyname2_rp)(const char *name, int af,
 			struct hostent *rret, char *buf, size_t buflen,
 			struct hostent **result, int *h_errnop);
@@ -1222,7 +1359,9 @@ int PROBE_NAME(gethostbyname2_r)(const char *name, int af, struct hostent *rret,
 	return ret;
 }
 
-struct servent *PROBE_NAME(getservbyname)(const char *name, const char *proto) {
+HANDLER_WRAPPERS(network_feature, struct servent *, getservbyname, const char *, name,
+		 const char *, proto)
+{
 	static struct servent * (*getservbynamep)(const char *name,
 			const char *proto);
 	struct servent* pret;
@@ -1238,7 +1377,8 @@ struct servent *PROBE_NAME(getservbyname)(const char *name, const char *proto) {
 	return pret;
 }
 
-void PROBE_NAME(setservent)(int stayopen) {
+HANDLER_WRAPPERS(network_feature, void , setservent, int, stayopen)
+{
 	static void (*setserventp)(int stayopen);
 
 	BEFORE_ORIGINAL_SOCK(setservent, LIBC);
@@ -1249,7 +1389,8 @@ void PROBE_NAME(setservent)(int stayopen) {
 			info, "d", stayopen);
 }
 
-void PROBE_NAME(endservent)(void) {
+HANDLER_WRAPPERS(network_feature, void , endservent, void)
+{
 	static void (*endserventp)(void);
 
 	BEFORE_ORIGINAL_SOCK(endservent, LIBC);
@@ -1260,7 +1401,8 @@ void PROBE_NAME(endservent)(void) {
 			info, "s", "");
 }
 
-struct servent *PROBE_NAME(getservent)(void) {
+HANDLER_WRAPPERS(network_feature, struct servent *, getservent, void)
+{
 	static struct servent * (*getserventp)(void);
 	struct servent* pret;
 
@@ -1274,7 +1416,9 @@ struct servent *PROBE_NAME(getservent)(void) {
 	return pret;
 }
 
-struct servent *PROBE_NAME(getservbyport)(int port, const char *proto) {
+HANDLER_WRAPPERS(network_feature, struct servent *, getservbyport, int, port,
+		 const char *, proto)
+{
 	static struct servent * (*getservbyportp)(int port, const char *proto);
 	struct servent* pret;
 
@@ -1288,8 +1432,9 @@ struct servent *PROBE_NAME(getservbyport)(int port, const char *proto) {
 	return pret;
 }
 
-int PROBE_NAME(getservent_r)(struct servent *result_buf, char *buf, size_t buflen,
-		struct servent **result) {
+HANDLED_WRAPPERS(int, getservent_r, struct servent *, result_buf, char *, buf,
+		 size_t, buflen, struct servent **, result)
+{
 	static int (*getservent_rp)(struct servent *result_buf, char *buf,
 			size_t buflen, struct servent **result);
 
@@ -1305,9 +1450,10 @@ int PROBE_NAME(getservent_r)(struct servent *result_buf, char *buf, size_t bufle
 	return ret;
 }
 
-int PROBE_NAME(getservbyname_r)(const char *name, const char *proto,
-		struct servent *result_buf, char *buf, size_t buflen,
-		struct servent **result) {
+HANDLER_WRAPPERS(network_feature, int, getservbyname_r, const char *, name, const char *, proto,
+		 struct servent *, result_buf, char *, buf, size_t, buflen,
+		 struct servent **, result)
+{
 	static int (*getservbyname_rp)(const char *name, const char *proto,
 			struct servent *result_buf, char *buf, size_t buflen,
 			struct servent **result);
@@ -1326,8 +1472,10 @@ int PROBE_NAME(getservbyname_r)(const char *name, const char *proto,
 	return ret;
 }
 
-int PROBE_NAME(getservbyport_r)(int port, const char *proto, struct servent *result_buf,
-		char *buf, size_t buflen, struct servent **result) {
+HANDLER_WRAPPERS(network_feature, int, getservbyport_r, int, port, const char *, proto,
+		 struct servent *, result_buf, char *, buf, size_t, buflen,
+		 struct servent **, result)
+{
 	static int (*getservbyport_rp)(int port, const char *proto,
 			struct servent *result_buf, char *buf, size_t buflen,
 			struct servent **result);
@@ -1345,7 +1493,8 @@ int PROBE_NAME(getservbyport_r)(int port, const char *proto, struct servent *res
 	return ret;
 }
 
-struct netent* PROBE_NAME(getnetent)(void) {
+HANDLER_WRAPPERS(network_feature, struct netent* , getnetent, void)
+{
 	static struct netent * (*getnetentp)(void);
 	struct netent* pret;
 
@@ -1359,7 +1508,8 @@ struct netent* PROBE_NAME(getnetent)(void) {
 	return pret;
 }
 
-struct netent *PROBE_NAME(getnetbyname)(const char *name) {
+HANDLER_WRAPPERS(network_feature, struct netent *, getnetbyname, const char *, name)
+{
 	static struct netent * (*getnetbynamep)(const char *name);
 	struct netent* pret;
 
@@ -1373,7 +1523,8 @@ struct netent *PROBE_NAME(getnetbyname)(const char *name) {
 	return pret;
 }
 
-struct netent *PROBE_NAME(getnetbyaddr)(uint32_t net, int type) {
+HANDLER_WRAPPERS(network_feature, struct netent *, getnetbyaddr, uint32_t, net, int, type)
+{
 	static struct netent * (*getnetbyaddrp)(uint32_t net, int type);
 	struct netent * pret;
 
@@ -1387,7 +1538,8 @@ struct netent *PROBE_NAME(getnetbyaddr)(uint32_t net, int type) {
 	return pret;
 }
 
-void PROBE_NAME(setnetent)(int stayopen) {
+HANDLER_WRAPPERS(network_feature, void , setnetent, int, stayopen)
+{
 	static void (*setnetentp)(int stayopen);
 
 	BEFORE_ORIGINAL_SOCK(setnetent, LIBC);
@@ -1398,7 +1550,8 @@ void PROBE_NAME(setnetent)(int stayopen) {
 			info, "d", stayopen);
 }
 
-void PROBE_NAME(endnetent)(void) {
+HANDLER_WRAPPERS(network_feature, void , endnetent)
+{
 	static void (*endnetentp)(void);
 
 	BEFORE_ORIGINAL_SOCK(endnetent, LIBC);
@@ -1409,8 +1562,9 @@ void PROBE_NAME(endnetent)(void) {
 			info, "s", "");
 }
 
-int PROBE_NAME(getnetent_r)(struct netent *result_buf, char *buf, size_t buflen,
-		struct netent **result, int *h_errnop) {
+HANDLER_WRAPPERS(network_feature, int, getnetent_r, struct netent *, result_buf, char *, buf,
+		 size_t, buflen, struct netent **, result, int *, h_errnop)
+{
 	static int (*getnetent_rp)(struct netent *result_buf, char *buf,
 			size_t buflen, struct netent **result, int *h_errnop);
 
@@ -1427,8 +1581,10 @@ int PROBE_NAME(getnetent_r)(struct netent *result_buf, char *buf, size_t buflen,
 	return ret;
 }
 
-int PROBE_NAME(getnetbyname_r)(const char *name, struct netent *result_buf, char *buf,
-		size_t buflen, struct netent **result, int *h_errnop) {
+HANDLER_WRAPPERS(network_feature, int, getnetbyname_r, const char *, name,
+		 struct netent *, result_buf, char *, buf, size_t, buflen,
+		 struct netent **, result, int *, h_errnop)
+{
 	static int (*getnetbyname_rp)(const char *name, struct netent *result_buf,
 			char *buf, size_t buflen, struct netent **result, int *h_errnop);
 
@@ -1446,8 +1602,10 @@ int PROBE_NAME(getnetbyname_r)(const char *name, struct netent *result_buf, char
 	return ret;
 }
 
-int PROBE_NAME(getnetbyaddr_r)(uint32_t net, int type, struct netent *result_buf, char *buf,
-		size_t buflen, struct netent **result, int *h_errnop) {
+HANDLER_WRAPPERS(network_feature, int, getnetbyaddr_r, uint32_t, net, int, type,
+		 struct netent *, result_buf, char *, buf, size_t, buflen,
+		 struct netent **, result, int *, h_errnop)
+{
 	static int (*getnetbyaddr_rp)(uint32_t net, int type,
 			struct netent *result_buf, char *buf, size_t buflen,
 			struct netent **result, int *h_errnop);
@@ -1466,7 +1624,8 @@ int PROBE_NAME(getnetbyaddr_r)(uint32_t net, int type, struct netent *result_buf
 	return ret;
 }
 
-struct protoent *PROBE_NAME(getprotoent)(void) {
+HANDLER_WRAPPERS(network_feature, struct protoent *, getprotoent, void)
+{
 	static struct protoent * (*getprotoentp)(void);
 	struct protoent * pret;
 
@@ -1480,7 +1639,8 @@ struct protoent *PROBE_NAME(getprotoent)(void) {
 	return pret;
 }
 
-struct protoent *PROBE_NAME(getprotobyname)(const char *name) {
+HANDLER_WRAPPERS(network_feature, struct protoent *, getprotobyname, const char *, name)
+{
 	static struct protoent * (*getprotobynamep)(const char *name);
 	struct protoent * pret;
 
@@ -1494,7 +1654,8 @@ struct protoent *PROBE_NAME(getprotobyname)(const char *name) {
 	return pret;
 }
 
-struct protoent *PROBE_NAME(getprotobynumber)(int proto) {
+HANDLER_WRAPPERS(network_feature, struct protoent *, getprotobynumber, int, proto)
+{
 	static struct protoent * (*getprotobynumberp)(int proto);
 	struct protoent * pret;
 
@@ -1508,7 +1669,8 @@ struct protoent *PROBE_NAME(getprotobynumber)(int proto) {
 	return pret;
 }
 
-void PROBE_NAME(setprotoent)(int stayopen) {
+HANDLER_WRAPPERS(network_feature, void , setprotoent, int, stayopen)
+{
 	static void (*setprotoentp)(int stayopen);
 
 	BEFORE_ORIGINAL_SOCK(setprotoent, LIBC);
@@ -1519,7 +1681,8 @@ void PROBE_NAME(setprotoent)(int stayopen) {
 			info, "d", stayopen);
 }
 
-void PROBE_NAME(endprotoent)(void) {
+HANDLER_WRAPPERS(network_feature, void , endprotoent)
+{
 	static void (*endprotoentp)(void);
 
 	BEFORE_ORIGINAL_SOCK(endprotoent, LIBC);
@@ -1530,8 +1693,9 @@ void PROBE_NAME(endprotoent)(void) {
 			info, "s", "");
 }
 
-int PROBE_NAME(getprotoent_r)(struct protoent *result_buf, char *buf, size_t buflen,
-		struct protoent **result) {
+HANDLER_WRAPPERS(network_feature, int, getprotoent_r, struct protoent *, result_buf, char *, buf,
+		 size_t, buflen, struct protoent **, result)
+{
 	static int (*getprotoent_rp)(struct protoent *result_buf, char *buf,
 			size_t buflen, struct protoent **result);
 
@@ -1547,8 +1711,10 @@ int PROBE_NAME(getprotoent_r)(struct protoent *result_buf, char *buf, size_t buf
 	return ret;
 }
 
-int PROBE_NAME(getprotobyname_r)(const char *name, struct protoent *result_buf, char *buf,
-		size_t buflen, struct protoent **result) {
+HANDLER_WRAPPERS(network_feature, int, getprotobyname_r, const char *, name,
+		 struct protoent *, result_buf, char *, buf, size_t, buflen,
+		 struct protoent **, result)
+{
 	static int (*getprotobyname_rp)(const char *name,
 			struct protoent *result_buf, char *buf, size_t buflen,
 			struct protoent **result);
@@ -1566,8 +1732,10 @@ int PROBE_NAME(getprotobyname_r)(const char *name, struct protoent *result_buf, 
 	return ret;
 }
 
-int PROBE_NAME(getprotobynumber_r)(int proto, struct protoent *result_buf, char *buf,
-		size_t buflen, struct protoent **result) {
+HANDLER_WRAPPERS(network_feature, int, getprotobynumber_r, int, proto,
+		 struct protoent *, result_buf, char *, buf, size_t, buflen,
+		 struct protoent **, result)
+{
 	static int (*getprotobynumber_rp)(int proto, struct protoent *result_buf,
 			char *buf, size_t buflen, struct protoent **result);
 
@@ -1584,7 +1752,8 @@ int PROBE_NAME(getprotobynumber_r)(int proto, struct protoent *result_buf, char 
 	return ret;
 }
 
-unsigned int PROBE_NAME(if_nametoindex)(__const char *__ifname) {
+HANDLER_WRAPPERS(network_feature, unsigned int , if_nametoindex, __const char *, __ifname)
+{
 	static unsigned int (*if_nametoindexp)(__const char *__ifname);
 	unsigned int uret;
 
@@ -1598,7 +1767,9 @@ unsigned int PROBE_NAME(if_nametoindex)(__const char *__ifname) {
 	return uret;
 }
 
-char *PROBE_NAME(if_indextoname)(unsigned int __ifindex, char *__ifname) {
+HANDLER_WRAPPERS(network_feature, char *, if_indextoname, unsigned int, __ifindex,
+		 char *, __ifname)
+{
 	static char * (*if_indextonamep)(unsigned int __ifindex, char *__ifname);
 	char * cret;
 
@@ -1613,7 +1784,8 @@ char *PROBE_NAME(if_indextoname)(unsigned int __ifindex, char *__ifname) {
 	return cret;
 }
 
-struct if_nameindex *PROBE_NAME(if_nameindex)(void) {
+HANDLER_WRAPPERS(network_feature, struct if_nameindex *, if_nameindex, void)
+{
 	static struct if_nameindex * (*if_nameindexp)(void);
 	struct if_nameindex * pret;
 
@@ -1627,7 +1799,8 @@ struct if_nameindex *PROBE_NAME(if_nameindex)(void) {
 	return pret;
 }
 
-void PROBE_NAME(if_freenameindex)(struct if_nameindex *__ptr) {
+HANDLER_WRAPPERS(network_feature, void , if_freenameindex, struct if_nameindex *, __ptr)
+{
 	static void (*if_freenameindexp)(struct if_nameindex *__ptr);
 
 	BEFORE_ORIGINAL_NOFILTER(if_freenameindex, LIBC);
@@ -1638,7 +1811,8 @@ void PROBE_NAME(if_freenameindex)(struct if_nameindex *__ptr) {
 				 info, "p", voidp_to_uint64(__ptr));
 }
 
-int PROBE_NAME(getifaddrs)(struct ifaddrs **ifap) {
+HANDLER_WRAPPERS(network_feature, int , getifaddrs, struct ifaddrs **, ifap)
+{
 	static int (*getifaddrsp)(struct ifaddrs **ifap);
 
 	BEFORE_ORIGINAL_NOFILTER(getifaddrs, LIBC);
@@ -1651,20 +1825,22 @@ int PROBE_NAME(getifaddrs)(struct ifaddrs **ifap) {
 	return ret;
 }
 
-void PROBE_NAME(freeifaddrs)(struct ifaddrs *ifa) {
+HANDLER_WRAPPERS(network_feature, void , freeifaddrs, struct ifaddrs *, ifa)
+{
 	static void (*freeifaddrsp)(struct ifaddrs *ifa);
 
 	BEFORE_ORIGINAL_NOFILTER(freeifaddrs, LIBC);
 
 	freeifaddrsp(ifa);
 
-	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER, info,
-				 "p", voidp_to_uint64(ifa));
+	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+			     info,
+			     "p", voidp_to_uint64(ifa));
 }
 
 //To do
 
-uint16_t PROBE_NAME(htobe16)(uint16_t host_16bits)
+HANDLER_WRAPPERS(network_feature, uint16_t , htobe16, uint16_t, host_16bits)
 {
 	static uint16_t (*htobe16p)(uint16_t host_16bits);
 	uint16_t uret;
@@ -1673,12 +1849,13 @@ uint16_t PROBE_NAME(htobe16)(uint16_t host_16bits)
 
 	uret = htobe16p(host_16bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER, "d", host_16bits);
+	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER,
+			      "d", host_16bits);
 
 	return uret;
 }
 
-uint16_t PROBE_NAME(htole16)(uint16_t host_16bits)
+HANDLER_WRAPPERS(network_feature, uint16_t , htole16, uint16_t, host_16bits)
 {
 	static uint16_t (*htole16p)(uint16_t host_16bits);
 	uint16_t uret;
@@ -1687,12 +1864,13 @@ uint16_t PROBE_NAME(htole16)(uint16_t host_16bits)
 
 	uret = htole16p(host_16bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER, "d", host_16bits);
+	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER,
+			      "d", host_16bits);
 
 	return uret;
 }
 
-uint16_t PROBE_NAME(be16toh)(uint16_t big_endian_16bits)
+HANDLER_WRAPPERS(network_feature, uint16_t , be16toh, uint16_t, big_endian_16bits)
 {
 	static uint16_t (*be16tohp)(uint16_t big_endian_16bits);
 	uint16_t uret;
@@ -1702,12 +1880,12 @@ uint16_t PROBE_NAME(be16toh)(uint16_t big_endian_16bits)
 	uret = be16tohp(big_endian_16bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER,
-			"d", big_endian_16bits);
+			      "d", big_endian_16bits);
 
 	return uret;
 }
 
-uint16_t PROBE_NAME(le16toh)(uint16_t little_endian_16bits)
+HANDLER_WRAPPERS(network_feature, uint16_t , le16toh, uint16_t, little_endian_16bits)
 {
 	static uint16_t (*le16tohp)(uint16_t little_endian_16bits);
 	uint16_t uret;
@@ -1717,12 +1895,12 @@ uint16_t PROBE_NAME(le16toh)(uint16_t little_endian_16bits)
 	uret = le16tohp(little_endian_16bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER,
-			"d", little_endian_16bits);
+			      "d", little_endian_16bits);
 
 	return uret;
 }
 
-uint32_t PROBE_NAME(htobe32)(uint32_t host_32bits)
+HANDLER_WRAPPERS(network_feature, uint32_t , htobe32, uint32_t, host_32bits)
 {
 	static uint32_t (*htobe32p)(uint32_t host_32bits);
 	uint32_t uret;
@@ -1732,12 +1910,12 @@ uint32_t PROBE_NAME(htobe32)(uint32_t host_32bits)
 	uret = htobe32p(host_32bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
-			"d", host_32bits);
+			      "d", host_32bits);
 
 	return uret;
 }
 
-uint32_t PROBE_NAME(htole32)(uint32_t host_32bits)
+HANDLER_WRAPPERS(network_feature, uint32_t , htole32, uint32_t, host_32bits)
 {
 	static uint32_t (*htole32p)(uint32_t host_32bits);
 	uint32_t uret;
@@ -1747,12 +1925,12 @@ uint32_t PROBE_NAME(htole32)(uint32_t host_32bits)
 	uret = htole32p(host_32bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
-			"d", host_32bits);
+			      "d", host_32bits);
 
 	return uret;
 }
 
-uint32_t PROBE_NAME(be32toh)(uint32_t big_endian_32bits)
+HANDLER_WRAPPERS(network_feature, uint32_t , be32toh, uint32_t, big_endian_32bits)
 {
 	static uint32_t (*be32tohp)(uint32_t big_endian_32bits);
 	uint32_t uret;
@@ -1762,12 +1940,12 @@ uint32_t PROBE_NAME(be32toh)(uint32_t big_endian_32bits)
 	uret = be32tohp(big_endian_32bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
-			"d", big_endian_32bits);
+			      "d", big_endian_32bits);
 
 	return uret;
 }
 
-uint32_t PROBE_NAME(le32toh)(uint32_t little_endian_32bits)
+HANDLER_WRAPPERS(network_feature, uint32_t , le32toh, uint32_t, little_endian_32bits)
 {
 	static uint32_t (*le32tohp)(uint32_t little_endian_32bits);
 	uint32_t uret;
@@ -1777,12 +1955,12 @@ uint32_t PROBE_NAME(le32toh)(uint32_t little_endian_32bits)
 	uret = le32tohp(little_endian_32bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
-			"d", little_endian_32bits);
+			      "d", little_endian_32bits);
 
 	return uret;
 }
 
-uint64_t PROBE_NAME(htobe64)(uint64_t host_64bits)
+HANDLER_WRAPPERS(network_feature, uint64_t , htobe64, uint64_t, host_64bits)
 {
 	static uint64_t (*htobe64p)(uint64_t host_64bits);
 	uint64_t uret;
@@ -1797,7 +1975,7 @@ uint64_t PROBE_NAME(htobe64)(uint64_t host_64bits)
 	return uret;
 }
 
-uint64_t PROBE_NAME(htole64)(uint64_t host_64bits)
+HANDLER_WRAPPERS(network_feature, uint64_t , htole64, uint64_t, host_64bits)
 {
 	static uint64_t (*htole64p)(uint64_t host_64bits);
 	uint64_t uret;
@@ -1812,7 +1990,7 @@ uint64_t PROBE_NAME(htole64)(uint64_t host_64bits)
 	return uret;
 }
 
-uint64_t PROBE_NAME(be64toh)(uint64_t big_endian_64bits)
+HANDLER_WRAPPERS(network_feature, uint64_t , be64toh, uint64_t, big_endian_64bits)
 {
 	static uint64_t (*be64tohp)(uint64_t big_endian_64bits);
 	uint64_t uret;
@@ -1827,7 +2005,7 @@ uint64_t PROBE_NAME(be64toh)(uint64_t big_endian_64bits)
 	return uret;
 }
 
-uint64_t PROBE_NAME(le64toh)(uint64_t little_endian_64bits)
+HANDLER_WRAPPERS(network_feature, uint64_t , le64toh, uint64_t, little_endian_64bits)
 {
 	static uint64_t (*le64tohp)(uint64_t little_endian_64bits);
 	uint64_t uret;
@@ -1842,7 +2020,7 @@ uint64_t PROBE_NAME(le64toh)(uint64_t little_endian_64bits)
 	return uret;
 }
 
-struct in_addr PROBE_NAME(inet_makeaddr)(int net, int host)
+HANDLER_WRAPPERS(network_feature, struct in_addr , inet_makeaddr, int, net, int, host)
 {
 	static struct in_addr (*inet_makeaddrp)(int net, int host);
 	struct in_addr iret;

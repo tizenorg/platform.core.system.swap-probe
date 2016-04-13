@@ -35,6 +35,8 @@
 #include "daprobe.h"
 #include "dahelper.h"
 #include "common_probe_init.h"
+#include "event_probes_list.h"
+#include "probe_event.h"
 
 struct rotation_s {
 	int handle;
@@ -218,11 +220,15 @@ not_found:
 
 EAPI int PROBE_NAME(ecore_wl_init)(const char *name)
 {
+	/* TODO Support old preload */
 	int res = 0;
-	static int (*ecore_wl_initp)(const char *name);
-
+//	static int (*ecore_wl_initp)(const char *name);
+	int (*ecore_wl_initp)(const char *name);
 	PRINTMSG("(%s)", name);
-	rtld_default_set_once(ecore_wl_initp, "ecore_wl_init");
+
+	ecore_wl_initp = (void *)GET_ORIG_FUNC(event_feature, ecore_wl_init);
+
+//	rtld_default_set_once(ecore_wl_initp, "ecore_wl_init");
 	res = ecore_wl_initp(name);
 
 	if (!rotation_initialized) {

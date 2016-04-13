@@ -51,6 +51,9 @@
 
 #include "binproto.h"
 #include "real_functions.h"
+#include "event_probes_list.h"
+#include "probe_event.h"
+
 
 bool touch_pressed = false;
 
@@ -62,16 +65,22 @@ bool touch_pressed = false;
 		PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID, "pdp",					\
 				  voidp_to_uint64(_ARGDATA), _ARGTYPE,	\
 				  voidp_to_uint64(_ARGEVENT));		\
-		PACK_COMMON_END('c', 0, 0, 0);												\
+		/* TODO Check if address is really unused here */					   \
+		PACK_COMMON_END('c', 0, 0, 0, (uint64_t)0xffffffff);							\
 		PACK_UIEVENT(_EVENTTYPE, _DETAILTYPE, _X, _Y, _KEYCODE, _EXTRA);		\
 		FLUSH_LOCAL_BUF();														\
 	} while (0)
 
 Eina_Bool PROBE_NAME(ecore_event_evas_key_down)(void *data, int type, void *event)
 {
-	static Eina_Bool (*ecore_event_evas_key_downp)(void *data, int type, void *event);
+	/* TODO Support old preload */
+//	static Eina_Bool (*ecore_event_evas_key_downp)(void *data, int type, void *event);
+	Eina_Bool (*ecore_event_evas_key_downp)(void *data, int type, void *event);
 
-	GET_REAL_FUNC(ecore_event_evas_key_down, LIBECORE_INPUT_EVAS);
+//	GET_REAL_FUNC(ecore_event_evas_key_down, LIBECORE_INPUT_EVAS);
+
+	ecore_event_evas_key_downp = (void *)GET_ORIG_FUNC(event_feature,
+						     ecore_event_evas_key_down);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -92,9 +101,14 @@ Eina_Bool PROBE_NAME(ecore_event_evas_key_down)(void *data, int type, void *even
 
 Eina_Bool PROBE_NAME(ecore_event_evas_key_up)(void *data, int type, void *event)
 {
-	static Eina_Bool (*ecore_event_evas_key_upp)(void *data, int type, void *event);
+	/* TODO Support old preload */
+//	static Eina_Bool (*ecore_event_evas_key_upp)(void *data, int type, void *event);
+	Eina_Bool (*ecore_event_evas_key_upp)(void *data, int type, void *event);
 
-	GET_REAL_FUNC(ecore_event_evas_key_up, LIBECORE_INPUT_EVAS);
+//	GET_REAL_FUNC(ecore_event_evas_key_up, LIBECORE_INPUT_EVAS);
+
+	ecore_event_evas_key_upp = (void *)GET_ORIG_FUNC(event_feature,
+						       ecore_event_evas_key_up);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -115,9 +129,14 @@ Eina_Bool PROBE_NAME(ecore_event_evas_key_up)(void *data, int type, void *event)
 
 Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_down)(void *data, int type, void *event)
 {
-	static Eina_Bool (*ecore_event_evas_mouse_button_downp)(void *data, int type, void *event);
+	/* TODO Support old preload */
+//	static Eina_Bool (*ecore_event_evas_mouse_button_downp)(void *data, int type, void *event);
+	Eina_Bool (*ecore_event_evas_mouse_button_downp)(void *data, int type, void *event);
 
-	GET_REAL_FUNC(ecore_event_evas_mouse_button_down, LIBECORE_INPUT_EVAS);
+//	GET_REAL_FUNC(ecore_event_evas_mouse_button_down, LIBECORE_INPUT_EVAS);
+	ecore_event_evas_mouse_button_downp = (void *)GET_ORIG_FUNC(
+					    event_feature,
+					    ecore_event_evas_mouse_button_down);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -136,9 +155,14 @@ Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_down)(void *data, int type, v
 
 Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_up)(void *data, int type, void *event)
 {
-	static Eina_Bool (*ecore_event_evas_mouse_button_upp)(void *data, int type, void *event);
+	/* TODO Support old preload */
+//	static Eina_Bool (*ecore_event_evas_mouse_button_upp)(void *data, int type, void *event);
+	Eina_Bool (*ecore_event_evas_mouse_button_upp)(void *data, int type, void *event);
 
-	GET_REAL_FUNC(ecore_event_evas_mouse_button_up, LIBECORE_INPUT_EVAS);
+//	GET_REAL_FUNC(ecore_event_evas_mouse_button_up, LIBECORE_INPUT_EVAS);
+
+	ecore_event_evas_mouse_button_upp = (void *)GET_ORIG_FUNC(event_feature,
+					      ecore_event_evas_mouse_button_up);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
@@ -157,9 +181,14 @@ Eina_Bool PROBE_NAME(ecore_event_evas_mouse_button_up)(void *data, int type, voi
 
 Eina_Bool PROBE_NAME(ecore_event_evas_mouse_move)(void *data, int type, void *event)
 {
-	static Eina_Bool (*ecore_event_evas_mouse_movep)(void *data, int type, void *event);
+	/* TODO Support old preload */
+//	static Eina_Bool (*ecore_event_evas_mouse_movep)(void *data, int type, void *event);
+	Eina_Bool (*ecore_event_evas_mouse_movep)(void *data, int type, void *event);
 
-	GET_REAL_FUNC(ecore_event_evas_mouse_move, LIBECORE_INPUT_EVAS);
+//	GET_REAL_FUNC(ecore_event_evas_mouse_move, LIBECORE_INPUT_EVAS);
+
+	ecore_event_evas_mouse_movep = (void *)GET_ORIG_FUNC(event_feature,
+						   ecore_event_evas_mouse_move);
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
