@@ -36,11 +36,21 @@ extern "C" {
 #endif
 
 #include "da_gles20.h"
+#include "binproto.h"
+#include "graphics_probes_list.h"
+#include "probe_graphics.h"
 
-#define DECLARE(TYPE, FUNCNAME, ...)   TYPE REAL_NAME(FUNCNAME)(__VA_ARGS__)
-#define DECLARE_NOARGS(TYPE, FUNCNAME)   TYPE REAL_NAME(FUNCNAME)()
+#undef DEF_H
+#define DEF_H(_ret, _name, ...)						\
+static _ret CONCAT(_name, _handler)(__attribute__((unused))ElfW(Addr) orig,\
+				    uint32_t call_type, uint64_t caller \
+				    FUNC_DECL_H(__VA_ARGS__))
 
-#define REAL_NAME(func) __local_##func
+
+#define DECLARE(TYPE, FUNCNAME, ...)   HANDLER_WRAPPERS(graphics_feature, TYPE, REAL_NAME(FUNCNAME), __VA_ARGS__)
+#define DECLARE_NOARGS(TYPE, FUNCNAME)   HANDLER_WRAPPERS(graphics_feature, TYPE, REAL_NAME(FUNCNAME))
+
+#define REAL_NAME(func) CONCAT(__local_, func)
 #define BEFORE BEFORE_GL2_API
 #define CALL_ORIG(func, ...) __gl_api->func(__VA_ARGS__)
 #define TYPEDEF(type)
@@ -58,6 +68,8 @@ extern "C" {
  *
  */
 #include "da_gles20.inc"
+
+#undef DEF_H
 
 #ifdef __cplusplus
 } /* extern C */

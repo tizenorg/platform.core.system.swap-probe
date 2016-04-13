@@ -17,6 +17,12 @@ INCLUDE_CPPFLAGS =				\
 		-I./include			\
 		-I./probe_thread		\
 		-I./probe_event				\
+		-I./probe_capi		\
+		-I./probe_file				\
+		-I./probe_graphics		\
+		-I./probe_memory			\
+		-I./probe_socket			\
+		-I./probe_ui				\
 		-I/usr/include/appfw		\
 		-I/usr/include/dbus-1.0		\
 		-I/usr/include/e_dbus-1		\
@@ -95,20 +101,27 @@ UTILITY_SRCS =				\
 	./helper/dacollection.c		\
 	./helper/daforkexec.c		\
 	./helper/dastdout.c			\
-	./custom_chart/da_chart.c	\
+	./helper/probe_helper.c		\
+	./helper/got_patching.c		\
+	./helper/get_got.c		\
 
 PROBE_SRCS =	   				\
 	./probe_memory/libdamemalloc.c		\
 	./probe_memory/libdamemmanage.c		\
+	./probe_memory/probe_memory.c		\
 	./probe_socket/libdasocket.c		\
+	./probe_socket/probe_socket.c		\
 	./probe_event/gesture.c			\
 	./probe_event/da_event.c		\
 	./probe_event/keytouch.c		\
+	./probe_event/probe_event.c		\
 	./probe_third/libdaemon.c		\
 	./probe_thread/libdathread.c		\
 	./probe_thread/libdasync.c		\
+	./probe_thread/probe_thread.c		\
 	./probe_file/da_io_posix.c		\
 	./probe_file/da_io_stdc.c		\
+	./probe_file/probe_file.c		\
 
 ifeq ($(TIZEN_FEATURE_WAYLAND),y)
 UTILITY_SRCS += ./helper/dacapture.c
@@ -130,7 +143,9 @@ endif # TIZEN_FEATURE_WAYLAND
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
 CAPI_SRCS = 	$(COMMON_SRCS)			\
 		./probe_capi/capi_appfw.c		\
-		./probe_ui/capi_capture.c
+		./probe_capi/probe_capi.c		\
+		./probe_ui/capi_capture.c		\
+		./probe_ui/probe_ui.c
 
 TIZEN_SRCS =	$(COMMON_SRCS) $(CAPI_SRCS)\
 		./helper/common_probe_init.c				\
@@ -138,7 +153,8 @@ TIZEN_SRCS =	$(COMMON_SRCS) $(CAPI_SRCS)\
 		./probe_graphics/da_gl_api_init.c			\
 		./probe_graphics/da_gles20_tizen.cpp			\
 		./probe_graphics/da_gles20_native.cpp			\
-		./probe_graphics/da_gles30_native.cpp
+		./probe_graphics/da_gles30_native.cpp			\
+		./probe_graphics/probe_graphics.c
 ## FIXME: new,delete and etc. operators not configured properly for SWAP-Preload
 #		./probe_memory/libdanew.cpp
 
@@ -175,10 +191,11 @@ $(PARSE_ELF_BIN_OBJ): $(PARSE_ELF_BIN_SRC)
 API_NAME_LIST = scripts/api_names_all.txt
 GENERATED_HEADERS = include/api_id_mapping.h include/x_define_api_id_list.h
 SOURCE_HEADERS = include/api_ld_mapping.h
+LINKER_HEADER = include/linker_info.h
 
-headers: $(API_NAME_LIST) $(GENERATED_HEADERS)
+headers: $(LINKER_HEADER) $(API_NAME_LIST) $(GENERATED_HEADERS)
 rmheaders:
-	rm -f $(API_NAME_LIST) $(GENERATED_HEADERS) $(SOURCE_HEADERS)
+	rm -f $(API_NAME_LIST) $(GENERATED_HEADERS) $(SOURCE_HEADERS) $(LINKER_HEADER)
 
 $(API_NAME_LIST):
 	if [ -f $@ ]; then rm $@;fi
@@ -189,6 +206,18 @@ $(SOURCE_HEADERS): $(API_NAME_LIST)
 $(SOURCE_HEADERS): ./scripts/gen_headers.py
 	python $< $(API_NAME_LIST) $(TIZEN_TARGET) $(INSTALLDIR) > $@ >&2
 	cat $@
+
+ifeq (arm, $(findstring arm, $(shell uname -sm)))
+LINKER_PATH = /lib/ld-linux.so.3
+else
+LINKER_PATH = /lib/ld-linux.so.2
+endif
+LINKER_DEBUG_PATH = /lib/ld-2.20-2014.11.so.debug
+
+DEBUG_POSTFIX = .debug
+
+$(LINKER_HEADER): ./scripts/gen_linker_header.sh
+	sh $^ $@ $(LINKER_PATH) $(LINKER_DEBUG_PATH)
 
 include/api_id_mapping.h: ./scripts/gen_api_id_mapping_header.awk
 include/x_define_api_id_list.h: ./scripts/gen_api_id_mapping_list.awk
@@ -213,7 +242,7 @@ $(PARSE_ELF_LIB_TARGET): $(PARSE_ELF_LIB_OBJ)
 $(PARSE_ELF_BIN_TARGET): $(PARSE_ELF_BIN_OBJ) $(PARSE_ELF_LIB_TARGET)
 	$(CC) $^ -o $@ -L. -lparserelf
 
-ldheader:	$(SOURCE_HEADERS)
+ldheader:	$(SOURCE_HEADERS) $(LINKER_HEADER)
 
 install: install_da install_ld install_elf
 
@@ -228,6 +257,7 @@ install_ld: ldheader # var_addr
 	install -m 644 include/ld_preload_probe_lib.h $(DESTDIR)/$(HEADER_INSTALLDIR)/ld_preload_probe_lib.h
 	install -m 644 include/x_define_api_id_list.h $(DESTDIR)/$(HEADER_INSTALLDIR)/x_define_api_id_list.h
 	install -m 644 include/app_protocol.h $(DESTDIR)/$(HEADER_INSTALLDIR)/app_protocol.h
+	install -m 644 include/linker_info.h $(DESTDIR)/$(HEADER_INSTALLDIR)/linker_info.h
 
 install_elf: elflib elfparser
 	install $(PARSE_ELF_LIB_TARGET) $(DESTDIR)/$(INSTALLDIR)/libparserelf.so

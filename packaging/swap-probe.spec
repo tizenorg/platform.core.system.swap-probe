@@ -26,6 +26,7 @@ BuildRequires: capi-appfw-application-devel
 BuildRequires: capi-system-runtime-info-devel
 BuildRequires: python
 BuildRequires: capi-appfw-application
+BuildRequires: glibc-debuginfo
 
 %if "%{_with_wayland}" == "1"
 BuildRequires:  pkgconfig(wayland-server)
@@ -118,6 +119,7 @@ mkdir -p %{buildroot}/usr/local/bin
 /usr/local/include/ld_preload_*.h
 /usr/local/include/x_define_api_id_list.h
 /usr/local/include/app_protocol.h
+/usr/local/include/linker_info.h
 
 %files -n swap-probe-elf
 %manifest swap-probe-elf.manifest

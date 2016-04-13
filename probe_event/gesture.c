@@ -39,6 +39,10 @@
 
 #include "gesture.h"
 #include "da_event.h"
+#include "event_probes_list.h"
+#include "probe_event.h"
+
+
 
 #define LOGW PRINTWRN
 
@@ -203,7 +207,7 @@ Evas_Event_Flags __common_elm_gesture_layer_cb(void *data , void *event_info)
 	inc_current_event_index();
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID___common_elm_gesture_layer_cb, "p", CALLER_ADDRESS);
-	PACK_COMMON_END('d', res, 0, 0);
+	PACK_COMMON_END('d', res, 0, 0, (uint64_t)0xffffffff);
 	PACK_UIEVENT_HEAD(__get_event_type_code(d->idx), d->cb_type);
 
 	BUF_PTR = __pack_callback_data(BUF_PTR, data, event_info);
@@ -217,18 +221,26 @@ void PROBE_NAME(elm_gesture_layer_cb_set)(Evas_Object *obj, Elm_Gesture_Type idx
 			      Elm_Gesture_State cb_type, Elm_Gesture_Event_Cb cb,
 			      void *data)
 {
-	struct __elm_gesture_layer_cb_set_data d, *elm;
-	static void (*elm_gesture_layer_cb_setp)(Evas_Object *obj, Elm_Gesture_Type idx,
+	/* TODO Support old preload */
+	struct __elm_gesture_layer_cb_set_data *elm;
+//	static void (*elm_gesture_layer_cb_setp)(Evas_Object *obj, Elm_Gesture_Type idx,
+//		      Elm_Gesture_State cb_type, Elm_Gesture_Event_Cb cb,
+//		      void *data);
+	void (*elm_gesture_layer_cb_setp)(Evas_Object *obj, Elm_Gesture_Type idx,
 		      Elm_Gesture_State cb_type, Elm_Gesture_Event_Cb cb,
 		      void *data);
 
-	d.obj = obj;
-	d.idx = idx;
-	d.cb_type = cb_type;
-	d.cb = cb;
-	d.data = data;
+	elm_gesture_layer_cb_setp = (void *)GET_ORIG_FUNC(event_feature,
+						     elm_gesture_layer_cb_set);
 
-	elm = add_gesture_hash(&d);
+	/* TODO Free memory on cb remove */
+	elm = malloc(sizeof(*elm));
+
+	elm->obj = obj;
+	elm->idx = idx;
+	elm->cb_type = cb_type;
+	elm->cb = cb;
+	elm->data = data;
 
 	GET_REAL_FUNCP_RTLD_DEFAULT(elm_gesture_layer_cb_set, elm_gesture_layer_cb_setp);
 

@@ -50,8 +50,17 @@
  *
  **********************************************************************/
 
+#if 0 /* TODO Support old preload */
+
 #define BEFORE_ORIGINAL_SNAPSHOT(FUNCNAME, LIBNAME)		\
 	GET_REAL_FUNC(FUNCNAME, LIBNAME)
+
+#else
+
+#define BEFORE_ORIGINAL_SNAPSHOT(FUNCNAME, LIBNAME)		\
+	FUNCNAME ## p = (void *)GET_ORIG_FUNC(ui_feature, FUNCNAME)
+
+#endif 
 
 #define AFTER_ORIGINAL_SNAPSHOT(EVASOBJECT)							\
 	do {															\
