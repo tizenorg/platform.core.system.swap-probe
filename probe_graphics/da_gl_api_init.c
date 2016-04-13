@@ -33,7 +33,7 @@
 #include "real_functions.h"
 
 /* GL __local_* functions prototypes */
-#define X(func) extern void __local_##func(void);
+#define X(func) extern void __PROBE____local_##func(void);
 #include "da_gl_api_func_list.h"
 	GL_ALL_FUNCTIONS;
 #undef X
@@ -54,7 +54,7 @@ void __init_gl_api__(void)
  */
 #define X(func) \
 	do {									\
-		__gl_api_fake.func = (typeof(api->func)) __local_##func;	\
+		__gl_api_fake.func = (typeof(api->func)) __PROBE____local_##func;	\
 		if (__gl_api_fake.func == NULL)					\
 			PRINTWRN("api->%s not setted", #func);			\
 	} while(0);

@@ -34,10 +34,14 @@
 #include "daprobe.h"
 #include "probeinfo.h"
 #include "da_ui.h"
+#include "ui_probes_list.h"
+#include "probe_ui.h"
+
 
 void PROBE_NAME(evas_object_show)(Evas_Object *obj)
 {
-	static void (*evas_object_showp)(Evas_Object *obj);
+//	static void (*evas_object_showp)(Evas_Object *obj);
+	void (*evas_object_showp)(Evas_Object *obj);
 
 	BEFORE_ORIGINAL_SNAPSHOT(evas_object_show, LIBEVAS);
 	evas_object_showp(obj);

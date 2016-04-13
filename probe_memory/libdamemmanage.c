@@ -43,15 +43,20 @@
 #include "binproto.h"
 #include "common_probe_init.h"
 #include "real_functions.h"
+#include "memory_probes_list.h"
+#include "probe_memory.h"
 
 
-void *PROBE_NAME(memset)(void *memblock, int c, size_t n)
+
+HANDLER_WRAPPERS(void *, memset, void *, memblock, int, c, size_t, n)
 {
-	static void *(*memsetp)(void *,int,size_t);
+//	static void *(*memsetp)(void *,int,size_t);
+	void *(*memsetp)(void *,int,size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	GET_REAL_FUNC_RTLD_NEXT(memset);
+//	GET_REAL_FUNC_RTLD_NEXT(memset);
+	memsetp = (void *)GET_ORIG_FUNC(memory_feature, memset);
 
 	PRE_PROBEBLOCK();
 
@@ -64,7 +69,7 @@ void *PROBE_NAME(memset)(void *memblock, int c, size_t n)
 			  API_ID_memset,
 			  "pdx", voidp_to_uint64(memblock), c,
 			  (uint64_t)(n));
-	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_COMMON_END('p', pret, newerrno, call_type, caller);
 	PACK_MEMORY(n, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();
 
@@ -73,12 +78,15 @@ void *PROBE_NAME(memset)(void *memblock, int c, size_t n)
 	return pret;
 }
 
-int PROBE_NAME(memcmp)(const void * ptr1, const void * ptr2, size_t num)
+HANDLER_WRAPPERS(int, memcmp, const void *, ptr1, const void *, ptr2,
+		 size_t, num)
 {
-	static int(*memcmpp)(const void *,const void *,size_t);
+//	static int(*memcmpp)(const void *,const void *,size_t);
+	int(*memcmpp)(const void *,const void *,size_t);
 	DECLARE_VARIABLE_STANDARD;
 
-	GET_REAL_FUNC_RTLD_NEXT(memcmp);
+//	GET_REAL_FUNC_RTLD_NEXT(memcmp);
+	memcmpp = (void *)GET_ORIG_FUNC(memory_feature, memcmp);
 
 	PRE_PROBEBLOCK();
 
@@ -91,7 +99,7 @@ int PROBE_NAME(memcmp)(const void * ptr1, const void * ptr2, size_t num)
 			  API_ID_memcmp,
 			  "ppx", voidp_to_uint64(ptr1), voidp_to_uint64(ptr2),
 			  (uint64_t)(num));
-	PACK_COMMON_END('d', ret, newerrno, blockresult);
+	PACK_COMMON_END('d', ret, newerrno, call_type, caller);
 	PACK_MEMORY(num, MEMORY_API_MANAGE, ret);
 	FLUSH_LOCAL_BUF();
 
@@ -100,13 +108,16 @@ int PROBE_NAME(memcmp)(const void * ptr1, const void * ptr2, size_t num)
 	return ret;
 }
 
-void *PROBE_NAME(memcpy)(void * destination, const void * source, size_t num )
+HANDLER_WRAPPERS(void *, memcpy, void *, destination, const void *, source,
+		 size_t, num)
 {
-	static void *(*memcpyp)(void *,const void *,size_t);
+//	static void *(*memcpyp)(void *,const void *,size_t);
+	void *(*memcpyp)(void *,const void *,size_t);
 	DECLARE_VARIABLE_STANDARD;
 	void *pret;
 
-	GET_REAL_FUNC_RTLD_NEXT(memcpy);
+//	GET_REAL_FUNC_RTLD_NEXT(memcpy);
+	memcpyp = (void *)GET_ORIG_FUNC(memory_feature, memcpy);
 
 	PRE_PROBEBLOCK();
 
@@ -120,7 +131,7 @@ void *PROBE_NAME(memcpy)(void * destination, const void * source, size_t num )
 			  "ppx", voidp_to_uint64(destination),
 			  voidp_to_uint64(source),
 			  (uint64_t)(num));
-	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_COMMON_END('p', pret, newerrno, call_type, caller);
 	PACK_MEMORY(num, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();
 
@@ -128,4 +139,3 @@ void *PROBE_NAME(memcpy)(void * destination, const void * source, size_t num )
 
 	return pret;
 }
-
