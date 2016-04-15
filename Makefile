@@ -70,7 +70,7 @@ LDFLAGS = -shared   	\
 	-ldl				\
 	-Wl,-z,noexecstack
 
-ASMFLAG = -O0 -g
+ASMFLAG = -O0 -g -Werror
 
 CFLAGS = $(WARN_CFLAGS) -fPIC
 CXXFLAGS = $(WARN_CFLAGS) -fPIC

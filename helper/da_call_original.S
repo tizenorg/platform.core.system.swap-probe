@@ -178,7 +178,7 @@ _da_call_original:
 .type _da_call_original, %function
 
 _da_call_original:
-	push {fp, lr, r5, r6, r7, r8}
+	push {r5, r6, r7, r8, fp, lr}
 	#create local stack
 	add  fp, sp, #4
 	sub  sp, sp, #stack_size
@@ -234,5 +234,5 @@ _da_call_original:
 	#local stack restore
 	add  sp, sp, #stack_size
 	#return
-	pop  {fp, pc, r5, r6, r7, r8}
+	pop  {r5, r6, r7, r8, fp, pc}
 #endif
