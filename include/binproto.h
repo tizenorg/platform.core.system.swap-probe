@@ -175,12 +175,12 @@ static char __attribute__((used)) *pack_string_to_file(char *to, const char *st,
 		/* pack string to file */
 		char template_name[] = SCREENSHOT_DIRECTORY "/swap_XXXXXX";
 		char dst_path_pack[MAX_PATH_LENGTH];
-		FILE *file;
-		mktemp(template_name);
-		file = fopen(template_name, "w");
-		if (file != NULL) {
-			fwrite(st, data_len, 1, file);
-			fclose(file);
+		int file = mkstemp(template_name);
+		if (file != -1) {
+			write(file, st, data_len);
+			close(file);
+		} else {
+			PRINTERR("cannot pack string to file %s\n", st);
 		}
 		snprintf(dst_path_pack, sizeof(dst_path_pack), "FILE:%s", template_name);
 		to = pack_string(to, dst_path_pack);

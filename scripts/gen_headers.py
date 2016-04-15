@@ -74,7 +74,7 @@ def __parse_file(libs_data, file):
         elif line[:7] == defines_tag:
             list = line.split()
             if len(list) < 2 or len(list) > 3:
-                print "WARNING: Wrong string in api_names.txt +" + str(current_line) + ": <" + line + ">"
+                print "[WARN]: Wrong string in api_names.txt +" + str(current_line) + ": <" + line + ">"
             if len(list) != 3:
                 continue
 
@@ -82,13 +82,13 @@ def __parse_file(libs_data, file):
             print "defines[" + list[1] + "] = " + list[2]
             defines[list[1]] = list[2]
         elif line[:1] == "#":
-                #print "WARNING: commented code : <" + line + ">"
+                #print "[WARN]: commented code : <" + line + ">"
                 continue
         else:
             splitted = line.split(';')
 
             if len(splitted) < 3:
-                print "WARNING: Wrong string in api_names.txt +" + str(current_line) + ": <" + line + ">"
+                print "[WARN]: Wrong string in api_names.txt +" + str(current_line) + ": <" + line + ">"
                 continue
             for i in range(0, len(splitted)):
                 splitted[i] = re.sub(" ", "", splitted[i])
@@ -99,7 +99,7 @@ def __parse_file(libs_data, file):
             probe_type = splitted[2]
 
             if len(current_libs) == 1 and (current_libs[0] == "???" or current_libs[0] == "---"):
-                print "WARNING: Skip func <" + func + "> file <" + current_filename + "> lib <" + current_libs[0] + ">"
+                print "[WARN]: Skip func <" + func + "> file <" + current_filename + "> lib <" + current_libs[0] + ">"
                 continue
 
             libs_data = __add_item(libs_data, [current_libs, [func, [current_feature]]], (handler, probe_type))
@@ -108,6 +108,7 @@ def __parse_file(libs_data, file):
 
 
 def parse_apis(func_list_file):
+    print "parse_apis"
     libs_data = {}
 
     with open(func_list_file) as f:
@@ -138,6 +139,7 @@ def __lib_syms(libname):
 
 
 def parse_probe_lib(da_lib):
+    print "parse_probe_lib"
     return __lib_syms(da_lib)
 
 ####################################################################
@@ -191,6 +193,7 @@ def get_function_search_error(function_name):
     return err_str % (function_name, err)
 
 def iterate_over_libs(data, probe_lib):
+    print "iterate_over_libs"
     feature_dict = {}
     for libname in data:
         lib_data = __lib_syms(libname)
@@ -304,7 +307,7 @@ def __print_feature_list(file, features_cnt, features_list_dict):
     file.write("int feature_to_data_count = " + str(features_cnt) + ";\n")
     file.write("struct feature_list_t feature_to_data[] = {\n")
     for feature in features_list_dict:
-        file.write("\t{" + feature + ", (struct ld_feature_list_el_t **) &" + features_list_dict[feature] + "},\n")
+        file.write("\t{.feature_value_0 = " + feature + ", .feature_value_1 = 0, .feature_ld = &" + features_list_dict[feature] + "},\n")
     file.write("};\n")
 
 def __print_features(file, data):
@@ -370,8 +373,9 @@ def __print_feature_list_el_t(file):
 
 def __print_feature_list_t(file):
     file.write("struct feature_list_t {\n")
-    file.write("\tenum feature_code feature_value;\n")
-    file.write("\tstruct ld_feature_list_el_t **feature_ld;\n")
+    file.write("\tenum feature_code_0 feature_value_0;\n")
+    file.write("\tenum feature_code_1 feature_value_1;\n")
+    file.write("\tstruct ld_feature_list_el_t *feature_ld;\n")
     file.write("};\n")
 
 def __print_types(file):
@@ -389,17 +393,17 @@ def __print_types(file):
 def __print_probe_lib(file, da_inst_dir, da_lib, probe_lib):
     get_caller_addr = __get_addr_by_funcname_handler(probe_lib, "get_caller_addr")
     if get_caller_addr is None:
-        print "WARNING: <get_caller> address is not found!"
+        print "[WARN]: <get_caller> address is not found!"
         return
 
     get_call_type_addr = __get_addr_by_funcname_handler(probe_lib, "get_call_type")
     if get_call_type_addr is None:
-        print "WARNING: <get_call_type> address is not found!"
+        print "[WARN]: <get_call_type> address is not found!"
         return
 
     write_msg_addr = __get_addr_by_funcname_handler(probe_lib, "write_msg")
     if write_msg_addr is None:
-        print "WARNING: <write_msg> address is not found!"
+        print "[WARN]: <write_msg> address is not found!"
         return
 
     file.write("static const char *probe_lib = \"" + da_inst_dir + "/" + da_lib + "\";\n")
@@ -409,6 +413,7 @@ def __print_probe_lib(file, da_inst_dir, da_lib, probe_lib):
 
 
 def generate_headers(dict, da_inst_dir, da_lib, probe_lib):
+    print "generate_headers"
     c_output="include/ld_preload_probes.h"
     c_output_types="include/ld_preload_types.h"
     c_output_probe_lib="include/ld_preload_probe_lib.h"
