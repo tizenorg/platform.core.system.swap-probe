@@ -64,7 +64,7 @@ LDFLAGS = -shared   	\
 	-ldl				\
 	-Wl,-z,noexecstack
 
-ASMFLAG = -O0 -g
+ASMFLAG = -O0 -g -Werror
 
 ## FIXME: Ideally, UTILITY_SRCS is sources for probe infrastructure and
 ## PROBE_SRCS is sources for actual replacement functions.  Unfortunatelly,
