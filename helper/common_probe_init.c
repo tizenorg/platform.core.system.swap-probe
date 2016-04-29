@@ -64,7 +64,8 @@ void set_real_func(const char *func_name, void **func_pointer,
 	_id = lib_handle[id];
 
 	if (_id == NULL)
-		probe_terminate_with_err("dlopen failed", func_name, id);
+		PRINTWRN("Cannot open lib <%s>."
+			 "It may be application fault reason\n",lib_string[id]);
 
 	faddr = dlsym(_id, func_name);
 	if (faddr == NULL || dlerror() != NULL) {
