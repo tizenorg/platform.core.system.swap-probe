@@ -55,18 +55,20 @@ void __gl_dummy_function()
 void set_real_func(const char *func_name, void **func_pointer,
 		   ORIGINAL_LIBRARY id)
 {
-	void *faddr;
-	void *_id;
+	void *faddr = NULL;
 
 	if (lib_handle[id] == NULL)
 		lib_handle[id] = dlopen(lib_string[id], RTLD_LAZY);
 
-	_id = lib_handle[id];
+	dlerror(); /* Clear any existing error */
 
-	if (_id == NULL)
-		probe_terminate_with_err("dlopen failed", func_name, id);
+	if (lib_handle[id] != NULL)
+		faddr = dlsym(lib_handle[id], func_name);
+	else
+		PRINTWRN("Cannot open lib <%s>."
+			 "It may be application fault reason\n",
+			 lib_string[id]);
 
-	faddr = dlsym(_id, func_name);
 	if (faddr == NULL || dlerror() != NULL) {
 		PRINTWRN("[set_real_function] function <%s> not found in lib <%s>; dummy function will be seted",
 			 func_name, lib_string[id]);
