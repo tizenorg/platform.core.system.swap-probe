@@ -178,3 +178,222 @@ void *PROBE_NAME(calloc)(size_t nelem, size_t elsize)
 
 	return pret;
 }
+
+char *PROBE_NAME(strdup)(const char *str)
+{
+	static void *(*strdupp)(const char *);
+	size_t size = 0;
+	DECLARE_VARIABLE_STANDARD;
+	char *pret;
+
+	rtdl_next_set_once(strdupp, "strdup");
+
+	PRE_PROBEBLOCK();
+
+	pret = (*strdupp)(str);
+
+	if (pret != NULL) {
+		size = strnlen(pret, PATH_MAX) + 1; /* +1 for terminate \0 */
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
+	}
+
+	POST_PACK_PROBEBLOCK_BEGIN();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_strdup,
+			  "p", str);
+	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_MEMORY((uint64_t)size, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+
+	POST_PACK_PROBEBLOCK_END();
+
+	return pret;
+}
+
+char *PROBE_NAME(strndup)(const char *str, size_t n)
+{
+	static void *(*strndupp)(const char *, size_t);
+	size_t size = 0;
+	DECLARE_VARIABLE_STANDARD;
+	char *pret;
+
+	rtdl_next_set_once(strndupp, "strndup");
+
+	PRE_PROBEBLOCK();
+
+	pret = (*strndupp)(str, n);
+
+	if (pret != NULL) {
+		size = strnlen(pret, PATH_MAX) + 1; /* +1 for terminate \0 */
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
+	}
+
+	POST_PACK_PROBEBLOCK_BEGIN();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_strndup,
+			  "pn", str, n);
+	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_MEMORY((uint64_t)size, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+
+	POST_PACK_PROBEBLOCK_END();
+
+	return pret;
+}
+
+wchar_t *PROBE_NAME(wcsdup)(const wchar_t * str)
+{
+	static wchar_t *(*wcsdupp)(const wchar_t *);
+	size_t size = 0;
+	DECLARE_VARIABLE_STANDARD;
+	wchar_t *pret;
+
+	rtdl_next_set_once(wcsdupp, "wcsdup");
+
+	PRE_PROBEBLOCK();
+
+	pret = (*wcsdupp)(str);
+
+	if (pret != NULL) {
+		size = (wcsnlen(pret, PATH_MAX) + 1) * sizeof(*pret); /* +1 for terminate \0 */
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
+	}
+
+	POST_PACK_PROBEBLOCK_BEGIN();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_wcsdup,
+			  "p", str);
+	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_MEMORY((uint64_t)size, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+
+	POST_PACK_PROBEBLOCK_END();
+
+	return pret;
+}
+
+int PROBE_NAME(asprintf)(char **strp, const char *fmt, ...)
+{
+	static int(*vasprintfp)(char **, const char *, va_list);
+	va_list valist;
+	size_t size = 0;
+	DECLARE_VARIABLE_STANDARD;
+	int pret;
+
+	rtdl_next_set_once(vasprintfp, "vasprintf");
+
+	PRE_PROBEBLOCK();
+	va_start(valist, fmt);
+	pret = (*vasprintfp)(strp, fmt, valist);
+	va_end(valist);
+
+	if (pret != -1) {
+		size = strnlen(*strp, PATH_MAX) + 1; /* +1 for terminate \0 */
+		add_memory_hash(*strp, size, MEMTYPE_ALLOC, CALL_TYPE);
+	}
+
+	POST_PACK_PROBEBLOCK_BEGIN();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_asprintf,
+			  "pp", strp, fmt);
+	PACK_COMMON_END('d', pret, newerrno, blockresult);
+	PACK_MEMORY((uint64_t)size, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+
+	POST_PACK_PROBEBLOCK_END();
+
+	return pret;
+}
+
+int PROBE_NAME(vasprintf)(char **strp, const char *fmt, va_list valist)
+{
+	static int(*vasprintfp)(char **, const char *, va_list);
+	size_t size = 0;
+	DECLARE_VARIABLE_STANDARD;
+	int pret;
+
+	rtdl_next_set_once(vasprintfp, "vasprintf");
+
+	PRE_PROBEBLOCK();
+	pret = (*vasprintfp)(strp, fmt, valist);
+
+	if (pret != -1) {
+		size = strnlen(*strp, PATH_MAX) + 1; /* +1 for terminate \0 */
+		add_memory_hash(*strp, size, MEMTYPE_ALLOC, CALL_TYPE);
+	}
+
+	POST_PACK_PROBEBLOCK_BEGIN();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_asprintf,
+			  "pp", strp, fmt);
+	PACK_COMMON_END('d', pret, newerrno, blockresult);
+	PACK_MEMORY((uint64_t)size, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+
+	POST_PACK_PROBEBLOCK_END();
+
+	return pret;
+}
+
+void *PROBE_NAME(memalign)(size_t boundary, size_t size)
+{
+	static void *(*memalignp)(size_t, size_t);
+	DECLARE_VARIABLE_STANDARD;
+	void *pret;
+
+	rtdl_next_set_once(memalignp, "memalign");
+
+	PRE_PROBEBLOCK();
+
+	pret = (*memalignp)(boundary, size);
+
+	if (pret != NULL)
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
+
+	POST_PACK_PROBEBLOCK_BEGIN();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_memalign,
+			  "xx", boundary, size);
+	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+
+	POST_PACK_PROBEBLOCK_END();
+
+	return pret;
+}
+
+void *PROBE_NAME(valloc)(size_t size)
+{
+	static void *(*vallocp)(size_t);
+	DECLARE_VARIABLE_STANDARD;
+	void *pret;
+
+	rtdl_next_set_once(vallocp, "valloc");
+
+	PRE_PROBEBLOCK();
+
+	pret = (*vallocp)(size);
+
+	if (pret != NULL)
+		add_memory_hash(pret, size, MEMTYPE_ALLOC, CALL_TYPE);
+
+	POST_PACK_PROBEBLOCK_BEGIN();
+
+	PREPARE_LOCAL_BUF();
+	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY, API_ID_valloc,
+			  "x", size);
+	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
+	FLUSH_LOCAL_BUF();
+
+	POST_PACK_PROBEBLOCK_END();
+
+	return pret;
+}

@@ -35,6 +35,13 @@ malloc@*;      malloc;     4
 free@*;        free;       4
 realloc@*;     realloc;    4
 calloc@*;      calloc;     4
+strdup@*;      strdup;     4
+strndup@*;     strndup;    4
+wcsdup@*;      wcsdup;     4
+asprintf@*;    asprintf;   4
+vasprintf@*;   vasprintf;  4
+memalign@*;    memalign;   4
+valloc@*;      valloc;     4
 
 
 #filename libdamemalloc.c
@@ -44,3 +51,10 @@ malloc@*;      malloc;     1
 free@*;        free;       1
 realloc@*;     realloc;    1
 calloc@*;      calloc;     1
+strdup@*;      strdup;     1
+strndup@*;     strndup;    1
+wcsdup@*;      wcsdup;     1
+asprintf@*;    asprintf;   1
+vasprintf@*;   vasprintf;  1
+memalign@*;    memalign;   1
+valloc@*;      valloc;     1
