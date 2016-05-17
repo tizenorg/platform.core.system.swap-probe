@@ -40,6 +40,7 @@ struct sym_table_entry {
 	struct sym_table_entry *prev;
 	char* name;
 	Elf_Addr addr;
+	unsigned int type;
 };
 
 int get_interp(const char *filename, char **interp_p);

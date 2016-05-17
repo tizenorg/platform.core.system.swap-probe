@@ -154,7 +154,8 @@ name_is_free:
 	free(entry);
 }
 
-static struct sym_table_entry *new_sym_entry(const char *name, Elf_Addr addr)
+static struct sym_table_entry *new_sym_entry(const char *name, Elf_Addr addr,
+					     unsigned int type)
 {
 	struct sym_table_entry *elem;
 	size_t len = 1;
@@ -176,6 +177,7 @@ static struct sym_table_entry *new_sym_entry(const char *name, Elf_Addr addr)
 
 	elem->name[len - 1] = '\0';
 	elem->addr = addr;
+	elem->type = type;
 	elem->prev = NULL;
 	elem->next = NULL;
 
@@ -196,6 +198,7 @@ get_sym_addr(const void *elf, const char* table_name, const char *sym_names[],
 	const Elf_Sym *table;
 	const char *name;
 	Elf_Addr addr;
+	unsigned int type;
 	int entries_num;
 	int i, j;
 	struct sym_table_entry *first = NULL, *elem = NULL, *prev = NULL;
@@ -236,12 +239,13 @@ get_sym_addr(const void *elf, const char* table_name, const char *sym_names[],
 			for (i = 0; i < entries_num; i++) {
 				name = elf + str_section->sh_offset + table[i].st_name;
 				addr = table[i].st_value;
+				type = ELF_ST_TYPE(table[i].st_info);
 
-				if (is_only_func && ELF_ST_TYPE(table[i].st_info) != STT_FUNC)
+				if (is_only_func && type != STT_FUNC)
 					continue;
 
 				if (!regexec(&regex, name, 0, NULL, 0)) {
-					elem = new_sym_entry(name, addr);
+					elem = new_sym_entry(name, addr, type);
 					if (elem == NULL)
 						break;
 					if (first == NULL)
@@ -258,7 +262,8 @@ get_sym_addr(const void *elf, const char* table_name, const char *sym_names[],
 		for (i = 0; i < entries_num; i++) {
 			name = elf + str_section->sh_offset + table[i].st_name;
 			addr = table[i].st_value;
-			elem = new_sym_entry(name, addr);
+			type = ELF_ST_TYPE(table[i].st_info);
+			elem = new_sym_entry(name, addr, type);
 			if (elem == NULL)
 				break;
 			if (first == NULL)
