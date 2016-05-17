@@ -130,10 +130,16 @@ def __lib_syms(libname):
         tokens = line.split('\n')
         for t in tokens:
             parts = t.split(' ')
-            if len(parts) == 2 and int(parts[0], 16) != 0:
-                if parts[1] not in probe_data:
-                    probe_data[parts[1]] = ()
-                probe_data[parts[1]] += (parts[0], )
+            if len(parts) == 3 and int(parts[0], 16) != 0:
+                addr = parts[0]
+                t = parts[1]
+                name = parts[2]
+                if t == "FUNC" or t == "IFUNC":
+                    if name not in probe_data:
+                        probe_data[name] = ()
+                    if t == "IFUNC":
+                        addr = "FFFFFFFF"
+                    probe_data[name] += (addr, )
 
     return probe_data
 
@@ -380,6 +386,7 @@ def __print_feature_list_t(file):
 
 def __print_types(file):
     file.write("#define NOFEATURE 0xFFFFFFFF\n")
+    file.write("#define IFUNC_UNDEF_ADDR 0xFFFFFFFF\n")
     file.write("\n")
     __print_probe_el_t(file)
     file.write("\n")
