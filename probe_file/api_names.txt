@@ -63,11 +63,11 @@ fseek@*;           fseek;      1
 fsetpos@*;         fsetpos;    1
 ftell@*;           ftell;      1
 fwrite@*;          fwrite;     1
-getc@*;            _IO_getc;   1
+getc@*;            getc;   1
 getchar@*;         getchar;    1
 gets@*;            gets;       1
 printf@*;          printf;     1
-putc@*;            _IO_putc;   1
+putc@*;            putc;   1
 putchar@*;         putchar;    1
 puts@*;            puts;       1
 rewind@*;          rewind;     1

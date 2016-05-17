@@ -46,7 +46,6 @@
 #include <sys/epoll.h>
 #include <sys/poll.h>
 #include "probeinfo.h"
-#include "dautil.h"
 #include "da_socket.h"
 #include "daprobe.h"
 #include "dahelper.h"

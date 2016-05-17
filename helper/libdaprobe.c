@@ -51,7 +51,6 @@
 #include <sys/timerfd.h>	// for timerfd
 
 #include "probeinfo.h"
-#include "dautil.h"
 #include "dahelper.h"
 #include "dacapture.h"
 #include "dacollection.h"
@@ -60,17 +59,13 @@
 
 #include "binproto.h"
 #include "daforkexec.h"
-#include "damaps.h"
 #include "dastdout.h"
 #include "common_probe_init.h"
 #include "real_functions.h"
 
-#define APP_INSTALL_PATH		"/opt/apps"
-#define TISEN_APP_POSTFIX			".exe"
 #define UDS_NAME				"/tmp/da.socket"
 #define TIMERFD_INTERVAL		100000000		// 0.1 sec
 
-__thread int		gProbeDepth = 0;
 pid_t gPid = -1;
 __thread pid_t		gTid = -1;
 
@@ -79,8 +74,6 @@ long		g_total_alloc_size = 0;
 pthread_t	g_recvthread_id;
 
 int log_fd = 0;
-
-int getExecutableMappingAddress();
 
 bool printLog(log_t* log, int msgType);
 
@@ -139,25 +132,24 @@ void application_exit()
 
 // create socket to daemon and connect
 #define MSG_CONFIG_RECV 0x01
-#define MSG_MAPS_INST_LIST_RECV 0x02
-static int createSocket(void)
+static int create_socket(void)
 {
 	char strerr_buf[MAX_PATH_LENGTH];
 	ssize_t recvlen;
-	int clientLen, ret = 0;
-	struct sockaddr_un clientAddr;
+	int client_len, ret = 0;
+	struct sockaddr_un client_addr;
 	log_t log;
 
 	gTraceInfo.socket.daemonSock =
 	  socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
 	if (gTraceInfo.socket.daemonSock != -1)	{
-		memset(&clientAddr, '\0', sizeof(clientAddr));
-		clientAddr.sun_family = AF_UNIX;
-		snprintf(clientAddr.sun_path, sizeof(UDS_NAME), "%s", UDS_NAME);
+		memset(&client_addr, '\0', sizeof(client_addr));
+		client_addr.sun_family = AF_UNIX;
+		snprintf(client_addr.sun_path, sizeof(UDS_NAME), "%s", UDS_NAME);
 
-		clientLen = sizeof(clientAddr);
+		client_len = sizeof(client_addr);
 		if (connect(gTraceInfo.socket.daemonSock,
-			    (struct sockaddr *)&clientAddr, clientLen) >= 0)
+			    (struct sockaddr *)&client_addr, client_len) >= 0)
 		{
 			char buf[64];
 			int recved = 0;
@@ -167,8 +159,7 @@ static int createSocket(void)
 			print_log_str(APP_MSG_PID, buf);
 
 			/* we need recv this messages right now! */
-			while (((recved & MSG_CONFIG_RECV) == 0) ||
-			       ((recved & MSG_MAPS_INST_LIST_RECV) == 0))
+			while ((recved & MSG_CONFIG_RECV) == 0)
 			{
 				PRINTMSG("wait incoming message %d\n",
 					 gTraceInfo.socket.daemonSock);
@@ -200,10 +191,6 @@ static int createSocket(void)
 						PRINTMSG("APP_MSG_CONFIG");
 						_configure(data_buf);
 						recved |= MSG_CONFIG_RECV;
-					} else if(log.type ==  APP_MSG_MAPS_INST_LIST) {
-						PRINTMSG("APP_MSG_MAPS_INST_LIST <%u>", *((uint32_t *)data_buf));
-						set_map_inst_list(&data_buf, *((uint32_t *)data_buf));
-						recved |= MSG_MAPS_INST_LIST_RECV;
 					} else {
 						// unexpected case
 						PRINTERR("unknown message! %d", log.type);
@@ -233,7 +220,7 @@ free_data_buf:
 
 			}
 
-			PRINTMSG("createSocket connect() success\n");
+			PRINTMSG("create_socket connect() success\n");
 		} else {
 			close(gTraceInfo.socket.daemonSock);
 			gTraceInfo.socket.daemonSock = -1;
@@ -252,30 +239,6 @@ free_data_buf:
 	return ret;
 }
 
-
-// parse backtrace string and find out the caller of probed api function
-// return 0 if caller is user binary, otherwise return 1
-static int determineCaller(char* tracestring)
-{
-	char *substr;
-
-	// determine whether saveptr (caller binary name) is user binary or not
-	substr = strstr(tracestring, APP_INSTALL_PATH);
-
-	if(substr == NULL)	// not user binary
-	{
-		return 1;
-	}
-	else				// user binary
-	{
-#ifdef TISENAPP
-		substr = strstr(tracestring, TISEN_APP_POSTFIX);
-		if(substr == NULL)
-			return 1;
-#endif
-		return 0;
-	}
-}
 
 void reset_pid_tid()
 {
@@ -299,12 +262,11 @@ pid_t _gettid()
 	return gTid;
 }
 
-static void *recvThread(void __unused * data)
+static void *recv_thread(void __unused * data)
 {
 	fd_set readfds, workfds;
 	int maxfd = 0, rc;
 	uint64_t xtime;
-	uint32_t tmp;
 	ssize_t recvlen;
 	log_t log;
 	char *data_buf = NULL;
@@ -386,15 +348,18 @@ static void *recvThread(void __unused * data)
 					if (log.type != APP_MSG_STOP_WITHOUT_KILL)
 						application_exit();
 					break;
-				} else if(log.type == APP_MSG_MAPS_INST_LIST) {
-					if(log.length > 0) {
-						tmp = *((uint32_t *)data_buf);
-						PRINTMSG("APP_MSG_MAPS_INST_LIST <%u>", tmp);
-						set_map_inst_list(&data_buf, tmp);
-						continue;
-					} else {
-						PRINTERR("WRONG APP_MSG_MAPS_INST_LIST");
-					}
+				} else if(log.type == APP_MSG_GET_UI_HIERARCHY) {
+					PRINTMSG("APP_MSG_GET_UI_HIERARCHY");
+					// do nothing
+					continue;
+				} else if(log.type == APP_MSG_GET_UI_SCREENSHOT) {
+					PRINTMSG("APP_MSG_GET_UI_SCREENSHOT");
+					// do nothing
+					continue;
+				} else if(log.type == APP_MSG_GET_UI_HIERARCHY_CANCEL) {
+					PRINTMSG("APP_MSG_GET_UI_HIERARCHY_CANCEL");
+					// do nothing
+					continue;
 				} else {
 					PRINTERR("recv unknown message. id = (%d)", log.type);
 				}
@@ -461,18 +426,9 @@ static int init_timerfd(void)
 	return timer;
 }
 
-static uint64_t get_app_start_time(void)
-{
-	enum {nsecs_in_sec = 1000 * 1000};
-	struct timeval time;
-
-	gettimeofday(&time, NULL);
-	return nsecs_in_sec * (uint64_t) time.tv_sec + time.tv_usec;
-}
-
 static int create_recv_thread()
 {
-	int err = pthread_create(&g_recvthread_id, NULL, recvThread, NULL);
+	int err = pthread_create(&g_recvthread_id, NULL, recv_thread, NULL);
 
 	if (err)
 		PRINTMSG("failed to crate recv thread\n");
@@ -489,14 +445,8 @@ void _init_(void)
 	init_exec_fork();
 	initialize_hash_table();
 
-	initialize_screencapture();
-
-	getExecutableMappingAddress();
-
-	gTraceInfo.app.startTime = get_app_start_time();
-
 	// create socket for communication with da_daemon
-	if (createSocket() == 0) {
+	if (create_socket() == 0) {
 		g_timerfd = init_timerfd();
 		create_recv_thread();
 		update_heap_memory_size(true, 0);
@@ -507,7 +457,6 @@ void _init_(void)
 		 getpid());
 
 	gTraceInfo.init_complete = 1;
-	maps_make();
 }
 
 void __attribute__((constructor)) _init_probe()
@@ -518,12 +467,6 @@ void __attribute__((constructor)) _init_probe()
 		exit(1);
 	}
 	rtdl_next_set_once(real_malloc, "malloc");
-
-	 /* init maps */
-	if (maps_init()!=0){
-		perror("cannot init readers semaphores\n");
-		exit(0);
-	};
 
 	/* init library */
 	_init_();
@@ -557,8 +500,6 @@ void _uninit_(void)
 	}
 
 	finalize_event();
-
-	finalize_screencapture();
 
 	finalize_hash_table();
 
@@ -737,59 +678,26 @@ static inline bool isNoFiltOptionEnabled(enum DaOptions option)
 		    && isOptionEnabled(OPT_GLES_ALWAYS));
 }
 
-static inline bool is_user_call(const void *caller)
-{
-	bool user = false;
-	char **strings;
-
-	if (gTraceInfo.exec_map.map_start != NULL) {
-		if (caller >= gTraceInfo.exec_map.map_start &&
-		    caller <= gTraceInfo.exec_map.map_end)
-			user = true;
-	} else {
-		strings = BACKTRACE_SYMBOLS((void * const *)caller, 1);
-		if (strings != NULL) {
-			if (determineCaller(strings[0]) == 0)
-				user = true;
-			free(strings);
-		}
-	}
-
-	return user;
-}
-
 int preBlockBegin(void)
 {
 	if(gTraceInfo.init_complete <= 0)
 		return 0;
 
-	probingStart();
-
 	return 1;
-}
-
-void postBlockEnd()
-{
-	probingEnd();
 }
 
 /*************************************************************************
  * helper info getter functions
  *************************************************************************/
 
-// return current time in 1/10000 sec unit
-unsigned long getCurrentTime()
-{
-	struct timeval cTime;
-
-	gettimeofday(&cTime, NULL);
-
-	return (unsigned long)((cTime.tv_sec * 10000 + (cTime.tv_usec/100)));
-}
-
 unsigned int getCurrentEventIndex()
 {
 	return gTraceInfo.index.eventIndex;
+}
+
+void inc_current_event_index(void)
+{
+	__sync_add_and_fetch(&gTraceInfo.index.eventIndex, 1);
 }
 
 uint64_t get_current_nsec(void)
@@ -821,24 +729,6 @@ void write_msg(unsigned long __unused msg_buf,
 /************************************************************************
  * probe functions
  ************************************************************************/
-bool setProbePoint(probeInfo_t* iProbe)
-{
-	if(unlikely(iProbe == NULL))
-	{
-		return false;
-	}
-
-	// atomic operaion(gcc builtin) is more expensive then pthread_mutex
-	// ...but it leads to a great workaround when using with the new preload.
-	iProbe->eventIndex = __sync_add_and_fetch(&gTraceInfo.index.eventIndex, 1);
-	iProbe->currentTime = getCurrentTime();
-	iProbe->pID = _getpid();
-	iProbe->tID = _gettid();
-	iProbe->callDepth = gProbeDepth;
-
-	return true;
-}
-
 // update heap memory size through socket
 // return 0 if size is updated through socket
 // return 1 if size is updated into global variable

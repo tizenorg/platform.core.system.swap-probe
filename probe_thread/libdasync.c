@@ -103,7 +103,7 @@ int PROBE_NAME(pthread_mutex_lock)(pthread_mutex_t *mutex) {
 
 	// send WAIT_END log
 	newerrno = errno;
-	setProbePoint(&probeInfo);
+	inc_current_event_index();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
@@ -113,7 +113,6 @@ int PROBE_NAME(pthread_mutex_lock)(pthread_mutex_t *mutex) {
 	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
 	FLUSH_LOCAL_BUF();
 
-	postBlockEnd();
 	errno = (newerrno != 0) ? newerrno : olderrno;
 
 	return ret;
@@ -144,7 +143,7 @@ int PROBE_NAME(pthread_mutex_timedlock)(pthread_mutex_t *mutex,
 
 	// send WAIT_END log
 	newerrno = errno;
-	setProbePoint(&probeInfo);
+	inc_current_event_index();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
@@ -154,8 +153,6 @@ int PROBE_NAME(pthread_mutex_timedlock)(pthread_mutex_t *mutex,
 	PACK_COMMON_END('d', ret, errno, blockresult);
 	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
 	FLUSH_LOCAL_BUF();
-
-	postBlockEnd();
 
 	errno = (newerrno != 0) ? newerrno : olderrno;
 
@@ -434,7 +431,7 @@ int PROBE_NAME(pthread_cond_wait)(pthread_cond_t *cond, pthread_mutex_t *mutex) 
 
 	// send WAIT_END log
 	newerrno = errno;
-		setProbePoint(&probeInfo);
+		inc_current_event_index();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
@@ -446,7 +443,6 @@ int PROBE_NAME(pthread_cond_wait)(pthread_cond_t *cond, pthread_mutex_t *mutex) 
 	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
 	FLUSH_LOCAL_BUF();
 
-	postBlockEnd();
 	errno = (newerrno != 0) ? newerrno : olderrno;
 
 	return ret;
@@ -480,7 +476,7 @@ int PROBE_NAME(pthread_cond_timedwait)(pthread_cond_t *cond, pthread_mutex_t *mu
 
 	// send WAIT_END log
 	newerrno = errno;
-	setProbePoint(&probeInfo);
+	inc_current_event_index();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
@@ -492,8 +488,6 @@ int PROBE_NAME(pthread_cond_timedwait)(pthread_cond_t *cond, pthread_mutex_t *mu
 	PACK_COMMON_END('d', ret, errno, blockresult);
 	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
 	FLUSH_LOCAL_BUF();
-
-	postBlockEnd();
 
 	errno = (newerrno != 0) ? newerrno : olderrno;
 

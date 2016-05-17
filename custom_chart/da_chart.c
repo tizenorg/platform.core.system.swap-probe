@@ -100,7 +100,6 @@ __thread pid_t cur_thread = -1;
 
 #define DECLARE_CHART_VARIABLE					\
 	da_handle __attribute__((unused)) ret = 0;	\
-	probeInfo_t probeInfo;
 
 // =====================================================================
 // timer thread routine for callback
@@ -130,7 +129,7 @@ void* _chart_timerThread(void* data)
 		{
 			value = cur->callback(cur->user_data);
 
-			setProbePoint(&probeInfo);
+			inc_current_event_index();
 
 			PREPARE_LOCAL_BUF();
 			PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM,
@@ -431,7 +430,7 @@ void da_mark(chart_color color, char* mark_text)
 {
 	DECLARE_CHART_VARIABLE;
 
-	setProbePoint(&probeInfo);
+	inc_current_event_index();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM,
@@ -456,7 +455,7 @@ da_handle da_create_chart(char* chart_name)
 
 	ret = ++(chm.chart_handle_index);
 
-	setProbePoint(&probeInfo);
+	inc_current_event_index();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM,
@@ -489,7 +488,7 @@ da_handle da_create_series(da_handle charthandle, char* seriesname,
 	ret = ++(chm.series_handle_index[charthandle]);
 	ret += (10 * charthandle);
 
-	setProbePoint(&probeInfo);
+	inc_current_event_index();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM,
@@ -557,7 +556,7 @@ void da_log(da_handle series_handle, float uservalue)
 	if(sindex > chm.series_handle_index[(int)cindex])
 		return;
 
-	setProbePoint(&probeInfo);
+	inc_current_event_index();
 
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_CUSTOM,

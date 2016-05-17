@@ -42,7 +42,7 @@
 #define PACK_GESTURE_EVENT(API_ID, _GESTURETYPE, _X, _Y, _INFO1, _INFO2, _ARGDETECTOR) \
 	do {																		\
 		char info1_str[16];														\
-		setProbePoint(&probeInfo);												\
+		inc_current_event_index();												\
 		PREPARE_LOCAL_BUF();													\
 		PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID, "p", voidp_to_uint64(_ARGDETECTOR));	\
 		PACK_COMMON_END('v', 0, 0, 0);												\
@@ -65,8 +65,6 @@ GestureEventListener::~GestureEventListener()
 
 void GestureEventListener::OnCustomGestureCanceled (TouchGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -78,8 +76,6 @@ void GestureEventListener::OnCustomGestureCanceled (TouchGestureDetector &gestur
 
 void GestureEventListener::OnCustomGestureChanged (TouchGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -91,8 +87,6 @@ void GestureEventListener::OnCustomGestureChanged (TouchGestureDetector &gesture
 
 void GestureEventListener::OnCustomGestureFinished (TouchGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -104,8 +98,6 @@ void GestureEventListener::OnCustomGestureFinished (TouchGestureDetector &gestur
 
 void GestureEventListener::OnCustomGestureStarted (TouchGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -117,8 +109,6 @@ void GestureEventListener::OnCustomGestureStarted (TouchGestureDetector &gesture
 
 void GestureEventListener::OnFlickGestureCanceled (TouchFlickGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -138,8 +128,6 @@ void GestureEventListener::OnFlickGestureCanceled (TouchFlickGestureDetector &ge
 
 void GestureEventListener::OnFlickGestureDetected (TouchFlickGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -159,8 +147,6 @@ void GestureEventListener::OnFlickGestureDetected (TouchFlickGestureDetector &ge
 
 void GestureEventListener::OnLongPressGestureCanceled (TouchLongPressGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -179,8 +165,6 @@ void GestureEventListener::OnLongPressGestureCanceled (TouchLongPressGestureDete
 
 void GestureEventListener::OnLongPressGestureDetected (TouchLongPressGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -199,8 +183,6 @@ void GestureEventListener::OnLongPressGestureDetected (TouchLongPressGestureDete
 
 void GestureEventListener::OnPanningGestureCanceled (TouchPanningGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -217,8 +199,6 @@ void GestureEventListener::OnPanningGestureCanceled (TouchPanningGestureDetector
 
 void GestureEventListener::OnPanningGestureChanged (TouchPanningGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -235,8 +215,6 @@ void GestureEventListener::OnPanningGestureChanged (TouchPanningGestureDetector 
 
 void GestureEventListener::OnPanningGestureFinished (TouchPanningGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -253,8 +231,6 @@ void GestureEventListener::OnPanningGestureFinished (TouchPanningGestureDetector
 
 void GestureEventListener::OnPanningGestureStarted (TouchPanningGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -271,8 +247,6 @@ void GestureEventListener::OnPanningGestureStarted (TouchPanningGestureDetector 
 
 void GestureEventListener::OnPinchGestureCanceled (TouchPinchGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -291,8 +265,6 @@ void GestureEventListener::OnPinchGestureCanceled (TouchPinchGestureDetector &ge
 
 void GestureEventListener::OnPinchGestureChanged (TouchPinchGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -311,8 +283,6 @@ void GestureEventListener::OnPinchGestureChanged (TouchPinchGestureDetector &ges
 
 void GestureEventListener::OnPinchGestureFinished (TouchPinchGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -331,8 +301,6 @@ void GestureEventListener::OnPinchGestureFinished (TouchPinchGestureDetector &ge
 
 void GestureEventListener::OnPinchGestureStarted (TouchPinchGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -351,8 +319,6 @@ void GestureEventListener::OnPinchGestureStarted (TouchPinchGestureDetector &ges
 
 void GestureEventListener::OnRotationGestureCanceled (TouchRotationGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -371,8 +337,6 @@ void GestureEventListener::OnRotationGestureCanceled (TouchRotationGestureDetect
 
 void GestureEventListener::OnRotationGestureChanged (TouchRotationGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -391,8 +355,6 @@ void GestureEventListener::OnRotationGestureChanged (TouchRotationGestureDetecto
 
 void GestureEventListener::OnRotationGestureFinished (TouchRotationGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -411,8 +373,6 @@ void GestureEventListener::OnRotationGestureFinished (TouchRotationGestureDetect
 
 void GestureEventListener::OnRotationGestureStarted (TouchRotationGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -431,8 +391,6 @@ void GestureEventListener::OnRotationGestureStarted (TouchRotationGestureDetecto
 
 void GestureEventListener::OnTapGestureCanceled (TouchTapGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();
@@ -452,8 +410,6 @@ void GestureEventListener::OnTapGestureCanceled (TouchTapGestureDetector &gestur
 
 void GestureEventListener::OnTapGestureDetected (TouchTapGestureDetector &gestureDetector)
 {
-	probeInfo_t	probeInfo;
-
 	if(isOptionEnabled(OPT_EVENT))
 	{
 		probeBlockStart();

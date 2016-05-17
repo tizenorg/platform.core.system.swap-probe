@@ -35,8 +35,6 @@
 #include <assert.h>
 #include "dahelper.h"
 
-int app_efl_main_flg = 0;
-
 const char *lib_string[NUM_ORIGINAL_LIBRARY] = {
 	"libc.so.6",				//0
 	"libpthread.so.0",			//1
@@ -64,27 +62,16 @@ __traceInfo gTraceInfo =
 	},		// __socketInfo
 	{
 		{0, },						// char appName[128]
-		0							// unsigned int startTime
 	},		// __appInfo
 	{
 		0,							// int state
 		PTHREAD_MUTEX_INITIALIZER	// ptrhread_mutex_t ssMutex
 	},		// __screenshotInfo
-	{
-		NULL,						// map_start
-		NULL						// map_end
-	},		// __mapInfo
 	-1,								// int stateTouch
 	0,								// int init_complete
 	0,								// int custom_chart_callback_count
 	0								// unsigned long optionflag
 };
-
-void WcharToChar(char* pstrDest, const wchar_t* pwstrSrc)
-{
-	int nLen=(int)wcslen(pwstrSrc);
-	wcstombs(pstrDest, pwstrSrc, nLen+1);
-}
 
 // return 0 if succeed
 // return -1 if error occured

@@ -370,7 +370,6 @@ int captureScreen()
 	Evas* ev = NULL;
 	Evas_Object* img;
 	screenshot_data sdata;
-	probeInfo_t	probeInfo;
 	int ret = 0;
 
 	rtld_default_set_once(__evas_object_resize_p, "evas_object_resize");
@@ -383,7 +382,7 @@ int captureScreen()
 
 	pthread_mutex_lock(&captureScreenLock);
 
-	setProbePoint(&probeInfo);
+	inc_current_event_index();
 	sdata.ximage = NULL;
 	scrimage = captureScreenShotX(&width, &height, &sdata);
 	if(scrimage != NULL)
@@ -393,7 +392,7 @@ int captureScreen()
 		{
 			snprintf(dstpath, sizeof(dstpath),
 				 SCREENSHOT_DIRECTORY "/%d_%d.png", getpid(),
-				 probeInfo.eventIndex);
+				 getCurrentEventIndex());
 
 			// make image buffer
 			if((img = __evas_object_image_add_p(ev)) != NULL)
@@ -470,22 +469,6 @@ int captureScreen()
 
 	pthread_mutex_unlock(&captureScreenLock);
 	return ret;
-}
-
-int initialize_screencapture()
-{
-	// remove all previous screenshot in dir
-//	remove_indir(SCREENSHOT_DIRECTORY);
-
-	// make screenshot directory
-//	mkdir(SCREENSHOT_DIRECTORY, 0777);
-
-	return 0;
-}
-
-int finalize_screencapture()
-{
-	return 0;
 }
 
 // =======================================================================

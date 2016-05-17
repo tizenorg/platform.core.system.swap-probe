@@ -101,8 +101,6 @@ static int convert_angle(int angle)
 
 void on_orientation_changed(int angle, bool capi)
 {
-	probeInfo_t	probeInfo;
-
 	initialize_event();
 
 	internal_angle = angle;
@@ -110,7 +108,7 @@ void on_orientation_changed(int angle, bool capi)
 
 	if(isOptionEnabled(OPT_EVENT))
 	{
-		setProbePoint(&probeInfo);
+		inc_current_event_index();
 
 		PREPARE_LOCAL_BUF();
 		PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT,
@@ -122,10 +120,6 @@ void on_orientation_changed(int angle, bool capi)
 	}
 
 	SCREENSHOT_SET();
-//	if(!capi)
-//	{
-//		SCREENSHOT_DONE();
-//	}
 }
 
 int getOrientation()

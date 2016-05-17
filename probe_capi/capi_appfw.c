@@ -32,7 +32,6 @@
 
 #include <app.h>
 #include <Ecore.h>
-#include "damaps.h"
 #include "daprobe.h"
 #include "dahelper.h"
 #include "probeinfo.h"
