@@ -26,6 +26,22 @@ unsigned long get_addr_by_name(struct sym_table_entry *entry, const char *name)
 	return 0;
 }
 
+static const char *name_by_type(unsigned int type)
+{
+	switch (type) {
+	case STT_NOTYPE:	return "NOTYPE";
+	case STT_OBJECT:	return "OBJECT";
+	case STT_FUNC:		return "FUNC";
+	case STT_SECTION:	return "SECTION";
+	case STT_FILE:		return "FILE";
+	case STT_COMMON:	return "COMMON";
+	case STT_TLS:		return "TLS";
+	case STT_GNU_IFUNC:	return "IFUNC";
+	}
+
+	return "UNKNOWN";
+}
+
 void print_sym_table(struct sym_table_entry *entry)
 {
 	struct sym_table_entry *first;
@@ -37,7 +53,7 @@ void print_sym_table(struct sym_table_entry *entry)
 	first = entry;
 
 	do {
-		printf("%08x %s\n", entry->addr, entry->name);
+		printf("%08x %s %s\n", entry->addr, name_by_type(entry->type), entry->name);
 		entry = entry->next;
 	} while (entry != NULL);
 }
