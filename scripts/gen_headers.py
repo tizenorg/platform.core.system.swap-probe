@@ -130,10 +130,16 @@ def __lib_syms(libname):
         tokens = line.split('\n')
         for t in tokens:
             parts = t.split(' ')
-            if len(parts) == 2 and int(parts[0], 16) != 0:
-                if parts[1] not in probe_data:
-                    probe_data[parts[1]] = ()
-                probe_data[parts[1]] += (parts[0], )
+            if len(parts) == 3 and int(parts[0], 16) != 0:
+                addr = parts[0]
+                t = parts[1]
+                name = parts[2]
+                if t == "FUNC" or t == "IFUNC":
+                    if name not in probe_data:
+                        probe_data[name] = ()
+                    if t == "IFUNC":
+                        addr = "ffffffff"
+                    probe_data[name] += (addr, )
 
     return probe_data
 
