@@ -44,6 +44,7 @@ INCLUDE_CPPFLAGS =				\
 		-I/usr/include/vconf		\
 		-I/usr/lib/dbus-1.0/include	\
 		-I/usr/include/efl-1 		\
+		-I/usr/include/sensor/		\
 		-I/usr/include/eo-1			\
 
 WARN_CFLAGS = -g			\
@@ -109,11 +110,12 @@ PROBE_SRCS =	   				\
 	./probe_file/da_io_posix.c		\
 	./probe_file/da_io_stdc.c		\
 
-ifeq ($(X11_SUPPORT),y)
+ifeq ($(WAYLAND_SUPPORT),y)
+UTILITY_SRCS += ./helper/wayland-api.c
 UTILITY_SRCS += ./helper/dacapture.c
 PROBE_SRCS += ./probe_event/orientation.c
-CFLAGS += -DX11_SUPPORT
-endif # X11_SUPPORT
+CFLAGS += -DWAYLAND_SUPPORT
+endif # WAYLAND_SUPPORT
 
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
 CAPI_SRCS = 	$(COMMON_SRCS)			\

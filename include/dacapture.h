@@ -27,7 +27,7 @@
 #define _DACAPTURE_H_
 
 
-#ifdef X11_SUPPORT
+#ifdef WAYLAND_SUPPORT
 
 #include <Evas.h>
 
@@ -38,7 +38,7 @@ void _cb_render_post(void *data, Evas *e, void *eventinfo);
 int initialize_screencapture();
 int finalize_screencapture();
 
-#else /* X11_SUPPORT */
+#else /* WAYLAND_SUPPORT */
 
 #include "daprobe.h"
 
@@ -68,7 +68,7 @@ static inline int finalize_screencapture()
 	return -1;
 }
 
-#endif /* X11_SUPPORT */
+#endif /* WAYLAND_SUPPORT */
 
 
 #endif /* _DACAPTURE_H_ */

@@ -8,11 +8,11 @@ Source:    %{name}_%{version}.tar.gz
 
 
 # setup config
-%define X11_SUPPORT 0
+%define WAYLAND_SUPPORT 0
 
-%if "%{_with_x}" == "1"
-%define X11_SUPPORT 1
-%endif # _with_x
+%if "%{_with_wayland}" == "1"
+%define WAYLAND_SUPPORT 1
+%endif # _with_wayland
 
 
 # unsupport arch
@@ -36,16 +36,12 @@ BuildRequires: python-accel-armv7l-cross-arm
 BuildRequires: python-accel-aarch64-cross-aarch64
 %endif # aarch64
 
+BuildRequires:  pkgconfig(sensor)
 
 # graphic support
 BuildRequires: pkgconfig(gles20)
 BuildRequires: pkgconfig(wayland-egl)
 BuildRequires: pkgconfig(egl)
-
-%if %{X11_SUPPORT}
-BuildRequires: libXext-devel
-%endif # X11_SUPPORT
-
 
 Provides:  swap-probe
 
@@ -83,9 +79,7 @@ This tool will be installed in target
 %setup -q -n %{name}_%{version}
 
 %build
-%if %{X11_SUPPORT}
-export X11_SUPPORT=y
-%endif
+export WAYLAND_SUPPORT=y
 
 make rmheaders
 make headers

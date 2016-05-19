@@ -43,8 +43,7 @@
 #include "binproto.h"
 #include "real_functions.h"
 
-static int external_angle = 0;
-static int internal_angle = 0;
+static int __current_angle = 0;
 
 // ====================================================================
 // initialize and finalize event
@@ -52,15 +51,6 @@ static int internal_angle = 0;
 
 int initialize_event()
 {
-	static bool inited = false;
-	static app_device_orientation_e (*__app_get_device_orientation_p)(void);
-
-	if (inited)
-		return 0;
-
-	rtld_default_set_once(__app_get_device_orientation_p, "app_get_device_orientation");
-
-	external_angle = internal_angle = __app_get_device_orientation_p();
 	return 0;
 }
 
@@ -68,7 +58,6 @@ int finalize_event()
 {
 	return 0;
 }
-
 
 // ===================================================================
 // orientation related functions
@@ -78,8 +67,7 @@ static int convert_angle(int angle)
 {
 	int os = _OS_NONE;
 
-	switch(angle)
-	{
+	switch(angle) {
 	case 0:
 		os = _OS_PORTRAIT;
 		break;
@@ -101,15 +89,12 @@ static int convert_angle(int angle)
 
 void on_orientation_changed(int angle, bool capi)
 {
-	probeInfo_t	probeInfo;
+	probeInfo_t probeInfo;
 
-	initialize_event();
+	__current_angle = angle;
 
-	internal_angle = angle;
-	external_angle = internal_angle;
-
-	if(isOptionEnabled(OPT_EVENT))
-	{
+	PRINTMSG("dor orientation changed event");
+	if (isOptionEnabled(OPT_EVENT)) {
 		setProbePoint(&probeInfo);
 
 		PREPARE_LOCAL_BUF();
@@ -117,20 +102,19 @@ void on_orientation_changed(int angle, bool capi)
 				  API_ID_on_orientation_changed,
 				  "dd", angle, (uint32_t)capi);
 		PACK_COMMON_END('v', 0, 0, 0);
-		PACK_UIEVENT(_EVENT_ORIENTATION, 0, 0, 0, "", convert_angle(external_angle));
+		PACK_UIEVENT(_EVENT_ORIENTATION, 0, 0, 0, "",
+			     convert_angle(__current_angle));
 		FLUSH_LOCAL_BUF();
 	}
 
 	SCREENSHOT_SET();
-//	if(!capi)
-//	{
-//		SCREENSHOT_DONE();
-//	}
 }
 
-int getOrientation()
+int current_angle_get()
 {
-	initialize_event();
-
-	return external_angle;
+	return __current_angle;
+}
+void current_angle_set(int angle)
+{
+	__current_angle = angle;
 }
