@@ -36,7 +36,6 @@
 #include "dahelper.h"
 #include "probeinfo.h"
 #include "binproto.h"
-#include "orientation.h"
 #include "real_functions.h"
 #include "common_probe_init.h"
 
@@ -116,12 +115,10 @@ static void _ui_dalc_app_control(app_control_h handle, void *user_data)
 int PROBE_NAME(ui_app_main)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data)
 {
 	static int (*ui_app_mainp)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data);
-	Ecore_Event_Handler* handler;
 	int ret;
 
 	GET_REAL_FUNCP_RTLD_DEFAULT(ui_app_main, ui_app_mainp);
 
-	handler = register_orientation_event_listener();
 	uiAppCallback.create = callback->create;
 	uiAppCallback.terminate = callback->terminate;
 	uiAppCallback.pause = callback->pause;
@@ -142,8 +139,6 @@ int PROBE_NAME(ui_app_main)(int argc, char **argv, ui_app_lifecycle_callback_s *
 		callback->app_control = _ui_dalc_app_control;
 
 	ret = ui_app_mainp(argc, argv, callback, user_data);
-
-	unregister_orientation_event_listener(handler);
 
 	callback->create = uiAppCallback.create;
 	callback->terminate = uiAppCallback.terminate;

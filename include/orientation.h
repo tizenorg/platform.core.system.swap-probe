@@ -26,31 +26,4 @@
 #ifndef _ORIENTATION_H_
 #define _ORIENTATION_H_
 
-
-#ifdef X11_SUPPORT
-
-#include <Ecore.h>
-
-Ecore_Event_Handler *register_orientation_event_listener();
-void unregister_orientation_event_listener(Ecore_Event_Handler *handler);
-
-#else /* X11_SUPPORT */
-
-#include "daprobe.h"
-
-static inline Ecore_Event_Handler *register_orientation_event_listener()
-{
-	PRINTERR("X11 isn't support, orientation_event unavailable\n");
-	return NULL;
-}
-
-static inline
-void unregister_orientation_event_listener(Ecore_Event_Handler __unused *handler)
-{
-	PRINTERR("X11 isn't support, orientation_event unavailable\n");
-}
-
-#endif /* X11_SUPPORT */
-
-
 #endif /* _ORIENTATION_H_ */

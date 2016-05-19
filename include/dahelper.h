@@ -179,7 +179,8 @@ char *real_abs_path(int fd, char *buffer, size_t bufsiz);
 // event related functions
 int initialize_event();
 int finalize_event();
-int getOrientation();
+int current_angle_get();
+void current_angle_set(int angle);
 void on_orientation_changed(int angle, bool capi);
 
 // query functions
