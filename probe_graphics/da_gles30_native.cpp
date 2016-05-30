@@ -1,13 +1,9 @@
-#include "daprobe.h"
-#include "binproto.h"
-#include "real_functions.h"
-#include "common_probe_init.h"
-
 #ifdef __cplusplus
  extern "C" {
 #endif
 
 #include "da_gles20.h"
+#include "binproto.h"
 
 #define DECLARE FUNC_DECLAR
 #define DECLARE_NOARGS FUNC_DECLAR_NOARGS
@@ -16,6 +12,10 @@
 #define CALL_ORIG(func, ...) /* CALL_ORIG */ func##p(__VA_ARGS__)
 #define BEFORE BEFORE_GL3_ORIG
 #define TYPEDEF(type) typedef type
+
+#include "daprobe.h"
+#include "real_functions.h"
+#include "common_probe_init.h"
 
 /* TODO search real definition */
 #ifndef ARB_sync
@@ -26,10 +26,26 @@ typedef struct __GLsync *GLsync;
 
 
 static __thread int is_gl_error_external = 1;
-//static enum DaOptions _sopt = OPT_GLES;
-extern GLenum REAL_NAME(glGetError)();
 
-DECLARE(void, glVertexAttribI1i, GLuint index, GLint x)
+static GLenum glGetError_internal(void)
+{
+	typedef GLenum (*mt_t)(void);
+	GLenum ret;
+	static mt_t glGetErrorp = 0;
+
+	/* TODO blockresult just sends event, API is used only there, so it is
+	 * useless */
+	if (!glGetErrorp)
+		init_probe_gl("glGetError", (void **)&glGetErrorp, LIBGLES20, 0, 0);
+
+	ret = glGetErrorp();
+
+	return ret;
+}
+
+
+
+DECLARE(void, glVertexAttribI1i, GLuint, index, GLint, x)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLint));
 	BEFORE(glVertexAttribI1i);
@@ -38,7 +54,7 @@ DECLARE(void, glVertexAttribI1i, GLuint index, GLint x)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd", index, x);
 }
 
-DECLARE(void, glVertexAttribI2i, GLuint index, GLint x, GLint y)
+DECLARE(void, glVertexAttribI2i, GLuint, index, GLint, x, GLint, y)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLint, GLint));
 	BEFORE(glVertexAttribI2i);
@@ -47,7 +63,7 @@ DECLARE(void, glVertexAttribI2i, GLuint index, GLint x, GLint y)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddd", index, x, y);
 }
 
-DECLARE(void, glVertexAttribI3i, GLuint index, GLint x, GLint y, GLint z)
+DECLARE(void, glVertexAttribI3i, GLuint, index, GLint, x, GLint, y, GLint, z)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLint, GLint, GLint));
 	BEFORE(glVertexAttribI3i);
@@ -57,8 +73,8 @@ DECLARE(void, glVertexAttribI3i, GLuint index, GLint x, GLint y, GLint z)
 	      y, z);
 }
 
-DECLARE(void, glVertexAttribI4i, GLuint index, GLint x, GLint y, GLint z,
-       GLint w)
+DECLARE(void, glVertexAttribI4i, GLuint, index, GLint, x, GLint, y, GLint, z,
+       GLint, w)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLint, GLint, GLint, GLint));
 	BEFORE(glVertexAttribI4i);
@@ -68,7 +84,7 @@ DECLARE(void, glVertexAttribI4i, GLuint index, GLint x, GLint y, GLint z,
 	      y, z, w);
 }
 
-DECLARE(void, glVertexAttribI1ui, GLuint index, GLuint x)
+DECLARE(void, glVertexAttribI1ui, GLuint, index, GLuint, x)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint));
 	BEFORE(glVertexAttribI1ui);
@@ -77,8 +93,8 @@ DECLARE(void, glVertexAttribI1ui, GLuint index, GLuint x)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd", index, x);
 }
 
-DECLARE(void, glUniformBlockBinding, GLuint program, GLuint UniformBlockIndex,
-       GLuint uniformBlockBinding)
+DECLARE(void, glUniformBlockBinding, GLuint, program, GLuint, UniformBlockIndex,
+       GLuint, uniformBlockBinding)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint, GLuint));
 	BEFORE(glUniformBlockBinding);
@@ -96,7 +112,7 @@ DECLARE_GL_DEFAULT_VOID(void, glUniformMatrix4x2fv, "dxbp", GLint, location, GLs
 DECLARE_GL_DEFAULT_VOID(void, glUniformMatrix3x4fv, "dxbp", GLint, location, GLsizei, count, GLboolean, transpose, const GLfloat *, value)
 DECLARE_GL_DEFAULT_VOID(void, glUniformMatrix4x3fv, "dxbp", GLint, location, GLsizei, count, GLboolean, transpose, const GLfloat *, value)
 
-DECLARE(void, glVertexAttribI2ui, GLuint index, GLuint x, GLuint y)
+DECLARE(void, glVertexAttribI2ui, GLuint, index, GLuint, x, GLuint, y)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint, GLuint));
 	BEFORE(glVertexAttribI2ui);
@@ -105,7 +121,7 @@ DECLARE(void, glVertexAttribI2ui, GLuint index, GLuint x, GLuint y)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddd", index, x, y);
 }
 
-DECLARE(void, glVertexAttribI3ui, GLuint index, GLuint x, GLuint y, GLuint z)
+DECLARE(void, glVertexAttribI3ui, GLuint, index, GLuint, x, GLuint, y, GLuint, z)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint, GLuint, GLuint));
 	BEFORE(glVertexAttribI3ui);
@@ -116,8 +132,8 @@ DECLARE(void, glVertexAttribI3ui, GLuint index, GLuint x, GLuint y, GLuint z)
 }
 
 
-DECLARE(void, glVertexAttribI4ui, GLuint index, GLuint x, GLuint y, GLuint z,
-       GLuint w)
+DECLARE(void, glVertexAttribI4ui, GLuint, index, GLuint, x, GLuint, y, GLuint, z,
+       GLuint, w)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint, GLuint, GLuint, GLuint));
 	BEFORE(glVertexAttribI4ui);
@@ -127,7 +143,7 @@ DECLARE(void, glVertexAttribI4ui, GLuint index, GLuint x, GLuint y, GLuint z,
 	      y, z, w);
 }
 
-DECLARE(void, glVertexAttribI1iv, GLuint index, const GLint *v)
+DECLARE(void, glVertexAttribI1iv, GLuint, index, const GLint *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLint*));
 	BEFORE(glVertexAttribI1iv);
@@ -136,7 +152,7 @@ DECLARE(void, glVertexAttribI1iv, GLuint index, const GLint *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glVertexAttribI2iv, GLuint index, const GLint *v)
+DECLARE(void, glVertexAttribI2iv, GLuint, index, const GLint *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLint*));
 	BEFORE(glVertexAttribI2iv);
@@ -145,7 +161,7 @@ DECLARE(void, glVertexAttribI2iv, GLuint index, const GLint *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glVertexAttribI3iv, GLuint index, const GLint *v)
+DECLARE(void, glVertexAttribI3iv, GLuint, index, const GLint *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLint*));
 	BEFORE(glVertexAttribI3iv);
@@ -154,7 +170,7 @@ DECLARE(void, glVertexAttribI3iv, GLuint index, const GLint *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glVertexAttribI4iv, GLuint index, const GLint *v)
+DECLARE(void, glVertexAttribI4iv, GLuint, index, const GLint *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLint*));
 	BEFORE(glVertexAttribI4iv);
@@ -163,7 +179,7 @@ DECLARE(void, glVertexAttribI4iv, GLuint index, const GLint *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glVertexAttribI1uiv, GLuint index, const GLuint *v)
+DECLARE(void, glVertexAttribI1uiv, GLuint, index, const GLuint *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLuint*));
 	BEFORE(glVertexAttribI1uiv);
@@ -172,7 +188,7 @@ DECLARE(void, glVertexAttribI1uiv, GLuint index, const GLuint *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glVertexAttribI2uiv, GLuint index, const GLuint *v)
+DECLARE(void, glVertexAttribI2uiv, GLuint, index, const GLuint *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLuint*));
 	BEFORE(glVertexAttribI2uiv);
@@ -181,7 +197,7 @@ DECLARE(void, glVertexAttribI2uiv, GLuint index, const GLuint *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glGetQueryObjectuiv, GLuint id, GLenum pname, GLuint *params)
+DECLARE(void, glGetQueryObjectuiv, GLuint, id, GLenum, pname, GLuint *, params)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum, GLuint *));
 	BEFORE(glGetQueryObjectuiv);
@@ -191,8 +207,8 @@ DECLARE(void, glGetQueryObjectuiv, GLuint id, GLenum pname, GLuint *params)
 	      params);
 }
 
-DECLARE(void, glGetActiveUniformsiv, GLuint program, GLsizei uniformCount,
-       const GLuint *uniformIndices, GLenum pname, GLint *params)
+DECLARE(void, glGetActiveUniformsiv, GLuint, program, GLsizei, uniformCount,
+       const GLuint *, uniformIndices, GLenum, pname, GLint *, params)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLsizei, const GLuint *, GLenum,
 		GLint *));
@@ -204,7 +220,7 @@ DECLARE(void, glGetActiveUniformsiv, GLuint program, GLsizei uniformCount,
 	      uniformCount, uniformIndices, pname, params);
 }
 
-DECLARE(void, glVertexAttribI3uiv, GLuint index, const GLuint *v)
+DECLARE(void, glVertexAttribI3uiv, GLuint, index, const GLuint *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLuint*));
 	BEFORE(glVertexAttribI3uiv);
@@ -213,7 +229,7 @@ DECLARE(void, glVertexAttribI3uiv, GLuint index, const GLuint *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glVertexAttribI4uiv, GLuint index, const GLuint *v)
+DECLARE(void, glVertexAttribI4uiv, GLuint, index, const GLuint *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLuint*));
 	BEFORE(glVertexAttribI4uiv);
@@ -222,7 +238,7 @@ DECLARE(void, glVertexAttribI4uiv, GLuint index, const GLuint *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glVertexAttribI4bv, GLuint index, const GLbyte *v)
+DECLARE(void, glVertexAttribI4bv, GLuint, index, const GLbyte *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLbyte*));
 	BEFORE(glVertexAttribI4bv);
@@ -231,7 +247,7 @@ DECLARE(void, glVertexAttribI4bv, GLuint index, const GLbyte *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glVertexAttribI4sv, GLuint index, const GLshort *v)
+DECLARE(void, glVertexAttribI4sv, GLuint, index, const GLshort *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLshort*));
 	BEFORE(glVertexAttribI4sv);
@@ -240,7 +256,7 @@ DECLARE(void, glVertexAttribI4sv, GLuint index, const GLshort *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glVertexAttribI4ubv, GLuint index, const GLubyte *v)
+DECLARE(void, glVertexAttribI4ubv, GLuint, index, const GLubyte *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLubyte*));
 	BEFORE(glVertexAttribI4ubv);
@@ -249,7 +265,7 @@ DECLARE(void, glVertexAttribI4ubv, GLuint index, const GLubyte *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glVertexAttribI4usv, GLuint index, const GLushort *v)
+DECLARE(void, glVertexAttribI4usv, GLuint, index, const GLushort *, v)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLushort*));
 	BEFORE(glVertexAttribI4usv);
@@ -258,8 +274,8 @@ DECLARE(void, glVertexAttribI4usv, GLuint index, const GLushort *v)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", index, v);
 }
 
-DECLARE(void, glVertexAttribIPointer, GLuint index, GLint size, GLenum type,
-       GLsizei stride, const GLvoid *pointer)
+DECLARE(void, glVertexAttribIPointer, GLuint, index, GLint, size, GLenum, type,
+       GLsizei, stride, const GLvoid *, pointer)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLint, GLenum, GLsizei, const
 		GLvoid *));
@@ -270,7 +286,7 @@ DECLARE(void, glVertexAttribIPointer, GLuint index, GLint size, GLenum type,
 	      size, type, stride, pointer);
 }
 
-DECLARE(void, glGetVertexAttribIiv, GLuint index, GLenum pname, GLint *params)
+DECLARE(void, glGetVertexAttribIiv, GLuint, index, GLenum, pname, GLint *, params)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum, GLint*));
 	BEFORE(glGetVertexAttribIiv);
@@ -280,8 +296,8 @@ DECLARE(void, glGetVertexAttribIiv, GLuint index, GLenum pname, GLint *params)
 	      pname, params);
 }
 
-DECLARE(void, glGetVertexAttribIuiv, GLuint index, GLenum pname, GLuint
-       *params)
+DECLARE(void, glGetVertexAttribIuiv, GLuint, index, GLenum, pname, GLuint
+       *, params)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum, GLuint*));
 	BEFORE(glGetVertexAttribIuiv);
@@ -291,7 +307,7 @@ DECLARE(void, glGetVertexAttribIuiv, GLuint index, GLenum pname, GLuint
 	      params);
 }
 
-DECLARE(void, glUniform1ui, GLint location, GLuint v0)
+DECLARE(void, glUniform1ui, GLint, location, GLuint, v0)
 {
 	TYPEDEF(void (*methodType)(GLint, GLuint));
 	BEFORE(glUniform1ui);
@@ -300,7 +316,7 @@ DECLARE(void, glUniform1ui, GLint location, GLuint v0)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd", location, v0);
 }
 
-DECLARE(void, glUniform2ui, GLint location, GLuint v0, GLuint v1)
+DECLARE(void, glUniform2ui, GLint, location, GLuint, v0, GLuint, v1)
 {
 	TYPEDEF(void (*methodType)(GLint, GLuint, GLuint));
 	BEFORE(glUniform2ui);
@@ -310,7 +326,7 @@ DECLARE(void, glUniform2ui, GLint location, GLuint v0, GLuint v1)
 	      v0, v1);
 }
 
-DECLARE(void, glUniform3ui, GLint location, GLuint v0, GLuint v1, GLuint v2)
+DECLARE(void, glUniform3ui, GLint, location, GLuint, v0, GLuint, v1, GLuint, v2)
 {
 	TYPEDEF(void (*methodType)(GLint, GLuint, GLuint, GLuint));
 	BEFORE(glUniform3ui);
@@ -320,8 +336,8 @@ DECLARE(void, glUniform3ui, GLint location, GLuint v0, GLuint v1, GLuint v2)
 	      v0, v1, v2);
 }
 
-DECLARE(void, glUniform4ui, GLint location, GLuint v0, GLuint v1, GLuint v2,
-       GLuint v3)
+DECLARE(void, glUniform4ui, GLint, location, GLuint, v0, GLuint, v1, GLuint, v2,
+       GLuint, v3)
 {
 	TYPEDEF(void (*methodType)(GLint, GLuint, GLuint, GLuint, GLuint));
 	BEFORE(glUniform4ui);
@@ -331,8 +347,8 @@ DECLARE(void, glUniform4ui, GLint location, GLuint v0, GLuint v1, GLuint v2,
 	      v0, v1, v2, v3);
 }
 
-DECLARE(void, glUniform2uiv, GLint location, GLsizei count, const GLuint
-       *value)
+DECLARE(void, glUniform2uiv, GLint, location, GLsizei, count, const GLuint
+       *, value)
 {
 	TYPEDEF(void (*methodType)(GLint, GLuint, const GLuint*));
 	BEFORE(glUniform2uiv);
@@ -342,8 +358,8 @@ DECLARE(void, glUniform2uiv, GLint location, GLsizei count, const GLuint
 	      count, value);
 }
 
-DECLARE(void, glUniform3uiv, GLint location, GLsizei count, const GLuint
-       *value)
+DECLARE(void, glUniform3uiv, GLint, location, GLsizei, count, const GLuint
+       *, value)
 {
 	TYPEDEF(void (*methodType)(GLint, GLuint, const GLuint*));
 	BEFORE(glUniform3uiv);
@@ -353,8 +369,8 @@ DECLARE(void, glUniform3uiv, GLint location, GLsizei count, const GLuint
 	      count, value);
 }
 
-DECLARE(void, glUniform1uiv, GLint location, GLsizei count, const GLuint
-       *value)
+DECLARE(void, glUniform1uiv, GLint, location, GLsizei, count, const GLuint
+       *, value)
 {
 	TYPEDEF(void (*methodType)(GLint, GLuint, const GLuint*));
 	BEFORE(glUniform1uiv);
@@ -364,8 +380,8 @@ DECLARE(void, glUniform1uiv, GLint location, GLsizei count, const GLuint
 	      count, value);
 }
 
-DECLARE(void, glUniform4uiv, GLint location, GLsizei count, const GLuint
-       *value)
+DECLARE(void, glUniform4uiv, GLint, location, GLsizei, count, const GLuint
+       *, value)
 {
 	TYPEDEF(void (*methodType)(GLint, GLuint, const GLuint*));
 	BEFORE(glUniform4uiv);
@@ -375,7 +391,7 @@ DECLARE(void, glUniform4uiv, GLint location, GLsizei count, const GLuint
 	      count, value);
 }
 
-DECLARE(void, glGetUniformuiv, GLuint program, GLint location, GLuint *params)
+DECLARE(void, glGetUniformuiv, GLuint, program, GLint, location, GLuint *, params)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLint, GLuint*));
 	BEFORE(glGetUniformuiv);
@@ -385,8 +401,8 @@ DECLARE(void, glGetUniformuiv, GLuint program, GLint location, GLuint *params)
 	      location, params);
 }
 
-DECLARE(void, glBindFragDataLocation, GLuint program, GLuint colorNumber,
-       const GLchar *name)
+DECLARE(void, glBindFragDataLocation, GLuint, program, GLuint, colorNumber,
+       const GLchar *, name)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint, const GLchar*));
 	BEFORE(glBindFragDataLocation);
@@ -396,7 +412,7 @@ DECLARE(void, glBindFragDataLocation, GLuint program, GLuint colorNumber,
 	      colorNumber, name);
 }
 
-DECLARE(void, glGetFragDataLocation, GLuint program, const GLchar *name)
+DECLARE(void, glGetFragDataLocation, GLuint, program, const GLchar *, name)
 {
 	TYPEDEF(void (*methodType)(GLuint, const GLchar*));
 	BEFORE(glGetFragDataLocation);
@@ -406,7 +422,7 @@ DECLARE(void, glGetFragDataLocation, GLuint program, const GLchar *name)
 	      name);
 }
 
-DECLARE(void, glBeginConditionalRenderNV, GLuint id, GLenum mode)
+DECLARE(void, glBeginConditionalRenderNV, GLuint, id, GLenum, mode)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum));
 	BEFORE(glBeginConditionalRenderNV);
@@ -424,7 +440,7 @@ DECLARE_NOARGS(void, glEndConditionalRenderNV)
 	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "");
 }
 
-DECLARE(void, glClampColorARB, GLenum target, GLenum clamp)
+DECLARE(void, glClampColorARB, GLenum, target, GLenum, clamp)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum));
 	BEFORE(glClampColorARB);
@@ -434,8 +450,8 @@ DECLARE(void, glClampColorARB, GLenum target, GLenum clamp)
 	      clamp);
 }
 
-DECLARE(void, glRenderbufferStorageMultisample, GLenum target, GLsizei
-       samplers, GLenum internalformat, GLsizei width, GLsizei height)
+DECLARE(void, glRenderbufferStorageMultisample, GLenum, target, GLsizei,
+       samplers, GLenum, internalformat, GLsizei, width, GLsizei, height)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLsizei, GLenum, GLsizei,
 		GLsizei));
@@ -447,8 +463,8 @@ DECLARE(void, glRenderbufferStorageMultisample, GLenum target, GLsizei
 	      internalformat, width, height);
 }
 
-DECLARE(void, glBlitFramebuffer, GLint srcX0, GLint srcY0, GLint srcX1,
-       GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1)
+DECLARE(void, glBlitFramebuffer, GLint, srcX0, GLint, srcY0, GLint, srcX1,
+       GLint, srcY1, GLint, dstX0, GLint, dstY0, GLint, dstX1, GLint, dstY1)
 {
 	TYPEDEF(void (*methodType)(GLint, GLint, GLint, GLint, GLint, GLint,
 		GLint, GLint));
@@ -460,7 +476,7 @@ DECLARE(void, glBlitFramebuffer, GLint srcX0, GLint srcY0, GLint srcX1,
 	      srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1);
 }
 
-DECLARE(void, glClearColorIi, GLint r, GLint g, GLint b, GLint a)
+DECLARE(void, glClearColorIi, GLint, r, GLint, g, GLint, b, GLint, a)
 {
 	TYPEDEF(void (*methodType)(GLint, GLint, GLint, GLint));
 	BEFORE(glClearColorIi);
@@ -469,7 +485,7 @@ DECLARE(void, glClearColorIi, GLint r, GLint g, GLint b, GLint a)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd", r, g, b, a);
 }
 
-DECLARE(void, glClearColorIui, GLint r, GLint g, GLint b, GLint a)
+DECLARE(void, glClearColorIui, GLint, r, GLint, g, GLint, b, GLint, a)
 {
 	TYPEDEF(void (*methodType)(GLint, GLint, GLint, GLint));
 	BEFORE(glClearColorIui);
@@ -484,7 +500,7 @@ DECLARE_GL_DEFAULT_VOID(void, glClearBufferfv, "xdp", GLenum, buffer, GLint, dra
 DECLARE_GL_DEFAULT_VOID(void, glClearBufferfi, "xdpd", GLenum, buffer, GLint, drawBuffer, GLfloat, depth, GLint, stencil)
 
 
-DECLARE(void, glTexParameterIiv, GLenum target, GLenum pname, GLint *params)
+DECLARE(void, glTexParameterIiv, GLenum, target, GLenum, pname, GLint *, params)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint*));
 	BEFORE(glTexParameterIiv);
@@ -494,7 +510,7 @@ DECLARE(void, glTexParameterIiv, GLenum target, GLenum pname, GLint *params)
 	      params);
 }
 
-DECLARE(void, glTexParameterIuiv, GLenum target, GLenum pname, GLint *params)
+DECLARE(void, glTexParameterIuiv, GLenum, target, GLenum, pname, GLint *, params)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint*));
 	BEFORE(glTexParameterIuiv);
@@ -504,7 +520,7 @@ DECLARE(void, glTexParameterIuiv, GLenum target, GLenum pname, GLint *params)
 	      params);
 }
 
-DECLARE(void, glGetTexParameterIiv, GLenum target, GLenum pname, GLint *params)
+DECLARE(void, glGetTexParameterIiv, GLenum, target, GLenum, pname, GLint *, params)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint*));
 	BEFORE(glGetTexParameterIiv);
@@ -514,7 +530,7 @@ DECLARE(void, glGetTexParameterIiv, GLenum target, GLenum pname, GLint *params)
 	      params);
 }
 
-DECLARE(void, glGetTexParameterIuiv, GLenum target, GLenum pname, GLint *params)
+DECLARE(void, glGetTexParameterIuiv, GLenum, target, GLenum, pname, GLint *, params)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint*));
 	BEFORE(glGetTexParameterIuiv);
@@ -524,8 +540,8 @@ DECLARE(void, glGetTexParameterIuiv, GLenum target, GLenum pname, GLint *params)
 	      params);
 }
 
-DECLARE(void, glFramebufferTureLayer, GLenum target, GLenum attachment, GLuint
-       ture, GLint level, GLint layer)
+DECLARE(void, glFramebufferTureLayer, GLenum, target, GLenum, attachment, GLuint,
+       ture, GLint, level, GLint, layer)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum, GLuint, GLint, GLint));
 	BEFORE(glFramebufferTureLayer);
@@ -536,8 +552,8 @@ DECLARE(void, glFramebufferTureLayer, GLenum target, GLenum attachment, GLuint
 	      attachment, ture, layer);
 }
 
-DECLARE(void, glColorMaskIndexed, GLuint buf, GLboolean r, GLboolean g,
-       GLboolean b, GLboolean a)
+DECLARE(void, glColorMaskIndexed, GLuint, buf, GLboolean, r, GLboolean, g,
+       GLboolean, b, GLboolean, a)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLboolean, GLboolean, GLboolean,
 		GLboolean));
@@ -548,7 +564,7 @@ DECLARE(void, glColorMaskIndexed, GLuint buf, GLboolean r, GLboolean g,
 	      b, a);
 }
 
-DECLARE(void, glGetBooleanIndexedv, GLenum value, GLint index, GLboolean *data)
+DECLARE(void, glGetBooleanIndexedv, GLenum, value, GLint, index, GLboolean *, data)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLint, GLboolean*));
 	BEFORE(glGetBooleanIndexedv);
@@ -560,10 +576,9 @@ DECLARE(void, glGetBooleanIndexedv, GLenum value, GLint index, GLboolean *data)
 
 DECLARE_GL_DEFAULT_VOID(void, glGetInteger64i_v, "xdp", GLenum, target, GLuint, index, GLint64 *, data)
 DECLARE_GL_DEFAULT_VOID(void, glGetInteger64v, "xp", GLenum, pname, GLint64 *, data)
-
 DECLARE_GL_DEFAULT_VOID(void, glGetIntegeri_v, "xdp", GLenum, target, GLuint, index, GLint *, data)
 
-DECLARE(void, glGetIntegerIndexedv, GLenum value, GLint index, GLboolean *data)
+DECLARE(void, glGetIntegerIndexedv, GLenum, value, GLint, index, GLboolean *, data)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLint, GLboolean*));
 	BEFORE(glGetIntegerIndexedv);
@@ -573,7 +588,7 @@ DECLARE(void, glGetIntegerIndexedv, GLenum value, GLint index, GLboolean *data)
 	      data);
 }
 
-DECLARE(void, glEnableIndexed, GLenum value, GLint index)
+DECLARE(void, glEnableIndexed, GLenum, value, GLint, index)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLint));
 	BEFORE(glEnableIndexed);
@@ -582,7 +597,7 @@ DECLARE(void, glEnableIndexed, GLenum value, GLint index)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd", value, index);
 }
 
-DECLARE(void, glDisableIndexed, GLenum value, GLint index)
+DECLARE(void, glDisableIndexed, GLenum, value, GLint, index)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLint));
 	BEFORE(glDisableIndexed);
@@ -591,7 +606,7 @@ DECLARE(void, glDisableIndexed, GLenum value, GLint index)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd", value, index);
 }
 
-DECLARE(GLboolean, glIsEnabledIndexed, GLenum target, GLuint index)
+DECLARE(GLboolean, glIsEnabledIndexed, GLenum, target, GLuint, index)
 {
 	TYPEDEF(GLboolean (*methodType)(GLenum, GLuint));
 	BEFORE(glIsEnabledIndexed);
@@ -602,8 +617,8 @@ DECLARE(GLboolean, glIsEnabledIndexed, GLenum target, GLuint index)
 	return ret;
 }
 
-DECLARE(void, glBindBufferRange, GLenum target, GLuint index, GLuint buffer,
-       GLintptr offset, GLsizeiptr size)
+DECLARE(void, glBindBufferRange, GLenum, target, GLuint, index, GLuint, buffer,
+       GLintptr, offset, GLsizeiptr, size)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLuint, GLuint, GLintptr,
 		GLsizeiptr));
@@ -614,8 +629,8 @@ DECLARE(void, glBindBufferRange, GLenum target, GLuint index, GLuint buffer,
 	      index, buffer, offset, size);
 }
 
-DECLARE(void, glBindBufferOffset, GLenum target, GLuint index, GLuint buffer,
-       GLintptr offset)
+DECLARE(void, glBindBufferOffset, GLenum, target, GLuint, index, GLuint, buffer,
+       GLintptr, offset)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLuint, GLuint, GLintptr));
 	BEFORE(glBindBufferOffset);
@@ -625,7 +640,7 @@ DECLARE(void, glBindBufferOffset, GLenum target, GLuint index, GLuint buffer,
 	      index, buffer, offset);
 }
 
-DECLARE(void, glBindBufferBase, GLenum target, GLuint index, GLuint buffer)
+DECLARE(void, glBindBufferBase, GLenum, target, GLuint, index, GLuint, buffer)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLuint, GLuint));
 	BEFORE(glBindBufferBase);
@@ -635,7 +650,7 @@ DECLARE(void, glBindBufferBase, GLenum target, GLuint index, GLuint buffer)
 	      index, buffer);
 }
 
-DECLARE(void, glBeginTransformFeedback, GLenum primitiveMode)
+DECLARE(void, glBeginTransformFeedback, GLenum, primitiveMode)
 {
 	TYPEDEF(void (*methodType)(GLenum));
 	BEFORE(glBeginTransformFeedback);
@@ -653,8 +668,8 @@ DECLARE_NOARGS(void, glEndTransformFeedback)
 	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "");
 }
 
-DECLARE(void, glTransformFeedbackVaryings, GLuint program, GLsizei count, const
-       char **varyings, GLenum bufferMode)
+DECLARE(void, glTransformFeedbackVaryings, GLuint, program, GLsizei, count, const
+       char **, varyings, GLenum, bufferMode)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLsizei, const char **, GLenum));
 	BEFORE(glTransformFeedbackVaryings);
@@ -665,9 +680,9 @@ DECLARE(void, glTransformFeedbackVaryings, GLuint program, GLsizei count, const
 	      count, varyings, bufferMode);
 }
 
-DECLARE(void, glGetTransformFeedbackVarying, GLuint program, GLuint index,
-       GLsizei bufSize, GLsizei *length, GLsizei *size, GLenum *type, char
-       *name)
+DECLARE(void, glGetTransformFeedbackVarying, GLuint, program, GLuint, index,
+       GLsizei, bufSize, GLsizei *, length, GLsizei *, size, GLenum *, type, char
+       *, name)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint, GLsizei, GLsizei *, GLsizei
 		*, GLenum *, char *));
@@ -679,8 +694,8 @@ DECLARE(void, glGetTransformFeedbackVarying, GLuint program, GLuint index,
 	      index, bufSize, length, size, type, name);
 }
 
-DECLARE(void, glFlushMappedBufferRange, GLenum target, GLintptr offset,
-       GLsizeiptr length)
+DECLARE(void, glFlushMappedBufferRange, GLenum, target, GLintptr, offset,
+       GLsizeiptr, length)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLintptr, GLsizeiptr));
 	BEFORE(glFlushMappedBufferRange);
@@ -690,7 +705,7 @@ DECLARE(void, glFlushMappedBufferRange, GLenum target, GLintptr offset,
 	      offset, length );
 }
 
-DECLARE(GLboolean, glUnmapBuffer, GLenum target)
+DECLARE(GLboolean, glUnmapBuffer, GLenum, target)
 {
 	TYPEDEF(GLboolean (*methodType)(GLenum));
 	BEFORE(glUnmapBuffer);
@@ -701,8 +716,8 @@ DECLARE(GLboolean, glUnmapBuffer, GLenum target)
 	return ret;
 }
 
-DECLARE(void, glCopyBufferSubData, GLenum readtarget,GLenum writetarget,
-       GLintptr readoffset, GLintptr writeoffset, GLsizeiptr size)
+DECLARE(void, glCopyBufferSubData, GLenum, readtarget, GLenum, writetarget,
+       GLintptr, readoffset, GLintptr, writeoffset, GLsizeiptr, size)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum, GLintptr, GLintptr,
 		GLsizeiptr));
@@ -714,7 +729,7 @@ DECLARE(void, glCopyBufferSubData, GLenum readtarget,GLenum writetarget,
 	      writetarget, readoffset, writeoffset, size);
 }
 
-DECLARE(void, glGenVertexArrays, GLsizei n, GLuint *arrays)
+DECLARE(void, glGenVertexArrays, GLsizei, n, GLuint *, arrays)
 {
 	TYPEDEF(void (*methodType)(GLsizei, GLuint *));
 	BEFORE(glGenVertexArrays);
@@ -723,7 +738,7 @@ DECLARE(void, glGenVertexArrays, GLsizei n, GLuint *arrays)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xp", n, arrays);
 }
 
-DECLARE(void, glDeleteVertexArrays, GLsizei n, const GLuint *arrays)
+DECLARE(void, glDeleteVertexArrays, GLsizei, n, const GLuint *, arrays)
 {
 	TYPEDEF(void (*methodType)(GLsizei, const GLuint *));
 	BEFORE(glDeleteVertexArrays);
@@ -732,7 +747,7 @@ DECLARE(void, glDeleteVertexArrays, GLsizei n, const GLuint *arrays)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xp", n, arrays);
 }
 
-DECLARE(void, glBindVertexArray, GLuint arrays)
+DECLARE(void, glBindVertexArray, GLuint, arrays)
 {
 	TYPEDEF(void (*methodType)(GLuint));
 	BEFORE(glBindVertexArray);
@@ -741,8 +756,8 @@ DECLARE(void, glBindVertexArray, GLuint arrays)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", arrays);
 }
 
-DECLARE(void, glGetProgramBinary, GLuint program, GLsizei bufSize, GLsizei
-       *length, GLenum *binaryFormat, void *binary)
+DECLARE(void, glGetProgramBinary, GLuint, program, GLsizei, bufSize, GLsizei
+       *, length, GLenum *, binaryFormat, void *, binary)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLsizei, GLsizei *, GLenum *,
 		void*));
@@ -754,8 +769,8 @@ DECLARE(void, glGetProgramBinary, GLuint program, GLsizei bufSize, GLsizei
 	      bufSize, length, binaryFormat, binary);
 }
 
-DECLARE(void, glProgramBinary, GLuint program, GLenum binaryFormat, const void
-       *binary, GLsizei length)
+DECLARE(void, glProgramBinary, GLuint, program, GLenum, binaryFormat, const void
+       *, binary, GLsizei, length)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum, const void *, GLsizei));
 	BEFORE(glProgramBinary);
@@ -765,8 +780,8 @@ DECLARE(void, glProgramBinary, GLuint program, GLenum binaryFormat, const void
 	      binaryFormat, binary, length);
 }
 
-DECLARE(GLuint, glGetUniformBlockIndex, GLuint program, const GLchar
-       *uniformBlockName)
+DECLARE(GLuint, glGetUniformBlockIndex, GLuint, program, const GLchar
+       *, uniformBlockName)
 {
 	TYPEDEF(GLuint (*methodType)(GLuint, const GLchar *));
 	BEFORE(glGetUniformBlockIndex);
@@ -778,9 +793,9 @@ DECLARE(GLuint, glGetUniformBlockIndex, GLuint program, const GLchar
 	return ret;
 }
 
-DECLARE(void, glGetActiveUniformBlockName, GLuint program, GLuint
-       UniformBlockIndex, GLsizei bufSize, GLsizei *length, GLchar
-       *uniformBlockName)
+DECLARE(void, glGetActiveUniformBlockName, GLuint, program, GLuint,
+       UniformBlockIndex, GLsizei, bufSize, GLsizei *, length, GLchar
+       *, uniformBlockName)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint, GLsizei, GLsizei *, GLchar
 		*));
@@ -792,8 +807,8 @@ DECLARE(void, glGetActiveUniformBlockName, GLuint program, GLuint
 	      UniformBlockIndex, bufSize, length, uniformBlockName);
 }
 
-DECLARE(void, glGetActiveUniformBlockiv, GLuint program, GLuint
-       UniformBlockIndex, GLenum pname, GLint *params)
+DECLARE(void, glGetActiveUniformBlockiv, GLuint, program, GLuint,
+       UniformBlockIndex, GLenum, pname, GLint *, params)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint, GLenum, GLint *));
 	BEFORE(glGetActiveUniformBlockiv);
@@ -804,8 +819,8 @@ DECLARE(void, glGetActiveUniformBlockiv, GLuint program, GLuint
 	      UniformBlockIndex, pname, params);
 }
 
-DECLARE(void, glGetUniformIndices, GLuint program, GLsizei uniformCount, const
-       GLchar **uniformsNames, GLuint *uniformIndices)
+DECLARE(void, glGetUniformIndices, GLuint, program, GLsizei, uniformCount, const
+       GLchar **, uniformsNames, GLuint *, uniformIndices)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLsizei, const GLchar **, GLuint
 		*));
@@ -817,7 +832,7 @@ DECLARE(void, glGetUniformIndices, GLuint program, GLsizei uniformCount, const
 	      uniformCount, uniformsNames, uniformIndices);
 }
 
-DECLARE(void, glGenQueries, GLsizei n, GLuint *ids)
+DECLARE(void, glGenQueries, GLsizei, n, GLuint *, ids)
 {
 	TYPEDEF(void (*methodType)(GLsizei, GLuint *));
 	BEFORE(glGenQueries);
@@ -826,7 +841,7 @@ DECLARE(void, glGenQueries, GLsizei n, GLuint *ids)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", n, ids);
 }
 
-DECLARE(void, glBeginQuery, GLenum target, GLuint id)
+DECLARE(void, glBeginQuery, GLenum, target, GLuint, id)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLuint));
 	BEFORE(glBeginQuery);
@@ -835,7 +850,7 @@ DECLARE(void, glBeginQuery, GLenum target, GLuint id)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd", target, id);
 }
 
-DECLARE(void, glEndQuery, GLenum target, GLuint id)
+DECLARE(void, glEndQuery, GLenum, target, GLuint, id)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLuint));
 	BEFORE(glEndQuery);
@@ -844,7 +859,7 @@ DECLARE(void, glEndQuery, GLenum target, GLuint id)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd", target, id);
 }
 
-DECLARE(void, glDeleteQueries, GLsizei n, const GLuint *ids)
+DECLARE(void, glDeleteQueries, GLsizei, n, const GLuint *, ids)
 {
 	TYPEDEF(void (*methodType)(GLsizei, const GLuint *));
 	BEFORE(glDeleteQueries);
@@ -853,7 +868,7 @@ DECLARE(void, glDeleteQueries, GLsizei n, const GLuint *ids)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", n, ids);
 }
 
-DECLARE(void, glGenTransformFeedbacks, GLsizei n, const GLuint *ids)
+DECLARE(void, glGenTransformFeedbacks, GLsizei, n, const GLuint *, ids)
 {
 	TYPEDEF(void (*methodType)(GLsizei, const GLuint *));
 	BEFORE(glGenTransformFeedbacks);
@@ -862,7 +877,7 @@ DECLARE(void, glGenTransformFeedbacks, GLsizei n, const GLuint *ids)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", n, ids);
 }
 
-DECLARE(void, glDeleteTransformFeedbacks, GLsizei n, const GLuint *ids)
+DECLARE(void, glDeleteTransformFeedbacks, GLsizei, n, const GLuint *, ids)
 {
 	TYPEDEF(void (*methodType)(GLsizei, const GLuint *));
 	BEFORE(glDeleteTransformFeedbacks);
@@ -889,7 +904,7 @@ DECLARE_NOARGS(void, glResumeTransformFeedback)
 	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "");
 }
 
-DECLARE(void, glGenSamplers, GLsizei n, GLuint *samplers)
+DECLARE(void, glGenSamplers, GLsizei, n, GLuint *, samplers)
 {
 	TYPEDEF(void (*methodType)(GLsizei, GLuint *));
 	BEFORE(glGenSamplers);
@@ -898,7 +913,7 @@ DECLARE(void, glGenSamplers, GLsizei n, GLuint *samplers)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", n, samplers);
 }
 
-DECLARE(void, glBindSampler, GLuint unit, GLuint sampler)
+DECLARE(void, glBindSampler, GLuint, unit, GLuint, sampler)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint));
 	BEFORE(glBindSampler);
@@ -907,7 +922,7 @@ DECLARE(void, glBindSampler, GLuint unit, GLuint sampler)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd", unit, sampler);
 }
 
-DECLARE(void, glSamplerParameterf, GLuint sampler, GLenum pname, GLfloat param)
+DECLARE(void, glSamplerParameterf, GLuint, sampler, GLenum, pname, GLfloat, param)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum, GLfloat));
 	BEFORE(glSamplerParameterf);
@@ -917,7 +932,7 @@ DECLARE(void, glSamplerParameterf, GLuint sampler, GLenum pname, GLfloat param)
 	      pname, param);
 }
 
-DECLARE(void, glSamplerParameteri, GLuint sampler, GLenum pname, GLint param)
+DECLARE(void, glSamplerParameteri, GLuint, sampler, GLenum, pname, GLint, param)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum, GLint));
 	BEFORE(glSamplerParameteri);
@@ -927,8 +942,8 @@ DECLARE(void, glSamplerParameteri, GLuint sampler, GLenum pname, GLint param)
 	      pname, param);
 }
 
-DECLARE(void, glSamplerParameterfv, GLuint sampler, GLenum pname, const GLfloat
-       *params)
+DECLARE(void, glSamplerParameterfv, GLuint, sampler, GLenum, pname, const GLfloat
+       *, params)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum, const GLfloat *));
 	BEFORE(glSamplerParameterfv);
@@ -938,8 +953,8 @@ DECLARE(void, glSamplerParameterfv, GLuint sampler, GLenum pname, const GLfloat
 	      pname, params);
 }
 
-DECLARE(void, glSamplerParameteriv, GLuint sampler, GLenum pname, const GLint
-       *params)
+DECLARE(void, glSamplerParameteriv, GLuint, sampler, GLenum, pname, const GLint
+       *, params)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum, const GLint *));
 	BEFORE(glSamplerParameteriv);
@@ -949,8 +964,8 @@ DECLARE(void, glSamplerParameteriv, GLuint sampler, GLenum pname, const GLint
 	      pname, params);
 }
 
-DECLARE(void, glSamplerParameterIiv, GLuint sampler, GLenum pname, const GLint
-       *params)
+DECLARE(void, glSamplerParameterIiv, GLuint, sampler, GLenum, pname, const GLint
+       *, params)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum, const GLint *));
 	BEFORE(glSamplerParameterIiv);
@@ -960,8 +975,8 @@ DECLARE(void, glSamplerParameterIiv, GLuint sampler, GLenum pname, const GLint
 	      pname, params);
 }
 
-DECLARE(void, glSamplerParameterIuiv, GLuint sampler, GLenum pname, const
-       GLuint *params)
+DECLARE(void, glSamplerParameterIuiv, GLuint, sampler, GLenum, pname, const
+       GLuint *, params)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum, const GLuint *));
 	BEFORE(glSamplerParameterIuiv);
@@ -971,7 +986,7 @@ DECLARE(void, glSamplerParameterIuiv, GLuint sampler, GLenum pname, const
 	      pname, params);
 }
 
-DECLARE(void, glDeleteSamplers, GLsizei n, const GLuint *samplers)
+DECLARE(void, glDeleteSamplers, GLsizei, n, const GLuint *, samplers)
 {
 	TYPEDEF(void (*methodType)(GLsizei, const GLuint *));
 	BEFORE(glDeleteSamplers);
@@ -980,9 +995,9 @@ DECLARE(void, glDeleteSamplers, GLsizei n, const GLuint *samplers)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", n, samplers);
 }
 
-DECLARE(void, glTexImage3D, GLenum target, GLint level, GLint internalFormat,
-       GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum
-       format, GLenum type, const GLvoid *data)
+DECLARE(void, glTexImage3D, GLenum, target, GLint, level, GLint, internalFormat,
+       GLsizei, width, GLsizei, height, GLsizei, depth, GLint, border, GLenum,
+       format, GLenum, type, const GLvoid *, data)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLint, GLint, GLsizei, GLsizei,
 		GLsizei, GLint, GLenum, GLenum, const GLvoid *));
@@ -995,8 +1010,8 @@ DECLARE(void, glTexImage3D, GLenum target, GLint level, GLint internalFormat,
 	      type, data);
 }
 
-DECLARE(void, glTexStorage2D, GLenum target, GLsizei levels, GLenum
-       internalformat, GLsizei width, GLsizei height)
+DECLARE(void, glTexStorage2D, GLenum, target, GLsizei, levels, GLenum,
+       internalformat, GLsizei, width, GLsizei, height)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLsizei, GLenum, GLsizei, GLsizei));
 	BEFORE(glTexStorage2D);
@@ -1007,9 +1022,9 @@ DECLARE(void, glTexStorage2D, GLenum target, GLsizei levels, GLenum
 	      levels, internalformat, width, height);
 }
 
-DECLARE(void, glTexSubImage3D, GLint level, GLint xoffset, GLint yoffset, GLint
-       zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format,
-       GLenum type, const GLvoid *pixels)
+DECLARE(void, glTexSubImage3D, GLint, level, GLint, xoffset, GLint, yoffset, GLint,
+       zoffset, GLsizei, width, GLsizei, height, GLsizei, depth, GLenum, format,
+       GLenum, type, const GLvoid *, pixels)
 {
 	TYPEDEF(void (*methodType)(GLint, GLint, GLint, GLint, GLsizei,
 		GLsizei, GLsizei, GLenum, GLenum, const GLvoid *));
@@ -1022,9 +1037,9 @@ DECLARE(void, glTexSubImage3D, GLint level, GLint xoffset, GLint yoffset, GLint
 	      pixels);
 }
 
-DECLARE(void, glCompressedTexImage3D, GLenum target, GLint level, GLenum
-       internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint
-       border, GLsizei imageSize, const GLvoid *data)
+DECLARE(void, glCompressedTexImage3D, GLenum, target, GLint, level, GLenum,
+       internalformat, GLsizei, width, GLsizei, height, GLsizei, depth, GLint,
+       border, GLsizei, imageSize, const GLvoid *, data)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLint, GLenum, GLsizei, GLsizei,
 		GLsizei, GLint, GLsizei, const GLvoid *));
@@ -1037,9 +1052,9 @@ DECLARE(void, glCompressedTexImage3D, GLenum target, GLint level, GLenum
 	      imageSize, data);
 }
 
-DECLARE(void, glCompressedTexSubImage3D, GLenum target, GLint xoffset, GLint
-       yoffset, GLint zoffset, GLsizei width, GLint height, GLint depth,
-       GLenum format, GLsizei imageSize, const GLvoid *data)
+DECLARE(void, glCompressedTexSubImage3D, GLenum, target, GLint, xoffset, GLint,
+       yoffset, GLint, zoffset, GLsizei, width, GLint, height, GLint, depth,
+       GLenum, format, GLsizei, imageSize, const GLvoid *, data)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLint, GLint, GLint, GLsizei,
 		GLsizei, GLsizei, GLenum, GLsizei, const GLvoid *));
@@ -1052,8 +1067,8 @@ DECLARE(void, glCompressedTexSubImage3D, GLenum target, GLint xoffset, GLint
 	      format, imageSize, data);
 }
 
-DECLARE(void, glFramebufferTextureLayer, GLenum target, GLenum attachment,
-       GLuint texture, GLint level, GLint layer)
+DECLARE(void, glFramebufferTextureLayer, GLenum, target, GLenum, attachment,
+       GLuint, texture, GLint, level, GLint, layer)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum, GLuint, GLint, GLint));
 	BEFORE(glFramebufferTextureLayer);
@@ -1064,8 +1079,8 @@ DECLARE(void, glFramebufferTextureLayer, GLenum target, GLenum attachment,
 	      attachment, texture, level, layer);
 }
 
-DECLARE(void, glInvalidateFramebuffer, GLenum target, GLsizei numAttachments,
-       const GLenum *attachments)
+DECLARE(void, glInvalidateFramebuffer, GLenum, target, GLsizei, numAttachments,
+       const GLenum *, attachments)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLsizei, const GLenum *));
 	BEFORE(glInvalidateFramebuffer);
@@ -1074,12 +1089,11 @@ DECLARE(void, glInvalidateFramebuffer, GLenum target, GLsizei numAttachments,
 	GL_GET_ERROR();
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdp", target,
 	      numAttachments, attachments);
-
 }
 
-DECLARE(void, glInvalidateSubFramebuffer, GLenum target, GLsizei
-       numAttachments, const GLenum *attachments, GLint x, GLint y, GLint
-       width, GLsizei height)
+DECLARE(void, glInvalidateSubFramebuffer, GLenum, target, GLsizei,
+       numAttachments, const GLenum *, attachments, GLint, x, GLint, y, GLint,
+       width, GLsizei, height)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLsizei, const GLenum *, GLint,
 		GLint, GLsizei, GLsizei));
@@ -1091,9 +1105,9 @@ DECLARE(void, glInvalidateSubFramebuffer, GLenum target, GLsizei
 	      numAttachments, attachments, x, y, width, height);
 }
 
-DECLARE(void, glInvalidateTexSubImage, GLuint texture, GLint level, GLint
-       xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height,
-       GLsizei depth)
+DECLARE(void, glInvalidateTexSubImage, GLuint, texture, GLint, level, GLint,
+       xoffset, GLint, yoffset, GLint, zoffset, GLsizei, width, GLsizei, height,
+       GLsizei, depth)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLint, GLint, GLint, GLint,
 		GLsizei, GLsizei, GLsizei));
@@ -1105,7 +1119,7 @@ DECLARE(void, glInvalidateTexSubImage, GLuint texture, GLint level, GLint
 	      level, xoffset, yoffset, zoffset, width, height, depth);
 }
 
-DECLARE(void, glInvalidateTexImage, GLuint texture, GLint level)
+DECLARE(void, glInvalidateTexImage, GLuint, texture, GLint, level)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLint));
 	BEFORE(glInvalidateTexImage);
@@ -1114,7 +1128,7 @@ DECLARE(void, glInvalidateTexImage, GLuint texture, GLint level)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd", texture, level);
 }
 
-DECLARE(void, glInvalidateBufferData, GLuint buffer)
+DECLARE(void, glInvalidateBufferData, GLuint, buffer)
 {
 	TYPEDEF(void (*methodType)(GLuint));
 	BEFORE(glInvalidateBufferData);
@@ -1123,8 +1137,8 @@ DECLARE(void, glInvalidateBufferData, GLuint buffer)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", buffer);
 }
 
-DECLARE(void, glInvalidateBufferSubData, GLuint buffer, GLintptr offset,
-       GLsizeiptr length)
+DECLARE(void, glInvalidateBufferSubData, GLuint, buffer, GLintptr, offset,
+       GLsizeiptr, length)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLintptr, GLsizeiptr));
 	BEFORE(glInvalidateBufferSubData);
@@ -1134,7 +1148,7 @@ DECLARE(void, glInvalidateBufferSubData, GLuint buffer, GLintptr offset,
 	      offset, length);
 }
 
-DECLARE(GLboolean, glIsVertexArray, GLuint array)
+DECLARE(GLboolean, glIsVertexArray, GLuint, array)
 {
 	TYPEDEF(GLboolean (*methodType)(GLuint));
 	BEFORE(glIsVertexArray);
@@ -1145,7 +1159,7 @@ DECLARE(GLboolean, glIsVertexArray, GLuint array)
 	return ret;
 }
 
-DECLARE(GLboolean, glIsTransformFeedback, GLuint id)
+DECLARE(GLboolean, glIsTransformFeedback, GLuint, id)
 {
 	TYPEDEF(GLboolean (*methodType)(GLuint));
 	BEFORE(glIsTransformFeedback);
@@ -1157,7 +1171,7 @@ DECLARE(GLboolean, glIsTransformFeedback, GLuint id)
 }
 
 //==========================================================================
-DECLARE(void, glBindTransformFeedback, GLenum target, GLuint id)
+DECLARE(void, glBindTransformFeedback, GLenum, target, GLuint, id)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLuint));
 	BEFORE(glBindTransformFeedback);
@@ -1166,8 +1180,8 @@ DECLARE(void, glBindTransformFeedback, GLenum target, GLuint id)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd", target, id);
 }
 
-DECLARE(GLenum, glClientWaitSync, GLsync sync, GLbitfield flags,
-       GLuint64 timeout)
+DECLARE(GLenum, glClientWaitSync, GLsync, sync, GLbitfield, flags,
+       GLuint64, timeout)
 {
 	TYPEDEF(GLenum (*methodType)(GLsync, GLbitfield, GLuint64));
 	BEFORE(glClientWaitSync);
@@ -1179,9 +1193,9 @@ DECLARE(GLenum, glClientWaitSync, GLsync sync, GLbitfield flags,
 	return ret;
 }
 
-DECLARE(void, glCopyTexSubImage3D, GLenum target, GLint level, GLint xoffset,
-       GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width,
-       GLsizei height)
+DECLARE(void, glCopyTexSubImage3D, GLenum, target, GLint, level, GLint, xoffset,
+       GLint, yoffset, GLint, zoffset, GLint, x, GLint, y, GLsizei, width,
+       GLsizei, height)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLint, GLint, GLint, GLint , GLint,
 				   GLint, GLsizei, GLsizei));
@@ -1193,7 +1207,7 @@ DECLARE(void, glCopyTexSubImage3D, GLenum target, GLint level, GLint xoffset,
 	      target, level, xoffset, yoffset, zoffset, x, y, width, height);
 }
 
-DECLARE(void, glDeleteSync, GLsync sync)
+DECLARE(void, glDeleteSync, GLsync, sync)
 {
 	TYPEDEF(void (*methodType)(GLsync));
 	BEFORE(glDeleteSync);
@@ -1202,8 +1216,8 @@ DECLARE(void, glDeleteSync, GLsync sync)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "p", sync);
 }
 
-DECLARE(void, glDrawArraysInstanced, GLenum mode, GLint first, GLsizei count,
-       GLsizei primcount)
+DECLARE(void, glDrawArraysInstanced, GLenum, mode, GLint, first, GLsizei, count,
+       GLsizei, primcount)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLint, GLsizei, GLsizei));
 	BEFORE(glDrawArraysInstanced);
@@ -1213,7 +1227,7 @@ DECLARE(void, glDrawArraysInstanced, GLenum mode, GLint first, GLsizei count,
 	      count, primcount);
 }
 
-DECLARE(void, glDrawBuffers, GLsizei n, const GLenum *bufs)
+DECLARE(void, glDrawBuffers, GLsizei, n, const GLenum *, bufs)
 {
 	TYPEDEF(void (*methodType)(GLsizei, const GLenum *));
 	BEFORE(glDrawBuffers);
@@ -1222,8 +1236,8 @@ DECLARE(void, glDrawBuffers, GLsizei n, const GLenum *bufs)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp", n, bufs);
 }
 
-DECLARE(void, glDrawElementsInstanced, GLenum mode, GLsizei count, GLenum type,
-       const void * indices, GLsizei primcount)
+DECLARE(void, glDrawElementsInstanced, GLenum, mode, GLsizei, count, GLenum, type,
+       const void *, indices, GLsizei, primcount)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLsizei, GLenum, const void *,
 				   GLsizei));
@@ -1235,8 +1249,8 @@ DECLARE(void, glDrawElementsInstanced, GLenum mode, GLsizei count, GLenum type,
 	      mode, count, type, indices, primcount);
 }
 
-DECLARE(void, glDrawRangeElements, GLenum mode, GLuint start, GLuint end,
-       GLsizei count, GLenum type, const GLvoid * indices)
+DECLARE(void, glDrawRangeElements, GLenum, mode, GLuint, start, GLuint, end,
+       GLsizei, count, GLenum, type, const GLvoid *, indices)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLuint, GLuint, GLsizei, GLenum,
 		const GLvoid *));
@@ -1247,7 +1261,7 @@ DECLARE(void, glDrawRangeElements, GLenum mode, GLuint start, GLuint end,
 	      mode, start, end, count, type, indices);
 }
 
-DECLARE(void, glWaitSync, GLsync sync, GLbitfield flags, GLuint64 timeout)
+DECLARE(void, glWaitSync, GLsync, sync, GLbitfield, flags, GLuint64, timeout)
 {
 	TYPEDEF(void (*methodType)(GLsync, GLbitfield, GLuint64));
 	BEFORE(glWaitSync);
@@ -1257,7 +1271,7 @@ DECLARE(void, glWaitSync, GLsync sync, GLbitfield flags, GLuint64 timeout)
 	      sync, flags, timeout);
 }
 
-DECLARE(void, glVertexAttribDivisor, GLuint index, GLuint divisor)
+DECLARE(void, glVertexAttribDivisor, GLuint, index, GLuint, divisor)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLuint));
 	BEFORE(glVertexAttribDivisor);
@@ -1267,8 +1281,8 @@ DECLARE(void, glVertexAttribDivisor, GLuint index, GLuint divisor)
 	      index, divisor);
 }
 
-DECLARE(void, glTexStorage3D, GLenum target, GLsizei levels,
-       GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth)
+DECLARE(void, glTexStorage3D, GLenum, target, GLsizei, levels,
+       GLenum, internalformat, GLsizei, width, GLsizei, height, GLsizei, depth)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLsizei, GLenum, GLsizei, GLsizei,
 		GLsizei));
@@ -1280,7 +1294,7 @@ DECLARE(void, glTexStorage3D, GLenum target, GLsizei levels,
 	      target, levels, internalformat, width, height, depth);
 }
 
-DECLARE(void, glReadBuffer, GLenum src)
+DECLARE(void, glReadBuffer, GLenum, src)
 {
 	TYPEDEF(void (*methodType)(GLenum));
 	BEFORE(glReadBuffer);
@@ -1290,7 +1304,7 @@ DECLARE(void, glReadBuffer, GLenum src)
 	      src);
 }
 
-DECLARE(void, glProgramParameteri, GLuint program, GLenum pname, GLint value)
+DECLARE(void, glProgramParameteri, GLuint, program, GLenum, pname, GLint, value)
 {
 	TYPEDEF(void (*methodType)(GLuint, GLenum, GLint));
 	BEFORE(glProgramParameteri);
@@ -1300,8 +1314,8 @@ DECLARE(void, glProgramParameteri, GLuint program, GLenum pname, GLint value)
 	      program, pname, value);
 }
 
-DECLARE(void *, glMapBufferRange, GLenum target, GLintptr offset,
-       GLsizeiptr length, GLbitfield access)
+DECLARE(void *, glMapBufferRange, GLenum, target, GLintptr, offset,
+       GLsizeiptr, length, GLbitfield, access)
 {
 	TYPEDEF(void *(*methodType)(GLenum, GLintptr, GLsizeiptr, GLbitfield));
 	BEFORE(glMapBufferRange);
@@ -1313,7 +1327,7 @@ DECLARE(void *, glMapBufferRange, GLenum target, GLintptr offset,
 	return ret;
 }
 
-DECLARE(GLboolean, glIsSync, GLsync sync)
+DECLARE(GLboolean, glIsSync, GLsync, sync)
 {
 	TYPEDEF(GLboolean (*methodType)(GLsync));
 	BEFORE(glIsSync);
@@ -1325,7 +1339,7 @@ DECLARE(GLboolean, glIsSync, GLsync sync)
 	return ret;
 }
 
-DECLARE(GLboolean, glIsQuery, GLuint id)
+DECLARE(GLboolean, glIsQuery, GLuint, id)
 {
 	TYPEDEF(GLboolean (*methodType)(GLuint));
 	BEFORE(glIsQuery);
@@ -1340,8 +1354,8 @@ DECLARE(GLboolean, glIsQuery, GLuint id)
 DECLARE_GL_DEFAULT_VOID(void, glGetSamplerParameterfv, "dxp", GLuint, sampler, GLenum, pname, GLfloat *, params)
 DECLARE_GL_DEFAULT_VOID(void, glGetSamplerParameteriv, "dxp", GLuint, sampler, GLenum, pname, GLint *, params)
 
-DECLARE(void, glGetSynciv, GLsync sync, GLenum pname, GLsizei bufSize,
-       GLsizei *length, GLint *values)
+DECLARE(void, glGetSynciv, GLsync, sync, GLenum, pname, GLsizei, bufSize,
+       GLsizei *, length, GLint *, values)
 {
 	TYPEDEF(void (*methodType)(GLsync, GLenum, GLsizei, GLsizei *, GLint *));
 	BEFORE(glGetSynciv);
@@ -1351,7 +1365,7 @@ DECLARE(void, glGetSynciv, GLsync sync, GLenum pname, GLsizei bufSize,
 	      sync, pname, bufSize, length, values);
 }
 
-DECLARE(void, glGetQueryiv, GLenum target, GLenum pname, GLint * params)
+DECLARE(void, glGetQueryiv, GLenum, target, GLenum, pname, GLint *, params)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum, GLint *));
 	BEFORE(glGetQueryiv);
@@ -1361,8 +1375,8 @@ DECLARE(void, glGetQueryiv, GLenum target, GLenum pname, GLint * params)
 	      target, pname, params);
 }
 
-DECLARE(void, glGetInternalformativ, GLenum target, GLenum internalformat,
-       GLenum pname, GLsizei bufSize, GLint *params)
+DECLARE(void, glGetInternalformativ, GLenum, target, GLenum, internalformat,
+       GLenum, pname, GLsizei, bufSize, GLint *, params)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum, GLenum, GLsizei, GLint *));
 	BEFORE(glGetInternalformativ);
@@ -1375,8 +1389,9 @@ DECLARE(void, glGetInternalformativ, GLenum target, GLenum internalformat,
 
 DECLARE_GL_DEFAULT_VOID(void, glGetBufferParameteri64v, "xxp", GLenum, target, GLenum, value, GLint64 *, data)
 
-DECLARE(void, glGetBufferPointerv, GLenum target, GLenum pname,
-       GLvoid ** params)
+
+DECLARE(void, glGetBufferPointerv, GLenum, target, GLenum, pname,
+       GLvoid **, params)
 {
 	TYPEDEF(void (*methodType)(GLenum, GLenum, GLvoid **));
 	BEFORE(glGetBufferPointerv);
@@ -1386,7 +1401,7 @@ DECLARE(void, glGetBufferPointerv, GLenum target, GLenum pname,
 	      target, pname, params);
 }
 
-DECLARE(GLsync, glFenceSync, GLenum condition, GLbitfield flags)
+DECLARE(GLsync, glFenceSync, GLenum, condition, GLbitfield, flags)
 {
 	TYPEDEF(GLsync (*methodType)(GLenum, GLbitfield));
 	BEFORE(glFenceSync);

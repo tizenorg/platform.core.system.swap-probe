@@ -35,6 +35,7 @@ extern "C" {
 #endif
 
 #include "da_gles20.h"
+#include "binproto.h"
 
 #define DECLARE FUNC_DECLAR
 #define DECLARE_NOARGS FUNC_DECLAR_NOARGS

@@ -119,14 +119,15 @@
  * only about regular files or sockets, so this logic implemented in macro.
  * Watch out when reusing it somewhere else
  */
-#define AFTER_PACK_ORIGINAL_FD(API_ID, RTYPE, RVAL, SIZE, FD, APITYPE, INPUTFORMAT, ...)	\
+#define AFTER_PACK_ORIGINAL_FD(API_ID, RTYPE, RVAL, SIZE, FD, APITYPE, \
+				INPUTFORMAT, ...)					   \
 do {												\
 	POST_PACK_PROBEBLOCK_BEGIN();								\
 	_fstatret = fstat(FD, &_statbuf);							\
 	if (stat_regular_or_socket_p(&_statbuf)) {						\
 		PREPARE_LOCAL_BUF();								\
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);				\
+		PACK_COMMON_END(RTYPE, RVAL, newerrno, call_type, caller);				\
 		POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE);				\
 	}											\
 	POST_PACK_PROBEBLOCK_END();								\
@@ -139,7 +140,7 @@ do {												\
 	if (stat_regular_or_socket_p(&_statbuf)) {						\
 		PREPARE_LOCAL_BUF();								\
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);				\
+		PACK_COMMON_END(RTYPE, RVAL, newerrno, call_type, caller);				\
 		POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, FD, APITYPE);				\
 	}											\
 	POST_PACK_PROBEBLOCK_ADD_END();								\
@@ -150,7 +151,7 @@ do {											\
 	POST_PACK_PROBEBLOCK_BEGIN();							\
 	PREPARE_LOCAL_BUF();								\
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-	PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);				\
+	PACK_COMMON_END(RTYPE, RVAL, newerrno, call_type, caller);				\
 	POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE);				\
 	POST_PACK_PROBEBLOCK_END();							\
 } while(0)
@@ -164,7 +165,7 @@ do {											\
 	}										\
 	PREPARE_LOCAL_BUF();								\
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-	PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);				\
+	PACK_COMMON_END(RTYPE, RVAL, newerrno, call_type, caller);				\
 	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, _fd, APITYPE);				\
 	POST_PACK_PROBEBLOCK_END();							\
 } while(0)
@@ -187,7 +188,7 @@ static inline bool stat_regular_or_socket_p(struct stat *buf)
 		DEFINE_FILESIZE_FD(fd);								\
 		PREPARE_LOCAL_BUF();								\
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-		PACK_COMMON_END(RTYPE, 0, 0, blockresult);					\
+		PACK_COMMON_END(RTYPE, 0, 0, call_type, caller);					\
 		PACK_RESOURCE(0, FD, APITYPE, _filesize, _filepath);				\
 		FLUSH_LOCAL_BUF();								\
 	}								\
@@ -201,7 +202,7 @@ do {									\
 	if (stat_regular_or_socket_p(&_statbuf)) {			\
 		PREPARE_LOCAL_BUF();								\
 		PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__); \
-		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);		\
+		PACK_COMMON_END(RTYPE, RVAL, newerrno, call_type, caller);		\
 		PACK_RESOURCE(SIZE, FD, APITYPE, _filesize, _filepath);	\
 		FLUSH_LOCAL_BUF();								\
 	}								\
@@ -216,7 +217,7 @@ do {									\
 	DEFINE_FILESIZE_0();								\
 	PREPARE_LOCAL_BUF();								\
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-	PACK_COMMON_END(RTYPE, 0, 0, blockresult);					\
+	PACK_COMMON_END(RTYPE, 0, 0, call_type, caller);					\
 	POST_PACK_PROBEBLOCK_MIDDLE_NOFD(0, APITYPE);					\
 	PRE_PROBEBLOCK_END()
 
@@ -229,7 +230,7 @@ do {									\
 	}											\
 	PREPARE_LOCAL_BUF();									\
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
-	PACK_COMMON_END(RTYPE, 0, 0, blockresult);						\
+	PACK_COMMON_END(RTYPE, 0, 0, call_type, caller);						\
 	POST_PACK_PROBEBLOCK_MIDDLE_FD(0, _fd, APITYPE);					\
 	PRE_PROBEBLOCK_END()
 
@@ -239,7 +240,7 @@ do {												\
 	inc_current_event_index();								\
 	PREPARE_LOCAL_BUF();									\
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
-	PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);					\
+	PACK_COMMON_END(RTYPE, RVAL, newerrno, call_type, caller);					\
 	POST_PACK_PROBEBLOCK_MIDDLE_NOFD(SIZE, APITYPE);					\
 	POST_PACK_PROBEBLOCK_END();								\
 } while(0)
@@ -254,7 +255,7 @@ do {												\
 	}											\
 	PREPARE_LOCAL_BUF();									\
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE, API_ID, INPUTFORMAT, __VA_ARGS__);		\
-	PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);					\
+	PACK_COMMON_END(RTYPE, RVAL, newerrno, call_type, caller);					\
 	POST_PACK_PROBEBLOCK_MIDDLE_FD(SIZE, _fd, APITYPE);					\
 	POST_PACK_PROBEBLOCK_END();								\
 } while(0)
