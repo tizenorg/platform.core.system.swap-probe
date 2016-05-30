@@ -49,7 +49,8 @@ ui_app_lifecycle_callback_s uiAppCallback;
 	do {									\
 		PREPARE_LOCAL_BUF();					\
 		PACK_COMMON_BEGIN(MSG_PROBE_LIFECYCLE, API_ID, INPUTFORMAT, __VA_ARGS__);	\
-		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult);	\
+        /* TODO Check address */                                                    \
+		PACK_COMMON_END(RTYPE, RVAL, newerrno, blockresult, (uint64_t)0xffffffff);	\
 		FLUSH_LOCAL_BUF();					\
 	} while(0);								\
 	errno = (newerrno != 0) ? newerrno : olderrno

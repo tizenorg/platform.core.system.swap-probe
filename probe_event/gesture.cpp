@@ -45,7 +45,8 @@
 		inc_current_event_index();												\
 		PREPARE_LOCAL_BUF();													\
 		PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID, "p", voidp_to_uint64(_ARGDETECTOR));	\
-		PACK_COMMON_END('v', 0, 0, 0);												\
+        /* TODO Check if address is really unused here */                       \
+		PACK_COMMON_END('v', 0, 0, 0, (uint64_t)0xffffffff);					\
 		sprintf(info1_str, "%d", _INFO1);										\
 		PACK_UIEVENT(_EVENT_GESTURE, _GESTURETYPE, _X, _Y, info1_str, _INFO2);	\
 		FLUSH_LOCAL_BUF();														\

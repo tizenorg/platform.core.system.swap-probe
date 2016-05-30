@@ -180,7 +180,7 @@ void init_probe_gl(const char *func_name, void **func_pointer,
 			snprintf(maxValString, sizeof(maxValString), "%d,%d", maxVal[0], maxVal[1]);
 			PREPARE_LOCAL_BUF();
 			PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, "", 0);
-			PACK_COMMON_END('p', 1, 0, 0);
+			PACK_COMMON_END('p', 1, 0, 0, (uint64_t)0xffffffff);
 			PACK_GL_ADD(APITYPE_INIT, 0, maxValString);
 			FLUSH_LOCAL_BUF();
 		}
