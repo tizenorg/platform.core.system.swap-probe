@@ -62,7 +62,8 @@ bool touch_pressed = false;
 		PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID, "pdp",					\
 				  voidp_to_uint64(_ARGDATA), _ARGTYPE,	\
 				  voidp_to_uint64(_ARGEVENT));		\
-		PACK_COMMON_END('c', 0, 0, 0);												\
+        /* TODO Check if address is really unused here */                       \
+		PACK_COMMON_END('c', 0, 0, 0, (uint64_t)0xffffffff);							\
 		PACK_UIEVENT(_EVENTTYPE, _DETAILTYPE, _X, _Y, _KEYCODE, _EXTRA);		\
 		FLUSH_LOCAL_BUF();														\
 	} while (0)

@@ -44,7 +44,7 @@
 #include "binproto.h"
 
 
-void *operator new(std::size_t size) throw (std::bad_alloc)
+HANDLER_DEF_THROW(void *, new, (std::bad_alloc), std::size_t size)
 {
 	static void*(*newp)(std::size_t size);
 	DECLARE_VARIABLE_STANDARD;
@@ -57,7 +57,7 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 	pret = newp(size);
 
 	if(pret != NULL)
-		add_memory_hash(pret, size, MEMTYPE_NEW, CALL_TYPE);
+		add_memory_hash(pret, size, MEMTYPE_NEW, (unsigned short)call_type);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -65,7 +65,7 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void__operator_new_std__size_t_size__throw__std__bad_alloc_,
 			  "x", (uint64_t)(size));
-	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_COMMON_END('p', pret, newerrno, call_type, caller);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 
@@ -73,8 +73,9 @@ void *operator new(std::size_t size) throw (std::bad_alloc)
 
 	return pret;
 }
+HANDLER_WRAPPERS_THROW(void *, new, (std::bad_alloc), std::size_t, size)
 
-void *operator new[](std::size_t size) throw (std::bad_alloc)
+HANDLER_DEF_THROW(void *, new_array, (std::bad_alloc), std::size_t size)
 {
 	static void*(*newp)(std::size_t size);
 	DECLARE_VARIABLE_STANDARD;
@@ -87,7 +88,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 	pret = newp(size);
 
 	if(pret != NULL)
-		add_memory_hash(pret, size, MEMTYPE_NEW, CALL_TYPE);
+		add_memory_hash(pret, size, MEMTYPE_NEW, call_type);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -95,7 +96,7 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void__operator_new___std__size_t_size__throw__std__bad_alloc_,
 			  "x", (uint64_t)(size));
-	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_COMMON_END('p', pret, newerrno, call_type, caller);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 
@@ -103,12 +104,12 @@ void *operator new[](std::size_t size) throw (std::bad_alloc)
 
 	return pret;
 }
+HANDLER_WRAPPERS_THROW(void *, new_array, (std::bad_alloc), std::size_t, size)
 
-void operator delete(void *ptr) throw()
+HANDLER_DEF_THROW(void, delete, (), void *ptr)
 {
 	static void (*deletep)(void *ptr);
 	DECLARE_VARIABLE_STANDARD;
-	unsigned short caller;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPv, deletep);
 
@@ -116,8 +117,9 @@ void operator delete(void *ptr) throw()
 
 	if(ptr != NULL)
 	{
-		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
-		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
+		/* TODO call_type rewrited as it was previously. Is it needed? */
+		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &call_type);
+		if(blockresult == 0 && ret == 0 && call_type == EXTERNAL_CALL)
 		{
 			inc_current_event_index();
 			blockresult = 2;
@@ -132,18 +134,18 @@ void operator delete(void *ptr) throw()
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void_operator_delete_void__ptr__throw__,
 			  "p", voidp_to_uint64(ptr));
-	PACK_COMMON_END('v', 0, newerrno, blockresult);
+	PACK_COMMON_END('v', 0, newerrno, call_type, caller);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
 
 	POST_PACK_PROBEBLOCK_END();
 }
+HANDLER_WRAPPERS_THROW(void, delete, (), void *, ptr)
 
-void operator delete[](void *ptr) throw()
+HANDLER_DEF_THROW(void, delete_array, (), void *ptr)
 {
 	static void (*deletep)(void *ptr);
 	DECLARE_VARIABLE_STANDARD;
-	unsigned short caller;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPv, deletep);
 
@@ -151,8 +153,9 @@ void operator delete[](void *ptr) throw()
 
 	if(ptr != NULL)
 	{
-		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
-		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
+		/* TODO call_type rewrited as it was previously. Is it needed? */
+		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &call_type);
+		if(blockresult == 0 && ret == 0 && call_type == EXTERNAL_CALL)
 		{
 			inc_current_event_index();
 			blockresult = 2;
@@ -167,14 +170,15 @@ void operator delete[](void *ptr) throw()
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void_operator_delete___void__ptr__throw__,
 			  "p", voidp_to_uint64(ptr));
-	PACK_COMMON_END('v', 0, newerrno, blockresult);
+	PACK_COMMON_END('v', 0, newerrno, call_type, caller);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
 
 	POST_PACK_PROBEBLOCK_END();
 }
+HANDLER_WRAPPERS_THROW(void, delete_array, (), void *, ptr)
 
-void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
+HANDLER_DEF_THROW(void *, new_nothrow, (), std::size_t size, const std::nothrow_t& nothrow)
 {
 	static void*(*newp)(std::size_t size, const std::nothrow_t& nothrow);
 	DECLARE_VARIABLE_STANDARD;
@@ -187,7 +191,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 	pret = newp(size, nothrow);
 
 	if(pret != NULL)
-		add_memory_hash(pret, size, MEMTYPE_NEW, CALL_TYPE);
+		add_memory_hash(pret, size, MEMTYPE_NEW, (unsigned short)call_type);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -195,7 +199,7 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void__operator_new_std__size_t_size__const_std__nothrow_t__nothrow__throw__,
 			  "xp", (uint64_t)(size), voidp_to_uint64(&nothrow));
-	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_COMMON_END('p', pret, newerrno, call_type, caller);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 
@@ -203,8 +207,9 @@ void *operator new(std::size_t size, const std::nothrow_t& nothrow) throw()
 
 	return pret;
 }
+HANDLER_WRAPPERS_THROW(void *, new_nothrow, (), std::size_t, size, const std::nothrow_t&, nothrow)
 
-void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
+HANDLER_DEF_THROW(void *, new_array_nothrow, (), std::size_t size, const std::nothrow_t& nothrow)
 {
 	static void*(*newp)(std::size_t size, const std::nothrow_t& nothrow);
 	DECLARE_VARIABLE_STANDARD;
@@ -217,7 +222,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 	pret = newp(size, nothrow);
 
 	if(pret != NULL)
-		add_memory_hash(pret, size, MEMTYPE_NEW, CALL_TYPE);
+		add_memory_hash(pret, size, MEMTYPE_NEW, call_type);
 
 	POST_PACK_PROBEBLOCK_BEGIN();
 
@@ -225,7 +230,7 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void__operator_new___std__size_t_size__const_std__nothrow_t__nothrow__throw__,
 			  "xp", (uint64_t)(size), voidp_to_uint64(&nothrow));
-	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_COMMON_END('p', pret, newerrno, call_type, caller);
 	PACK_MEMORY(size, MEMORY_API_ALLOC, pret);
 	FLUSH_LOCAL_BUF();
 
@@ -233,12 +238,12 @@ void *operator new[](std::size_t size, const std::nothrow_t& nothrow) throw()
 
 	return pret;
 }
+HANDLER_WRAPPERS_THROW(void *, new_array_nothrow, (), std::size_t, size, const std::nothrow_t&, nothrow)
 
-void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
+HANDLER_DEF_THROW(void, delete_nothrow, (), void *ptr, const std::nothrow_t& nothrow)
 {
 	static void (*deletep)(void *ptr, const std::nothrow_t& nothrow);
 	DECLARE_VARIABLE_STANDARD;
-	unsigned short caller;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdlPvRKSt9nothrow_t, deletep);
 
@@ -246,8 +251,9 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 
 	if(ptr != NULL)
 	{
-		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
-		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
+		/* TODO call_type rewrited as it was previously. Is it needed? */
+		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &call_type);
+		if(blockresult == 0 && ret == 0 && call_type == EXTERNAL_CALL)
 		{
 			inc_current_event_index();
 			blockresult = 2;
@@ -262,18 +268,18 @@ void operator delete(void *ptr, const std::nothrow_t& nothrow) throw()
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void_operator_delete_void__ptr__const_std__nothrow_t__nothrow__throw__,
 			  "pp", voidp_to_uint64(ptr), voidp_to_uint64(&nothrow));
-	PACK_COMMON_END('v', 0, newerrno, blockresult);
+	PACK_COMMON_END('v', 0, newerrno, call_type, caller);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
 
 	POST_PACK_PROBEBLOCK_END();
 }
+HANDLER_WRAPPERS_THROW(void, delete_nothrow, (), void *, ptr, const std::nothrow_t&, nothrow)
 
-void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
+HANDLER_DEF_THROW(void, delete_array_nothrow, (), void *ptr, const std::nothrow_t& nothrow)
 {
 	static void (*deletep)(void *ptr, const std::nothrow_t& nothrow);
 	DECLARE_VARIABLE_STANDARD;
-	unsigned short caller;
 
 	GET_REAL_FUNCP_RTLD_NEXT_CPP(_ZdaPvRKSt9nothrow_t, deletep);
 
@@ -281,8 +287,9 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 
 	if(ptr != NULL)
 	{
-		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &caller);
-		if(blockresult == 0 && ret == 0 && caller == MEM_EXTERNAL)
+		/* TODO call_type rewrited as it was previously. Is it needed? */
+		ret = del_memory_hash(ptr, MEMTYPE_DELETE, &call_type);
+		if(blockresult == 0 && ret == 0 && call_type == EXTERNAL_CALL)
 		{
 			inc_current_event_index();
 			blockresult = 2;
@@ -297,10 +304,10 @@ void operator delete[](void *ptr, const std::nothrow_t& nothrow) throw()
 	PACK_COMMON_BEGIN(MSG_PROBE_MEMORY,
 			  API_ID_void_operator_delete___void__ptr__const_std__nothrow_t__nothrow__throw__,
 			  "pp", voidp_to_uint64(ptr), voidp_to_uint64(&nothrow));
-	PACK_COMMON_END('v', 0, newerrno, blockresult);
+	PACK_COMMON_END('v', 0, newerrno, call_type, caller);
 	PACK_MEMORY(0, MEMORY_API_FREE, ptr);
 	FLUSH_LOCAL_BUF();
 
 	POST_PACK_PROBEBLOCK_END();
 }
-
+HANDLER_WRAPPERS_THROW(void, delete_array_nothrow, (), void *, ptr, const std::nothrow_t&, nothrow)
