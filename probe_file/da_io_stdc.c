@@ -56,7 +56,7 @@ static inline char *get_abs_path(FILE *file, const char *fname,
 	return path;
 }
 
-FILE* PROBE_NAME(fopen)(const char* filename, const char* mode)
+HANDLER_DEF(FILE*, fopen, const char* filename, const char* mode)
 {
 	static FILE* (*fopenp)(const char* filename, const char* mode);
 	char buffer[PATH_MAX];
@@ -74,8 +74,9 @@ FILE* PROBE_NAME(fopen)(const char* filename, const char* mode)
 
 	return fret;
 }
+HANDLER_WRAPPERS(FILE*, fopen, const char*, filename, const char*, mode)
 
-FILE* PROBE_NAME(freopen)(const char * filename, const char * mode, FILE * stream)
+HANDLER_DEF(FILE*, freopen, const char * filename, const char * mode, FILE * stream)
 {
 	static FILE* (*freopenp)(const char *filename, const char *mode,
 				 FILE *stream);
@@ -94,8 +95,9 @@ FILE* PROBE_NAME(freopen)(const char * filename, const char * mode, FILE * strea
 
 	return fret;
 }
+HANDLER_WRAPPERS(FILE*, freopen, const char *, filename, const char *, mode, FILE *, stream)
 
-FILE* PROBE_NAME(fdopen)(int fildes, const char *mode)
+HANDLER_DEF(FILE*, fdopen, int fildes, const char *mode)
 {
 	static FILE* (*fdopenp)(int fildes, const char *mode);
  	FILE* fret;
@@ -109,8 +111,9 @@ FILE* PROBE_NAME(fdopen)(int fildes, const char *mode)
 
 	return fret;
 }
+HANDLER_WRAPPERS(FILE*, fdopen, int, fildes, const char *, mode)
 
-int PROBE_NAME(fflush)(FILE* stream)
+HANDLER_DEF(int, fflush, FILE* stream)
 {
 	static int (*fflushp)(FILE* stream);
 
@@ -121,8 +124,9 @@ int PROBE_NAME(fflush)(FILE* stream)
 				  voidp_to_uint64(stream));
 	return ret;
 }
+HANDLER_WRAPPERS(int, fflush, FILE*, stream)
 
-int PROBE_NAME(fclose)(FILE* stream)
+HANDLER_DEF(int, fclose, FILE* stream)
 {
 	static int (*fclosep)(FILE* stream);
 	DECLARE_VARIABLE_FD;
@@ -143,14 +147,15 @@ int PROBE_NAME(fclose)(FILE* stream)
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 			  API_ID_fclose,
 			  "p", voidp_to_uint64(stream));
-	PACK_COMMON_END('d', ret, newerrno, blockresult);
+	PACK_COMMON_END('d', ret, newerrno, call_type, caller);
 	POST_PACK_PROBEBLOCK_MIDDLE_FD(0, _fd, FD_API_CLOSE);
 	POST_PACK_PROBEBLOCK_END();
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fclose, FILE*, stream)
 
-FILE * PROBE_NAME(tmpfile )( void )
+HANDLER_DEF(FILE *, tmpfile, void)
 {
 	static FILE* (*tmpfilep) ( void );
 	FILE* fret;
@@ -162,8 +167,9 @@ FILE * PROBE_NAME(tmpfile )( void )
 				  'p', fret, 0, fret, FD_API_OPEN, "s", "");
 	return fret;
 }
+HANDLER_WRAPPERS(FILE *, tmpfile, void)
 
-int PROBE_NAME(fgetpos)(FILE* stream, fpos_t* position)
+HANDLER_DEF(int, fgetpos, FILE* stream, fpos_t* position)
 {
 	static int (*fgetposp)(FILE* stream, fpos_t* position);
 
@@ -175,8 +181,9 @@ int PROBE_NAME(fgetpos)(FILE* stream, fpos_t* position)
 				  voidp_to_uint64(position));
 	return ret;
 }
+HANDLER_WRAPPERS(int, fgetpos, FILE*, stream, fpos_t*, position)
 
-int PROBE_NAME(fseek)(FILE* stream, long int offset, int origin)
+HANDLER_DEF(int, fseek, FILE* stream, long int offset, int origin)
 {
 	static int (*fseekp)(FILE* stream, long int offset, int origin);
 
@@ -188,8 +195,9 @@ int PROBE_NAME(fseek)(FILE* stream, long int offset, int origin)
 				  (uint64_t)(offset), origin);
 	return ret;
 }
+HANDLER_WRAPPERS(int, fseek, FILE*, stream, long int, offset, int, origin)
 
-int PROBE_NAME(fsetpos)(FILE* stream, const fpos_t* pos)
+HANDLER_DEF(int, fsetpos, FILE* stream, const fpos_t* pos)
 {
 	static int (*fsetposp)(FILE* stream, const fpos_t* pos);
 
@@ -200,8 +208,9 @@ int PROBE_NAME(fsetpos)(FILE* stream, const fpos_t* pos)
 				  voidp_to_uint64(stream), voidp_to_uint64(pos));
 	return ret;
 }
+HANDLER_WRAPPERS(int, fsetpos, FILE*, stream, const fpos_t*, pos)
 
-long int PROBE_NAME(ftell)(FILE* stream)
+HANDLER_DEF(long int, ftell, FILE* stream)
 {
 	static long int (*ftellp)(FILE* stream);
 	long int lret;
@@ -216,8 +225,9 @@ long int PROBE_NAME(ftell)(FILE* stream)
 
 	return lret;
 }
+HANDLER_WRAPPERS(long int, ftell, FILE*, stream)
 
-void PROBE_NAME(rewind)(FILE* stream)
+HANDLER_DEF(void, rewind, FILE* stream)
 {
 	static void (*rewindp)(FILE* stream);
 
@@ -229,8 +239,9 @@ void PROBE_NAME(rewind)(FILE* stream)
 				  'v', 0, 0, stream, FD_API_OTHER, "p",
 				  voidp_to_uint64(stream));
 }
+HANDLER_WRAPPERS(void, rewind, FILE*, stream)
 
-void PROBE_NAME(clearerr)(FILE* stream)
+HANDLER_DEF(void, clearerr, FILE* stream)
 {
 	static void (*clearerrp)(FILE* stream);
 
@@ -242,8 +253,9 @@ void PROBE_NAME(clearerr)(FILE* stream)
 				  'v', 0, 0, stream, FD_API_OTHER, "p",
 				  voidp_to_uint64(stream));
 }
+HANDLER_WRAPPERS(void, clearerr, FILE*, stream)
 
-int PROBE_NAME(feof)(FILE* stream)
+HANDLER_DEF(int, feof, FILE* stream)
 {
 	static int (*feofp)(FILE* stream);
 
@@ -254,8 +266,9 @@ int PROBE_NAME(feof)(FILE* stream)
 				  voidp_to_uint64(stream));
 	return ret;
 }
+HANDLER_WRAPPERS(int, feof, FILE*, stream)
 
-int PROBE_NAME(ferror)(FILE* stream)
+HANDLER_DEF(int, ferror, FILE* stream)
 {
 	static int (*ferrorp)(FILE* stream);
 
@@ -266,8 +279,9 @@ int PROBE_NAME(ferror)(FILE* stream)
 				  voidp_to_uint64(stream));
 	return ret;
 }
+HANDLER_WRAPPERS(int, ferror, FILE*, stream)
 
-int PROBE_NAME(fileno)(FILE* stream)
+HANDLER_DEF(int, fileno, FILE* stream)
 {
 	static int (*filenop)(FILE* stream);
 
@@ -278,6 +292,7 @@ int PROBE_NAME(fileno)(FILE* stream)
 				  voidp_to_uint64(stream));
 	return ret;
 }
+HANDLER_WRAPPERS(int, fileno, FILE*, stream)
 
 
 
@@ -285,7 +300,7 @@ int PROBE_NAME(fileno)(FILE* stream)
 // File read / write APIs
 // *******************************************************************
 
-int PROBE_NAME(vfprintf)(FILE* stream, const char* format, va_list arg)
+HANDLER_DEF(int, vfprintf, FILE* stream, const char* format, va_list arg)
 {
 	static int (*vfprintfp)(FILE* stream, const char* format, va_list arg);
 
@@ -301,8 +316,9 @@ int PROBE_NAME(vfprintf)(FILE* stream, const char* format, va_list arg)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, vfprintf, FILE*, stream, const char*, format, va_list, arg)
 
-int PROBE_NAME(vfscanf)(FILE* stream, const char* format, va_list arg)
+HANDLER_DEF(int, vfscanf, FILE* stream, const char* format, va_list arg)
 {
 	static int (*vfscanfp)(FILE* stream, const char* format, va_list arg);
 
@@ -318,8 +334,9 @@ int PROBE_NAME(vfscanf)(FILE* stream, const char* format, va_list arg)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, vfscanf, FILE*, stream, const char*, format, va_list, arg)
 
-int PROBE_NAME(fgetc)(FILE* stream)
+HANDLER_DEF(int, fgetc, FILE* stream)
 {
 	static int (*fgetcp)(FILE* stream);
 
@@ -335,9 +352,10 @@ int PROBE_NAME(fgetc)(FILE* stream)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fgetc, FILE*, stream)
 
 #if 0	// why is this commented?
-char* PROBE_NAME(fgets)(char* str, int size, FILE* stream)
+HANDLER_DEF(char*, fgets, char* str, int size, FILE* stream)
 {
 	static char* (*fgetsp)(char* str, int num, FILE* stream);
 	char* cret;
@@ -352,9 +370,10 @@ char* PROBE_NAME(fgets)(char* str, int size, FILE* stream)
 
 	return cret;
 }
+HANDLER_WRAPPERS(char*, fgets, char*, str, int, size, FILE*, stream)
 #endif
 
-int PROBE_NAME(fputc)(int character, FILE* stream)
+HANDLER_DEF(int, fputc, int character, FILE* stream)
 {
 	static int (*fputcp)(int character, FILE* stream);
 
@@ -370,8 +389,9 @@ int PROBE_NAME(fputc)(int character, FILE* stream)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fputc, int, character, FILE*, stream)
 
-int PROBE_NAME(fputs)(const char* str, FILE* stream)
+HANDLER_DEF(int, fputs, const char* str, FILE* stream)
 {
 	static int (*fputsp)(const char* str, FILE* stream);
 
@@ -387,8 +407,9 @@ int PROBE_NAME(fputs)(const char* str, FILE* stream)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fputs, const char*, str, FILE*, stream)
 
-int PROBE_NAME(getc)(FILE* stream)
+HANDLER_DEF(int, getc, FILE* stream)
 {
 	static int (*getcp)(FILE* stream);
 
@@ -404,8 +425,9 @@ int PROBE_NAME(getc)(FILE* stream)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, getc, FILE*, stream)
 
-int PROBE_NAME(putc)(int character, FILE* stream)
+HANDLER_DEF(int, putc, int character, FILE* stream)
 {
 	static int (*putcp)(int character, FILE* stream);
 
@@ -421,8 +443,9 @@ int PROBE_NAME(putc)(int character, FILE* stream)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, putc, int, character, FILE*, stream)
 
-int PROBE_NAME(ungetc)(int character, FILE* stream)
+HANDLER_DEF(int, ungetc, int character, FILE* stream)
 {
 	static int (*ungetcp)(int character, FILE* stream);
 
@@ -438,8 +461,9 @@ int PROBE_NAME(ungetc)(int character, FILE* stream)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, ungetc, int, character, FILE*, stream)
 
-size_t PROBE_NAME(fread)(void* ptr, size_t size, size_t count, FILE* stream)
+HANDLER_DEF(size_t, fread, void* ptr, size_t size, size_t count, FILE* stream)
 {
 	static size_t (*freadp)(void* ptr, size_t size, size_t count, FILE* stream);
 	size_t tret;
@@ -462,8 +486,9 @@ size_t PROBE_NAME(fread)(void* ptr, size_t size, size_t count, FILE* stream)
 
 	return tret;
 }
+HANDLER_WRAPPERS(size_t, fread, void*, ptr, size_t, size, size_t, count, FILE*, stream)
 
-size_t PROBE_NAME(fwrite)(const void* ptr, size_t size, size_t count, FILE* stream)
+HANDLER_DEF(size_t, fwrite, const void* ptr, size_t size, size_t count, FILE* stream)
 {
 	static size_t (*fwritep)(const void* ptr, size_t size, size_t count, FILE* stream);
 	size_t tret;
@@ -486,11 +511,12 @@ size_t PROBE_NAME(fwrite)(const void* ptr, size_t size, size_t count, FILE* stre
 
 	return tret;
 }
+HANDLER_WRAPPERS(size_t, fwrite, const void*, ptr, size_t, size, size_t, count, FILE*, stream)
 
 // *********************************************************
 // variable parameter function
 // *********************************************************
-int PROBE_NAME(fprintf)(FILE* stream, const char* format, ...)
+HANDLER_DEF(int, fprintf, FILE* stream, const char* format, ...)
 {
 	static int (*vfprintfp)(FILE* stream, const char* format, ...);
 
@@ -511,8 +537,9 @@ int PROBE_NAME(fprintf)(FILE* stream, const char* format, ...)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fprintf, FILE*, stream, const char*, format, ...)
 
-int PROBE_NAME(fscanf)(FILE* stream, const char* format, ...)
+HANDLER_DEF(int, fscanf, FILE* stream, const char* format, ...)
 {
 	static int (*vfscanfp)(FILE* stream, const char* format, ...);
 
@@ -533,9 +560,10 @@ int PROBE_NAME(fscanf)(FILE* stream, const char* format, ...)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fscanf, FILE*, stream, const char*, format, ...)
 
 #if !defined(DA_DEBUG_LOG) && !defined(PRINT_STDOUT)
-int PROBE_NAME(printf)(const char* format, ...)
+HANDLER_DEF(int, printf, const char* format, ...)
 {
 	static int (*vprintfp)(const char* format, ...);
 
@@ -553,9 +581,10 @@ int PROBE_NAME(printf)(const char* format, ...)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, printf, const char*, format, ...)
 #endif
 
-int PROBE_NAME(scanf)(const char* format, ...)
+HANDLER_DEF(int, scanf, const char* format, ...)
 {
 	static int (*vscanfp)(const char* format, ...);
 
@@ -573,8 +602,9 @@ int PROBE_NAME(scanf)(const char* format, ...)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, scanf, const char*, format, ...)
 
-int PROBE_NAME(getchar)()
+HANDLER_DEF(int, getchar, void)
 {
 	static int (*getcharp)();
 
@@ -588,8 +618,9 @@ int PROBE_NAME(getchar)()
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, getchar, void)
 
-int PROBE_NAME(putchar)(int c)
+HANDLER_DEF(int, putchar, int c)
 {
 	static int (*putcharp)(int c);
 
@@ -603,8 +634,9 @@ int PROBE_NAME(putchar)(int c)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, putchar, int, c)
 
-char* PROBE_NAME(gets)(char* str)
+HANDLER_DEF(char*, gets, char* str)
 {
 	static char* (*getsp)(char* str);
 	char* cret;
@@ -619,9 +651,10 @@ char* PROBE_NAME(gets)(char* str)
 
 	return cret;
 }
+HANDLER_WRAPPERS(char*, gets, char*, str)
 
 #if !defined(DA_DEBUG_LOG) && !defined(PRINT_STDOUT)
-int PROBE_NAME(puts)(const char* str)
+HANDLER_DEF(int, puts, const char* str)
 {
 	static int (*putsp)(const char* str);
 
@@ -635,11 +668,12 @@ int PROBE_NAME(puts)(const char* str)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, puts, const char*, str)
 #endif
 
 
 
-void PROBE_NAME(setbuf)(FILE* stream, char* buf)
+HANDLER_DEF(void, setbuf, FILE* stream, char* buf)
 {
 	static void (*setbufp)(FILE* stream, char* buf);
 
@@ -652,8 +686,9 @@ void PROBE_NAME(setbuf)(FILE* stream, char* buf)
 				  voidp_to_uint64(stream),
 				  voidp_to_uint64(buf));
 }
+HANDLER_WRAPPERS(void, setbuf, FILE*, stream, char*, buf)
 
-void PROBE_NAME(setbuffer)(FILE* stream, char* buf, size_t size)
+HANDLER_DEF(void, setbuffer, FILE* stream, char* buf, size_t size)
 {
 	static void (*setbufferp)(FILE* stream, char* buf, size_t size);
 
@@ -666,8 +701,9 @@ void PROBE_NAME(setbuffer)(FILE* stream, char* buf, size_t size)
 				  "ppx", voidp_to_uint64(stream),
 				  voidp_to_uint64(buf), (uint64_t)(size));
 }
+HANDLER_WRAPPERS(void, setbuffer, FILE*, stream, char*, buf, size_t, size)
 
-void PROBE_NAME(setlinebuf)(FILE* stream)
+HANDLER_DEF(void, setlinebuf, FILE* stream)
 {
 	static int (*setlinebufp)(FILE* stream);
 
@@ -679,8 +715,9 @@ void PROBE_NAME(setlinebuf)(FILE* stream)
 				  'v', 0, 0, stream, FD_API_OTHER, "p",
 				  voidp_to_uint64(stream));
 }
+HANDLER_WRAPPERS(void, setlinebuf, FILE*, stream)
 
-int PROBE_NAME(setvbuf)(FILE* stream, char* buf, int mode, size_t size)
+HANDLER_DEF(int, setvbuf, FILE* stream, char* buf, int mode, size_t size)
 {
 	static int (*setvbufp)(FILE* stream, char* buf, int mode, size_t size);
 
@@ -694,6 +731,7 @@ int PROBE_NAME(setvbuf)(FILE* stream, char* buf, int mode, size_t size)
 				  (uint64_t)(size));
 	return ret;
 }
+HANDLER_WRAPPERS(int, setvbuf, FILE*, stream, char*, buf, int, mode, size_t, size)
 
 /**************************** ALIASES *********************************/
 weak_alias_pref(__isoc99_scanf, scanf);
