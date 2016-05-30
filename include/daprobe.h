@@ -268,12 +268,13 @@ typedef struct {
 
 // =========================== post block macro ===========================
 
-#define POST_PROBEBLOCK_BEGIN(LCTYPE, RETTYPE, RETVALUE, INPUTFORMAT, ...)	\
+#define POST_PROBEBLOCK_BEGIN(LCTYPE, RETTYPE, RETVALUE, CALL_TYPE, CALLER, \
+			       INPUTFORMAT, ...)			     \
 	newerrno = errno;														\
 	do {																	\
 		PREPARE_LOCAL_BUF(); \
 		PACK_COMMON_BEGIN(MSG_PROBE_NETWORK, vAPI_ID, INPUTFORMAT, __VA_ARGS__);\
-		PACK_COMMON_END(RETTYPE, RETVALUE, errno, blockresult);
+		PACK_COMMON_END(RETTYPE, RETVALUE, errno, CALL_TYPE, CALLER);
 
 #define POST_PROBEBLOCK_END() 						\
 		FLUSH_LOCAL_BUF();						\
