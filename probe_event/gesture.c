@@ -203,7 +203,7 @@ Evas_Event_Flags __common_elm_gesture_layer_cb(void *data , void *event_info)
 	inc_current_event_index();
 	PREPARE_LOCAL_BUF();
 	PACK_COMMON_BEGIN(MSG_PROBE_UIEVENT, API_ID___common_elm_gesture_layer_cb, "p", CALLER_ADDRESS);
-	PACK_COMMON_END('d', res, 0, 0);
+	PACK_COMMON_END('d', res, 0, 0, (uint64_t)0xffffffff);
 	PACK_UIEVENT_HEAD(__get_event_type_code(d->idx), d->cb_type);
 
 	BUF_PTR = __pack_callback_data(BUF_PTR, data, event_info);
