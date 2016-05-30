@@ -41,7 +41,7 @@
 static enum DaOptions _sopt = OPT_GLES;
 static __thread EGLint egl_error_external = EGL_SUCCESS;
 
-EGLint eglGetError(void)
+HANDLER_DEF(EGLint, eglGetError, void)
 {
 	typedef EGLint (*methodType)(void);
 	BEFORE_EGL(eglGetError);
@@ -56,12 +56,13 @@ EGLint eglGetError(void)
 		egl_error_external = EGL_SUCCESS;
 	}
 
-	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, call_type, caller, "");
 
 	return ret;
 }
+HANDLER_WRAPPERS(EGLint, eglGetError, void)
 
-EGLDisplay eglGetDisplay(EGLNativeDisplayType display_id)
+HANDLED_DEF(EGLDisplay, eglGetDisplay, EGLNativeDisplayType display_id)
 {
 	typedef EGLDisplay (*methodType)(EGLNativeDisplayType display_id);
 	/* probe prepare */
@@ -71,12 +72,13 @@ EGLDisplay eglGetDisplay(EGLNativeDisplayType display_id)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, "", "p",
+	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, call_type, caller, "", "p",
 	      voidp_to_uint64(display_id));
 	return ret;
 }
+HANDLED_WRAPPERS(EGLDisplay, eglGetDisplay, EGLNativeDisplayType, display_id)
 
-EGLBoolean eglInitialize(EGLDisplay dpy, EGLint *major, EGLint *minor)
+HANDLER_DEF(EGLBoolean, eglInitialize, EGLDisplay dpy, EGLint *major, EGLint *minor)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLint *major,
 					 EGLint *minor);
@@ -87,12 +89,13 @@ EGLBoolean eglInitialize(EGLDisplay dpy, EGLint *major, EGLint *minor)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "", "ppp", voidp_to_uint64(dpy),
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "", "ppp", voidp_to_uint64(dpy),
 	      voidp_to_uint64(major), voidp_to_uint64(minor));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglInitialize, EGLDisplay, dpy, EGLint *, major, EGLint *, minor)
 
-EGLBoolean eglTerminate(EGLDisplay dpy)
+HANDLER_DEF(EGLBoolean, eglTerminate, EGLDisplay dpy)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy);
 	/* probe prepare */
@@ -102,11 +105,12 @@ EGLBoolean eglTerminate(EGLDisplay dpy)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "", "p", voidp_to_uint64(dpy));
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "", "p", voidp_to_uint64(dpy));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglTerminate, EGLDisplay, dpy)
 
-const char *eglQueryString(EGLDisplay dpy, EGLint name)
+HANDLER_DEF(const char *, eglQueryString, EGLDisplay dpy, EGLint name)
 {
 	typedef const char *(*methodType)(EGLDisplay dpy, EGLint name);
 	/* probe prepare */
@@ -116,12 +120,12 @@ const char *eglQueryString(EGLDisplay dpy, EGLint name)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('s', ret, APITYPE_CONTEXT, "", "pd", voidp_to_uint64(dpy), name);
+	AFTER('s', ret, APITYPE_CONTEXT, call_type, caller, "", "pd", voidp_to_uint64(dpy), name);
 	return ret;
 }
+HANDLER_WRAPPERS(const char *, eglQueryString, EGLDisplay, dpy, EGLint, name)
 
-EGLBoolean eglGetConfigs(EGLDisplay dpy, EGLConfig *configs, EGLint config_size,
-			 EGLint *num_config)
+HANDLER_DEF(EGLBoolean, eglGetConfigs, EGLDisplay dpy, EGLConfig *configs, EGLint config_size, EGLint *num_config)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLConfig *configs,
 					 EGLint config_size,
@@ -133,15 +137,14 @@ EGLBoolean eglGetConfigs(EGLDisplay dpy, EGLConfig *configs, EGLint config_size,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "", "ppdp",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "", "ppdp",
 	      voidp_to_uint64(dpy), voidp_to_uint64(configs), config_size,
 	      voidp_to_uint64(num_config));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglGetConfigs, EGLDisplay, dpy, EGLConfig *, configs, EGLint, config_size, EGLint *, num_config)
 
-EGLBoolean eglChooseConfig(EGLDisplay dpy, const EGLint *attrib_list,
-			   EGLConfig *configs, EGLint config_size,
-			   EGLint *num_config)
+HANDLER_DEF(EGLBoolean eglChooseConfig, EGLDisplay dpy, const EGLint *attrib_list, EGLConfig *configs, EGLint config_size, EGLint *num_config)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy,
 					 const EGLint *attrib_list,
@@ -155,15 +158,15 @@ EGLBoolean eglChooseConfig(EGLDisplay dpy, const EGLint *attrib_list,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "pppdp", voidp_to_uint64(dpy), voidp_to_uint64(attrib_list),
 	      voidp_to_uint64(configs), config_size,
 	      voidp_to_uint64(num_config));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglChooseConfig, EGLDisplay, dpy, const EGLint *, attrib_list, EGLConfig *, configs, EGLint, config_size, EGLint *, num_config)
 
-EGLBoolean eglGetConfigAttrib(EGLDisplay dpy, EGLConfig config,
-			      EGLint attribute, EGLint *value)
+HANDLER_DEF(EGLBoolean, eglGetConfigAttrib, EGLDisplay dpy, EGLConfig config, EGLint attribute, EGLint *value)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLConfig config,
 					 EGLint attribute, EGLint *value);
@@ -174,15 +177,14 @@ EGLBoolean eglGetConfigAttrib(EGLDisplay dpy, EGLConfig config,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "ppdp", voidp_to_uint64(dpy), voidp_to_uint64(config), attribute,
 	      voidp_to_uint64(value));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglGetConfigAttrib, EGLDisplay, dpy, EGLConfig, config, EGLint, attribute, EGLint *, value)
 
-EGLSurface eglCreateWindowSurface(EGLDisplay dpy, EGLConfig config,
-				  EGLNativeWindowType win,
-				  const EGLint *attrib_list)
+HANDLER_DEF(EGLSurface, eglCreateWindowSurface, EGLDisplay dpy, EGLConfig config, EGLNativeWindowType win, const EGLint *attrib_list)
 {
 	typedef EGLSurface (*methodType)(EGLDisplay dpy, EGLConfig config,
 					 EGLNativeWindowType win,
@@ -195,14 +197,14 @@ EGLSurface eglCreateWindowSurface(EGLDisplay dpy, EGLConfig config,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, "",
+	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, call_type, caller, "",
 	      "pppp", voidp_to_uint64(dpy), voidp_to_uint64(config),
 	      voidp_to_uint64(win), voidp_to_uint64(attrib_list));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLSurface, eglCreateWindowSurface, EGLDisplay, dpy, EGLConfig, config, EGLNativeWindowType, win, const EGLint *, attrib_list)
 
-EGLSurface eglCreatePbufferSurface(EGLDisplay dpy, EGLConfig config,
-				   const EGLint *attrib_list)
+HANLDER_DEF(EGLSurface, eglCreatePbufferSurface, EGLDisplay dpy, EGLConfig config, const EGLint *attrib_list)
 {
 	typedef EGLSurface (*methodType)(EGLDisplay dpy, EGLConfig config,
 					 const EGLint *attrib_list);
@@ -213,15 +215,14 @@ EGLSurface eglCreatePbufferSurface(EGLDisplay dpy, EGLConfig config,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, "",
+	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, call_type, caller, "",
 	      "ppp", voidp_to_uint64(dpy), voidp_to_uint64(config),
 	      voidp_to_uint64(attrib_list));
 	return ret;
 }
+HANLDER_WRAPPERS(EGLSurface, eglCreatePbufferSurface, EGLDisplay, dpy, EGLConfig, config, const EGLint *, attrib_list)
 
-EGLSurface eglCreatePixmapSurface(EGLDisplay dpy, EGLConfig config,
-				  EGLNativePixmapType pixmap,
-				  const EGLint *attrib_list)
+HANDLER_DEF(EGLSurface, eglCreatePixmapSurface(EGLDisplay dpy, EGLConfig config, EGLNativePixmapType pixmap, const EGLint *attrib_list)
 {
 	typedef EGLSurface (*methodType)(EGLDisplay dpy, EGLConfig config,
 					 EGLNativePixmapType pixmap,
@@ -234,13 +235,14 @@ EGLSurface eglCreatePixmapSurface(EGLDisplay dpy, EGLConfig config,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, "",
+	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, call_type, caller, "",
 	      "pppp", voidp_to_uint64(dpy), voidp_to_uint64(config),
 	      voidp_to_uint64(pixmap), voidp_to_uint64(attrib_list));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLSurface, eglCreatePixmapSurface, EGLDisplay, dpy, EGLConfig, config, EGLNativePixmapType, pixmap, const EGLint *, attrib_list)
 
-EGLBoolean eglDestroySurface(EGLDisplay dpy, EGLSurface surface)
+HANDLER_DEF(EGLBoolean, eglDestroySurface(EGLDisplay dpy, EGLSurface surface)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface);
 	/* probe prepare */
@@ -250,13 +252,13 @@ EGLBoolean eglDestroySurface(EGLDisplay dpy, EGLSurface surface)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "pp", voidp_to_uint64(dpy), voidp_to_uint64(surface));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglDestroySurface, EGLDisplay, dpy, EGLSurface, surface)
 
-EGLBoolean eglQuerySurface(EGLDisplay dpy, EGLSurface surface, EGLint attribute,
-			   EGLint *value)
+HANDLER_DEF(EGLBoolean, eglQuerySurface, EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint *value)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface,
 					 EGLint attribute, EGLint *value);
@@ -267,13 +269,14 @@ EGLBoolean eglQuerySurface(EGLDisplay dpy, EGLSurface surface, EGLint attribute,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "ppdp", voidp_to_uint64(dpy), voidp_to_uint64(surface),
 	      attribute, voidp_to_uint64(value));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglQuerySurface, EGLDisplay, dpy, EGLSurface, surface, EGLint, attribute, EGLint *, value)
 
-EGLBoolean eglBindAPI(EGLenum api)
+HANDLER_DEF(EGLBoolean, eglBindAPI, EGLenum api)
 {
 	typedef EGLBoolean (*methodType)(EGLenum api);
 	/* probe prepare */
@@ -283,12 +286,13 @@ EGLBoolean eglBindAPI(EGLenum api)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "d", api);
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglBindAPI, EGLenum, api)
 
-EGLenum eglQueryAPI(void)
+HANDLER_DEF(EGLenum, eglQueryAPI, void)
 {
 	typedef EGLenum (*methodType)(void);
 	/* probe prepare */
@@ -298,11 +302,12 @@ EGLenum eglQueryAPI(void)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, call_type, caller, "");
 	return ret;
 }
+HANDLER_WRAPPERS(EGLenum, eglQueryAPI, void)
 
-EGLBoolean eglWaitClient(void)
+HANDLER_DEF(EGLBoolean, eglWaitClient, void)
 {
 	typedef EGLBoolean (*methodType)(void);
 	/* probe prepare */
@@ -312,11 +317,12 @@ EGLBoolean eglWaitClient(void)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, call_type, caller, "");
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglWaitClient, void)
 
-EGLBoolean eglReleaseThread(void)
+HANDLER_DEF(EGLBoolean, eglReleaseThread, void)
 {
 	typedef EGLBoolean (*methodType)(void);
 	/* probe prepare */
@@ -326,14 +332,12 @@ EGLBoolean eglReleaseThread(void)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, call_type, caller, "");
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglReleaseThread, void)
 
-EGLSurface eglCreatePbufferFromClientBuffer(EGLDisplay dpy, EGLenum buftype,
-					    EGLClientBuffer buffer,
-					    EGLConfig config,
-					    const EGLint *attrib_list)
+HANDLER_DEF(EGLSurface, eglCreatePbufferFromClientBuffer ,EGLDisplay dpy, EGLenum buftype, EGLClientBuffer buffer, EGLConfig config, const EGLint *attrib_list)
 {
 	typedef EGLSurface (*methodType)(EGLDisplay dpy, EGLenum buftype,
 					 EGLClientBuffer buffer,
@@ -347,14 +351,14 @@ EGLSurface eglCreatePbufferFromClientBuffer(EGLDisplay dpy, EGLenum buftype,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, "",
+	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, call_type, caller, "",
 	      "pdppp", voidp_to_uint64(dpy), buftype, voidp_to_uint64(buffer),
 	      voidp_to_uint64(config), voidp_to_uint64(attrib_list));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLSurface, eglCreatePbufferFromClientBuffer, EGLDisplay, dpy, EGLenum, buftype, EGLClientBuffer, buffer, EGLConfig, config, const EGLint *, attrib_list)
 
-EGLBoolean eglSurfaceAttrib(EGLDisplay dpy, EGLSurface surface,
-			    EGLint attribute, EGLint value)
+HANDLER_DEF(EGLBoolean, eglSurfaceAttrib, EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint value)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface,
 					 EGLint attribute, EGLint value);
@@ -365,13 +369,14 @@ EGLBoolean eglSurfaceAttrib(EGLDisplay dpy, EGLSurface surface,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "ppdd", voidp_to_uint64(dpy), voidp_to_uint64(surface), attribute,
 	      value);
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglSurfaceAttrib, EGLDisplay, dpy, EGLSurface, surface, EGLint, attribute, EGLint, value)
 
-EGLBoolean eglBindTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
+HANDLER_DEF(EGLBoolean, eglBindTexImage, EGLDisplay dpy, EGLSurface surface, EGLint buffer)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface,
 					 EGLint buffer);
@@ -382,12 +387,13 @@ EGLBoolean eglBindTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "ppd", voidp_to_uint64(dpy), voidp_to_uint64(surface), buffer);
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglBindTexImage, EGLDisplay, dpy, EGLSurface, surface, EGLint, buffer)
 
-EGLBoolean eglReleaseTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
+HANDLER_DEF(EGLBoolean, eglReleaseTexImage, EGLDisplay dpy, EGLSurface surface, EGLint buffer)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface,
 					 EGLint buffer);
@@ -398,12 +404,13 @@ EGLBoolean eglReleaseTexImage(EGLDisplay dpy, EGLSurface surface, EGLint buffer)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "ppd", voidp_to_uint64(dpy), voidp_to_uint64(surface), buffer);
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglReleaseTexImage, EGLDisplay, dpy, EGLSurface, surface, EGLint, buffer)
 
-EGLBoolean eglSwapInterval(EGLDisplay dpy, EGLint interval)
+HANDLER_DEF(EGLBoolean, eglSwapInterval, EGLDisplay dpy, EGLint interval)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLint interval);
 	/* probe prepare */
@@ -413,13 +420,13 @@ EGLBoolean eglSwapInterval(EGLDisplay dpy, EGLint interval)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "pd", voidp_to_uint64(dpy), interval);
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglSwapInterval, EGLDisplay, dpy, EGLint, interval)
 
-EGLContext eglCreateContext(EGLDisplay dpy, EGLConfig config,
-			    EGLContext share_context, const EGLint *attrib_list)
+HANDLER_DEF(EGLContext, eglCreateContext, EGLDisplay dpy, EGLConfig config, EGLContext share_context, const EGLint *attrib_list)
 {
 	typedef EGLContext (*methodType)(EGLDisplay dpy, EGLConfig config,
 					 EGLContext share_context,
@@ -433,13 +440,14 @@ EGLContext eglCreateContext(EGLDisplay dpy, EGLConfig config,
 	EGL_GET_ERROR();
 	/* pack and send */
 
-	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, "",
+	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, call_type, caller, "",
 	      "pppp", voidp_to_uint64(dpy), voidp_to_uint64(config),
 	      voidp_to_uint64(share_context), voidp_to_uint64(attrib_list));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLContext, eglCreateContext, EGLDisplay, dpy, EGLConfig, config, EGLContext, share_context, const EGLint *, attrib_list)
 
-EGLBoolean eglDestroyContext(EGLDisplay dpy, EGLContext ctx)
+HANDLER_DEF(EGLBoolean, eglDestroyContext, EGLDisplay dpy, EGLContext ctx)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLContext ctx);
 	/* probe prepare */
@@ -450,13 +458,13 @@ EGLBoolean eglDestroyContext(EGLDisplay dpy, EGLContext ctx)
 	EGL_GET_ERROR()
 
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "pp", voidp_to_uint64(dpy), voidp_to_uint64(ctx));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglDestroyContext, EGLDisplay, dpy, EGLContext, ctx)
 
-EGLBoolean eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read,
-			  EGLContext ctx)
+HANDLER_DEF(EGLBoolean, eglMakeCurrent, EGLDisplay dpy, EGLSurface draw, EGLSurface read, EGLContext ctx)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface draw,
 					 EGLSurface read, EGLContext ctx);
@@ -467,13 +475,14 @@ EGLBoolean eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "pppp", voidp_to_uint64(dpy), voidp_to_uint64(draw),
 	      voidp_to_uint64(read), voidp_to_uint64(ctx));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglMakeCurrent, EGLDisplay, dpy, EGLSurface, draw, EGLSurface, read, EGLContext, ctx)
 
-EGLContext eglGetCurrentContext(void)
+HANDLER_DEF(EGLContext, eglGetCurrentContext, void)
 {
 	typedef EGLContext (*methodType)(void);
 	/* probe prepare */
@@ -484,11 +493,12 @@ EGLContext eglGetCurrentContext(void)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER_NO_PARAM('p', voidp_to_uint64(ret), APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('p', voidp_to_uint64(ret), APITYPE_CONTEXT, call_type, caller, "");
 	return ret;
 }
+HANDLER_WRAPPERS(EGLContext, eglGetCurrentContext, void)
 
-EGLSurface eglGetCurrentSurface(EGLint readdraw)
+HANDLER_DEF(EGLSurface, eglGetCurrentSurface, EGLint readdraw)
 {
 	typedef EGLSurface (*methodType)(EGLint readdraw);
 	/* probe prepare */
@@ -498,12 +508,13 @@ EGLSurface eglGetCurrentSurface(EGLint readdraw)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, "",
+	AFTER('p', voidp_to_uint64(ret), APITYPE_CONTEXT, call_type, caller, "",
 	      "d", readdraw);
 	return ret;
 }
+HANDLER_WRAPPERS(EGLSurface, eglGetCurrentSurface, EGLint, readdraw)
 
-EGLDisplay eglGetCurrentDisplay(void)
+HANDLER_DEF(EGLDisplay, eglGetCurrentDisplay, void)
 {
 	typedef EGLDisplay (*methodType)(void);
 	/* probe prepare */
@@ -513,12 +524,12 @@ EGLDisplay eglGetCurrentDisplay(void)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER_NO_PARAM('p', voidp_to_uint64(ret), APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('p', voidp_to_uint64(ret), APITYPE_CONTEXT, call_type, caller, "");
 	return ret;
 }
+HANDLER_WRAPPERS(EGLDisplay, eglGetCurrentDisplay, void)
 
-EGLBoolean eglQueryContext(EGLDisplay dpy, EGLContext ctx, EGLint attribute,
-			   EGLint *value)
+HANLDER_DEF(EGLBoolean, eglQueryContext, EGLDisplay dpy, EGLContext ctx, EGLint attribute, EGLint *value)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLContext ctx,
 					 EGLint attribute, EGLint *value);
@@ -529,13 +540,14 @@ EGLBoolean eglQueryContext(EGLDisplay dpy, EGLContext ctx, EGLint attribute,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "ppdp", voidp_to_uint64(dpy), voidp_to_uint64(ctx),
 	      attribute, voidp_to_uint64(value));
 	return ret;
 }
+HANLDER_WRAPPERS(EGLBoolean, eglQueryContext, EGLDisplay, dpy, EGLContext, ctx, EGLint, attribute, EGLint *, value)
 
-EGLBoolean eglWaitGL(void)
+HANDLER_DEF(EGLBoolean, eglWaitGL, void)
 {
 	typedef EGLBoolean (*methodType)(void);
 	/* probe prepare */
@@ -545,11 +557,12 @@ EGLBoolean eglWaitGL(void)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, call_type, caller, "");
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglWaitGL, void)
 
-EGLBoolean eglWaitNative(EGLint engine)
+HANDLER_DEF(EGLBoolean, eglWaitNative, EGLint engine)
 {
 	typedef EGLBoolean (*methodType)(EGLint engine);
 	/* probe prepare */
@@ -559,24 +572,25 @@ EGLBoolean eglWaitNative(EGLint engine)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "d", engine);
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglWaitNative, EGLint, engine)
 
-EGLBoolean eglSwapBuffers(EGLDisplay dpy, EGLSurface surface)
+HANDLER_DEF(EGLBoolean, eglSwapBuffers, EGLDisplay dpy, EGLSurface surface)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface);
 	BEFORE_EGL(eglSwapBuffers);
 	EGLBoolean ret = eglSwapBuffersp(dpy, surface);
 	EGL_GET_ERROR();
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "pp", voidp_to_uint64(dpy), voidp_to_uint64(surface));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglSwapBuffers, EGLDisplay, dpy, EGLSurface, surface)
 
-EGLBoolean eglCopyBuffers(EGLDisplay dpy, EGLSurface surface,
-			  EGLNativePixmapType target)
+HANDLER_DEF(EGLBoolean, eglCopyBuffers, EGLDisplay dpy, EGLSurface surface, EGLNativePixmapType target)
 {
 	typedef EGLBoolean (*methodType)(EGLDisplay dpy, EGLSurface surface,
 					 EGLNativePixmapType target);
@@ -587,14 +601,15 @@ EGLBoolean eglCopyBuffers(EGLDisplay dpy, EGLSurface surface,
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('d', ret, APITYPE_CONTEXT, "",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "",
 	      "ppp", voidp_to_uint64(dpy), voidp_to_uint64(surface),
 	      voidp_to_uint64(target));
 	return ret;
 }
+HANDLER_WRAPPERS(EGLBoolean, eglCopyBuffers, EGLDisplay, dpy, EGLSurface, surface, EGLNativePixmapType, target)
 
 #define __eglGetProcAddress_t __eglMustCastToProperFunctionPointerType
-EGLAPI __eglGetProcAddress_t eglGetProcAddress(const char *procname)
+HANDLER_DEF(EGLAPI __eglGetProcAddress_t, eglGetProcAddress, const char *procname)
 {
 	typedef EGLAPI __eglGetProcAddress_t(*methodType)(const char *procname);
 	/* probe prepare */
@@ -604,8 +619,8 @@ EGLAPI __eglGetProcAddress_t eglGetProcAddress(const char *procname)
 	/* get error code */
 	EGL_GET_ERROR();
 	/* pack and send */
-	AFTER('p', voidp_to_uint64((void *)ret), APITYPE_CONTEXT, "",
+	AFTER('p', voidp_to_uint64((void *)ret), APITYPE_CONTEXT, call_type, caller, "",
 	      "s", procname);
 	return ret;
 }
-
+HANDLER_WRAPPERS(EGLAPI __eglGetProcAddress_t, eglGetProcAddress, const char *, procname)

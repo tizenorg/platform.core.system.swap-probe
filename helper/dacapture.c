@@ -430,7 +430,8 @@ int captureScreen()
 
 					/* pack probe */
 					PACK_COMMON_BEGIN(MSG_PROBE_SCREENSHOT, API_ID_captureScreen, "", 0);
-					PACK_COMMON_END_THOUGH('d', 0, 0, 0);
+					/* TODO Check address requirement */
+					PACK_COMMON_END_THOUGH('d', 0, 0, 0. 0xffffffff);
 					PACK_SCREENSHOT(dstpath, getOrientation());
 					SET_MSG_LEN();
 					log.length = GET_MSG_LEN() + MSG_HDR_LEN + strlen(dstpath) + 1;

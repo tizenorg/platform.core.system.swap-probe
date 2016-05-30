@@ -74,6 +74,12 @@
 #define WRITE_MSG_CALLER_ADDR 0
 #endif
 
+enum {
+	NOT_INSTRUMENTED,
+	EXTERNAL_CALL,
+	INTERNAL_CALL
+};
+
 static inline uint64_t voidp_to_uint64(const void *p)
 {
 	return (uint64_t)(uintptr_t)p;
@@ -340,6 +346,84 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 #define PACK_STRING(str)			\
 	BUF_PTR = pack_string(BUF_PTR, str);
 
+#define CONCAT2(a, b)               a ## b
+#define CONCAT(a, b)                CONCAT2(a, b)
+
+#define HANDLER_DEF(_ret, _name, ...)         \
+	static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller, __VA_ARGS__)
+
+
+#define FUNC_DECL0(...)             void
+#define FUNC_DECL1(t1, n1, ...)     t1 n1
+#define FUNC_DECL2(t1, n1, ...)     t1 n1, FUNC_DECL1(__VA_ARGS__)
+#define FUNC_DECL3(t1, n1, ...)     t1 n1, FUNC_DECL2(__VA_ARGS__)
+#define FUNC_DECL4(t1, n1, ...)     t1 n1, FUNC_DECL3(__VA_ARGS__)
+#define FUNC_DECL5(t1, n1, ...)     t1 n1, FUNC_DECL4(__VA_ARGS__)
+#define FUNC_DECL6(t1, n1, ...)     t1 n1, FUNC_DECL5(__VA_ARGS__)
+
+#define FUNC_CALL0(...)
+#define FUNC_CALL1(t1, n1, ...)     ,n1
+#define FUNC_CALL2(t1, n1, ...)     ,n1 FUNC_CALL1(__VA_ARGS__)
+#define FUNC_CALL3(t1, n1, ...)     ,n1 FUNC_CALL2(__VA_ARGS__)
+#define FUNC_CALL4(t1, n1, ...)     ,n1 FUNC_CALL3(__VA_ARGS__)
+#define FUNC_CALL5(t1, n1, ...)     ,n1 FUNC_CALL4(__VA_ARGS__)
+#define FUNC_CALL6(t1, n1, ...)     ,n1 FUNC_CALL5(__VA_ARGS__)
+
+#define FUNC_DECL(...)          \
+    CONCAT(FUNC_DECL, N_ARG(__VA_ARGS, C_SEQ_N())(__VA_ARGS__))
+#define FUNC_CALL(...)          \
+    CONCAT(FUNC_CALL, N_ARG(__VA_ARGS, C_SEQ_N())(__VA_ARGS__))
+#define N_ARG(...)                  ARG_N(__VA_ARGS__)
+#define ARG_N(_1n, _1t, _2n, _2t, _3n, _3t, _4n, _4t, _5n, _5t, _6n, _6t, N, ...) N
+#define C_SEQ_N() 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0
+
+#define HANDLER_WRAPPERS(_ret, _name, ...)                                  \
+_ret PROBE_NAME(_name)(FUNC_DECL(__VA_ARGS__))                              \
+{                                                                           \
+    /* TODO Arch dependent */                                               \
+    uint32_t caller;                                                        \
+                                                                            \
+    caller = (uint32_t)                                                     \
+        (__builtin_extract_return_addr(__builtin_return_address(0)));       \
+    return CONCAT(_name, _handler)(INTERNAL_CALL, (uint64_t)caller  FUNC_CALL(__VA_ARGS__));\
+}                                                                           \
+                                                                            \
+_ret PROBE_NAME(_name##_always)(FUNC_DECL(__VA_ARGS__))                     \
+{                                                                           \
+    /* TODO Arch dependent */                                               \
+    uint32_t caller;                                                        \
+                                                                            \
+    caller = (uint32_t)                                                     \
+        (__builtin_extract_return_addr(__builtin_return_address(0)));       \
+    return CONCAT(_name, _handler)(EXTERNAL_CALL, (uint64_t)caller  FUNC_CALL(__VA_ARGS__));\
+}
+
+
+#define HANDLER_DEF_THROW(_ret, _name, _throw, ...)         \
+	static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller, __VA_ARGS__) throw _throw
+
+#define HANDLER_WRAPPERS_THROW(_ret, _name, _throw, ...)                    \
+_ret PROBE_NAME(_name)(FUNC_DECL(__VA_ARGS__) throw _throw                  \
+{                                                                           \
+    /* TODO Arch dependent */                                               \
+    uint32_t caller;                                                        \
+                                                                            \
+    caller = (uint32_t)                                                     \
+        (__builtin_extract_return_addr(__builtin_return_address(0)));       \
+    return CONCAT(_name, _handler)(INTERNAL_CALL, (uint64_t)caller, FUNC_CALL(__VA_ARGS__));  \
+}                                                                           \
+                                                                            \
+_ret PROBE_NAME(_name##_always)(FUNC_DECL(__VA_ARGS__)) throw _throw        \
+{                                                                           \
+    /* TODO Arch dependent */                                               \
+    uint32_t caller;                                                        \
+                                                                            \
+    caller = (uint32_t)                                                     \
+        (__builtin_extract_return_addr(__builtin_return_address(0)));       \
+    return CONCAT(_name, _handler)(EXTERNAL_CALL, (uint64_t)caller, FUNC_CALL(__VA_ARGS__));  \
+}
+
+
 #define PACK_COMMON_BEGIN(msg_id, api_id, fmt, ...)		\
 	do {	/* PACK_COMMON_BEGIN*/				\
 		BUF_PTR = pack_int32(BUF_PTR, msg_id);		/* msg id */	\
@@ -353,19 +437,25 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 		RET_PTR = BUF_PTR;		\
 	} while (0)
 
-#define PACK_COMMON_END(ret_type, ret, errn, intern_call)			\
+#define PACK_COMMON_END(ret_type, ret, errn, intern_call, caller)	\
 	do {	/* PACK_COMMON_END */						\
 		BUF_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret); /* return val */ \
 		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);	/* errno */	\
-		CALL_TYPE_PTR = BUF_PTR;					\
-		BUF_PTR = pack_int32(BUF_PTR, (uint32_t)0);	/* internal call*/	\
-		CALLER_PTR = BUF_PTR;						\
-		BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)0); /*caller addr*/	\
+        /* TODO Support old preload */                              \
+        if (0) {                                        \
+		    CALL_TYPE_PTR = BUF_PTR;					\
+		    BUF_PTR = pack_int32(BUF_PTR, (uint32_t)0);	/* internal call*/	\
+		    CALLER_PTR = BUF_PTR;						\
+		    BUF_PTR = pack_int64(BUF_PTR, (uintptr_t)0); /*caller addr*/	\
+        } else {                                        \
+		    BUF_PTR = pack_int32(BUF_PTR, intern_call);	/* internal call*/	\
+		    BUF_PTR = pack_int64(BUF_PTR, caller); /*caller addr*/	\
+        }                                               \
 		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
 		BUF_PTR = pack_int32(BUF_PTR, 0);	/* reserved */		\
 	} while (0)
 
-#define PACK_COMMON_END_THOUGH(ret_type, ret, errn, intern_call)			\
+#define PACK_COMMON_END_THOUGH(ret_type, ret, errn, intern_call, caller)	\
 	do {	/* PACK_COMMON_END */						\
 		BUF_PTR = pack_ret(RET_PTR, ret_type, (uintptr_t)ret); /* return val */ \
 		BUF_PTR = pack_int64(BUF_PTR, (uint64_t)errn);	/* errno */	\
