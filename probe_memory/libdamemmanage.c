@@ -45,7 +45,7 @@
 #include "real_functions.h"
 
 
-void *PROBE_NAME(memset)(void *memblock, int c, size_t n)
+HANDLER_DEF(void *, memset, void *memblock, int c, size_t n)
 {
 	static void *(*memsetp)(void *,int,size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -64,7 +64,7 @@ void *PROBE_NAME(memset)(void *memblock, int c, size_t n)
 			  API_ID_memset,
 			  "pdx", voidp_to_uint64(memblock), c,
 			  (uint64_t)(n));
-	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_COMMON_END('p', pret, newerrno, call_type, caller);
 	PACK_MEMORY(n, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();
 
@@ -72,8 +72,9 @@ void *PROBE_NAME(memset)(void *memblock, int c, size_t n)
 
 	return pret;
 }
+HANDLER_WRAPPERS(void *, memset, void *, memblock, int, c, size_t, n)
 
-int PROBE_NAME(memcmp)(const void * ptr1, const void * ptr2, size_t num)
+HANDLER_DEF(int, memcmp, const void * ptr1, const void * ptr2, size_t num)
 {
 	static int(*memcmpp)(const void *,const void *,size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -91,7 +92,7 @@ int PROBE_NAME(memcmp)(const void * ptr1, const void * ptr2, size_t num)
 			  API_ID_memcmp,
 			  "ppx", voidp_to_uint64(ptr1), voidp_to_uint64(ptr2),
 			  (uint64_t)(num));
-	PACK_COMMON_END('d', ret, newerrno, blockresult);
+	PACK_COMMON_END('d', ret, newerrno, call_type, caller);
 	PACK_MEMORY(num, MEMORY_API_MANAGE, ret);
 	FLUSH_LOCAL_BUF();
 
@@ -99,8 +100,10 @@ int PROBE_NAME(memcmp)(const void * ptr1, const void * ptr2, size_t num)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, memcmp, const void *, ptr1, const void *, ptr2,
+		 size_t, num)
 
-void *PROBE_NAME(memcpy)(void * destination, const void * source, size_t num )
+HANDLER_DEF(void *, memcpy, void * destination, const void * source, size_t num)
 {
 	static void *(*memcpyp)(void *,const void *,size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -120,7 +123,7 @@ void *PROBE_NAME(memcpy)(void * destination, const void * source, size_t num )
 			  "ppx", voidp_to_uint64(destination),
 			  voidp_to_uint64(source),
 			  (uint64_t)(num));
-	PACK_COMMON_END('p', pret, newerrno, blockresult);
+	PACK_COMMON_END('p', pret, newerrno, call_type, caller);
 	PACK_MEMORY(num, MEMORY_API_MANAGE, pret);
 	FLUSH_LOCAL_BUF();
 
@@ -128,4 +131,5 @@ void *PROBE_NAME(memcpy)(void * destination, const void * source, size_t num )
 
 	return pret;
 }
-
+HANDLER_WRAPPERS(void *, memcpy, void *, destination, const void *, source,
+		 size_t, num)

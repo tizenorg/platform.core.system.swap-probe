@@ -1,6 +1,6 @@
 #include <stddef.h>
 #include "api_names_global.h"
-#include "probeinfo.h"
+#include "binproto.h"
 //#include "libdasync.h"
 //#include "libdathread.h"
 
@@ -67,6 +67,13 @@ PROBES_LIST
 
 #undef X
 
+#define X(func_name, orig_name) \
+	void CONCAT(func_name, _always)(void);
+
+PROBES_LIST
+
+#undef X
+
 
 /* X-macros replaced by structures defenitions */
 /* For target binaries probes */
@@ -79,7 +86,8 @@ static struct probe_desc_t thread_probes[] = {
 #undef X
 
 /* For all binaries probes */
-#define X(func_name, orig_name) { & func_name, orig_name, GT_ALWAYS_PROBE },
+#define X(func_name, orig_name)     \
+    { & CONCAT(func_name, _always), orig_name, GT_ALWAYS_PROBE },
 
 static struct probe_desc_t thread_always_probes[] = {
 	PROBES_LIST

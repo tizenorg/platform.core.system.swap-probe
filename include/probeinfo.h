@@ -39,6 +39,11 @@ extern "C"{
 
 #include "app_protocol.h"
 
+
+#define CONCAT2(a, b)               a ## b
+#define CONCAT(a, b)                CONCAT2(a, b)
+
+
 #define		VT_INT			'd'
 #define		VT_UINT			'd'
 #define		VT_LONG			'x'
