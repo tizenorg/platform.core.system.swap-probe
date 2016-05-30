@@ -30,7 +30,6 @@
  */
 #include "da_gles20.h"
 #include "daprobe.h"
-#include "binproto.h"
 #include "real_functions.h"
 #include "common_probe_init.h"
 
@@ -83,9 +82,27 @@ static void __get_context_buf_data(GLenum target, char *buf, int buf_size)
        }
 }
 
+static GLenum glGetError_internal(void)
+{
+    typedef GLenum (*mt_t)(void);
+    GLenum ret;
+    static mt_t glGetErrorp = 0;
+
+    /* TODO blockresult just sends event, API is used only there, so it is
+     * useless */
+    if (!glGetErrorp)
+        init_probe_gl("glGetError", (void **)&glGetErrorp, LIBGLES20, 0, 0);
+
+    ret = glGetErrorp();
+
+    return ret;
+}
+
+
 // ==================================================================
 // A 2
 // ==================================================================
+
 
 DECLARE_NOARGS(GLenum, glGetError)
 {
@@ -101,21 +118,23 @@ DECLARE_NOARGS(GLenum, glGetError)
 		ret = gl_error_external;
 		gl_error_external = GL_NO_ERROR;
 
-		AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
+		AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, call_type, caller, "");
 	}
-
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLenum, REAL_NAME(glGetError))
+
 DECLARE(void, glActiveTexture, GLenum texture)
 {
 	TYPEDEF(void (*methodType)(GLenum));
 	BEFORE(glActiveTexture);
 	CALL_ORIG(glActiveTexture, texture);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(texture));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glActiveTexture), GLenum, texture)
 
 DECLARE(void, glAttachShader, GLuint program, GLuint shader)
 {
@@ -123,8 +142,10 @@ DECLARE(void, glAttachShader, GLuint program, GLuint shader)
 	BEFORE(glAttachShader);
 	CALL_ORIG(glAttachShader, program, shader);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd", program, shader);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dd", program, shader);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glAttachShader), GLuint, program,
+		      GLuint, shader)
 
 // ==================================================================
 // B 12
@@ -136,9 +157,11 @@ DECLARE(void, glBindAttribLocation, GLuint program, GLuint index, const char *na
 	BEFORE(glBindAttribLocation);
 	CALL_ORIG(glBindAttribLocation, program, index, name);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dds",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dds",
 	      program, index, name);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBindAttribLocation), GLuint, program,
+		      GLuint, index, const char *, name)
 
 DECLARE(void, glBindBuffer, GLenum target, GLuint buffer)
 {
@@ -152,9 +175,11 @@ DECLARE(void, glBindBuffer, GLenum target, GLuint buffer)
 				       sizeof(context_value));
 
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, context_value, "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, context_value, "xd",
 	      (uint64_t)(target), buffer);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBindBuffer), GLenum, target,
+		      GLuint, buffer)
 
 DECLARE(void, glBindFramebuffer, GLenum target, GLuint framebuffer)
 {
@@ -162,9 +187,11 @@ DECLARE(void, glBindFramebuffer, GLenum target, GLuint framebuffer)
 	BEFORE(glBindFramebuffer);
 	CALL_ORIG(glBindFramebuffer, target, framebuffer);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xd",
 	      (uint64_t)(target), framebuffer);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBindFramebuffer), GLenum, target,
+		      GLuint, framebuffer)
 
 DECLARE(void, glBindRenderbuffer, GLenum target, GLuint renderbuffer)
 {
@@ -172,9 +199,11 @@ DECLARE(void, glBindRenderbuffer, GLenum target, GLuint renderbuffer)
 	BEFORE(glBindRenderbuffer);
 	CALL_ORIG(glBindRenderbuffer, target, renderbuffer);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xd",
 	      (uint64_t)(target), renderbuffer);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBindRenderbuffer), GLenum, target,
+		      GLuint, renderbuffer)
 
 DECLARE(void, glBindTexture, GLenum target, GLuint texture)
 {
@@ -182,9 +211,11 @@ DECLARE(void, glBindTexture, GLenum target, GLuint texture)
 	BEFORE(glBindTexture);
 	CALL_ORIG(glBindTexture, target, texture);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xd",
 	      (uint64_t)(target), texture);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBindTexture), GLenum, target,
+		      GLuint, texture)
 
 DECLARE(void, glBlendColor, GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
 {
@@ -192,9 +223,11 @@ DECLARE(void, glBlendColor, GLclampf red, GLclampf green, GLclampf blue, GLclamp
 	BEFORE(glBlendColor);
 	CALL_ORIG(glBlendColor, red, green, blue, alpha);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ffff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ffff",
 	      red, green, blue, alpha);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBlendColor), GLclampf, red,
+		      GLclampf, green, GLclampf, blue, GLclampf, alpha)
 
 DECLARE(void, glBlendEquation, GLenum mode)
 {
@@ -202,9 +235,10 @@ DECLARE(void, glBlendEquation, GLenum mode)
 	BEFORE(glBlendEquation);
 	CALL_ORIG(glBlendEquation, mode);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(mode));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBlendEquation), GLenum, mode)
 
 DECLARE(void, glBlendEquationSeparate, GLenum modeRGB, GLenum modeAlpha)
 {
@@ -212,9 +246,11 @@ DECLARE(void, glBlendEquationSeparate, GLenum modeRGB, GLenum modeAlpha)
 	BEFORE(glBlendEquationSeparate);
 	CALL_ORIG(glBlendEquationSeparate, modeRGB, modeAlpha);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xx",
 	      (uint64_t)(modeRGB), (uint64_t)(modeAlpha));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBlendEquationSeparate), GLenum, modeRGB,
+		      GLenum, modeAlpha)
 
 DECLARE(void, glBlendFunc, GLenum sfactor, GLenum dfactor)
 {
@@ -222,9 +258,11 @@ DECLARE(void, glBlendFunc, GLenum sfactor, GLenum dfactor)
 	BEFORE(glBlendFunc);
 	CALL_ORIG(glBlendFunc, sfactor, dfactor);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xx",
 	      (uint64_t)(sfactor), (uint64_t)(dfactor));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBlendFunc), GLenum, sfactor,
+		      GLenum, dfactor)
 
 DECLARE(void, glBlendFuncSeparate, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha,
 			 GLenum dstAlpha)
@@ -233,10 +271,12 @@ DECLARE(void, glBlendFuncSeparate, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha
 	BEFORE(glBlendFuncSeparate);
 	CALL_ORIG(glBlendFuncSeparate, srcRGB, dstRGB, srcAlpha, dstAlpha);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxxx",
 	      (uint64_t)(srcRGB), (uint64_t)(dstRGB),
 	      (uint64_t)(srcAlpha), (uint64_t)(dstAlpha));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBlendFuncSeparate), GLenum, srcRGB,
+		      GLenum, dstRGB, GLenum, srcAlpha, GLenum, dstAlpha)
 
 DECLARE(void, glBufferData, GLenum target, GLsizeiptr size, const GLvoid * data,
 		  GLenum usage)
@@ -250,10 +290,12 @@ DECLARE(void, glBufferData, GLenum target, GLsizeiptr size, const GLvoid * data,
 		__get_context_buf_data(target, &context_value[0],
 				       sizeof(context_value));
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, context_value, "xxpx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, context_value, "xxpx",
 	      (uint64_t)(target), (uint64_t)(size),
 	      voidp_to_uint64(data), (uint64_t)(usage));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBufferData), GLenum, target,
+		      GLsizeiptr, size, const GLvoid *, data, GLenum, usage)
 
 DECLARE(void, glBufferSubData, GLenum target, GLintptr offset, GLsizeiptr size,
 		     const GLvoid * data)
@@ -268,10 +310,12 @@ DECLARE(void, glBufferSubData, GLenum target, GLintptr offset, GLsizeiptr size,
 				       sizeof(context_value));
 	CALL_ORIG(glBufferSubData, target, offset, size, data);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, context_value, "xxxp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, context_value, "xxxp",
 	      (uint64_t)(target), (uint64_t)(offset),
 	      (uint64_t)(size), voidp_to_uint64(data));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glBufferSubData), GLenum, target,
+		      GLintptr, offset, GLsizeiptr, size, const GLvoid *, data)
 
 // ==================================================================
 // C 14
@@ -283,11 +327,12 @@ DECLARE(GLenum, glCheckFramebufferStatus, GLenum target)
 	BEFORE(glCheckFramebufferStatus);
 	GLenum ret = CALL_ORIG(glCheckFramebufferStatus, target);
 	GL_GET_ERROR();
-	AFTER('d', ret, APITYPE_CONTEXT, "", "x",
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(target));
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLenum, REAL_NAME(glCheckFramebufferStatus), GLenum, target)
 
 DECLARE(void, glClear, GLbitfield mask)
 {
@@ -295,9 +340,10 @@ DECLARE(void, glClear, GLbitfield mask)
 	BEFORE(glClear);
 	CALL_ORIG(glClear, mask);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(mask));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glClear), GLbitfield, mask)
 
 DECLARE(void, glClearColor, GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
 {
@@ -305,9 +351,11 @@ DECLARE(void, glClearColor, GLclampf red, GLclampf green, GLclampf blue, GLclamp
 	BEFORE(glClearColor);
 	CALL_ORIG(glClearColor, red, green, blue, alpha);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ffff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ffff",
 	      red, green, blue, alpha);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glClearColor), GLclampf, red,
+		      GLclampf, green, GLclampf, blue, GLclampf, alpha)
 
 DECLARE(void, glClearDepthf, GLclampf depth)
 {
@@ -315,8 +363,9 @@ DECLARE(void, glClearDepthf, GLclampf depth)
 	BEFORE(glClearDepthf);
 	CALL_ORIG(glClearDepthf, depth);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "f", depth);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "f", depth);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glClearDepthf), GLclampf, depth)
 
 DECLARE(void, glClearStencil, GLint s)
 {
@@ -324,8 +373,9 @@ DECLARE(void, glClearStencil, GLint s)
 	BEFORE(glClearStencil);
 	CALL_ORIG(glClearStencil, s);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", s);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "d", s);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glClearStencil), GLint, s)
 
 DECLARE(void, glColorMask, GLboolean red, GLboolean green, GLboolean blue,
 		 GLboolean alpha)
@@ -334,9 +384,11 @@ DECLARE(void, glColorMask, GLboolean red, GLboolean green, GLboolean blue,
 	BEFORE(glColorMask);
 	CALL_ORIG(glColorMask, red, green, blue, alpha);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dddd",
 	      red, green, blue, alpha);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glColorMask), GLboolean, red,
+		      GLboolean, green, GLboolean, blue, GLboolean, alpha)
 
 DECLARE(void, glCompileShader, GLuint shader)
 {
@@ -344,9 +396,10 @@ DECLARE(void, glCompileShader, GLuint shader)
 	BEFORE(glCompileShader);
 	CALL_ORIG(glCompileShader, shader);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(shader));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glCompileShader), GLuint, shader)
 
 DECLARE(void, glCompressedTexImage2D, GLenum target, GLint level, GLenum internalformat,
 			    GLsizei width, GLsizei height, GLint border,
@@ -358,11 +411,15 @@ DECLARE(void, glCompressedTexImage2D, GLenum target, GLint level, GLenum interna
 	CALL_ORIG(glCompressedTexImage2D, target, level, internalformat, width,
 		  height, border, imageSize, data);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdxddddp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xdxddddp",
 	      (uint64_t)(target), level,
 	      (uint64_t)(internalformat), width, height, border, imageSize,
 	      voidp_to_uint64(data));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glCompressedTexImage2D), GLenum, target,
+		      GLint, level, GLenum, internalformat, GLsizei, width,
+		      GLsizei, height, GLint, border, GLsizei, imageSize,
+		      const GLvoid *, data)
 
 DECLARE(void, glCompressedTexSubImage2D, GLenum target, GLint level, GLint xoffset,
 			       GLint yoffset, GLsizei width, GLsizei height,
@@ -375,10 +432,14 @@ DECLARE(void, glCompressedTexSubImage2D, GLenum target, GLint level, GLint xoffs
 	CALL_ORIG(glCompressedTexSubImage2D, target, level, xoffset, yoffset,
 		  width, height, format, imageSize, data);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdddddxdp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xdddddxdp",
 	      (uint64_t)(target), level, xoffset, yoffset, width, height,
 	      (uint64_t)(format), imageSize, voidp_to_uint64(data));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glCompressedTexSubImage2D),
+		      GLenum, target, GLint, level, GLint, xoffset,
+		      GLint, yoffset, GLsizei, width, GLsizei, height,
+		      GLenum, format, GLsizei, imageSize, const GLvoid *, data)
 
 DECLARE(void, glCopyTexImage2D, GLenum target, GLint level, GLenum internalformat,
 		      GLint x, GLint y, GLsizei width, GLsizei height,
@@ -390,10 +451,14 @@ DECLARE(void, glCopyTexImage2D, GLenum target, GLint level, GLenum internalforma
 	CALL_ORIG(glCopyTexImage2D, target, level, internalformat, x, y, width,
 		  height, border);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdxddddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xdxddddd",
 	      (uint64_t)(target), level,
 	      (uint64_t)(internalformat), x, y, width, height, border);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glCopyTexImage2D), GLenum, target,
+		      GLint, level, GLenum, internalformat,
+		      GLint, x, GLint, y, GLsizei, width, GLsizei, height,
+		      GLint, border)
 
 DECLARE(void, glCopyTexSubImage2D, GLenum target, GLint level, GLint xoffset,
 			 GLint yoffset, GLint x, GLint y, GLsizei width,
@@ -405,10 +470,13 @@ DECLARE(void, glCopyTexSubImage2D, GLenum target, GLint level, GLint xoffset,
 	CALL_ORIG(glCopyTexSubImage2D, target, level, xoffset, yoffset, x, y,
 		  width, height);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xddddddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xddddddd",
 	      (uint64_t)(target), level, xoffset, yoffset, x, y, width,
 	      height);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glCopyTexSubImage2D), GLenum, target,
+		      GLint, level, GLint, xoffset, GLint, yoffset, GLint, x,
+		      GLint, y, GLsizei, width, GLsizei, height)
 
 DECLARE_NOARGS(GLuint, glCreateProgram)
 {
@@ -416,10 +484,11 @@ DECLARE_NOARGS(GLuint, glCreateProgram)
 	BEFORE(glCreateProgram);
 	GLuint ret = CALL_ORIG(glCreateProgram,);
 	GL_GET_ERROR();
-	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('d', ret, APITYPE_CONTEXT, call_type, caller, "");
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLuint, REAL_NAME(glCreateProgram))
 
 DECLARE(GLuint, glCreateShader, GLenum shaderType)
 {
@@ -427,10 +496,11 @@ DECLARE(GLuint, glCreateShader, GLenum shaderType)
 	BEFORE(glCreateShader);
 	GLuint ret = CALL_ORIG(glCreateShader, shaderType);
 	GL_GET_ERROR();
-	AFTER('d', ret, APITYPE_CONTEXT, "", "x", (uint64_t)(shaderType));
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "", "x", (uint64_t)(shaderType));
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLuint, REAL_NAME(glCreateShader), GLenum, shaderType)
 
 DECLARE(void, glCullFace, GLenum mode)
 {
@@ -438,9 +508,10 @@ DECLARE(void, glCullFace, GLenum mode)
 	BEFORE(glCullFace);
 	CALL_ORIG(glCullFace, mode);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(mode));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glCullFace), GLenum, mode)
 
 // ==================================================================
 // D 14
@@ -454,9 +525,11 @@ DECLARE(void, glDeleteBuffers, GLsizei n, const GLuint * buffers)
 	char context_value[MAX_GL_CONTEXT_VALUE_SIZE];
 	CALL_ORIG(glDeleteBuffers, n, buffers);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, context_value, "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, context_value, "dp",
 	      n, voidp_to_uint64(buffers));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDeleteBuffers), GLsizei, n,
+		      const GLuint *, buffers)
 
 DECLARE(void, glDeleteFramebuffers, GLsizei n, const GLuint * framebuffers)
 {
@@ -464,9 +537,11 @@ DECLARE(void, glDeleteFramebuffers, GLsizei n, const GLuint * framebuffers)
 	BEFORE(glDeleteFramebuffers);
 	CALL_ORIG(glDeleteFramebuffers, n, framebuffers);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dp",
 	      n, voidp_to_uint64(framebuffers));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDeleteFramebuffers), GLsizei, n,
+		      const GLuint *, framebuffers)
 
 DECLARE(void, glDeleteProgram, GLuint program)
 {
@@ -474,8 +549,9 @@ DECLARE(void, glDeleteProgram, GLuint program)
 	BEFORE(glDeleteProgram);
 	CALL_ORIG(glDeleteProgram, program);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", program);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "d", program);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDeleteProgram), GLuint, program)
 
 DECLARE(void, glDeleteRenderbuffers, GLsizei n, const GLuint * renderbuffers)
 {
@@ -483,9 +559,11 @@ DECLARE(void, glDeleteRenderbuffers, GLsizei n, const GLuint * renderbuffers)
 	BEFORE(glDeleteRenderbuffers);
 	CALL_ORIG(glDeleteRenderbuffers, n, renderbuffers);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dp",
 	      n, voidp_to_uint64(renderbuffers));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDeleteRenderbuffers), GLsizei, n,
+		      const GLuint *, renderbuffers)
 
 DECLARE(void, glDeleteShader, GLuint shader)
 {
@@ -493,8 +571,9 @@ DECLARE(void, glDeleteShader, GLuint shader)
 	BEFORE(glDeleteShader);
 	CALL_ORIG(glDeleteShader, shader);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", shader);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "d", shader);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDeleteShader), GLuint, shader)
 
 DECLARE(void, glDeleteTextures, GLsizei n, const GLuint *textures)
 {
@@ -507,9 +586,11 @@ DECLARE(void, glDeleteTextures, GLsizei n, const GLuint *textures)
 	if (error == GL_NO_ERROR)
 		__ui_array_to_str(buf, (GLuint *)textures, n, sizeof(buf));
 
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, buf, "dp",
 	      n, voidp_to_uint64(textures));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDeleteTextures), GLsizei, n,
+		      const GLuint *, textures)
 
 DECLARE(void, glDepthFunc, GLenum func)
 {
@@ -517,9 +598,10 @@ DECLARE(void, glDepthFunc, GLenum func)
 	BEFORE(glDepthFunc);
 	CALL_ORIG(glDepthFunc, func);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(func));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDepthFunc), GLenum, func)
 
 DECLARE(void, glDepthMask, GLboolean flag)
 {
@@ -527,9 +609,10 @@ DECLARE(void, glDepthMask, GLboolean flag)
 	BEFORE(glDepthMask);
 	CALL_ORIG(glDepthMask, flag);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(flag));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDepthMask), GLboolean, flag)
 
 DECLARE(void, glDepthRangef, GLclampf nearVal, GLclampf farVal)
 {
@@ -537,9 +620,11 @@ DECLARE(void, glDepthRangef, GLclampf nearVal, GLclampf farVal)
 	BEFORE(glDepthRangef);
 	CALL_ORIG(glDepthRangef, nearVal, farVal);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ff",
 	      nearVal, farVal);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDepthRangef), GLclampf, nearVal,
+		      GLclampf, farVal)
 
 DECLARE(void, glDetachShader, GLuint program, GLuint shader)
 {
@@ -547,9 +632,11 @@ DECLARE(void, glDetachShader, GLuint program, GLuint shader)
 	BEFORE(glDetachShader);
 	CALL_ORIG(glDetachShader, program, shader);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dd",
 	      program, shader);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDetachShader), GLuint, program,
+		      GLuint, shader)
 
 DECLARE(void, glDisable, GLenum cap)
 {
@@ -557,8 +644,9 @@ DECLARE(void, glDisable, GLenum cap)
 	BEFORE(glDisable);
 	CALL_ORIG(glDisable, cap);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(cap));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x", (uint64_t)(cap));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDisable), GLenum, cap)
 
 DECLARE(void, glDisableVertexAttribArray, GLuint index)
 {
@@ -566,8 +654,10 @@ DECLARE(void, glDisableVertexAttribArray, GLuint index)
 	BEFORE(glDisableVertexAttribArray);
 	CALL_ORIG(glDisableVertexAttribArray, index);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", index);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "d", index);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDisableVertexAttribArray),
+		      GLuint, index)
 
 DECLARE(void, glDrawArrays, GLenum mode, GLint first, GLsizei count)
 {
@@ -575,9 +665,11 @@ DECLARE(void, glDrawArrays, GLenum mode, GLint first, GLsizei count)
 	BEFORE(glDrawArrays);
 	CALL_ORIG(glDrawArrays, mode, first, count);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xdd",
 	      (uint64_t)(mode), first, count);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDrawArrays), GLenum, mode, GLint, first,
+		      GLsizei, count)
 
 DECLARE(void, glDrawElements, GLenum mode, GLsizei count, GLenum type,
 		const GLvoid *indices)
@@ -586,9 +678,11 @@ DECLARE(void, glDrawElements, GLenum mode, GLsizei count, GLenum type,
 	BEFORE(glDrawElements);
 	CALL_ORIG(glDrawElements, mode, count, type, indices);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdxp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xdxp",
 	      (uint64_t)(mode), count, (uint64_t)(type), indices);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glDrawElements), GLenum, mode,
+		      GLsizei, count, GLenum, type, const GLvoid *, indices)
 
 // ==================================================================
 // E 2
@@ -600,8 +694,9 @@ DECLARE(void, glEnable, GLenum cap)
 	BEFORE(glEnable);
 	CALL_ORIG(glEnable, cap);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x", (uint64_t)(cap));
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x", (uint64_t)(cap));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glEnable), GLenum, cap)
 
 DECLARE(void, glEnableVertexAttribArray, GLuint index)
 {
@@ -609,8 +704,9 @@ DECLARE(void, glEnableVertexAttribArray, GLuint index)
 	BEFORE(glEnableVertexAttribArray);
 	CALL_ORIG(glEnableVertexAttribArray, index);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", index);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "d", index);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glEnableVertexAttribArray), GLuint, index)
 
 // ==================================================================
 // F 5
@@ -622,8 +718,9 @@ DECLARE_NOARGS(void, glFinish)
 	BEFORE(glFinish);
 	CALL_ORIG(glFinish,);
 	GL_GET_ERROR();
-	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "");
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glFinish))
 
 DECLARE_NOARGS(void, glFlush)
 {
@@ -631,8 +728,9 @@ DECLARE_NOARGS(void, glFlush)
 	BEFORE(glFlush);
 	CALL_ORIG(glFlush,);
 	GL_GET_ERROR();
-	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "");
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glFlush))
 
 DECLARE(void, glFramebufferRenderbuffer, GLenum target, GLenum attachment,
 			       GLenum renderbuffertarget, GLuint renderbuffer)
@@ -642,10 +740,13 @@ DECLARE(void, glFramebufferRenderbuffer, GLenum target, GLenum attachment,
 	CALL_ORIG(glFramebufferRenderbuffer, target, attachment,
 		  renderbuffertarget, renderbuffer);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxxd",
 	      (uint64_t)(target), (uint64_t)(attachment),
 	      (uint64_t)(renderbuffertarget), renderbuffer);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glFramebufferRenderbuffer),
+		      GLenum, target, GLenum, attachment,
+		      GLenum, renderbuffertarget, GLuint, renderbuffer)
 
 DECLARE(void, glFramebufferTexture2D, GLenum target, GLenum attachment, GLenum textarget,
 			    GLuint texture, GLint level)
@@ -655,10 +756,13 @@ DECLARE(void, glFramebufferTexture2D, GLenum target, GLenum attachment, GLenum t
 	CALL_ORIG(glFramebufferTexture2D, target, attachment, textarget,
 		  texture, level);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxdd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxxdd",
 	      (uint64_t)(target), (uint64_t)(attachment),
 	      (uint64_t)(textarget), texture, level);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glFramebufferTexture2D), GLenum, target,
+		      GLenum, attachment, GLenum, textarget, GLuint, texture,
+		      GLint, level)
 
 DECLARE(void, glFrontFace, GLenum mode)
 {
@@ -666,9 +770,10 @@ DECLARE(void, glFrontFace, GLenum mode)
 	BEFORE(glFrontFace);
 	CALL_ORIG(glFrontFace, mode);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(mode));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glFrontFace), GLenum, mode)
 
 // ==================================================================
 // G 31
@@ -685,9 +790,11 @@ DECLARE(void, glGenBuffers, GLsizei n, GLuint * buffers)
 	if (error == GL_NO_ERROR)
 		__ui_array_to_str(buf, buffers, n, sizeof(buf));
 
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, buf, "dp",
 	      n, voidp_to_uint64(buffers));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGenBuffers), GLsizei, n,
+		      GLuint *, buffers)
 
 DECLARE(void, glGenFramebuffers, GLsizei n, GLuint * framebuffers)
 {
@@ -695,9 +802,11 @@ DECLARE(void, glGenFramebuffers, GLsizei n, GLuint * framebuffers)
 	BEFORE(glGenFramebuffers);
 	CALL_ORIG(glGenFramebuffers, n, framebuffers);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dp",
 	      n, voidp_to_uint64(framebuffers));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGenFramebuffers), GLsizei, n,
+		      GLuint *, framebuffers)
 
 DECLARE(void, glGenRenderbuffers, GLsizei n, GLuint * renderbuffers)
 {
@@ -705,9 +814,11 @@ DECLARE(void, glGenRenderbuffers, GLsizei n, GLuint * renderbuffers)
 	BEFORE(glGenRenderbuffers);
 	CALL_ORIG(glGenRenderbuffers, n, renderbuffers);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dp",
 	      n, voidp_to_uint64(renderbuffers));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGenRenderbuffers), GLsizei, n,
+		      GLuint *, renderbuffers)
 
 DECLARE(void, glGenTextures, GLsizei n, GLuint * textures)
 {
@@ -720,9 +831,11 @@ DECLARE(void, glGenTextures, GLsizei n, GLuint * textures)
 	if (error == GL_NO_ERROR)
 		__ui_array_to_str(buf, textures, n, sizeof(buf));
 
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "dp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, buf, "dp",
 	      n, voidp_to_uint64(textures));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGenTextures), GLsizei, n,
+		      GLuint *, textures)
 
 DECLARE(void, glGenerateMipmap, GLenum target)
 {
@@ -730,9 +843,10 @@ DECLARE(void, glGenerateMipmap, GLenum target)
 	BEFORE(glGenerateMipmap);
 	CALL_ORIG(glGenerateMipmap, target);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(target));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGenerateMipmap), GLenum, target)
 
 //lsh_get
 DECLARE(void, glGetBooleanv, GLenum pname, GLboolean * params)
@@ -741,9 +855,11 @@ DECLARE(void, glGetBooleanv, GLenum pname, GLboolean * params)
 	BEFORE(glGetBooleanv);
 	CALL_ORIG(glGetBooleanv, pname, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(pname));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetBooleanv), GLenum, pname,
+		      GLboolean *, params)
 
 //lsh_get
 DECLARE(void, glGetFloatv, GLenum pname, GLfloat * params)
@@ -752,9 +868,11 @@ DECLARE(void, glGetFloatv, GLenum pname, GLfloat * params)
 	BEFORE(glGetFloatv);
 	CALL_ORIG(glGetFloatv, pname, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(pname));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetFloatv), GLenum, pname,
+		      GLfloat *, params)
 
 //lsh_get
 DECLARE(void, glGetIntegerv, GLenum pname, GLint * params)
@@ -763,9 +881,11 @@ DECLARE(void, glGetIntegerv, GLenum pname, GLint * params)
 	BEFORE(glGetIntegerv);
 	CALL_ORIG(glGetIntegerv, pname, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "x",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "x",
 	      (uint64_t)(pname));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetIntegerv), GLenum, pname,
+		      GLint *, params)
 
 //lsh_get
 DECLARE(void, glGetActiveAttrib, GLuint program, GLuint index, GLsizei bufSize,
@@ -777,9 +897,12 @@ DECLARE(void, glGetActiveAttrib, GLuint program, GLuint index, GLsizei bufSize,
 	CALL_ORIG(glGetActiveAttrib, program, index, bufSize, length, size,
 		  type, name);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddd",
 	      program, index, bufSize);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetActiveAttrib), GLuint, program,
+		      GLuint, index, GLsizei, bufSize, GLsizei *, length,
+		      GLint *, size, GLenum *, type, char *, name)
 
 //lsh_get
 DECLARE(void, glGetActiveUniform, GLuint program, GLuint index, GLsizei bufSize,
@@ -791,9 +914,12 @@ DECLARE(void, glGetActiveUniform, GLuint program, GLuint index, GLsizei bufSize,
 	CALL_ORIG(glGetActiveUniform, program, index, bufSize, length, size,
 		  type, name);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddd",
 	      program, index, bufSize);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetActiveUniform), GLuint, program,
+		      GLuint, index, GLsizei, bufSize, GLsizei *, length,
+		      GLint *, size, GLenum *, type, char *, name)
 
 //lsh_get
 DECLARE(void, glGetAttachedShaders, GLuint program, GLsizei maxCount, GLsizei *count,
@@ -803,9 +929,11 @@ DECLARE(void, glGetAttachedShaders, GLuint program, GLsizei maxCount, GLsizei *c
 	BEFORE(glGetAttachedShaders);
 	CALL_ORIG(glGetAttachedShaders, program, maxCount, count, shaders);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dd",
 	      program, maxCount);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetAttachedShaders), GLuint, program,
+		      GLsizei, maxCount, GLsizei *, count, GLuint *, shaders)
 
 //lsh_get
 DECLARE(int ,glGetAttribLocation, GLuint program, const char *name)
@@ -814,10 +942,12 @@ DECLARE(int ,glGetAttribLocation, GLuint program, const char *name)
 	BEFORE(glGetAttribLocation);
 	int ret = CALL_ORIG(glGetAttribLocation, program, name);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xs",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xs",
 	      (uint64_t)(program), name);
 	return ret;
 }
+HANDLER_WRAPPERS(int, REAL_NAME(glGetAttribLocation), GLuint, program,
+		 const char *, name)
 
 //lsh_get
 DECLARE(void, glGetBufferParameteriv, GLenum target, GLenum value, GLint * data)
@@ -826,9 +956,11 @@ DECLARE(void, glGetBufferParameteriv, GLenum target, GLenum value, GLint * data)
 	BEFORE(glGetBufferParameteriv);
 	CALL_ORIG(glGetBufferParameteriv, target, value, data);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xx",
 	      (uint64_t)(target), (uint64_t)(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetBufferParameteriv), GLenum, target,
+		      GLenum, value, GLint *, data)
 
 //lsh_get
 DECLARE(void, glGetFramebufferAttachmentParameteriv, GLenum target, GLenum attachment,
@@ -839,9 +971,12 @@ DECLARE(void, glGetFramebufferAttachmentParameteriv, GLenum target, GLenum attac
 	CALL_ORIG(glGetFramebufferAttachmentParameteriv, target, attachment,
 		  pname, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxx",
 	      (uint64_t)(target), (uint64_t)(attachment), (uint64_t)(pname));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetFramebufferAttachmentParameteriv),
+		      GLenum, target, GLenum, attachment,  GLenum, pname,
+		      GLint *, params)
 
 //lsh_get
 DECLARE(void, glGetProgramInfoLog, GLuint program, GLsizei maxLength, GLsizei *length,
@@ -851,9 +986,11 @@ DECLARE(void, glGetProgramInfoLog, GLuint program, GLsizei maxLength, GLsizei *l
 	BEFORE(glGetProgramInfoLog);
 	CALL_ORIG(glGetProgramInfoLog, program, maxLength, length, infoLog);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dd",
 	      program, maxLength);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetProgramInfoLog), GLuint, program,
+		      GLsizei, maxLength, GLsizei *, length, char *, infoLog)
 
 //lsh_get
 DECLARE(void, glGetProgramiv, GLuint program, GLenum pname, GLint *params)
@@ -862,9 +999,11 @@ DECLARE(void, glGetProgramiv, GLuint program, GLenum pname, GLint *params)
 	BEFORE(glGetProgramiv);
 	CALL_ORIG(glGetProgramiv, program, pname, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dx",
 	      program, (uint64_t)(pname));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetProgramiv), GLuint, program,
+		      GLenum, pname, GLint *, params)
 
 //lsh_get
 DECLARE(void, glGetRenderbufferParameteriv, GLenum target, GLenum pname, GLint *params)
@@ -873,9 +1012,11 @@ DECLARE(void, glGetRenderbufferParameteriv, GLenum target, GLenum pname, GLint *
 	BEFORE(glGetRenderbufferParameteriv);
 	CALL_ORIG(glGetRenderbufferParameteriv, target, pname, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xx",
 	      (uint64_t)(target), (uint64_t)(pname));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetRenderbufferParameteriv),
+		      GLenum, target, GLenum, pname, GLint *, params)
 
 //lsh_get
 DECLARE(void, glGetShaderInfoLog, GLuint shader, GLsizei maxLength, GLsizei *length,
@@ -885,9 +1026,11 @@ DECLARE(void, glGetShaderInfoLog, GLuint shader, GLsizei maxLength, GLsizei *len
 	BEFORE(glGetShaderInfoLog);
 	CALL_ORIG(glGetShaderInfoLog, shader, maxLength, length, infoLog);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dd",
 	      shader, maxLength);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetShaderInfoLog), GLuint, shader,
+		      GLsizei, maxLength, GLsizei *, length, char *, infoLog)
 
 //lsh_get
 DECLARE(void, glGetShaderPrecisionFormat, GLenum shaderType, GLenum precisionType,
@@ -898,9 +1041,12 @@ DECLARE(void, glGetShaderPrecisionFormat, GLenum shaderType, GLenum precisionTyp
 	CALL_ORIG(glGetShaderPrecisionFormat, shaderType, precisionType, range,
 		  precision);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xx",
 	      (uint64_t)(shaderType), (uint64_t)(precisionType));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetShaderPrecisionFormat),
+		      GLenum, shaderType, GLenum, precisionType, GLint *, range,
+		      GLint *, precision)
 
 //lsh_get
 DECLARE(void, glGetShaderSource, GLuint shader, GLsizei bufSize, GLsizei *length,
@@ -910,9 +1056,11 @@ DECLARE(void, glGetShaderSource, GLuint shader, GLsizei bufSize, GLsizei *length
 	BEFORE(glGetShaderSource);
 	CALL_ORIG(glGetShaderSource, shader, bufSize, length, source);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dd",
 	      shader, bufSize);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetShaderSource), GLuint, shader,
+		      GLsizei, bufSize, GLsizei *, length, char *, source)
 
 //lsh_get
 DECLARE(void, glGetShaderiv, GLuint shader, GLenum pname, GLint *params)
@@ -921,9 +1069,11 @@ DECLARE(void, glGetShaderiv, GLuint shader, GLenum pname, GLint *params)
 	BEFORE(glGetShaderiv);
 	CALL_ORIG(glGetShaderiv, shader, pname, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dx",
 	      shader, (uint64_t)(pname));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetShaderiv), GLuint, shader,
+		      GLenum, pname, GLint *, params)
 
 DECLARE(const GLubyte *, glGetString, GLenum name)
 {
@@ -931,10 +1081,12 @@ DECLARE(const GLubyte *, glGetString, GLenum name)
 	BEFORE(glGetString);
 	const GLubyte *ret = CALL_ORIG(glGetString, name);
 	GL_GET_ERROR();
-	AFTER('p', ret, APITYPE_CONTEXT, "", "x", (uint64_t)(name));
+	AFTER('p', ret, APITYPE_CONTEXT, call_type, caller, "", "x", (uint64_t)(name));
 
 	return ret;
 }
+HANDLER_WRAPPERS(const GLubyte *, REAL_NAME(glGetString), GLenum, name)
+
 //lsh_get
 DECLARE(void, glGetTexParameterfv, GLenum target, GLenum pname, GLfloat * params)
 {
@@ -942,9 +1094,11 @@ DECLARE(void, glGetTexParameterfv, GLenum target, GLenum pname, GLfloat * params
 	BEFORE(glGetTexParameterfv);
 	CALL_ORIG(glGetTexParameterfv, target, pname, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xx",
 	      (uint64_t)(target), (uint64_t)(pname));
 }
+HANDLER_WRAPPERS(void, REAL_NAME(glGetTexParameterfv), GLenum, target,
+		 GLenum, pname, GLfloat *, params)
 
 //lsh_get
 DECLARE(void, glGetTexParameteriv, GLenum target, GLenum pname, GLint * params)
@@ -953,9 +1107,11 @@ DECLARE(void, glGetTexParameteriv, GLenum target, GLenum pname, GLint * params)
 	BEFORE(glGetTexParameteriv);
 	CALL_ORIG(glGetTexParameteriv, target, pname, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xx",
 	      (uint64_t)(target), (uint64_t)(pname));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetTexParameteriv), GLenum, target,
+		      GLenum, pname, GLint *, params)
 
 //lsh_get
 DECLARE(void, glGetUniformfv, GLuint program, GLint location, GLfloat *params)
@@ -964,9 +1120,11 @@ DECLARE(void, glGetUniformfv, GLuint program, GLint location, GLfloat *params)
 	BEFORE(glGetUniformfv);
 	CALL_ORIG(glGetUniformfv, program, location, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dd",
 	      program, location);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetUniformfv), GLuint, program,
+		      GLint, location, GLfloat *, params)
 
 //lsh_get
 DECLARE(void, glGetUniformiv, GLuint program, GLint location, GLint *params)
@@ -975,9 +1133,11 @@ DECLARE(void, glGetUniformiv, GLuint program, GLint location, GLint *params)
 	BEFORE(glGetUniformiv);
 	CALL_ORIG(glGetUniformiv, program, location, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dd",
 	      program, location);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetUniformiv), GLuint, program,
+		      GLint, location, GLint *, params)
 
 //lsh_get
 DECLARE(GLint, glGetUniformLocation, GLuint program, const char *name)
@@ -986,10 +1146,12 @@ DECLARE(GLint, glGetUniformLocation, GLuint program, const char *name)
 	BEFORE(glGetUniformLocation);
 	GLint ret = CALL_ORIG(glGetUniformLocation, program, name);
 	GL_GET_ERROR();
-	AFTER('d', ret, APITYPE_CONTEXT, "", "d", program);
+	AFTER('d', ret, APITYPE_CONTEXT, call_type, caller, "", "d", program);
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLint, REAL_NAME(glGetUniformLocation), GLuint, program,
+		 const char *, name)
 
 //lsh_get
 DECLARE(void, glGetVertexAttribfv, GLuint index, GLenum pname, GLfloat *params)
@@ -998,9 +1160,11 @@ DECLARE(void, glGetVertexAttribfv, GLuint index, GLenum pname, GLfloat *params)
 	BEFORE(glGetVertexAttribfv);
 	CALL_ORIG(glGetVertexAttribfv, index, pname, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dx",
 	      index, (uint64_t)(pname));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetVertexAttribfv), GLuint, index,
+		      GLenum, pname, GLfloat *, params)
 
 //lsh_get
 DECLARE(void, glGetVertexAttribiv, GLuint index, GLenum pname, GLint *params)
@@ -1009,9 +1173,11 @@ DECLARE(void, glGetVertexAttribiv, GLuint index, GLenum pname, GLint *params)
 	BEFORE(glGetVertexAttribiv);
 	CALL_ORIG(glGetVertexAttribiv, index, pname, params);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dx",
 	      index, (uint64_t)(pname));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetVertexAttribiv), GLuint, index,
+		      GLenum, pname, GLint *, params)
 
 //lsh_get
 DECLARE(void, glGetVertexAttribPointerv, GLuint index, GLenum pname, GLvoid **pointer)
@@ -1020,9 +1186,11 @@ DECLARE(void, glGetVertexAttribPointerv, GLuint index, GLenum pname, GLvoid **po
 	BEFORE(glGetVertexAttribPointerv);
 	CALL_ORIG(glGetVertexAttribPointerv, index, pname, pointer);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dx",
 	      index, (uint64_t)(pname));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glGetVertexAttribPointerv), GLuint, index,
+		      GLenum, pname, GLvoid **, pointer)
 
 // ==================================================================
 // H 1
@@ -1034,9 +1202,10 @@ DECLARE(void, glHint, GLenum target, GLenum mode)
 	BEFORE(glHint);
 	CALL_ORIG(glHint, target, mode);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xx",
 	      (uint64_t)(target), (uint64_t)(mode));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glHint), GLenum, target, GLenum, mode)
 
 // ==================================================================
 // I 7
@@ -1048,10 +1217,11 @@ DECLARE(GLboolean, glIsBuffer, GLuint buffer)
 	BEFORE(glIsBuffer);
 	GLboolean ret = CALL_ORIG(glIsBuffer, buffer);
 	GL_GET_ERROR();
-	AFTER('c', ret, APITYPE_CONTEXT, "", "d", buffer);
+	AFTER('c', ret, APITYPE_CONTEXT, call_type, caller, "", "d", buffer);
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLboolean, REAL_NAME(glIsBuffer), GLuint, buffer)
 
 DECLARE(GLboolean, glIsEnabled, GLenum cap)
 {
@@ -1059,10 +1229,11 @@ DECLARE(GLboolean, glIsEnabled, GLenum cap)
 	BEFORE(glIsEnabled);
 	GLboolean ret = CALL_ORIG(glIsEnabled, cap);
 	GL_GET_ERROR();
-	AFTER('c', ret, APITYPE_CONTEXT, "", "x", (uint64_t)(cap));
+	AFTER('c', ret, APITYPE_CONTEXT, call_type, caller, "", "x", (uint64_t)(cap));
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLboolean, REAL_NAME(glIsEnabled), GLenum, cap)
 
 DECLARE(GLboolean, glIsFramebuffer, GLuint framebuffer)
 {
@@ -1070,10 +1241,11 @@ DECLARE(GLboolean, glIsFramebuffer, GLuint framebuffer)
 	BEFORE(glIsFramebuffer);
 	GLboolean ret = CALL_ORIG(glIsFramebuffer, framebuffer);
 	GL_GET_ERROR();
-	AFTER('c', ret, APITYPE_CONTEXT, "", "d", framebuffer);
+	AFTER('c', ret, APITYPE_CONTEXT, call_type, caller, "", "d", framebuffer);
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLboolean, REAL_NAME(glIsFramebuffer), GLuint, framebuffer)
 
 DECLARE(GLboolean, glIsProgram, GLuint program)
 {
@@ -1081,10 +1253,11 @@ DECLARE(GLboolean, glIsProgram, GLuint program)
 	BEFORE(glIsProgram);
 	GLboolean ret = CALL_ORIG(glIsProgram, program);
 	GL_GET_ERROR();
-	AFTER('c', ret, APITYPE_CONTEXT, "", "d", program);
+	AFTER('c', ret, APITYPE_CONTEXT, call_type, caller, "", "d", program);
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLboolean, REAL_NAME(glIsProgram), GLuint, program)
 
 DECLARE(GLboolean, glIsRenderbuffer, GLuint renderbuffer)
 {
@@ -1092,10 +1265,11 @@ DECLARE(GLboolean, glIsRenderbuffer, GLuint renderbuffer)
 	BEFORE(glIsRenderbuffer);
 	GLboolean ret = CALL_ORIG(glIsRenderbuffer, renderbuffer);
 	GL_GET_ERROR();
-	AFTER('c', ret, APITYPE_CONTEXT, "", "d", renderbuffer);
+	AFTER('c', ret, APITYPE_CONTEXT, call_type, caller, "", "d", renderbuffer);
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLboolean, REAL_NAME(glIsRenderbuffer), GLuint, renderbuffer)
 
 DECLARE(GLboolean, glIsShader, GLuint shader)
 {
@@ -1103,10 +1277,11 @@ DECLARE(GLboolean, glIsShader, GLuint shader)
 	BEFORE(glIsShader);
 	GLboolean ret = CALL_ORIG(glIsShader, shader);
 	GL_GET_ERROR();
-	AFTER('c', ret, APITYPE_CONTEXT, "", "d", shader);
+	AFTER('c', ret, APITYPE_CONTEXT, call_type, caller, "", "d", shader);
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLboolean, REAL_NAME(glIsShader), GLuint, shader)
 
 DECLARE(GLboolean, glIsTexture, GLuint texture)
 {
@@ -1114,10 +1289,11 @@ DECLARE(GLboolean, glIsTexture, GLuint texture)
 	BEFORE(glIsTexture);
 	GLboolean ret = CALL_ORIG(glIsTexture, texture);
 	GL_GET_ERROR();
-	AFTER('c', ret, APITYPE_CONTEXT, "", "d", texture);
+	AFTER('c', ret, APITYPE_CONTEXT, call_type, caller, "", "d", texture);
 
 	return ret;
 }
+HANDLER_WRAPPERS(GLboolean, REAL_NAME(glIsTexture), GLuint, texture)
 
 // ==================================================================
 // L 2
@@ -1129,8 +1305,9 @@ DECLARE(void, glLineWidth, GLfloat width)
 	BEFORE(glLineWidth);
 	CALL_ORIG(glLineWidth, width);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "f", width);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "f", width);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glLineWidth), GLfloat, width)
 
 /* TODO refactor snprintf check*/
 DECLARE(void, glLinkProgram, GLuint program)
@@ -1205,9 +1382,10 @@ DECLARE(void, glLinkProgram, GLuint program)
 
 		}
 	}
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf, "d",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, buf, "d",
 	      program);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glLinkProgram), GLuint, program)
 
 // ==================================================================
 // P 2
@@ -1219,9 +1397,11 @@ DECLARE(void, glPixelStorei, GLenum pname, GLint param)
 	BEFORE(glPixelStorei);
 	CALL_ORIG(glPixelStorei, pname, param);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xd",
 	      (uint64_t)(pname), param);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glPixelStorei), GLenum, pname,
+		      GLint, param)
 
 DECLARE(void, glPolygonOffset, GLfloat factor, GLfloat units)
 {
@@ -1229,9 +1409,11 @@ DECLARE(void, glPolygonOffset, GLfloat factor, GLfloat units)
 	BEFORE(glPolygonOffset);
 	CALL_ORIG(glPolygonOffset, factor, units);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ff",
 	      factor, units);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glPolygonOffset), GLfloat, factor,
+		      GLfloat, units)
 
 // ==================================================================
 // R 3
@@ -1246,10 +1428,13 @@ DECLARE(void, glReadPixels, GLint x, GLint y, GLsizei width, GLsizei height,
 	BEFORE(glReadPixels);
 	CALL_ORIG(glReadPixels, x, y, width, height, format, type, data);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "",
 	      "ddddxx", x, y, width, height,
 	      (uint64_t)(format), (uint64_t)(type));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glReadPixels), GLint, x, GLint, y,
+		      GLsizei, width, GLsizei, height, GLenum, format,
+		      GLenum, type, GLvoid *, data)
 
 DECLARE_NOARGS(void, glReleaseShaderCompiler)
 {
@@ -1257,8 +1442,10 @@ DECLARE_NOARGS(void, glReleaseShaderCompiler)
 	BEFORE(glReleaseShaderCompiler);
 	CALL_ORIG(glReleaseShaderCompiler,);
 	GL_GET_ERROR();
-	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "");
+	AFTER_NO_PARAM('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "");
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glReleaseShaderCompiler))
+
 DECLARE(void, glRenderbufferStorage, GLenum target, GLenum internalformat, GLsizei width,
 			   GLsizei height)
 {
@@ -1266,9 +1453,11 @@ DECLARE(void, glRenderbufferStorage, GLenum target, GLenum internalformat, GLsiz
 	BEFORE(glRenderbufferStorage);
 	CALL_ORIG(glRenderbufferStorage, target, internalformat, width, height);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxdd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxdd",
 	      (uint64_t)(target), (uint64_t)(internalformat), width, height);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glRenderbufferStorage), GLenum, target,
+		      GLenum, internalformat, GLsizei, width, GLsizei, height)
 
 // ==================================================================
 // S 10
@@ -1280,9 +1469,11 @@ DECLARE(void, glSampleCoverage, GLclampf value, GLboolean invert)
 	BEFORE(glSampleCoverage);
 	CALL_ORIG(glSampleCoverage, value, invert);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "fx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "fx",
 	      value, (uint64_t)(invert));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glSampleCoverage), GLclampf, value,
+		      GLboolean, invert)
 
 DECLARE(void, glScissor, GLint x, GLint y, GLsizei width, GLsizei height)
 {
@@ -1290,9 +1481,11 @@ DECLARE(void, glScissor, GLint x, GLint y, GLsizei width, GLsizei height)
 	BEFORE(glScissor);
 	CALL_ORIG(glScissor, x, y, width, height);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dddd",
 	      x, y, width, height);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glScissor), GLint, x, GLint, y,
+		      GLsizei, width, GLsizei, height)
 
 //lsh_param
 DECLARE(void, glShaderBinary, GLsizei n, const GLuint *shaders, GLenum binaryformat,
@@ -1303,10 +1496,13 @@ DECLARE(void, glShaderBinary, GLsizei n, const GLuint *shaders, GLenum binaryfor
 	BEFORE(glShaderBinary);
 	CALL_ORIG(glShaderBinary, n, shaders, binaryformat, binary, length);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "",
 	      "dpxpd", n, voidp_to_uint64(shaders),
 	      (uint64_t)(binaryformat), voidp_to_uint64(binary), length);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glShaderBinary), GLsizei, n,
+		      const GLuint *, shaders, GLenum, binaryformat,
+		      const void *, binary, GLsizei, length)
 
 //lsh_param
 DECLARE(void, glShaderSource, GLuint shader, GLsizei count, const char **string,
@@ -1322,15 +1518,18 @@ DECLARE(void, glShaderSource, GLuint shader, GLsizei count, const char **string,
 		real_glGetShaderiv(shader, GL_SHADER_SOURCE_LENGTH, length);
 		char buf[length[0]];
 		real_glGetShaderSource(shader, length[0], NULL, buf);
-		AFTER_SHADER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, buf,
+		AFTER_SHADER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, buf,
 			     length[0], "ddpp", shader, count,
 			     voidp_to_uint64(string), voidp_to_uint64(length));
 	} else {
-		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "",
 		      "ddpp", shader, count,
 		      voidp_to_uint64(string), voidp_to_uint64(length));
 	}
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glShaderSource), GLuint, shader,
+		      GLsizei, count, const char **, string,
+		      const GLint *, length)
 
 DECLARE(void, glStencilFunc, GLenum func, GLint ref, GLuint mask)
 {
@@ -1338,9 +1537,11 @@ DECLARE(void, glStencilFunc, GLenum func, GLint ref, GLuint mask)
 	BEFORE(glStencilFunc);
 	CALL_ORIG(glStencilFunc, func, ref, mask);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xdd",
 	      (uint64_t)(func), ref, mask);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glStencilFunc), GLenum, func, GLint, ref,
+		      GLuint, mask)
 
 DECLARE(void, glStencilFuncSeparate, GLenum face, GLenum func, GLint ref, GLuint mask)
 {
@@ -1348,9 +1549,11 @@ DECLARE(void, glStencilFuncSeparate, GLenum face, GLenum func, GLint ref, GLuint
 	BEFORE(glStencilFuncSeparate);
 	CALL_ORIG(glStencilFuncSeparate, face, func, ref, mask);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxdd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxdd",
 	      (uint64_t)(face), (uint64_t)(func), ref, mask);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glStencilFuncSeparate), GLenum, face,
+		      GLenum, func, GLint, ref, GLuint, mask)
 
 DECLARE(void, glStencilMask, GLuint mask)
 {
@@ -1358,8 +1561,9 @@ DECLARE(void, glStencilMask, GLuint mask)
 	BEFORE(glStencilMask);
 	CALL_ORIG(glStencilMask, mask);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d", mask);
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "d", mask);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glStencilMask), GLuint, mask)
 
 DECLARE(void, glStencilMaskSeparate, GLenum face, GLuint mask)
 {
@@ -1367,9 +1571,11 @@ DECLARE(void, glStencilMaskSeparate, GLenum face, GLuint mask)
 	BEFORE(glStencilMaskSeparate);
 	CALL_ORIG(glStencilMaskSeparate, face, mask);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xd",
 	      (uint64_t)(face), mask);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glStencilMaskSeparate), GLenum, face,
+		      GLuint, mask)
 
 DECLARE(void, glStencilOp, GLenum sfail, GLenum dpfail, GLenum dppass)
 {
@@ -1377,10 +1583,12 @@ DECLARE(void, glStencilOp, GLenum sfail, GLenum dpfail, GLenum dppass)
 	BEFORE(glStencilOp);
 	CALL_ORIG(glStencilOp, sfail, dpfail, dppass);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxx",
 	      (uint64_t)(sfail), (uint64_t)(dpfail),
 	      (uint64_t)(dppass));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glStencilOp), GLenum, sfail,
+		      GLenum, dpfail, GLenum, dppass)
 
 DECLARE(void, glStencilOpSeparate, GLenum face, GLenum sfail, GLenum dpfail,
 			 GLenum dppass)
@@ -1389,10 +1597,12 @@ DECLARE(void, glStencilOpSeparate, GLenum face, GLenum sfail, GLenum dpfail,
 	BEFORE(glStencilOpSeparate);
 	CALL_ORIG(glStencilOpSeparate, face, sfail, dpfail, dppass);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxxx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxxx",
 	      (uint64_t)(face), (uint64_t)(sfail), (uint64_t)(dpfail),
 	      (uint64_t)(dppass));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glStencilOpSeparate), GLenum, face,
+		      GLenum, sfail, GLenum, dpfail, GLenum, dppass)
 
 // ==================================================================
 // T 6
@@ -1408,11 +1618,15 @@ DECLARE(void, glTexImage2D, GLenum target, GLint level, GLenum internalformat,
 	CALL_ORIG(glTexImage2D, target, level, internalformat, width,
 		  height, border, format, type, data);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xdddddxxp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xdddddxxp",
 	      (uint64_t)(target), level, internalformat, width, height,
 	      border, (uint64_t)(format), (uint64_t)(type),
 	      voidp_to_uint64(data));
 }
+HANDLER_WRAPPERS(void, REAL_NAME(glTexImage2D), GLenum, target, GLint, level,
+		 GLenum, internalformat, GLsizei, width, GLsizei, height,
+		 GLint, border, GLenum, format, GLenum, type,
+		 const GLvoid *, data)
 
 DECLARE(void, glTexParameterf, GLenum target, GLenum pname, GLfloat param)
 {
@@ -1420,9 +1634,11 @@ DECLARE(void, glTexParameterf, GLenum target, GLenum pname, GLfloat param)
 	BEFORE(glTexParameterf);
 	CALL_ORIG(glTexParameterf, target, pname, param);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxf",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxf",
 	      (uint64_t)(target), (uint64_t)(pname), param);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glTexParameterf), GLenum, target,
+		      GLenum, pname, GLfloat, param)
 
 DECLARE(void, glTexParameterfv, GLenum target, GLenum pname, const GLfloat * params)
 {
@@ -1433,15 +1649,17 @@ DECLARE(void, glTexParameterfv, GLenum target, GLenum pname, const GLfloat * par
 	if (error == GL_NO_ERROR) {
 		char param0[sizeof(GLenum) * 4];
 		snprintf(param0, sizeof(param0), "%x", (GLenum)params[0]);
-		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, param0, "xxp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, param0, "xxp",
 		      (uint64_t)(target), (uint64_t)(pname),
 		      voidp_to_uint64(params));
 	} else {
-		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxp",
 		      (uint64_t)(target), (uint64_t)(pname),
 		      voidp_to_uint64(params));
 	}
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glTexParameterfv), GLenum, target,
+		      GLenum, pname, const GLfloat *, params)
 
 DECLARE(void, glTexParameteri, GLenum target, GLenum pname, GLint param)
 {
@@ -1449,10 +1667,12 @@ DECLARE(void, glTexParameteri, GLenum target, GLenum pname, GLint param)
 	BEFORE(glTexParameteri);
 	CALL_ORIG(glTexParameteri, target, pname, param);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxx",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxx",
 	      (uint64_t)(target), (uint64_t)(pname),
 	      (uint64_t)(param));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glTexParameteri), GLenum, target,
+		      GLenum, pname, GLint, param)
 
 DECLARE(void, glTexParameteriv, GLenum target, GLenum pname, const GLint * params)
 {
@@ -1463,16 +1683,18 @@ DECLARE(void, glTexParameteriv, GLenum target, GLenum pname, const GLint * param
 	if (error == GL_NO_ERROR) {
 		char param0[sizeof(GLenum) * 4];
 		snprintf(param0, sizeof(param0), "%x", (GLenum)params[0]);
-		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, param0, "xxp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, param0, "xxp",
 		      (uint64_t)(target), (uint64_t)(pname),
 		      voidp_to_uint64(params));
 	} else {
-		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "xxp",
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "xxp",
 		      (uint64_t)(target),
 		      (uint64_t)(pname),
 		      voidp_to_uint64(params));
 	}
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glTexParameteriv), GLenum, target,
+		      GLenum, pname, const GLint *, params)
 
 DECLARE(void, glTexSubImage2D, GLenum target, GLint level, GLint xoffset, GLint yoffset,
 		     GLsizei width, GLsizei height, GLenum format, GLenum type,
@@ -1484,11 +1706,15 @@ DECLARE(void, glTexSubImage2D, GLenum target, GLint level, GLint xoffset, GLint 
 	CALL_ORIG(glTexSubImage2D, target, level, xoffset, yoffset, width,
 		  height, format, type, data);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "",
 	      "xdddddxxp",
 	      (uint64_t)(target), level, xoffset, yoffset, width, height,
 	      (uint64_t)(format), (uint64_t)(type), voidp_to_uint64(data));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glTexSubImage2D), GLenum, target,
+		      GLint, level, GLint, xoffset, GLint, yoffset,
+		      GLsizei, width, GLsizei, height, GLenum, format,
+		      GLenum, type, const GLvoid *, data)
 
 // ==================================================================
 // U 20
@@ -1500,9 +1726,11 @@ DECLARE(void, glUniform1f, GLint location, GLfloat v0)
 	BEFORE(glUniform1f);
 	CALL_ORIG(glUniform1f, location, v0);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "df",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "df",
 	      location, v0);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform1f), GLint, location,
+		      GLfloat, v0)
 
 DECLARE(void, glUniform2f, GLint location, GLfloat v0, GLfloat v1)
 {
@@ -1510,9 +1738,11 @@ DECLARE(void, glUniform2f, GLint location, GLfloat v0, GLfloat v1)
 	BEFORE(glUniform2f);
 	CALL_ORIG(glUniform2f, location, v0, v1);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dff",
 	      location, v0, v1);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform2f), GLint, location,
+		      GLfloat, v0, GLfloat, v1)
 
 DECLARE(void, glUniform3f, GLint location, GLfloat v0, GLfloat v1, GLfloat v2)
 {
@@ -1520,9 +1750,11 @@ DECLARE(void, glUniform3f, GLint location, GLfloat v0, GLfloat v1, GLfloat v2)
 	BEFORE(glUniform3f);
 	CALL_ORIG(glUniform3f, location, v0, v1, v2);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dfff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dfff",
 	      location, v0, v1, v2);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform3f), GLint, location,
+		      GLfloat, v0, GLfloat, v1, GLfloat, v2)
 
 DECLARE(void, glUniform4f, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
 {
@@ -1530,9 +1762,11 @@ DECLARE(void, glUniform4f, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, G
 	BEFORE(glUniform4f);
 	CALL_ORIG(glUniform4f, location, v0, v1, v2, v3);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dffff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dffff",
 	      location, v0, v1, v2, v3);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform4f), GLint, location,
+		      GLfloat, v0, GLfloat, v1, GLfloat, v2, GLfloat, v3)
 
 DECLARE(void, glUniform1fv, GLint location, GLsizei count, const GLfloat *value)
 {
@@ -1540,9 +1774,11 @@ DECLARE(void, glUniform1fv, GLint location, GLsizei count, const GLfloat *value)
 	BEFORE(glUniform1fv);
 	CALL_ORIG(glUniform1fv, location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddF",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddF",
 	      location, count, count * 1, voidp_to_uint64(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform1fv), GLint, location,
+		      GLsizei, count, const GLfloat *, value)
 
 DECLARE(void, glUniform2fv, GLint location, GLsizei count, const GLfloat *value)
 {
@@ -1550,9 +1786,11 @@ DECLARE(void, glUniform2fv, GLint location, GLsizei count, const GLfloat *value)
 	BEFORE(glUniform2fv);
 	CALL_ORIG(glUniform2fv, location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddF",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddF",
 	      location, count, count * 2, voidp_to_uint64(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform2fv), GLint, location,
+		      GLsizei, count, const GLfloat *, value)
 
 DECLARE(void, glUniform3fv, GLint location, GLsizei count, const GLfloat *value)
 {
@@ -1560,9 +1798,11 @@ DECLARE(void, glUniform3fv, GLint location, GLsizei count, const GLfloat *value)
 	BEFORE(glUniform3fv);
 	CALL_ORIG(glUniform3fv, location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddF",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddF",
 	      location, count, count * 3, voidp_to_uint64(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform3fv), GLint, location,
+		      GLsizei, count, const GLfloat *, value)
 
 DECLARE(void, glUniform4fv, GLint location, GLsizei count, const GLfloat *value)
 {
@@ -1570,9 +1810,11 @@ DECLARE(void, glUniform4fv, GLint location, GLsizei count, const GLfloat *value)
 	BEFORE(glUniform4fv);
 	CALL_ORIG(glUniform4fv, location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddF",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddF",
 	      location, count, count * 4, voidp_to_uint64(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform4fv), GLint, location,
+		      GLsizei, count, const GLfloat *, value)
 
 DECLARE(void, glUniform1i, GLint location, GLint v0)
 {
@@ -1580,9 +1822,10 @@ DECLARE(void, glUniform1i, GLint location, GLint v0)
 	BEFORE(glUniform1i);
 	CALL_ORIG(glUniform1i, location, v0);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dd",
 	      location, v0);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform1i), GLint, location, GLint, v0)
 
 DECLARE(void, glUniform2i, GLint location, GLint v0, GLint v1)
 {
@@ -1590,9 +1833,11 @@ DECLARE(void, glUniform2i, GLint location, GLint v0, GLint v1)
 	BEFORE(glUniform2i);
 	CALL_ORIG(glUniform2i, location, v0, v1);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddd",
 	      location, v0, v1);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform2i), GLint, location,
+		      GLint, v0, GLint, v1)
 
 DECLARE(void, glUniform3i, GLint location, GLint v0, GLint v1, GLint v2)
 {
@@ -1600,9 +1845,11 @@ DECLARE(void, glUniform3i, GLint location, GLint v0, GLint v1, GLint v2)
 	BEFORE(glUniform3i);
 	CALL_ORIG(glUniform3i, location, v0, v1, v2);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dddd",
 	      location, v0, v1, v2);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform3i), GLint, location,
+		      GLint, v0, GLint, v1, GLint, v2)
 
 DECLARE(void, glUniform4i, GLint location, GLint v0, GLint v1, GLint v2, GLint v3)
 {
@@ -1610,9 +1857,11 @@ DECLARE(void, glUniform4i, GLint location, GLint v0, GLint v1, GLint v2, GLint v
 	BEFORE(glUniform4i);
 	CALL_ORIG(glUniform4i, location, v0, v1, v2, v3);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddddd",
 	      location, v0, v1, v2, v3);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform4i), GLint, location, GLint, v0,
+		      GLint, v1, GLint, v2, GLint, v3)
 
 DECLARE(void, glUniform1iv, GLint location, GLsizei count, const GLint *value)
 {
@@ -1620,9 +1869,11 @@ DECLARE(void, glUniform1iv, GLint location, GLsizei count, const GLint *value)
 	BEFORE(glUniform1iv);
 	CALL_ORIG(glUniform1iv, location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddD",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddD",
 	      location, count, count * 1, voidp_to_uint64(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform1iv), GLint, location,
+		      GLsizei, count, const GLint *, value)
 
 DECLARE(void, glUniform2iv, GLint location, GLsizei count, const GLint *value)
 {
@@ -1630,9 +1881,11 @@ DECLARE(void, glUniform2iv, GLint location, GLsizei count, const GLint *value)
 	BEFORE(glUniform2iv);
 	CALL_ORIG(glUniform2iv, location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddD",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddD",
 	      location, count, count * 2, voidp_to_uint64(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform2iv), GLint, location,
+		      GLsizei, count, const GLint *, value)
 
 DECLARE(void, glUniform3iv, GLint location, GLsizei count, const GLint *value)
 {
@@ -1640,9 +1893,11 @@ DECLARE(void, glUniform3iv, GLint location, GLsizei count, const GLint *value)
 	BEFORE(glUniform3iv);
 	CALL_ORIG(glUniform3iv, location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddD",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddD",
 	      location, count, count * 3, voidp_to_uint64(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform3iv), GLint, location,
+		      GLsizei, count, const GLint *, value)
 
 DECLARE(void, glUniform4iv, GLint location, GLsizei count, const GLint *value)
 {
@@ -1650,9 +1905,11 @@ DECLARE(void, glUniform4iv, GLint location, GLsizei count, const GLint *value)
 	BEFORE(glUniform4iv);
 	CALL_ORIG(glUniform4iv, location, count, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddD",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddD",
 	      location, count, count * 4, voidp_to_uint64(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniform4iv), GLint, location,
+		      GLsizei, count, const GLint *, value)
 
 DECLARE(void, glUniformMatrix2fv, GLint location, GLsizei count, GLboolean transpose,
 			const GLfloat *value)
@@ -1661,10 +1918,13 @@ DECLARE(void, glUniformMatrix2fv, GLint location, GLsizei count, GLboolean trans
 	BEFORE(glUniformMatrix2fv);
 	CALL_ORIG(glUniformMatrix2fv, location, count, transpose, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxF",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddxF",
 	      location, count, (uint64_t)(transpose), count * 2 * 2,
 	      voidp_to_uint64(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniformMatrix2fv), GLint, location,
+		      GLsizei, count, GLboolean, transpose,
+		      const GLfloat *, value)
 
 DECLARE(void, glUniformMatrix3fv, GLint location, GLsizei count, GLboolean transpose,
 			const GLfloat *value)
@@ -1673,10 +1933,13 @@ DECLARE(void, glUniformMatrix3fv, GLint location, GLsizei count, GLboolean trans
 	BEFORE(glUniformMatrix3fv);
 	CALL_ORIG(glUniformMatrix3fv, location, count, transpose, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxF",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddxF",
 	      location, count, (uint64_t)(transpose), count * 3 * 3,
 	      voidp_to_uint64(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniformMatrix3fv), GLint, location,
+		      GLsizei, count, GLboolean, transpose,
+		      const GLfloat *, value)
 
 DECLARE(void, glUniformMatrix4fv, GLint location, GLsizei count, GLboolean transpose,
 			const GLfloat *value)
@@ -1685,10 +1948,13 @@ DECLARE(void, glUniformMatrix4fv, GLint location, GLsizei count, GLboolean trans
 	BEFORE(glUniformMatrix4fv);
 	CALL_ORIG(glUniformMatrix4fv, location, count, transpose, value);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxF",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddxF",
 	      location, count, (uint64_t)(transpose), count * 4 * 4,
 	      voidp_to_uint64(value));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUniformMatrix4fv), GLint, location,
+		      GLsizei, count, GLboolean, transpose,
+		      const GLfloat *, value)
 
 DECLARE(void, glUseProgram, GLuint program)
 {
@@ -1696,9 +1962,10 @@ DECLARE(void, glUseProgram, GLuint program)
 	BEFORE(glUseProgram);
 	CALL_ORIG(glUseProgram, program);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "d",
 	      program);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glUseProgram), GLuint, program)
 
 // ==================================================================
 // V 7
@@ -1710,9 +1977,10 @@ DECLARE(void, glValidateProgram, GLuint program)
 	BEFORE(glValidateProgram);
 	CALL_ORIG(glValidateProgram, program);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "d",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "d",
 	      program);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glValidateProgram), GLuint, program)
 
 DECLARE(void, glVertexAttrib1f, GLuint index, GLfloat v0)
 {
@@ -1726,9 +1994,11 @@ DECLARE(void, glVertexAttrib1f, GLuint index, GLfloat v0)
 		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue, "df",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, contextValue, "df",
 	      index, v0);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glVertexAttrib1f), GLuint, index,
+		      GLfloat, v0)
 
 DECLARE(void, glVertexAttrib2f, GLuint index, GLfloat v0, GLfloat v1)
 {
@@ -1742,9 +2012,11 @@ DECLARE(void, glVertexAttrib2f, GLuint index, GLfloat v0, GLfloat v1)
 		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue, "dff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, contextValue, "dff",
 	      index, v0, v1);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glVertexAttrib2f), GLuint, index,
+		      GLfloat, v0, GLfloat, v1)
 
 DECLARE(void, glVertexAttrib3f, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2)
 {
@@ -1758,9 +2030,11 @@ DECLARE(void, glVertexAttrib3f, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2
 		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue, "dfff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, contextValue, "dfff",
 	      index, v0, v1, v2);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glVertexAttrib3f), GLuint, index,
+		      GLfloat, v0, GLfloat, v1, GLfloat, v2)
 
 DECLARE(void, glVertexAttrib4f, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2,
 		      GLfloat v3)
@@ -1775,9 +2049,11 @@ DECLARE(void, glVertexAttrib4f, GLuint index, GLfloat v0, GLfloat v1, GLfloat v2
 		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue, "dffff",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, contextValue, "dffff",
 	      index, v0, v1, v2, v3);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glVertexAttrib4f), GLuint, index,
+		      GLfloat, v0, GLfloat, v1, GLfloat, v2, GLfloat, v3)
 
 DECLARE(void, glVertexAttrib1fv, GLuint index, const GLfloat *v)
 {
@@ -1791,9 +2067,11 @@ DECLARE(void, glVertexAttrib1fv, GLuint index, const GLfloat *v)
 		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, contextValue,
 	      "dp", index, voidp_to_uint64(v));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glVertexAttrib1fv), GLuint, index,
+		      const GLfloat *, v)
 
 DECLARE(void, glVertexAttrib2fv, GLuint index, const GLfloat *v)
 {
@@ -1807,9 +2085,11 @@ DECLARE(void, glVertexAttrib2fv, GLuint index, const GLfloat *v)
 		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, contextValue,
 	      "dp", index, voidp_to_uint64(v));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glVertexAttrib2fv), GLuint, index,
+		      const GLfloat *, v)
 
 DECLARE(void, glVertexAttrib3fv, GLuint index, const GLfloat *v)
 {
@@ -1823,9 +2103,11 @@ DECLARE(void, glVertexAttrib3fv, GLuint index, const GLfloat *v)
 		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, contextValue,
 	      "dp", index, voidp_to_uint64(v));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glVertexAttrib3fv), GLuint, index,
+		      const GLfloat *, v)
 
 DECLARE(void, glVertexAttrib4fv, GLuint index, const GLfloat *v)
 {
@@ -1838,9 +2120,11 @@ DECLARE(void, glVertexAttrib4fv, GLuint index, const GLfloat *v)
 		 cv[0], cv[1], cv[2], cv[3]);
 
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, contextValue,
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, contextValue,
 	      "dp", index, voidp_to_uint64(v));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glVertexAttrib4fv), GLuint, index,
+		      const GLfloat *, v)
 
 DECLARE(void, glVertexAttribPointer, GLuint index, GLint size, GLenum type,
 			   GLboolean normalized, GLsizei stride,
@@ -1852,10 +2136,13 @@ DECLARE(void, glVertexAttribPointer, GLuint index, GLint size, GLenum type,
 	CALL_ORIG(glVertexAttribPointer, index, size, type, normalized, stride,
 		  pointer);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "ddxxdp",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "ddxxdp",
 	      index, size, (uint64_t)(type), (uint64_t)(normalized),
 	      stride, voidp_to_uint64(pointer));
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glVertexAttribPointer), GLuint, index,
+		      GLint, size, GLenum, type, GLboolean, normalized,
+		      GLsizei, stride, const GLvoid *, pointer)
 
 DECLARE(void, glViewport, GLint x, GLint y, GLsizei width, GLsizei height)
 {
@@ -1865,9 +2152,11 @@ DECLARE(void, glViewport, GLint x, GLint y, GLsizei width, GLsizei height)
 
 	CALL_ORIG(glViewport, x, y, width, height);
 	GL_GET_ERROR();
-	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", "dddd",
+	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "dddd",
 	      x, y, width, height);
 }
+HANDLER_WRAPPERS_VOID(void, REAL_NAME(glViewport), GLint, x, GLint, y,
+		      GLsizei, width, GLsizei, height)
 
 #undef CALL_ORIG
 #undef BEFORE
