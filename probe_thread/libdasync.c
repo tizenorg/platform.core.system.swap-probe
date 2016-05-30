@@ -42,8 +42,8 @@
 #include "real_functions.h"
 
 
-int PROBE_NAME(pthread_mutex_init)(pthread_mutex_t *mutex,
-		const pthread_mutexattr_t *attr) {
+HANDLER_DEF(int, pthread_mutex_init, pthread_mutex_t *mutex, const pthread_mutexattr_t *attr)
+{
 	static int (*pthread_mutex_initp)(pthread_mutex_t *mutex,
 			const pthread_mutexattr_t *attr);
 
@@ -52,14 +52,16 @@ int PROBE_NAME(pthread_mutex_init)(pthread_mutex_t *mutex,
 	ret = pthread_mutex_initp(mutex, attr);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_init,
-				 'd', ret, mutex, SYNC_PTHREAD_MUTEX,
+				 'd', ret, mutex, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(mutex), voidp_to_uint64(attr));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_mutex_init, pthread_mutex_t *mutex, const pthread_mutexattr_t *attr)
 
-int PROBE_NAME(pthread_mutex_destroy)(pthread_mutex_t *mutex) {
+HANDLER_DEF(int , pthread_mutex_destroy, pthread_mutex_t *mutex)
+{
 	static int (*pthread_mutex_destroyp)(pthread_mutex_t *mutex);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_destroy, LIBPTHREAD);
@@ -67,11 +69,12 @@ int PROBE_NAME(pthread_mutex_destroy)(pthread_mutex_t *mutex) {
 	ret = pthread_mutex_destroyp(mutex);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_destroy,
-				 'd', ret, mutex, SYNC_PTHREAD_MUTEX,
+				 'd', ret, mutex, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "p", voidp_to_uint64(mutex));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_mutex_destroy, pthread_mutex_t *mutex)
 
 int real_pthread_mutex_lock(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_lockp)(pthread_mutex_t *mutex);
@@ -81,7 +84,8 @@ int real_pthread_mutex_lock(pthread_mutex_t *mutex) {
 	return pthread_mutex_lockp(mutex);
 }
 
-int PROBE_NAME(pthread_mutex_lock)(pthread_mutex_t *mutex) {
+HANDLER_DEF(int , pthread_mutex_lock, pthread_mutex_t *mutex)
+{
 	static int (*pthread_mutex_lockp)(pthread_mutex_t *mutex);
 
 	DECLARE_VARIABLE_STANDARD;
@@ -93,7 +97,7 @@ int PROBE_NAME(pthread_mutex_lock)(pthread_mutex_t *mutex) {
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 			  API_ID_pthread_mutex_lock,
 			  "p", voidp_to_uint64(mutex));
-	PACK_COMMON_END('d', 0, 0, blockresult);
+	PACK_COMMON_END('d', 0, 0, call_type, caller);
 	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
 	FLUSH_LOCAL_BUF();
 
@@ -109,7 +113,7 @@ int PROBE_NAME(pthread_mutex_lock)(pthread_mutex_t *mutex) {
 	PACK_COMMON_BEGIN(MSG_PROBE_SYNC,
 			  API_ID_pthread_mutex_lock,
 			  "p", voidp_to_uint64(mutex));
-	PACK_COMMON_END('p', ret, errno, blockresult);
+	PACK_COMMON_END('p', ret, errno, call_type, caller);
 	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
 	FLUSH_LOCAL_BUF();
 
@@ -117,9 +121,10 @@ int PROBE_NAME(pthread_mutex_lock)(pthread_mutex_t *mutex) {
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_mutex_lock, pthread_mutex_t *mutex)
 
-int PROBE_NAME(pthread_mutex_timedlock)(pthread_mutex_t *mutex,
-		const struct timespec *abs_timeout) {
+HANDLER_DEF(int, pthread_mutex_timedlock, pthread_mutex_t *mutex, const struct timespec *abs_timeout)
+{
 	static int (*pthread_mutex_timedlockp)(pthread_mutex_t *mutex,
 			const struct timespec *abs_timeout);
 
@@ -133,7 +138,7 @@ int PROBE_NAME(pthread_mutex_timedlock)(pthread_mutex_t *mutex,
 			  API_ID_pthread_mutex_timedlock,
 			  "pp", voidp_to_uint64(mutex),
 			  voidp_to_uint64(abs_timeout));
-	PACK_COMMON_END('d', 0, 0, blockresult);
+	PACK_COMMON_END('d', 0, 0, call_type, caller);
 	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_START);
 	FLUSH_LOCAL_BUF();
 
@@ -150,7 +155,7 @@ int PROBE_NAME(pthread_mutex_timedlock)(pthread_mutex_t *mutex,
 			  API_ID_pthread_mutex_timedlock,
 			  "pp", voidp_to_uint64(mutex),
 			  voidp_to_uint64(abs_timeout));
-	PACK_COMMON_END('d', ret, errno, blockresult);
+	PACK_COMMON_END('d', ret, errno, call_type, caller);
 	PACK_SYNC(mutex, SYNC_PTHREAD_MUTEX, SYNC_API_ACQUIRE_WAIT_END);
 	FLUSH_LOCAL_BUF();
 
@@ -158,8 +163,10 @@ int PROBE_NAME(pthread_mutex_timedlock)(pthread_mutex_t *mutex,
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_mutex_timedlock, pthread_mutex_t *mutex, const struct timespec *abs_timeout)
 
-int PROBE_NAME(pthread_mutex_trylock)(pthread_mutex_t *mutex) {
+HANDLER_DEF(int , pthread_mutex_trylock, pthread_mutex_t *mutex)
+{
 	static int (*pthread_mutex_trylockp)(pthread_mutex_t *mutex);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_trylock, LIBPTHREAD);
@@ -167,12 +174,13 @@ int PROBE_NAME(pthread_mutex_trylock)(pthread_mutex_t *mutex) {
 	ret = pthread_mutex_trylockp(mutex);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_trylock,
-				 'd', ret, mutex, SYNC_PTHREAD_MUTEX,
+				 'd', ret, mutex, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_TRY_ACQUIRE, "p",
 				 voidp_to_uint64(mutex));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_mutex_trylock, pthread_mutex_t *mutex)
 
 int real_pthread_mutex_unlock(pthread_mutex_t *mutex) {
 	static int (*pthread_mutex_unlockp)(pthread_mutex_t *mutex);
@@ -182,7 +190,8 @@ int real_pthread_mutex_unlock(pthread_mutex_t *mutex) {
 	return pthread_mutex_unlockp(mutex);
 }
 
-int PROBE_NAME(pthread_mutex_unlock)(pthread_mutex_t *mutex) {
+HANDLER_DEF(int , pthread_mutex_unlock, pthread_mutex_t *mutex)
+{
 	static int (*pthread_mutex_unlockp)(pthread_mutex_t *mutex);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutex_unlock, LIBPTHREAD);
@@ -190,14 +199,16 @@ int PROBE_NAME(pthread_mutex_unlock)(pthread_mutex_t *mutex) {
 	ret = pthread_mutex_unlockp(mutex);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_unlock,
-				 'd', ret, mutex, SYNC_PTHREAD_MUTEX,
+				 'd', ret, mutex, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_RELEASE, "p",
 				 voidp_to_uint64(mutex));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_mutex_unlock, pthread_mutex_t *mutex)
 
-int PROBE_NAME(pthread_mutexattr_init)(pthread_mutexattr_t *attr) {
+HANDLER_DEF(int , pthread_mutexattr_init, pthread_mutexattr_t *attr)
+{
 	static int (*pthread_mutexattr_initp)(pthread_mutexattr_t *attr);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_init, LIBPTHREAD);
@@ -205,14 +216,16 @@ int PROBE_NAME(pthread_mutexattr_init)(pthread_mutexattr_t *attr) {
 	ret = pthread_mutexattr_initp(attr);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_init,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "p",
 				 voidp_to_uint64(attr));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_mutexattr_init, pthread_mutexattr_t *attr)
 
-int PROBE_NAME(pthread_mutexattr_destroy)(pthread_mutexattr_t *attr) {
+HANDLER_DEF(int , pthread_mutexattr_destroy, pthread_mutexattr_t *attr)
+{
 	static int (*pthread_mutexattr_destroyp)(pthread_mutexattr_t *attr);
 
 	BEFORE_ORIGINAL_SYNC(pthread_mutexattr_destroy, LIBPTHREAD);
@@ -220,15 +233,16 @@ int PROBE_NAME(pthread_mutexattr_destroy)(pthread_mutexattr_t *attr) {
 	ret = pthread_mutexattr_destroyp(attr);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_destroy,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "p",
 				 voidp_to_uint64(attr));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_mutexattr_destroy, pthread_mutexattr_t *attr)
 
-int PROBE_NAME(pthread_mutexattr_getprioceiling)(const pthread_mutexattr_t *attr,
-		int *prioceiling) {
+HANDLER_DEF(int, pthread_mutexattr_getprioceiling, const pthread_mutexattr_t *attr, int *prioceiling)
+{
 	static int (*pthread_mutexattr_getprioceilingp)(
 			const pthread_mutexattr_t *attr, int *prioceiling);
 
@@ -237,16 +251,17 @@ int PROBE_NAME(pthread_mutexattr_getprioceiling)(const pthread_mutexattr_t *attr
 	ret = pthread_mutexattr_getprioceilingp(attr, prioceiling);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_getprioceiling,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(attr),
 				 voidp_to_uint64(prioceiling));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_mutexattr_getprioceiling, const pthread_mutexattr_t *attr, int *prioceiling)
 
-int PROBE_NAME(pthread_mutexattr_setprioceiling)(pthread_mutexattr_t *attr,
-		int prioceiling) {
+HANDLER_DEF(int, pthread_mutexattr_setprioceiling, pthread_mutexattr_t *attr, int prioceiling)
+{
 	static int (*pthread_mutexattr_setprioceilingp)(
 			pthread_mutexattr_t *attr, int prioceiling);
 
@@ -255,15 +270,16 @@ int PROBE_NAME(pthread_mutexattr_setprioceiling)(pthread_mutexattr_t *attr,
 	ret = pthread_mutexattr_setprioceilingp(attr, prioceiling);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_setprioceiling,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "pd", voidp_to_uint64(attr),
 				 prioceiling);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_mutexattr_setprioceiling, pthread_mutexattr_t *attr, int prioceiling)
 
-int PROBE_NAME(pthread_mutexattr_getprotocol)(const pthread_mutexattr_t *attr,
-		int *protocol) {
+HANDLER_DEF(int, pthread_mutexattr_getprotocol, const pthread_mutexattr_t *attr, int *protocol)
+{
 	static int (*pthread_mutexattr_getprotocolp)(
 			const pthread_mutexattr_t *attr, int *protocol);
 
@@ -272,16 +288,17 @@ int PROBE_NAME(pthread_mutexattr_getprotocol)(const pthread_mutexattr_t *attr,
 	ret = pthread_mutexattr_getprotocolp(attr, protocol);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_getprotocol,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(attr),
 				 voidp_to_uint64(protocol));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_mutexattr_getprotocol, const pthread_mutexattr_t *attr, int *protocol)
 
-int PROBE_NAME(pthread_mutexattr_setprotocol)(pthread_mutexattr_t *attr,
-		int protocol) {
+HANDLER_DEF(int, pthread_mutexattr_setprotocol, pthread_mutexattr_t *attr, int protocol)
+{
 	static int (*pthread_mutexattr_setprotocolp)(
 			pthread_mutexattr_t *attr, int protocol);
 
@@ -290,15 +307,16 @@ int PROBE_NAME(pthread_mutexattr_setprotocol)(pthread_mutexattr_t *attr,
 	ret = pthread_mutexattr_setprotocolp(attr, protocol);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_setprotocol,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "pd", voidp_to_uint64(attr),
 				 protocol);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_mutexattr_setprotocol, pthread_mutexattr_t *attr, int protocol)
 
-int PROBE_NAME(pthread_mutexattr_getpshared)(const pthread_mutexattr_t *attr,
-		int *pshared) {
+HANDLER_DEF(int, pthread_mutexattr_getpshared, const pthread_mutexattr_t *attr, int *pshared)
+{
 	static int (*pthread_mutexattr_getpsharedp)(
 			const pthread_mutexattr_t *attr, int *pshared);
 
@@ -307,16 +325,17 @@ int PROBE_NAME(pthread_mutexattr_getpshared)(const pthread_mutexattr_t *attr,
 	ret = pthread_mutexattr_getpsharedp(attr, pshared);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_getpshared,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(attr),
 				 voidp_to_uint64(pshared));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_mutexattr_getpshared, const pthread_mutexattr_t *attr, int *pshared)
 
-int PROBE_NAME(pthread_mutexattr_setpshared)(pthread_mutexattr_t *attr,
-		int pshared) {
+HANDLER_DEF(int, pthread_mutexattr_setpshared, pthread_mutexattr_t *attr, int pshared)
+{
 	static int (*pthread_mutexattr_setpsharedp)(
 			pthread_mutexattr_t *attr, int pshared);
 
@@ -325,14 +344,16 @@ int PROBE_NAME(pthread_mutexattr_setpshared)(pthread_mutexattr_t *attr,
 	ret = pthread_mutexattr_setpsharedp(attr, pshared);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_setpshared,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "pd", voidp_to_uint64(attr),
 				 pshared);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_mutexattr_setpshared, pthread_mutexattr_t *attr, int pshared)
 
-int PROBE_NAME(pthread_mutexattr_gettype)(const pthread_mutexattr_t *attr, int *type) {
+HANDLER_DEF(int , pthread_mutexattr_gettype, const pthread_mutexattr_t *attr, int *type)
+{
 	static int (*pthread_mutexattr_gettypep)(
 			const pthread_mutexattr_t *attr, int *type);
 
@@ -341,15 +362,17 @@ int PROBE_NAME(pthread_mutexattr_gettype)(const pthread_mutexattr_t *attr, int *
 	ret = pthread_mutexattr_gettypep(attr, type);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_gettype,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(attr),
 				 voidp_to_uint64(type));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_mutexattr_gettype, const pthread_mutexattr_t *attr, int *type)
 
-int PROBE_NAME(pthread_mutexattr_settype)(pthread_mutexattr_t *attr, int type) {
+HANDLER_DEF(int , pthread_mutexattr_settype, pthread_mutexattr_t *attr, int type)
+{
 	static int (*pthread_mutexattr_settypep)(
 			pthread_mutexattr_t *attr, int type);
 
@@ -358,13 +381,14 @@ int PROBE_NAME(pthread_mutexattr_settype)(pthread_mutexattr_t *attr, int type) {
 	ret = pthread_mutexattr_settypep(attr, type);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_settype,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
 				 SYNC_API_OTHER, "pd",
 				 voidp_to_uint64(attr),
 				 type);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_mutexattr_settype, pthread_mutexattr_t *attr, int type)
 
 /*
 int pthread_mutex_getprioceiling(const pthread_mutex_t *mutex,
@@ -373,7 +397,8 @@ int pthread_mutex_setprioceiling(pthread_mutex_t *mutex,
 		int prioceiling, int *old_ceiling);
 */
 
-int PROBE_NAME(pthread_cond_init)(pthread_cond_t *cond, const pthread_condattr_t *attr) {
+HANDLER_DEF(int , pthread_cond_init, pthread_cond_t *cond, const pthread_condattr_t *attr)
+{
 	static int (*pthread_cond_initp)(pthread_cond_t *cond,
 			const pthread_condattr_t *attr);
 
@@ -382,15 +407,17 @@ int PROBE_NAME(pthread_cond_init)(pthread_cond_t *cond, const pthread_condattr_t
 	ret = pthread_cond_initp(cond, attr);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_init,
-				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE,
+				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE, call_type, caller,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(cond),
 				 voidp_to_uint64(attr));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_cond_init, pthread_cond_t *cond, const pthread_condattr_t *attr)
 
-int PROBE_NAME(pthread_cond_destroy)(pthread_cond_t *cond) {
+HANDLER_DEF(int , pthread_cond_destroy, pthread_cond_t *cond)
+{
 	static int (*pthread_cond_destroyp)(pthread_cond_t *cond);
 
 	BEFORE_ORIGINAL_SYNC(pthread_cond_destroy, LIBPTHREAD);
@@ -398,14 +425,16 @@ int PROBE_NAME(pthread_cond_destroy)(pthread_cond_t *cond) {
 	ret = pthread_cond_destroyp(cond);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_destroy,
-				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE,
+				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE, call_type, caller,
 				 SYNC_API_OTHER, "p",
 				 voidp_to_uint64(cond));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_cond_destroy, pthread_cond_t *cond)
 
-int PROBE_NAME(pthread_cond_wait)(pthread_cond_t *cond, pthread_mutex_t *mutex) {
+HANDLER_DEF(int , pthread_cond_wait, pthread_cond_t *cond, pthread_mutex_t *mutex)
+{
 	static int (*pthread_cond_waitp)(pthread_cond_t *cond,
 			pthread_mutex_t *mutex);
 
@@ -421,7 +450,7 @@ int PROBE_NAME(pthread_cond_wait)(pthread_cond_t *cond, pthread_mutex_t *mutex) 
 			  "pp",
 			  voidp_to_uint64(cond),
 			  voidp_to_uint64(mutex));
-	PACK_COMMON_END('d', 0, 0, blockresult);
+	PACK_COMMON_END('d', 0, 0, call_type, caller);
 	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_START);
 	FLUSH_LOCAL_BUF();
 
@@ -439,7 +468,7 @@ int PROBE_NAME(pthread_cond_wait)(pthread_cond_t *cond, pthread_mutex_t *mutex) 
 			  "pp",
 			  voidp_to_uint64(cond),
 			  voidp_to_uint64(mutex));
-	PACK_COMMON_END('d', ret, errno, blockresult);
+	PACK_COMMON_END('d', ret, errno, call_type, caller);
 	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
 	FLUSH_LOCAL_BUF();
 
@@ -447,9 +476,10 @@ int PROBE_NAME(pthread_cond_wait)(pthread_cond_t *cond, pthread_mutex_t *mutex) 
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_cond_wait, pthread_cond_t *cond, pthread_mutex_t *mutex)
 
-int PROBE_NAME(pthread_cond_timedwait)(pthread_cond_t *cond, pthread_mutex_t *mutex,
-		const struct timespec *abstime) {
+HANDLER_DEF(int, pthread_cond_timedwait, pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime)
+{
 	static int (*pthread_cond_timedwaitp)(pthread_cond_t *cond,
 				pthread_mutex_t *mutex, const struct timespec *abstime);
 
@@ -466,7 +496,7 @@ int PROBE_NAME(pthread_cond_timedwait)(pthread_cond_t *cond, pthread_mutex_t *mu
 			  voidp_to_uint64(cond),
 			  voidp_to_uint64(mutex),
 			  voidp_to_uint64(abstime));
-	PACK_COMMON_END('d', 0, 0, blockresult);
+	PACK_COMMON_END('d', 0, 0, call_type, caller);
 	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_START);
 	FLUSH_LOCAL_BUF();
 
@@ -485,7 +515,7 @@ int PROBE_NAME(pthread_cond_timedwait)(pthread_cond_t *cond, pthread_mutex_t *mu
 			  voidp_to_uint64(cond),
 			  voidp_to_uint64(mutex),
 			  voidp_to_uint64(abstime));
-	PACK_COMMON_END('d', ret, errno, blockresult);
+	PACK_COMMON_END('d', ret, errno, call_type, caller);
 	PACK_SYNC(cond, SYNC_PTHREAD_COND_VARIABLE, SYNC_API_COND_WAIT_END);
 	FLUSH_LOCAL_BUF();
 
@@ -493,8 +523,10 @@ int PROBE_NAME(pthread_cond_timedwait)(pthread_cond_t *cond, pthread_mutex_t *mu
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_cond_timedwait, pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime)
 
-int PROBE_NAME(pthread_cond_signal)(pthread_cond_t *cond) {
+HANDLER_DEF(int , pthread_cond_signal, pthread_cond_t *cond)
+{
 	static int (*pthread_cond_signalp)(pthread_cond_t *cond);
 
 	BEFORE_ORIGINAL_SYNC(pthread_cond_signal, LIBPTHREAD);
@@ -502,13 +534,15 @@ int PROBE_NAME(pthread_cond_signal)(pthread_cond_t *cond) {
 	ret = pthread_cond_signalp(cond);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_signal,
-				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE,
+				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE, call_type, caller,
 				 SYNC_API_NOTIFY, "p", voidp_to_uint64(cond));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_cond_signal, pthread_cond_t *cond)
 
-int PROBE_NAME(pthread_cond_broadcast)(pthread_cond_t *cond) {
+HANDLER_DEF(int , pthread_cond_broadcast, pthread_cond_t *cond)
+{
 	static int (*pthread_cond_broadcastp)(pthread_cond_t *cond);
 
 	BEFORE_ORIGINAL_SYNC(pthread_cond_broadcast, LIBPTHREAD);
@@ -516,8 +550,9 @@ int PROBE_NAME(pthread_cond_broadcast)(pthread_cond_t *cond) {
 	ret = pthread_cond_broadcastp(cond);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_broadcast,
-				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE,
+				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE, call_type, caller,
 				 SYNC_API_NOTIFY_ALL, "p", voidp_to_uint64(cond));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_cond_broadcast, pthread_cond_t *cond)

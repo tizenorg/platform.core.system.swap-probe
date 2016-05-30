@@ -92,18 +92,21 @@ void getAddress(const struct sockaddr *sa, char *address) {
 }
 
 //FD
-int PROBE_NAME(socket)(int domain, int type, int protocol) {
+HANDLER_DEF(int , socket, int domain, int type, int protocol)
+{
 	static int (*socketp)(int domain, int type, int protocol);
 	BEFORE_ORIGINAL_SOCK(socket, LIBC);
 	ret = socketp(domain, type, protocol);
 
-	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
-				 "ddd", domain, type, protocol);
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN,
+				 call_type, caller, info, "ddd", domain, type, protocol);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , socket, int domain, int type, int protocol)
 
-int PROBE_NAME(accept)(int socket, struct sockaddr *address, socklen_t *address_len) {
+HANDLER_DEF(int, accept, int socket, struct sockaddr *address, socklen_t *address_len)
+{
 
 	static int (*acceptp)(int socket, struct sockaddr *address,
 			socklen_t *address_len);
@@ -114,7 +117,7 @@ int PROBE_NAME(accept)(int socket, struct sockaddr *address, socklen_t *address_
 	getAddress(address, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, socket,
-						 SOCKET_API_ACCEPT_START, info,
+						 SOCKET_API_ACCEPT_START, call_type, caller, info,
 						 "dsp", socket, callAddress,
 						 voidp_to_uint64(address_len));
 
@@ -124,14 +127,16 @@ int PROBE_NAME(accept)(int socket, struct sockaddr *address, socklen_t *address_
 	getAddress(address, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, socket,
-					       SOCKET_API_ACCEPT_END, info,
+					       SOCKET_API_ACCEPT_END, call_type, caller, info,
 					       "dsp", socket, callAddress,
 					       voidp_to_uint64(address_len));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, accept, int socket, struct sockaddr *address, socklen_t *address_len)
 
-int PROBE_NAME(accept4)(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags) {
+HANDLER_DEF(int, accept4, int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags)
+{
 	static int (*accept4p)(int sockfd, struct sockaddr *addr,
 			socklen_t *addrlen, int flags);
 
@@ -141,7 +146,7 @@ int PROBE_NAME(accept4)(int sockfd, struct sockaddr *addr, socklen_t *addrlen, i
 	getAddress(addr, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, sockfd,
-						 SOCKET_API_ACCEPT_START, info,
+						 SOCKET_API_ACCEPT_START, call_type, caller, info,
 						 "dspd", sockfd, callAddress,
 						 voidp_to_uint64(addrlen),
 						 flags);
@@ -158,8 +163,10 @@ int PROBE_NAME(accept4)(int sockfd, struct sockaddr *addr, socklen_t *addrlen, i
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, accept4, int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags)
 
-int PROBE_NAME(connect)(int socket, const struct sockaddr *address, socklen_t address_len) {
+HANDLER_DEF(int, connect, int socket, const struct sockaddr *address, socklen_t address_len)
+{
 	static int (*connectp)(int socket, const struct sockaddr *address,
 			socklen_t address_len);
 
@@ -172,13 +179,15 @@ int PROBE_NAME(connect)(int socket, const struct sockaddr *address, socklen_t ad
 	getAddress(address, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_CONNECT,
-			info, "dsd",
+			call_type, caller, info, "dsd",
 			socket, callAddress, address_len);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, connect, int socket, const struct sockaddr *address, socklen_t address_len)
 
-int PROBE_NAME(shutdown)(int socket, int how) {
+HANDLER_DEF(int, shutdown, int socket, int how)
+{
 	static int (*shutdownp)(int socket, int how);
 
 	BEFORE_ORIGINAL_SOCK(shutdown, LIBC);
@@ -186,12 +195,14 @@ int PROBE_NAME(shutdown)(int socket, int how) {
 	ret = shutdownp(socket, how);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_FD_CLOSE,
-			info, "dd", socket, how);
+			call_type, caller, info, "dd", socket, how);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, shutdown, int socket, int how)
 
-int PROBE_NAME(bind)(int socket, const struct sockaddr *address, socklen_t address_len) {
+HANDLER_DEF(int, bind, int socket, const struct sockaddr *address, socklen_t address_len)
+{
 	static int (*bindp)(int socket, const struct sockaddr *address,
 			socklen_t address_len);
 
@@ -204,23 +215,27 @@ int PROBE_NAME(bind)(int socket, const struct sockaddr *address, socklen_t addre
 	getAddress(address, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_BIND,
-			info, "dsd", socket, callAddress, address_len);
+			call_type, caller, info, "dsd", socket, callAddress, address_len);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, bind, int socket, const struct sockaddr *address, socklen_t address_len)
 
-int PROBE_NAME(listen)(int socket, int backlog) {
+HANDLER_DEF(int, listen, int socket, int backlog)
+{
 	static int (*listenp)(int socket, int backlog);
 	BEFORE_ORIGINAL_SOCK(listen, LIBC);
 	ret = listenp(socket, backlog);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_LISTEN,
-				 info, "dd", socket, backlog);
+				call_type, caller,  info, "dd", socket, backlog);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, listen, int socket, int backlog)
 
-ssize_t PROBE_NAME(send)(int socket, const void *message, size_t length, int flags) {
+HANDLER_DEF(ssize_t, send, int socket, const void *message, size_t length, int flags)
+{
 	static ssize_t (*sendp)(int socket, const void *message, size_t length,
 			int flags);
 	ssize_t sret, result;
@@ -229,7 +244,7 @@ ssize_t PROBE_NAME(send)(int socket, const void *message, size_t length, int fla
 	char *messagP = (char *)message;
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
-						  SOCKET_API_SEND_START, info,
+						  SOCKET_API_SEND_START, call_type, caller, info,
 						  "dpdd", socket,
 						  voidp_to_uint64(messagP),
 						  length, flags);
@@ -243,14 +258,16 @@ ssize_t PROBE_NAME(send)(int socket, const void *message, size_t length, int fla
 	info.msg_buf = messagP;
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
-					       SOCKET_API_SEND_END, info,
+					       SOCKET_API_SEND_END, call_type, caller, info,
 					       "dpdd", socket,
 					       voidp_to_uint64(messagP),
 					       length, flags);
 	return sret;
 }
+HANDLER_WRAPPERS(ssize_t, send, int socket, const void *message, size_t length, int flags)
 
-ssize_t PROBE_NAME(recv)(int socket, void *buffer, size_t length, int flags) {
+HANDLER_DEF(ssize_t, recv, int socket, void *buffer, size_t length, int flags)
+{
 	static ssize_t (*recvp)(int socket, void *buffer, size_t length, int flags);
 	ssize_t sret, result;
 
@@ -259,7 +276,7 @@ ssize_t PROBE_NAME(recv)(int socket, void *buffer, size_t length, int flags) {
 	char *bufferP = (char *)buffer;
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
-						 SOCKET_API_RECV_START, info,
+						 SOCKET_API_RECV_START, call_type, caller, info,
 						 "dpdd", socket,
 						 voidp_to_uint64(bufferP),
 						 length, flags);
@@ -273,15 +290,16 @@ ssize_t PROBE_NAME(recv)(int socket, void *buffer, size_t length, int flags) {
 	info.msg_buf = bufferP;
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
-					       SOCKET_API_RECV_END, info,
+					       SOCKET_API_RECV_END, call_type, caller, info,
 					       "dpdd", socket,
 					       voidp_to_uint64(bufferP),
 					       length, flags);
 	return sret;
 }
+HANDLER_WRAPPERS(ssize_t, recv, int socket, void *buffer, size_t length, int flags)
 
-ssize_t PROBE_NAME(sendto)(int socket, const void *message, size_t length, int flags,
-		const struct sockaddr *dest_addr, socklen_t dest_len) {
+HANDLER_DEF(ssize_t, sendto, int socket, const void *message, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t dest_len)
+{
 	static ssize_t (*sendtop)(int socket, const void *message, size_t length,
 			int flags, const struct sockaddr *dest_addr, socklen_t dest_len);
 	ssize_t sret, result;
@@ -292,7 +310,7 @@ ssize_t PROBE_NAME(sendto)(int socket, const void *message, size_t length, int f
 	info.sock = (struct sockaddr *) dest_addr;
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
-						 SOCKET_API_SEND_START, info,
+						 SOCKET_API_SEND_START, call_type, caller, info,
 						 "dpddpd", socket,
 						 voidp_to_uint64(bufferP),
 						 length, flags,
@@ -308,16 +326,17 @@ ssize_t PROBE_NAME(sendto)(int socket, const void *message, size_t length, int f
 	info.msg_buf = bufferP;
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
-					       SOCKET_API_SEND_END, info,
+					       SOCKET_API_SEND_END, call_type, caller, info,
 					       "dpddpd", socket,
 					       voidp_to_uint64(bufferP),
 					       length, flags,
 					       voidp_to_uint64(dest_addr), dest_len);
 	return sret;
 }
+HANDLER_WRAPPERS(ssize_t, sendto, int socket, const void *message, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t dest_len)
 
-ssize_t PROBE_NAME(recvfrom)(int socket, void *buffer, size_t length, int flags,
-		struct sockaddr *address, socklen_t *address_len) {
+HANDLER_DEF(ssize_t, recvfrom, int socket, void *buffer, size_t length, int flags, struct sockaddr *address, socklen_t *address_len)
+{
 	static ssize_t (*recvfromp)(int socket, void *buffer, size_t length,
 			int flags, struct sockaddr *address, socklen_t *address_len);
 	ssize_t sret, result;
@@ -327,7 +346,7 @@ ssize_t PROBE_NAME(recvfrom)(int socket, void *buffer, size_t length, int flags,
 	char *bufferP = (char *)buffer;
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
-						 SOCKET_API_RECV_START, info,
+						 SOCKET_API_RECV_START, call_type, caller, info,
 						 "dpddpp", socket,
 						 voidp_to_uint64(bufferP),
 						 length, flags,
@@ -345,7 +364,7 @@ ssize_t PROBE_NAME(recvfrom)(int socket, void *buffer, size_t length, int flags,
 	info.msg_buf = bufferP;
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
-					       SOCKET_API_RECV_END, info,
+					       SOCKET_API_RECV_END, call_type, caller, info,
 					       "dpddpp", socket,
 					       voidp_to_uint64(bufferP),
 					       length, flags,
@@ -353,8 +372,10 @@ ssize_t PROBE_NAME(recvfrom)(int socket, void *buffer, size_t length, int flags,
 					       voidp_to_uint64(address_len));
 	return sret;
 }
+HANDLER_WRAPPERS(ssize_t, recvfrom, int socket, void *buffer, size_t length, int flags, struct sockaddr *address, socklen_t *address_len)
 
-ssize_t PROBE_NAME(recvmsg)(int socket, struct msghdr *message, int flags) {
+HANDLER_DEF(ssize_t, recvmsg, int socket, struct msghdr *message, int flags)
+{
 	static ssize_t (*recvmsgp)(int socket, struct msghdr *message, int flags);
 	ssize_t sret;
 
@@ -363,7 +384,7 @@ ssize_t PROBE_NAME(recvmsg)(int socket, struct msghdr *message, int flags) {
 	int* bufferP = (int*) message->msg_name;
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
-						 SOCKET_API_RECV_START, info,
+						 SOCKET_API_RECV_START, call_type, caller, info,
 						 "dpd", socket,
 						 voidp_to_uint64(message),
 						 flags);
@@ -389,14 +410,16 @@ ssize_t PROBE_NAME(recvmsg)(int socket, struct msghdr *message, int flags) {
 	}
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
-					       SOCKET_API_RECV_END, info, "dpd",
+					       SOCKET_API_RECV_END, call_type, caller, info, "dpd",
 					       socket, voidp_to_uint64(bufferP),
 					       flags);
 	free(out);
 	return sret;
 }
+HANDLER_WRAPPERS(ssize_t, recvmsg, int socket, struct msghdr *message, int flags)
 
-ssize_t PROBE_NAME(sendmsg)(int socket, const struct msghdr *message, int flags) {
+HANDLER_DEF(ssize_t, sendmsg, int socket, const struct msghdr *message, int flags)
+{
 	static ssize_t (*sendmsgp)(int socket, const struct msghdr *message,
 			int flags);
 	ssize_t sret;
@@ -406,7 +429,7 @@ ssize_t PROBE_NAME(sendmsg)(int socket, const struct msghdr *message, int flags)
 	int* bufferP = (int*) message->msg_name;
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('x', NULL, OBJ_DUMMY, socket,
-						 SOCKET_API_SEND_START, info,
+						 SOCKET_API_SEND_START, call_type, caller, info,
 						 "dpd", socket,
 						 voidp_to_uint64(message),
 						 flags);
@@ -430,7 +453,7 @@ ssize_t PROBE_NAME(sendmsg)(int socket, const struct msghdr *message, int flags)
 	}
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('x', sret, OBJ_DUMMY, socket,
-					       SOCKET_API_SEND_END, info, "dpd",
+					       SOCKET_API_SEND_END, call_type, caller, info, "dpd",
 					       socket, voidp_to_uint64(bufferP),
 					       flags);
 	free(out);
@@ -447,7 +470,7 @@ int PROBE_NAME(getsockopt)(int socket, int level, int option_name, void *option_
 	ret = getsockoptp(socket, level, option_name, option_value, option_len);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_OTHER,
-				 info, "dddpp", socket, level, option_name,
+				 call_type, caller,  info, "dddpp", socket, level, option_name,
 				 voidp_to_uint64(option_value),
 				 voidp_to_uint64(option_len));
 
@@ -464,13 +487,15 @@ int PROBE_NAME(setsockopt)(int socket, int level, int option_name, const void *o
 	ret = setsockoptp(socket, level, option_name, option_value, option_len);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket, SOCKET_API_OTHER,
-				 info, "dddpd", socket, level, option_name,
+				 call_type, caller,  info, "dddpd", socket, level, option_name,
 				 voidp_to_uint64(option_value), option_len);
 
 	return ret;
 }
+HANDLER_WRAPPERS(ssize_t, sendmsg, int socket, const struct msghdr *message, int flags)
 
-int PROBE_NAME(getpeername)(int fd, struct sockaddr *addr, socklen_t *len) {
+HANDLER_DEF(int, getpeername, int fd, struct sockaddr *addr, socklen_t *len)
+{
 	static int (*getpeernamep)(int s, struct sockaddr *addr, socklen_t *len);
 
 	BEFORE_ORIGINAL_SOCK(getpeername, LIBC);
@@ -482,12 +507,14 @@ int PROBE_NAME(getpeername)(int fd, struct sockaddr *addr, socklen_t *len) {
 	getAddress(addr, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, fd, SOCKET_API_OTHER,
-				 info, "dsp", fd, callAddress,
+				 call_type, caller,  info, "dsp", fd, callAddress,
 				 voidp_to_uint64(len));
 	return ret;
 }
+HANDLER_WRAPPERS(int, getpeername, int fd, struct sockaddr *addr, socklen_t *len)
 
-int PROBE_NAME(getsockname)(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
+HANDLER_DEF(int, getsockname, int sockfd, struct sockaddr *addr, socklen_t *addrlen)
+{
 	static int (*getsocknamep)(int sockfd, struct sockaddr *addr,
 			socklen_t *addrlen);
 
@@ -500,13 +527,15 @@ int PROBE_NAME(getsockname)(int sockfd, struct sockaddr *addr, socklen_t *addrle
 	getAddress(addr, callAddress);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, sockfd, SOCKET_API_OTHER,
-				 info, "dsp", sockfd, callAddress,
+				 call_type, caller,  info, "dsp", sockfd, callAddress,
 				 voidp_to_uint64(addrlen));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, getsockname, int sockfd, struct sockaddr *addr, socklen_t *addrlen)
 
-int PROBE_NAME(socketpair)(int domain, int type, int protocol, int socket_vector[2]) {
+HANDLER_DEF(int, socketpair, int domain, int type, int protocol, int socket_vector[2])
+{
 	static int (*socketpairp)(int domain, int type, int protocol,
 			int socket_vector[2]);
 
@@ -515,13 +544,15 @@ int PROBE_NAME(socketpair)(int domain, int type, int protocol, int socket_vector
 	ret = socketpairp(domain, type, protocol, socket_vector);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, socket_vector[0],
-			SOCKET_API_FD_OPEN, info, "ddddd",
+			SOCKET_API_FD_OPEN, call_type, caller, info, "ddddd",
 			domain, type, protocol, socket_vector[0], socket_vector[1]);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, socketpair, int domain, int type, int protocol, int socket_vector[2])
 
-int PROBE_NAME(sockatmark)(int __fd) {
+HANDLER_DEF(int, sockatmark, int __fd)
+{
 	static int (*sockatmarkp)(int __fd);
 
 	BEFORE_ORIGINAL_SOCK(sockatmark, LIBC);
@@ -529,19 +560,21 @@ int PROBE_NAME(sockatmark)(int __fd) {
 	ret = sockatmarkp(__fd);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, __fd,
-			SOCKET_API_OTHER, info, "d", __fd);
+			SOCKET_API_OTHER, call_type, caller, info, "d", __fd);
 	return ret;
 }
+HANDLER_WRAPPERS(int, sockatmark, int __fd)
 
-int PROBE_NAME(isfdtype)(int __fd, int __fdtype) {
+HANDLER_DEF(int, isfdtype, int __fd, int __fdtype)
+{
 	static int (*isfdtypep)(int __fd, int __fdtype);
 
 	BEFORE_ORIGINAL_SOCK(isfdtype, LIBC);
 
 	ret = isfdtypep(__fd, __fdtype);
 
-	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, __fd, SOCKET_API_OTHER, info,
-				 "dd", __fd, __fdtype);
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, __fd, SOCKET_API_OTHER, 
+                             call_type, caller, info, "dd", __fd, __fdtype);
 	return ret;
 }
 
@@ -553,7 +586,7 @@ int PROBE_NAME(select)(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exce
 	BEFORE_ORIGINAL_SOCK(select, LIBC);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, 0,
-						 SOCKET_API_EVENT_START, info,
+						 SOCKET_API_EVENT_START, call_type, caller, info,
 						 "dpppp", nfds,
 						 voidp_to_uint64(readfds),
 						 voidp_to_uint64(writefds),
@@ -563,7 +596,7 @@ int PROBE_NAME(select)(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exce
 	ret = selectp(nfds, readfds, writefds, exceptfds, timeout);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, 0,
-					       SOCKET_API_EVENT_END, info,
+					       SOCKET_API_EVENT_END, call_type, caller, info,
 					       "dpppp", nfds,
 					       voidp_to_uint64(readfds),
 					       voidp_to_uint64(writefds),
@@ -582,7 +615,7 @@ int PROBE_NAME(pselect)(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exc
 	BEFORE_ORIGINAL_SOCK(pselect, LIBC);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, 0,
-						 SOCKET_API_EVENT_START, info,
+						 SOCKET_API_EVENT_START, call_type, caller, info,
 						 "dppppp",nfds,
 						 voidp_to_uint64(readfds),
 						 voidp_to_uint64(writefds),
@@ -593,7 +626,7 @@ int PROBE_NAME(pselect)(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exc
 	ret = pselectp(nfds, readfds, writefds, exceptfds, ntimeout, sigmask);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, 0,
-					       SOCKET_API_EVENT_END, info,
+					       SOCKET_API_EVENT_END, call_type, caller, info,
 					       "dppppp", nfds,
 					       voidp_to_uint64(readfds),
 					       voidp_to_uint64(writefds),
@@ -603,21 +636,23 @@ int PROBE_NAME(pselect)(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exc
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, isfdtype, int __fd, int __fdtype)
 
-int PROBE_NAME(poll)(struct pollfd *fds, nfds_t nfds, int timeout) {
+HANDLER_DEF(int, poll, struct pollfd *fds, nfds_t nfds, int timeout)
+{
 	static int (*pollp)(struct pollfd *ufds, unsigned int nfds, int timeout);
 
 	BEFORE_ORIGINAL_SOCK(poll, LIBC);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, fds->fd,
-						 SOCKET_API_EVENT_START, info,
+						 SOCKET_API_EVENT_START, call_type, caller, info,
 						 "pxd", voidp_to_uint64(fds),
 						 (uint64_t)(nfds), timeout);
 
 	ret = pollp(fds, nfds, timeout);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, fds->fd,
-					       SOCKET_API_EVENT_END, info,
+					       SOCKET_API_EVENT_END, call_type, caller, info,
 					       "pxd", voidp_to_uint64(fds),
 					       (uint64_t)(nfds), timeout);
 
@@ -632,7 +667,7 @@ int PROBE_NAME(ppoll)(struct pollfd *fds, nfds_t nfds, const struct timespec *ti
 	BEFORE_ORIGINAL_SOCK(ppoll, LIBC);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, fds->fd,
-						 SOCKET_API_EVENT_START, info,
+						 SOCKET_API_EVENT_START, call_type, caller, info,
 						 "pxpp",
 						 voidp_to_uint64(fds),
 						 (uint64_t)(nfds),
@@ -642,7 +677,7 @@ int PROBE_NAME(ppoll)(struct pollfd *fds, nfds_t nfds, const struct timespec *ti
 	ret = ppollp(fds, nfds, timeout_ts, sigmask);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, fds->fd,
-					       SOCKET_API_EVENT_END, info,
+					       SOCKET_API_EVENT_END, call_type, caller, info,
 					       "pxpp",
 					       voidp_to_uint64(fds),
 					       (uint64_t)(nfds),
@@ -651,26 +686,30 @@ int PROBE_NAME(ppoll)(struct pollfd *fds, nfds_t nfds, const struct timespec *ti
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, poll, struct pollfd *fds, nfds_t nfds, int timeout)
 
-int PROBE_NAME(epoll_create)(int __size) {
+HANDLER_DEF(int, epoll_create, int __size)
+{
 	static int (*epoll_createp)(int __size);
 	BEFORE_ORIGINAL_SOCK(epoll_create, LIBC);
 
 	ret = epoll_createp(__size);
 
-	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
-				 "d", __size);
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN,
+                             call_type, caller, info, "d", __size);
 	return ret;
 }
+HANDLER_WRAPPERS(int, epoll_create, int __size)
 
-int PROBE_NAME(epoll_create1)(int __flags) {
+HANDLER_DEF(int, epoll_create1, int __flags)
+{
 	static int (*epoll_create1p)(int __size);
 	BEFORE_ORIGINAL_SOCK(epoll_create1, LIBC);
 
 	ret = epoll_create1p(__flags);
 
-	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN, info,
-				 "d", __flags);
+	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, ret, SOCKET_API_FD_OPEN,
+                             call_type, caller,  info, "d", __flags);
 	return ret;
 }
 
@@ -681,7 +720,7 @@ int PROBE_NAME(epoll_wait)(int __epfd, struct epoll_event *__events, int __maxev
 	BEFORE_ORIGINAL_SOCK(epoll_wait, LIBC);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, __epfd,
-						 SOCKET_API_EVENT_START, info,
+						 SOCKET_API_EVENT_START, call_type, caller, info,
 						 "dpdd", __epfd,
 						 voidp_to_uint64(__events),
 						 __maxevents, __timeout);
@@ -689,7 +728,7 @@ int PROBE_NAME(epoll_wait)(int __epfd, struct epoll_event *__events, int __maxev
 	ret = epoll_waitp(__epfd, __events, __maxevents, __timeout);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, __epfd,
-					       SOCKET_API_EVENT_END, info,
+					       SOCKET_API_EVENT_END, call_type, caller, info,
 					       "dpdd", __epfd,
 					       voidp_to_uint64(__events),
 					       __maxevents, __timeout);
@@ -704,7 +743,7 @@ int PROBE_NAME(epoll_pwait)(int __epfd, struct epoll_event *__events, int __maxe
 	BEFORE_ORIGINAL_SOCK(epoll_pwait, LIBC);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_START('d', NULL, OBJ_DUMMY, __epfd,
-						 SOCKET_API_EVENT_START, info,
+						 SOCKET_API_EVENT_START, call_type, caller, info,
 						 "dpddp", __epfd,
 						 voidp_to_uint64(__events),
 						 __maxevents, __timeout,
@@ -713,7 +752,7 @@ int PROBE_NAME(epoll_pwait)(int __epfd, struct epoll_event *__events, int __maxe
 	ret = epoll_pwaitp(__epfd, __events, __maxevents, __timeout, __ss);
 
 	AFTER_ORIGINAL_LIBC_SOCK_WAIT_FUNC_END('d', ret, OBJ_DUMMY, __epfd,
-					       SOCKET_API_EVENT_END, info,
+					       SOCKET_API_EVENT_END, call_type, caller, info,
 					       "dpddp", __epfd,
 					       voidp_to_uint64(__events),
 					       __maxevents, __timeout,
@@ -721,8 +760,10 @@ int PROBE_NAME(epoll_pwait)(int __epfd, struct epoll_event *__events, int __maxe
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, epoll_create1, int __flags)
 
-int PROBE_NAME(epoll_ctl)(int __epfd, int __op, int __fd, struct epoll_event *__event) {
+HANDLER_DEF(int, epoll_ctl, int __epfd, int __op, int __fd, struct epoll_event *__event)
+{
 	static int (*epoll_ctlp)(int __epfd, int __op, int __fd,
 			struct epoll_event *__event);
 
@@ -731,15 +772,17 @@ int PROBE_NAME(epoll_ctl)(int __epfd, int __op, int __fd, struct epoll_event *__
 	ret = epoll_ctlp(__epfd, __op, __fd, __event);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, __fd, SOCKET_API_OTHER,
-				 info, "dddp", __epfd, __op, __fd,
+				 call_type, caller, info, "dddp", __epfd, __op, __fd,
 				 voidp_to_uint64(__event));
 	return ret;
 }
+HANDLER_WRAPPERS(int, epoll_ctl, int __epfd, int __op, int __fd, struct epoll_event *__event)
 
 #if 0
 //OPTION _//NO FD
 
-uint32_t PROBE_NAME(htonl)(uint32_t hostlong) {
+HANDLER_DEF(uint32_t, htonl, uint32_t hostlong)
+{
 	static uint32_t (*htonlp)(uint32_t hostlong);
 	uint32_t uret;
 
@@ -748,12 +791,14 @@ uint32_t PROBE_NAME(htonl)(uint32_t hostlong) {
 	uret = htonlp(hostlong);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "d", hostlong);
+			call_type, caller, info, "d", hostlong);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint32_t, htonl, uint32_t hostlong)
 
-uint16_t PROBE_NAME(htons)(uint16_t hostshort) {
+HANDLER_DEF(uint16_t , htons, uint16_t hostshort)
+{
 	static uint16_t (*htonsp)(uint16_t hostshort);
 	uint16_t uret;
 
@@ -762,12 +807,14 @@ uint16_t PROBE_NAME(htons)(uint16_t hostshort) {
 	uret = htonsp(hostshort);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', (uint32_t)uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "d", hostshort);
+			call_type, caller, info, "d", hostshort);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint16_t , htons, uint16_t hostshort)
 
-int PROBE_NAME(inet_aton)(const char *cp, struct in_addr *inp) {
+HANDLER_DEF(int , inet_aton, const char *cp, struct in_addr *inp)
+{
 	static int (*inet_atonp)(const char *cp, struct in_addr *inp);
 
 	BEFORE_ORIGINAL_SOCK(inet_aton, LIBC);
@@ -775,13 +822,15 @@ int PROBE_NAME(inet_aton)(const char *cp, struct in_addr *inp) {
 	ret = inet_atonp(cp, inp);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pp", voidp_to_uint64(cp),
+				 call_type, caller,  info, "pp", voidp_to_uint64(cp),
 				 voidp_to_uint64(inp));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , inet_aton, const char *cp, struct in_addr *inp)
 
-in_addr_t PROBE_NAME(inet_addr)(const char *cp) {
+HANDLER_DEF(in_addr_t , inet_addr, const char *cp)
+{
 	static in_addr_t (*inet_addrp)(const char *cp);
 	in_addr_t iret;
 
@@ -790,12 +839,14 @@ in_addr_t PROBE_NAME(inet_addr)(const char *cp) {
 	iret = inet_addrp(cp);
 
 	AFTER_ORIGINAL_LIBC_SOCK(iret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(cp));
+				 call_type, caller, info, "p", voidp_to_uint64(cp));
 
 	return iret;
 }
+HANDLER_WRAPPERS(in_addr_t , inet_addr, const char *cp)
 
-in_addr_t PROBE_NAME(inet_network)(const char *cp) {
+HANDLER_DEF(in_addr_t , inet_network, const char *cp)
+{
 	static in_addr_t (*inet_networkp)(const char *cp);
 	in_addr_t iret;
 
@@ -804,12 +855,14 @@ in_addr_t PROBE_NAME(inet_network)(const char *cp) {
 	iret = inet_networkp(cp);
 
 	AFTER_ORIGINAL_LIBC_SOCK(iret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(cp));
+				 call_type, caller, info, "p", voidp_to_uint64(cp));
 
 	return iret;
 }
+HANDLER_WRAPPERS(in_addr_t , inet_network, const char *cp)
 
-char *PROBE_NAME(inet_ntoa)(struct in_addr in) {
+HANDLER_DEF(char *, inet_ntoa, struct in_addr in)
+{
 	static char * (*inet_ntoap)(struct in_addr in);
 	char* sret;
 
@@ -818,12 +871,14 @@ char *PROBE_NAME(inet_ntoa)(struct in_addr in) {
 	sret = inet_ntoap(in);
 
 	AFTER_ORIGINAL_LIBC_SOCK(sret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "d", in.s_addr);
+				 call_type, caller, info, "d", in.s_addr);
 
 	return sret;
 }
+HANDLER_WRAPPERS(char *, inet_ntoa, struct in_addr in)
 
-uint32_t PROBE_NAME(ntohl)(uint32_t netlong) {
+HANDLER_DEF(uint32_t , ntohl, uint32_t netlong)
+{
 	static uint32_t (*ntohlp)(uint32_t netlong);
 	uint32_t uret;
 
@@ -832,12 +887,14 @@ uint32_t PROBE_NAME(ntohl)(uint32_t netlong) {
 	uret = ntohlp(netlong);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "d", netlong);
+				 call_type, caller, info, "d", netlong);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint32_t , ntohl, uint32_t netlong)
 
-uint16_t PROBE_NAME(ntohs)(uint16_t netshort) {
+HANDLER_DEF(uint16_t , ntohs, uint16_t netshort)
+{
 	static uint16_t (*ntohsp)(uint16_t netshort);
 	uint16_t uret;
 
@@ -846,12 +903,14 @@ uint16_t PROBE_NAME(ntohs)(uint16_t netshort) {
 	uret = ntohsp(netshort);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', (uint32_t)uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "d", netshort);
+				 call_type, caller, info, "d", netshort);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint16_t , ntohs, uint16_t netshort)
 
-in_addr_t PROBE_NAME(inet_lnaof)(struct in_addr in) {
+HANDLER_DEF(in_addr_t , inet_lnaof, struct in_addr in)
+{
 	static in_addr_t (*inet_lnaofp)(struct in_addr in);
 	in_addr_t iret;
 
@@ -860,12 +919,14 @@ in_addr_t PROBE_NAME(inet_lnaof)(struct in_addr in) {
 	iret = inet_lnaofp(in);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', iret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "d", in.s_addr);
+				 call_type, caller, info, "d", in.s_addr);
 
 	return iret;
 }
+HANDLER_WRAPPERS(in_addr_t , inet_lnaof, struct in_addr in)
 
-in_addr_t PROBE_NAME(inet_netof)(struct in_addr in) {
+HANDLER_DEF(in_addr_t , inet_netof, struct in_addr in)
+{
 	static in_addr_t (*inet_netofp)(struct in_addr in);
 	in_addr_t iret;
 
@@ -874,12 +935,14 @@ in_addr_t PROBE_NAME(inet_netof)(struct in_addr in) {
 	iret = inet_netofp(in);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', iret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "d", in.s_addr);
+				 call_type, caller, info, "d", in.s_addr);
 
 	return iret;
 }
+HANDLER_WRAPPERS(in_addr_t , inet_netof, struct in_addr in)
 
-const char *PROBE_NAME(inet_ntop)(int af, const void *src, char *dst, socklen_t size) {
+HANDLER_DEF(const char *, inet_ntop, int af, const void *src, char *dst, socklen_t size)
+{
 	static const char* (*inet_ntopp)(int af, const void *src, char *dst,
 			socklen_t size);
 	const char* cret;
@@ -889,12 +952,14 @@ const char *PROBE_NAME(inet_ntop)(int af, const void *src, char *dst, socklen_t 
 	cret = inet_ntopp(af, src, dst, size);
 
 	AFTER_ORIGINAL_LIBC_SOCK(cret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "dppd", af, voidp_to_uint64(src), voidp_to_uint64(dst), size);
+				 call_type, caller, info, "dppd", af, voidp_to_uint64(src), voidp_to_uint64(dst), size);
 
 	return cret;
 }
+HANDLER_WRAPPERS(const char *, inet_ntop, int af, const void *src, char *dst, socklen_t size)
 
-int PROBE_NAME(inet_pton)(int af, const char *src, void *dst) {
+HANDLER_DEF(int , inet_pton, int af, const char *src, void *dst)
+{
 	static int (*inet_ptonp)(int af, const char *src, void *dst);
 
 	BEFORE_ORIGINAL_SOCK(inet_pton, LIBC);
@@ -902,7 +967,7 @@ int PROBE_NAME(inet_pton)(int af, const char *src, void *dst) {
 	ret = inet_ptonp(af, src, dst);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "dpp", af, voidp_to_uint64(src), voidp_to_uint64(dst));
+				 call_type, caller, info, "dpp", af, voidp_to_uint64(src), voidp_to_uint64(dst));
 
 	return ret;
 }
@@ -917,12 +982,14 @@ int PROBE_NAME(getaddrinfo)(const char *node, const char *service,
 	ret = getaddrinfop(node, service, hints, res);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pppp", voidp_to_uint64(node), voidp_to_uint64(service), voidp_to_uint64(hints), voidp_to_uint64(res));
+				 call_type, caller, info, "pppp", voidp_to_uint64(node), voidp_to_uint64(service), voidp_to_uint64(hints), voidp_to_uint64(res));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , inet_pton, int af, const char *src, void *dst)
 
-void PROBE_NAME(freeaddrinfo)(struct addrinfo *res) {
+HANDLER_DEF(void , freeaddrinfo, struct addrinfo *res)
+{
 	static void (*freeaddrinfop)(struct addrinfo *res);
 
 	BEFORE_ORIGINAL_NOFILTER(freeaddrinfo, LIBC);
@@ -930,10 +997,12 @@ void PROBE_NAME(freeaddrinfo)(struct addrinfo *res) {
 	freeaddrinfop(res);
 
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(res));
+				 call_type, caller, info, "p", voidp_to_uint64(res));
 }
+HANDLER_WRAPPERS(void , freeaddrinfo, struct addrinfo *res)
 
-const char *PROBE_NAME(gai_strerror)(int errcode) {
+HANDLER_DEF(const char *, gai_strerror, int errcode)
+{
 	static const char * (*gai_strerrorp)(int errcode);
 	const char * cret;
 
@@ -942,7 +1011,7 @@ const char *PROBE_NAME(gai_strerror)(int errcode) {
 	cret = gai_strerrorp(errcode);
 
 	AFTER_ORIGINAL_LIBC_SOCK(cret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "d", errcode);
+			call_type, caller, info, "d", errcode);
 
 	return cret;
 }
@@ -957,12 +1026,14 @@ int PROBE_NAME(gai_suspend)(const struct gaicb* const list[], int nitems,
 	ret = gai_suspendp(list, nitems, timeout);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pdp", voidp_to_uint64(list), nitems, voidp_to_uint64(timeout));
+				 call_type, caller, info, "pdp", voidp_to_uint64(list), nitems, voidp_to_uint64(timeout));
 
 	return ret;
 }
+HANDLER_WRAPPERS(const char *, gai_strerror, int errcode)
 
-int PROBE_NAME(gai_error)(struct gaicb *req) {
+HANDLER_DEF(int , gai_error, struct gaicb *req)
+{
 	static int (*gai_errorp)(struct gaicb *req);
 
 	BEFORE_ORIGINAL_SOCK(gai_error, LIBC);
@@ -970,12 +1041,14 @@ int PROBE_NAME(gai_error)(struct gaicb *req) {
 	ret = gai_errorp(req);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(req));
+				 call_type, caller, info, "p", voidp_to_uint64(req));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , gai_error, struct gaicb *req)
 
-int PROBE_NAME(gai_cancel)(struct gaicb *req) {
+HANDLER_DEF(int , gai_cancel, struct gaicb *req)
+{
 	static int (*gai_cancelp)(struct gaicb *req);
 
 	BEFORE_ORIGINAL_SOCK(gai_cancel, LIBC);
@@ -983,7 +1056,7 @@ int PROBE_NAME(gai_cancel)(struct gaicb *req) {
 	ret = gai_cancelp(req);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(req));
+				 call_type, caller, info, "p", voidp_to_uint64(req));
 
 	return ret;
 }
@@ -998,12 +1071,14 @@ int PROBE_NAME(getaddrinfo_a)(int mode, struct gaicb *list[], int nitems,
 	ret = getaddrinfo_ap(mode, list, nitems, sevp);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "dpdp", mode, voidp_to_uint64(list), nitems, voidp_to_uint64(sevp));
+				 call_type, caller, info, "dpdp", mode, voidp_to_uint64(list), nitems, voidp_to_uint64(sevp));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , gai_cancel, struct gaicb *req)
 
-int PROBE_NAME(getdomainname)(char *name, size_t len) {
+HANDLER_DEF(int , getdomainname, char *name, size_t len)
+{
 	static int (*getdomainnamep)(char *name, size_t len);
 
 	BEFORE_ORIGINAL_SOCK(getdomainname, LIBC);
@@ -1013,12 +1088,14 @@ int PROBE_NAME(getdomainname)(char *name, size_t len) {
 	//AFTER_ORIGINAL_NOSOCK(FD_API_OTHER, "pd", voidp_to_uint64(name), len);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pd", voidp_to_uint64(name), len);
+				 call_type, caller, info, "pd", voidp_to_uint64(name), len);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , getdomainname, char *name, size_t len)
 
-int PROBE_NAME(setdomainname)(const char *name, size_t len) {
+HANDLER_DEF(int , setdomainname, const char *name, size_t len)
+{
 	static int (*setdomainnamep)(const char *name, size_t len);
 
 	BEFORE_ORIGINAL_SOCK(setdomainname, LIBC);
@@ -1026,12 +1103,14 @@ int PROBE_NAME(setdomainname)(const char *name, size_t len) {
 	ret = setdomainnamep(name, len);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pd", voidp_to_uint64(name), len);
+				 call_type, caller, info, "pd", voidp_to_uint64(name), len);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , setdomainname, const char *name, size_t len)
 
-int PROBE_NAME(gethostname)(char *name, size_t len) {
+HANDLER_DEF(int , gethostname, char *name, size_t len)
+{
 	static int (*gethostnamep)(char *name, size_t len);
 
 	BEFORE_ORIGINAL_SOCK(gethostname, LIBC);
@@ -1039,12 +1118,14 @@ int PROBE_NAME(gethostname)(char *name, size_t len) {
 	ret = gethostnamep(name, len);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pd", voidp_to_uint64(name), len);
+				 call_type, caller, info, "pd", voidp_to_uint64(name), len);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , gethostname, char *name, size_t len)
 
-int PROBE_NAME(sethostname)(const char *name, size_t len) {
+HANDLER_DEF(int , sethostname, const char *name, size_t len)
+{
 	static int (*sethostnamep)(const char *name, size_t len);
 
 	BEFORE_ORIGINAL_SOCK(sethostname, LIBC);
@@ -1052,7 +1133,7 @@ int PROBE_NAME(sethostname)(const char *name, size_t len) {
 	ret = sethostnamep(name, len);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pd", voidp_to_uint64(name), len);
+				 call_type, caller, info, "pd", voidp_to_uint64(name), len);
 
 	return ret;
 }
@@ -1068,14 +1149,16 @@ int PROBE_NAME(getnameinfo)(const struct sockaddr *sa, socklen_t salen, char *ho
 	ret = getnameinfop(sa, salen, host, hostlen, serv, servlen, flags);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pdpdpdd", voidp_to_uint64(sa), salen,
+				 call_type, caller, info, "pdpdpdd", voidp_to_uint64(sa), salen,
 				 voidp_to_uint64(host), hostlen,
 				 voidp_to_uint64(serv), servlen, flags);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , sethostname, const char *name, size_t len)
 
-struct hostent *PROBE_NAME(gethostbyname)(const char *name) {
+HANDLER_DEF(struct hostent *, gethostbyname, const char *name)
+{
 	static struct hostent * (*gethostbynamep)(const char *name);
 	struct hostent* pret;
 
@@ -1084,12 +1167,14 @@ struct hostent *PROBE_NAME(gethostbyname)(const char *name) {
 	pret = gethostbynamep(name);
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(name));
+				 call_type, caller, info, "p", voidp_to_uint64(name));
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct hostent *, gethostbyname, const char *name)
 
-struct hostent *PROBE_NAME(gethostbyaddr)(const void *addr, socklen_t len, int type) {
+HANDLER_DEF(struct hostent *, gethostbyaddr, const void *addr, socklen_t len, int type)
+{
 	static struct hostent * (*gethostbyaddrp)(const void *addr, socklen_t len,
 			int type);
 	struct hostent* pret;
@@ -1099,12 +1184,14 @@ struct hostent *PROBE_NAME(gethostbyaddr)(const void *addr, socklen_t len, int t
 	pret = gethostbyaddrp(addr, len, type);
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pdd", voidp_to_uint64(addr), len, type);
+				 call_type, caller, info, "pdd", voidp_to_uint64(addr), len, type);
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct hostent *, gethostbyaddr, const void *addr, socklen_t len, int type)
 
-void PROBE_NAME(sethostent)(int stayopen) {
+HANDLER_DEF(void , sethostent, int stayopen)
+{
 	static void (*sethostentp)(int stayopen);
 
 	BEFORE_ORIGINAL_SOCK(sethostent, LIBC);
@@ -1112,10 +1199,12 @@ void PROBE_NAME(sethostent)(int stayopen) {
 	sethostentp(stayopen);
 
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "d", stayopen);
+			call_type, caller, info, "d", stayopen);
 }
+HANDLER_WRAPPERS(void , sethostent, int stayopen)
 
-void PROBE_NAME(endhostent)(void) {
+HANDLER_DEF(void , endhostent, void)
+{
 	static void (*endhostentp)(void);
 
 	BEFORE_ORIGINAL_SOCK(endhostent, LIBC);
@@ -1125,10 +1214,12 @@ void PROBE_NAME(endhostent)(void) {
 	//AFTER_ORIGINAL_NOSOCK_RET(NULL, 0, FD_API_OTHER, "s", "");
 
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "s", "");
+			call_type, caller, info, "s", "");
 }
+HANDLER_WRAPPERS(void , endhostent, void)
 
-void PROBE_NAME(herror)(const char *s) {
+HANDLER_DEF(void , herror, const char *s)
+{
 	static void (*herrorp)(const char *s);
 
 	BEFORE_ORIGINAL_SOCK(herror, LIBC);
@@ -1136,10 +1227,12 @@ void PROBE_NAME(herror)(const char *s) {
 	herrorp(s);
 
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(s));
+				 call_type, caller, info, "p", voidp_to_uint64(s));
 }
+HANDLER_WRAPPERS(void , herror, const char *s)
 
-const char *PROBE_NAME(hstrerror)(int err) {
+HANDLER_DEF(const char *, hstrerror, int err)
+{
 	static const char* (*hstrerrorp)(int err);
 	const char* cret;
 
@@ -1148,12 +1241,14 @@ const char *PROBE_NAME(hstrerror)(int err) {
 	cret = hstrerrorp(err);
 
 	AFTER_ORIGINAL_LIBC_SOCK(cret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "d", err);
+			call_type, caller, info, "d", err);
 
 	return cret;
 }
+HANDLER_WRAPPERS(const char *, hstrerror, int err)
 
-struct hostent *PROBE_NAME(gethostent)(void) {
+HANDLER_DEF(struct hostent *, gethostent, void)
+{
 	static struct hostent* (*gethostentp)(void);
 	struct hostent* pret;
 
@@ -1162,12 +1257,14 @@ struct hostent *PROBE_NAME(gethostent)(void) {
 	pret = gethostentp();
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "s", "");
+			call_type, caller, info, "s", "");
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct hostent *, gethostent, void)
 
-struct hostent *PROBE_NAME(gethostbyname2)(const char *name, int af) {
+HANDLER_DEF(struct hostent *, gethostbyname2, const char *name, int af)
+{
 	static struct hostent * (*gethostbyname2p)(const char *name, int af);
 	struct hostent* pret;
 
@@ -1176,7 +1273,7 @@ struct hostent *PROBE_NAME(gethostbyname2)(const char *name, int af) {
 	pret = gethostbyname2p(name, af);
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pd", voidp_to_uint64(name), af);
+				 call_type, caller, info, "pd", voidp_to_uint64(name), af);
 
 	return pret;
 }
@@ -1191,7 +1288,7 @@ int PROBE_NAME(gethostent_r)(struct hostent *rret, char *buf, size_t buflen,
 	ret = gethostent_rp(rret, buf, buflen, result, h_errnop);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "ppdpp", voidp_to_uint64(rret),
+				 call_type, caller, info, "ppdpp", voidp_to_uint64(rret),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result),
 				 voidp_to_uint64(h_errnop));
@@ -1212,7 +1309,7 @@ int PROBE_NAME(gethostbyaddr_r)(const void *addr, socklen_t len, int type,
 			h_errnop);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pddppdpp", voidp_to_uint64(addr), len,
+				 call_type, caller, info, "pddppdpp", voidp_to_uint64(addr), len,
 				 type, voidp_to_uint64(rret),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result),
@@ -1231,7 +1328,7 @@ int PROBE_NAME(gethostbyname_r)(const char *name, struct hostent *rret, char *bu
 	ret = gethostbyname_rp(name, rret, buf, buflen, result, h_errnop);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pppdpp", voidp_to_uint64(name),
+				 call_type, caller, info, "pppdpp", voidp_to_uint64(name),
 				 voidp_to_uint64(rret), voidp_to_uint64(buf),
 				 buflen, voidp_to_uint64(result),
 				 voidp_to_uint64(h_errnop));
@@ -1250,15 +1347,17 @@ int PROBE_NAME(gethostbyname2_r)(const char *name, int af, struct hostent *rret,
 	ret = gethostbyname2_rp(name, af, rret, buf, buflen, result, h_errnop);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pdppdpp", voidp_to_uint64(name), af,
+				 call_type, caller, info, "pdppdpp", voidp_to_uint64(name), af,
 				 voidp_to_uint64(rret), voidp_to_uint64(buf),
 				 buflen, voidp_to_uint64(result),
 				 voidp_to_uint64(h_errnop));
 
 	return ret;
 }
+HANDLER_WRAPPERS(struct hostent *, gethostbyname2, const char *name, int af)
 
-struct servent *PROBE_NAME(getservbyname)(const char *name, const char *proto) {
+HANDLER_DEF(struct servent *, getservbyname, const char *name, const char *proto)
+{
 	static struct servent * (*getservbynamep)(const char *name,
 			const char *proto);
 	struct servent* pret;
@@ -1268,13 +1367,15 @@ struct servent *PROBE_NAME(getservbyname)(const char *name, const char *proto) {
 	pret = getservbynamep(name, proto);
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pp", voidp_to_uint64(name),
+				 call_type, caller, info, "pp", voidp_to_uint64(name),
 				 voidp_to_uint64(proto));
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct servent *, getservbyname, const char *name, const char *proto)
 
-void PROBE_NAME(setservent)(int stayopen) {
+HANDLER_DEF(void , setservent, int stayopen)
+{
 	static void (*setserventp)(int stayopen);
 
 	BEFORE_ORIGINAL_SOCK(setservent, LIBC);
@@ -1282,10 +1383,12 @@ void PROBE_NAME(setservent)(int stayopen) {
 	setserventp(stayopen);
 
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "d", stayopen);
+			call_type, caller, info, "d", stayopen);
 }
+HANDLER_WRAPPERS(void , setservent, int stayopen)
 
-void PROBE_NAME(endservent)(void) {
+HANDLER_DEF(void , endservent, void)
+{
 	static void (*endserventp)(void);
 
 	BEFORE_ORIGINAL_SOCK(endservent, LIBC);
@@ -1293,10 +1396,12 @@ void PROBE_NAME(endservent)(void) {
 	endserventp();
 
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "s", "");
+			call_type, caller, info, "s", "");
 }
+HANDLER_WRAPPERS(void , endservent, void)
 
-struct servent *PROBE_NAME(getservent)(void) {
+HANDLER_DEF(struct servent *, getservent, void)
+{
 	static struct servent * (*getserventp)(void);
 	struct servent* pret;
 
@@ -1305,12 +1410,14 @@ struct servent *PROBE_NAME(getservent)(void) {
 	pret = getserventp();
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "s", "");
+			call_type, caller, info, "s", "");
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct servent *, getservent, void)
 
-struct servent *PROBE_NAME(getservbyport)(int port, const char *proto) {
+HANDLER_DEF(struct servent *, getservbyport, int port, const char *proto)
+{
 	static struct servent * (*getservbyportp)(int port, const char *proto);
 	struct servent* pret;
 
@@ -1319,7 +1426,7 @@ struct servent *PROBE_NAME(getservbyport)(int port, const char *proto) {
 	pret = getservbyportp(port, proto);
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "dp", port, voidp_to_uint64(proto));
+				 call_type, caller, info, "dp", port, voidp_to_uint64(proto));
 
 	return pret;
 }
@@ -1334,7 +1441,7 @@ int PROBE_NAME(getservent_r)(struct servent *result_buf, char *buf, size_t bufle
 	ret = getservent_rp(result_buf, buf, buflen, result);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "ppdp", voidp_to_uint64(result_buf),
+				 call_type, caller, info, "ppdp", voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result));
 
@@ -1353,7 +1460,7 @@ int PROBE_NAME(getservbyname_r)(const char *name, const char *proto,
 	ret = getservbyname_rp(name, proto, result_buf, buf, buflen, result);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "ppppdp", voidp_to_uint64(name),
+				 call_type, caller, info, "ppppdp", voidp_to_uint64(name),
 				 voidp_to_uint64(proto),
 				 voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
@@ -1373,15 +1480,17 @@ int PROBE_NAME(getservbyport_r)(int port, const char *proto, struct servent *res
 	ret = getservbyport_rp(port, proto, result_buf, buf, buflen, result);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "dpppdp", port, voidp_to_uint64(proto),
+				 call_type, caller, info, "dpppdp", port, voidp_to_uint64(proto),
 				 voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result));
 
 	return ret;
 }
+HANDLER_WRAPPERS(struct servent *, getservbyport, int port, const char *proto)
 
-struct netent* PROBE_NAME(getnetent)(void) {
+HANDLER_DEF(struct netent* , getnetent, void)
+{
 	static struct netent * (*getnetentp)(void);
 	struct netent* pret;
 
@@ -1390,12 +1499,14 @@ struct netent* PROBE_NAME(getnetent)(void) {
 	pret = getnetentp();
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "s", "");
+			call_type, caller, info, "s", "");
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct netent* , getnetent, void)
 
-struct netent *PROBE_NAME(getnetbyname)(const char *name) {
+HANDLER_DEF(struct netent *, getnetbyname, const char *name)
+{
 	static struct netent * (*getnetbynamep)(const char *name);
 	struct netent* pret;
 
@@ -1404,12 +1515,14 @@ struct netent *PROBE_NAME(getnetbyname)(const char *name) {
 	pret = getnetbynamep(name);
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(name));
+				 call_type, caller, info, "p", voidp_to_uint64(name));
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct netent *, getnetbyname, const char *name)
 
-struct netent *PROBE_NAME(getnetbyaddr)(uint32_t net, int type) {
+HANDLER_DEF(struct netent *, getnetbyaddr, uint32_t net, int type)
+{
 	static struct netent * (*getnetbyaddrp)(uint32_t net, int type);
 	struct netent * pret;
 
@@ -1418,12 +1531,14 @@ struct netent *PROBE_NAME(getnetbyaddr)(uint32_t net, int type) {
 	pret = getnetbyaddrp(net, type);
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "dd", net, type);
+			call_type, caller, info, "dd", net, type);
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct netent *, getnetbyaddr, uint32_t net, int type)
 
-void PROBE_NAME(setnetent)(int stayopen) {
+HANDLER_DEF(void , setnetent, int stayopen)
+{
 	static void (*setnetentp)(int stayopen);
 
 	BEFORE_ORIGINAL_SOCK(setnetent, LIBC);
@@ -1431,10 +1546,12 @@ void PROBE_NAME(setnetent)(int stayopen) {
 	setnetentp(stayopen);
 
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "d", stayopen);
+			call_type, caller, info, "d", stayopen);
 }
+HANDLER_WRAPPERS(void , setnetent, int stayopen)
 
-void PROBE_NAME(endnetent)(void) {
+HANDLER_DEF(void , endnetent, void)
+{
 	static void (*endnetentp)(void);
 
 	BEFORE_ORIGINAL_SOCK(endnetent, LIBC);
@@ -1442,7 +1559,7 @@ void PROBE_NAME(endnetent)(void) {
 	endnetentp();
 
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "s", "");
+			call_type, caller, info, "s", "");
 }
 
 int PROBE_NAME(getnetent_r)(struct netent *result_buf, char *buf, size_t buflen,
@@ -1455,7 +1572,7 @@ int PROBE_NAME(getnetent_r)(struct netent *result_buf, char *buf, size_t buflen,
 	ret = getnetent_rp(result_buf, buf, buflen, result, h_errnop);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "ppdpp", voidp_to_uint64(result_buf),
+				 call_type, caller, info, "ppdpp", voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result),
 				 voidp_to_uint64(h_errnop));
@@ -1473,7 +1590,7 @@ int PROBE_NAME(getnetbyname_r)(const char *name, struct netent *result_buf, char
 	ret = getnetbyname_rp(name, result_buf, buf, buflen, result, h_errnop);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pppdpp", voidp_to_uint64(name),
+				 call_type, caller, info, "pppdpp", voidp_to_uint64(name),
 				 voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result),
@@ -1493,7 +1610,7 @@ int PROBE_NAME(getnetbyaddr_r)(uint32_t net, int type, struct netent *result_buf
 	ret = getnetbyaddr_rp(net, type, result_buf, buf, buflen, result, h_errnop);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "ddppdpp", net, type,
+				 call_type, caller, info, "ddppdpp", net, type,
 				 voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result),
@@ -1501,8 +1618,10 @@ int PROBE_NAME(getnetbyaddr_r)(uint32_t net, int type, struct netent *result_buf
 
 	return ret;
 }
+HANDLER_WRAPPERS(void , endnetent, void)
 
-struct protoent *PROBE_NAME(getprotoent)(void) {
+HANDLER_DEF(struct protoent *, getprotoent, void)
+{
 	static struct protoent * (*getprotoentp)(void);
 	struct protoent * pret;
 
@@ -1511,12 +1630,14 @@ struct protoent *PROBE_NAME(getprotoent)(void) {
 	pret = getprotoentp();
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "s", "");
+			call_type, caller, info, "s", "");
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct protoent *, getprotoent, void)
 
-struct protoent *PROBE_NAME(getprotobyname)(const char *name) {
+HANDLER_DEF(struct protoent *, getprotobyname, const char *name)
+{
 	static struct protoent * (*getprotobynamep)(const char *name);
 	struct protoent * pret;
 
@@ -1525,12 +1646,14 @@ struct protoent *PROBE_NAME(getprotobyname)(const char *name) {
 	pret = getprotobynamep(name);
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(name));
+				 call_type, caller, info, "p", voidp_to_uint64(name));
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct protoent *, getprotobyname, const char *name)
 
-struct protoent *PROBE_NAME(getprotobynumber)(int proto) {
+HANDLER_DEF(struct protoent *, getprotobynumber, int proto)
+{
 	static struct protoent * (*getprotobynumberp)(int proto);
 	struct protoent * pret;
 
@@ -1539,12 +1662,14 @@ struct protoent *PROBE_NAME(getprotobynumber)(int proto) {
 	pret = getprotobynumberp(proto);
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "d", proto);
+			call_type, caller, info, "d", proto);
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct protoent *, getprotobynumber, int proto)
 
-void PROBE_NAME(setprotoent)(int stayopen) {
+HANDLER_DEF(void , setprotoent, int stayopen)
+{
 	static void (*setprotoentp)(int stayopen);
 
 	BEFORE_ORIGINAL_SOCK(setprotoent, LIBC);
@@ -1552,10 +1677,12 @@ void PROBE_NAME(setprotoent)(int stayopen) {
 	setprotoentp(stayopen);
 
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "d", stayopen);
+			call_type, caller, info, "d", stayopen);
 }
+HANDLER_WRAPPERS(void , setprotoent, int stayopen)
 
-void PROBE_NAME(endprotoent)(void) {
+HANDLER_DEF(void , endprotoent, void)
+{
 	static void (*endprotoentp)(void);
 
 	BEFORE_ORIGINAL_SOCK(endprotoent, LIBC);
@@ -1563,7 +1690,7 @@ void PROBE_NAME(endprotoent)(void) {
 	endprotoentp();
 
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "s", "");
+			call_type, caller, info, "s", "");
 }
 
 int PROBE_NAME(getprotoent_r)(struct protoent *result_buf, char *buf, size_t buflen,
@@ -1576,7 +1703,7 @@ int PROBE_NAME(getprotoent_r)(struct protoent *result_buf, char *buf, size_t buf
 	ret = getprotoent_rp(result_buf, buf, buflen, result);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "ppdp", voidp_to_uint64(result_buf),
+				 call_type, caller, info, "ppdp", voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result));
 
@@ -1594,7 +1721,7 @@ int PROBE_NAME(getprotobyname_r)(const char *name, struct protoent *result_buf, 
 	ret = getprotobyname_rp(name, result_buf, buf, buflen, result);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "pppdp", voidp_to_uint64(name),
+				 call_type, caller, info, "pppdp", voidp_to_uint64(name),
 				 voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result));
@@ -1612,15 +1739,17 @@ int PROBE_NAME(getprotobynumber_r)(int proto, struct protoent *result_buf, char 
 	ret = getprotobynumber_rp(proto, result_buf, buf, buflen, result);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "dppdp", proto,
+				 call_type, caller, info, "dppdp", proto,
 				 voidp_to_uint64(result_buf),
 				 voidp_to_uint64(buf), buflen,
 				 voidp_to_uint64(result));
 
 	return ret;
 }
+HANDLER_WRAPPERS(void , endprotoent, void)
 
-unsigned int PROBE_NAME(if_nametoindex)(__const char *__ifname) {
+HANDLER_DEF(unsigned int , if_nametoindex, __const char *__ifname)
+{
 	static unsigned int (*if_nametoindexp)(__const char *__ifname);
 	unsigned int uret;
 
@@ -1629,12 +1758,14 @@ unsigned int PROBE_NAME(if_nametoindex)(__const char *__ifname) {
 	uret = if_nametoindexp(__ifname);
 
 	AFTER_ORIGINAL_LIBC_SOCK(uret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(__ifname));
+				 call_type, caller, info, "p", voidp_to_uint64(__ifname));
 
 	return uret;
 }
+HANDLER_WRAPPERS(unsigned int , if_nametoindex, __const char *__ifname)
 
-char *PROBE_NAME(if_indextoname)(unsigned int __ifindex, char *__ifname) {
+HANDLER_DEF(char *, if_indextoname, unsigned int __ifindex, char *__ifname)
+{
 	static char * (*if_indextonamep)(unsigned int __ifindex, char *__ifname);
 	char * cret;
 
@@ -1643,13 +1774,15 @@ char *PROBE_NAME(if_indextoname)(unsigned int __ifindex, char *__ifname) {
 	cret = if_indextonamep(__ifindex, __ifname);
 
 	AFTER_ORIGINAL_LIBC_SOCK(cret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "dp", __ifindex,
+				 call_type, caller, info, "dp", __ifindex,
 				 voidp_to_uint64(__ifname));
 
 	return cret;
 }
+HANDLER_WRAPPERS(char *, if_indextoname, unsigned int __ifindex, char *__ifname)
 
-struct if_nameindex *PROBE_NAME(if_nameindex)(void) {
+HANDLER_DEF(struct if_nameindex *, if_nameindex, void)
+{
 	static struct if_nameindex * (*if_nameindexp)(void);
 	struct if_nameindex * pret;
 
@@ -1658,12 +1791,14 @@ struct if_nameindex *PROBE_NAME(if_nameindex)(void) {
 	pret = if_nameindexp();
 
 	AFTER_ORIGINAL_LIBC_SOCK(pret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-			info, "s", "");
+			call_type, caller, info, "s", "");
 
 	return pret;
 }
+HANDLER_WRAPPERS(struct if_nameindex *, if_nameindex, void)
 
-void PROBE_NAME(if_freenameindex)(struct if_nameindex *__ptr) {
+HANDLER_DEF(void , if_freenameindex, struct if_nameindex *__ptr)
+{
 	static void (*if_freenameindexp)(struct if_nameindex *__ptr);
 
 	BEFORE_ORIGINAL_NOFILTER(if_freenameindex, LIBC);
@@ -1671,10 +1806,12 @@ void PROBE_NAME(if_freenameindex)(struct if_nameindex *__ptr) {
 	if_freenameindexp(__ptr);
 
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(__ptr));
+				 call_type, caller, info, "p", voidp_to_uint64(__ptr));
 }
+HANDLER_WRAPPERS(void , if_freenameindex, struct if_nameindex *__ptr)
 
-int PROBE_NAME(getifaddrs)(struct ifaddrs **ifap) {
+HANDLER_DEF(int , getifaddrs, struct ifaddrs **ifap)
+{
 	static int (*getifaddrsp)(struct ifaddrs **ifap);
 
 	BEFORE_ORIGINAL_NOFILTER(getifaddrs, LIBC);
@@ -1682,25 +1819,29 @@ int PROBE_NAME(getifaddrs)(struct ifaddrs **ifap) {
 	ret = getifaddrsp(ifap);
 
 	AFTER_ORIGINAL_LIBC_SOCK('d', ret, OBJ_DUMMY, 0, SOCKET_API_OTHER,
-				 info, "p", voidp_to_uint64(ifap));
+				 call_type, caller, info, "p", voidp_to_uint64(ifap));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , getifaddrs, struct ifaddrs **ifap)
 
-void PROBE_NAME(freeifaddrs)(struct ifaddrs *ifa) {
+HANDLER_DEF(void , freeifaddrs, struct ifaddrs *ifa)
+{
 	static void (*freeifaddrsp)(struct ifaddrs *ifa);
 
 	BEFORE_ORIGINAL_NOFILTER(freeifaddrs, LIBC);
 
 	freeifaddrsp(ifa);
 
-	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER, info,
-				 "p", voidp_to_uint64(ifa));
+	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
+                             call_type, caller, info,
+                             "p", voidp_to_uint64(ifa));
 }
+HANDLER_WRAPPERS(void , freeifaddrs, struct ifaddrs *ifa)
 
 //To do
 
-uint16_t PROBE_NAME(htobe16)(uint16_t host_16bits)
+HANDLER_DEF(uint16_t , htobe16, uint16_t host_16bits)
 {
 	static uint16_t (*htobe16p)(uint16_t host_16bits);
 	uint16_t uret;
@@ -1709,12 +1850,14 @@ uint16_t PROBE_NAME(htobe16)(uint16_t host_16bits)
 
 	uret = htobe16p(host_16bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER, "d", host_16bits);
+	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER,
+                              call_type, caller, "d", host_16bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint16_t , htobe16, uint16_t host_16bits)
 
-uint16_t PROBE_NAME(htole16)(uint16_t host_16bits)
+HANDLER_DEF(uint16_t , htole16, uint16_t host_16bits)
 {
 	static uint16_t (*htole16p)(uint16_t host_16bits);
 	uint16_t uret;
@@ -1723,12 +1866,14 @@ uint16_t PROBE_NAME(htole16)(uint16_t host_16bits)
 
 	uret = htole16p(host_16bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER, "d", host_16bits);
+	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER,
+                              call_type, caller, "d", host_16bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint16_t , htole16, uint16_t host_16bits)
 
-uint16_t PROBE_NAME(be16toh)(uint16_t big_endian_16bits)
+HANDLER_DEF(uint16_t , be16toh, uint16_t big_endian_16bits)
 {
 	static uint16_t (*be16tohp)(uint16_t big_endian_16bits);
 	uint16_t uret;
@@ -1738,12 +1883,13 @@ uint16_t PROBE_NAME(be16toh)(uint16_t big_endian_16bits)
 	uret = be16tohp(big_endian_16bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER,
-			"d", big_endian_16bits);
+                              call_type, caller, "d", big_endian_16bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint16_t , be16toh, uint16_t big_endian_16bits)
 
-uint16_t PROBE_NAME(le16toh)(uint16_t little_endian_16bits)
+HANDLER_DEF(uint16_t , le16toh, uint16_t little_endian_16bits)
 {
 	static uint16_t (*le16tohp)(uint16_t little_endian_16bits);
 	uint16_t uret;
@@ -1753,12 +1899,13 @@ uint16_t PROBE_NAME(le16toh)(uint16_t little_endian_16bits)
 	uret = le16tohp(little_endian_16bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', (uint32_t)uret, 0, FD_API_OTHER,
-			"d", little_endian_16bits);
+                              call_type, caller, "d", little_endian_16bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint16_t , le16toh, uint16_t little_endian_16bits)
 
-uint32_t PROBE_NAME(htobe32)(uint32_t host_32bits)
+HANDLER_DEF(uint32_t , htobe32, uint32_t host_32bits)
 {
 	static uint32_t (*htobe32p)(uint32_t host_32bits);
 	uint32_t uret;
@@ -1768,12 +1915,13 @@ uint32_t PROBE_NAME(htobe32)(uint32_t host_32bits)
 	uret = htobe32p(host_32bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
-			"d", host_32bits);
+                              call_type, caller, "d", host_32bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint32_t , htobe32, uint32_t host_32bits)
 
-uint32_t PROBE_NAME(htole32)(uint32_t host_32bits)
+HANDLER_DEF(uint32_t , htole32, uint32_t host_32bits)
 {
 	static uint32_t (*htole32p)(uint32_t host_32bits);
 	uint32_t uret;
@@ -1783,12 +1931,13 @@ uint32_t PROBE_NAME(htole32)(uint32_t host_32bits)
 	uret = htole32p(host_32bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
-			"d", host_32bits);
+                              call_type, caller, "d", host_32bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint32_t , htole32, uint32_t host_32bits)
 
-uint32_t PROBE_NAME(be32toh)(uint32_t big_endian_32bits)
+HANDLER_DEF(uint32_t , be32toh, uint32_t big_endian_32bits)
 {
 	static uint32_t (*be32tohp)(uint32_t big_endian_32bits);
 	uint32_t uret;
@@ -1798,12 +1947,13 @@ uint32_t PROBE_NAME(be32toh)(uint32_t big_endian_32bits)
 	uret = be32tohp(big_endian_32bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
-			"d", big_endian_32bits);
+                              call_type, caller, "d", big_endian_32bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint32_t , be32toh, uint32_t big_endian_32bits)
 
-uint32_t PROBE_NAME(le32toh)(uint32_t little_endian_32bits)
+HANDLER_DEF(uint32_t , le32toh, uint32_t little_endian_32bits)
 {
 	static uint32_t (*le32tohp)(uint32_t little_endian_32bits);
 	uint32_t uret;
@@ -1813,12 +1963,13 @@ uint32_t PROBE_NAME(le32toh)(uint32_t little_endian_32bits)
 	uret = le32tohp(little_endian_32bits);
 
 	AFTER_ORIGINAL_NOSOCK_RET('d', uret, 0, FD_API_OTHER,
-			"d", little_endian_32bits);
+                              call_type, caller, "d", little_endian_32bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint32_t , le32toh, uint32_t little_endian_32bits)
 
-uint64_t PROBE_NAME(htobe64)(uint64_t host_64bits)
+HANDLER_DEF(uint64_t , htobe64, uint64_t host_64bits)
 {
 	static uint64_t (*htobe64p)(uint64_t host_64bits);
 	uint64_t uret;
@@ -1827,13 +1978,14 @@ uint64_t PROBE_NAME(htobe64)(uint64_t host_64bits)
 
 	uret = htobe64p(host_64bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER, call_type, caller,
 			"d", host_64bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint64_t , htobe64, uint64_t host_64bits)
 
-uint64_t PROBE_NAME(htole64)(uint64_t host_64bits)
+HANDLER_DEF(uint64_t , htole64, uint64_t host_64bits)
 {
 	static uint64_t (*htole64p)(uint64_t host_64bits);
 	uint64_t uret;
@@ -1842,13 +1994,14 @@ uint64_t PROBE_NAME(htole64)(uint64_t host_64bits)
 
 	uret = htole64p(host_64bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER, call_type, caller,
 			"d", host_64bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint64_t , htole64, uint64_t host_64bits)
 
-uint64_t PROBE_NAME(be64toh)(uint64_t big_endian_64bits)
+HANDLER_DEF(uint64_t , be64toh, uint64_t big_endian_64bits)
 {
 	static uint64_t (*be64tohp)(uint64_t big_endian_64bits);
 	uint64_t uret;
@@ -1857,13 +2010,14 @@ uint64_t PROBE_NAME(be64toh)(uint64_t big_endian_64bits)
 
 	uret = be64tohp(big_endian_64bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER, call_type, caller,
 			"d", big_endian_64bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint64_t , be64toh, uint64_t big_endian_64bits)
 
-uint64_t PROBE_NAME(le64toh)(uint64_t little_endian_64bits)
+HANDLER_DEF(uint64_t , le64toh, uint64_t little_endian_64bits)
 {
 	static uint64_t (*le64tohp)(uint64_t little_endian_64bits);
 	uint64_t uret;
@@ -1872,13 +2026,14 @@ uint64_t PROBE_NAME(le64toh)(uint64_t little_endian_64bits)
 
 	uret = le64tohp(little_endian_64bits);
 
-	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('x', uret, 0, FD_API_OTHER, call_type, caller,
 			"d", little_endian_64bits);
 
 	return uret;
 }
+HANDLER_WRAPPERS(uint64_t , le64toh, uint64_t little_endian_64bits)
 
-struct in_addr PROBE_NAME(inet_makeaddr)(int net, int host)
+HANDLER_DEF(struct in_addr , inet_makeaddr, int net, int host)
 {
 	static struct in_addr (*inet_makeaddrp)(int net, int host);
 	struct in_addr iret;
@@ -1887,10 +2042,11 @@ struct in_addr PROBE_NAME(inet_makeaddr)(int net, int host)
 
 	iret = inet_makeaddrp(net,host);
 
-	AFTER_ORIGINAL_NOSOCK_RET('d', iret.s_addr, 0, FD_API_OTHER,
+	AFTER_ORIGINAL_NOSOCK_RET('d', iret.s_addr, 0, FD_API_OTHER, call_type, caller,
 			"dd", net, host);
 
 	return iret;
 }
+HANDLER_WRAPPERS(struct in_addr , inet_makeaddr, int net, int host)
 
 #endif
