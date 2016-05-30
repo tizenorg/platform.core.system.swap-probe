@@ -48,8 +48,7 @@ typedef struct thread_routine_call_t {
 void _da_cleanup_handler(void *data);
 void *_da_ThreadProc(void *params);
 
-int PROBE_NAME(pthread_create)(pthread_t *thread, const pthread_attr_t *attr,
-		void *(*start_routine) (void*), void *arg)
+HANDLER_DEF(int, pthread_create, pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void*), void *arg)
 {
 	static int (*pthread_createp)(pthread_t *thread,
 			const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg);
@@ -71,7 +70,7 @@ int PROBE_NAME(pthread_create)(pthread_t *thread, const pthread_attr_t *attr,
 	}
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_create,
-				   'd', ret, *thread, THREAD_API_START,
+				   'd', ret, *thread, THREAD_API_START, call_type, caller,
 				   "pppp",
 				   voidp_to_uint64(thread),
 				   voidp_to_uint64(attr),
@@ -80,8 +79,9 @@ int PROBE_NAME(pthread_create)(pthread_t *thread, const pthread_attr_t *attr,
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_create, pthread_t *, thread, const pthread_attr_t *, attr, void *(*)(void *), start_routine, void *, arg)
 
-int PROBE_NAME(pthread_join)(pthread_t thread, void **retval)
+HANDLER_DEF(int , pthread_join, pthread_t thread, void **retval)
 {
 	static int (*pthread_joinp)(pthread_t thread, void **retval);
 
@@ -94,7 +94,7 @@ int PROBE_NAME(pthread_join)(pthread_t thread, void **retval)
 	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
 			  API_ID_pthread_join,
 			  "xp", (uint64_t)(thread), voidp_to_uint64(retval));
-	PACK_COMMON_END('d', 0, 0, blockresult);
+	PACK_COMMON_END('d', 0, 0, call_type, caller);
 	PACK_THREAD(thread, THREAD_PTHREAD, THREAD_API_WAIT_START, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
 
@@ -112,7 +112,7 @@ int PROBE_NAME(pthread_join)(pthread_t thread, void **retval)
 			  "xp",
 			  (uint64_t)(thread),
 			  voidp_to_uint64(retval));
-	PACK_COMMON_END('d', ret, errno, blockresult);
+	PACK_COMMON_END('d', ret, errno, call_type, caller);
 	PACK_THREAD(thread, THREAD_PTHREAD, THREAD_API_WAIT_END, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
 
@@ -120,8 +120,9 @@ int PROBE_NAME(pthread_join)(pthread_t thread, void **retval)
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_join, pthread_t, thread, void **, retval)
 
-void PROBE_NAME(pthread_exit)(void *retval)
+HANDLER_DEF(void , pthread_exit, void *retval)
 {
 	pthread_t pSelf;
 	static void (*pthread_exitp)(void *retval) __attribute__((noreturn));
@@ -137,7 +138,7 @@ void PROBE_NAME(pthread_exit)(void *retval)
 	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
 			  API_ID_pthread_exit,
 			  "p", voidp_to_uint64(retval));
-	PACK_COMMON_END('v', 0, 0, blockresult);
+	PACK_COMMON_END('v', 0, 0, call_type, caller);
 	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_EXIT, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
 
@@ -148,8 +149,9 @@ void PROBE_NAME(pthread_exit)(void *retval)
 	pthread_exitp(retval);
 
 }
+HANDLER_WRAPPERS(void , pthread_exit, void *, retval)
 
-int PROBE_NAME(pthread_cancel)(pthread_t thread)
+HANDLER_DEF(int , pthread_cancel, pthread_t thread)
 {
 	static int (*pthread_cancelp)(pthread_t thread);
 
@@ -158,13 +160,14 @@ int PROBE_NAME(pthread_cancel)(pthread_t thread)
 	ret = pthread_cancelp(thread);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_cancel,
-				   'd', ret, thread, THREAD_API_STOP, "x",
+				   'd', ret, thread, THREAD_API_STOP, call_type, caller, "x",
 				   (uint64_t)(thread));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_cancel, pthread_t, thread)
 
-int PROBE_NAME(pthread_detach)(pthread_t thread)
+HANDLER_DEF(int , pthread_detach, pthread_t thread)
 {
 	static int (*pthread_detachp)(pthread_t thread);
 
@@ -173,13 +176,14 @@ int PROBE_NAME(pthread_detach)(pthread_t thread)
 	ret = pthread_detachp(thread);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_detach,
-				   'd', ret, thread, THREAD_API_OTHER, "x",
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller, "x",
 				   (uint64_t)(thread));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_detach, pthread_t, thread)
 
-pthread_t PROBE_NAME(pthread_self)(void)
+HANDLER_DEF(pthread_t , pthread_self)
 {
 	pthread_t ret_pthr;
 	static pthread_t (*pthread_selfp)(void);
@@ -191,12 +195,13 @@ pthread_t PROBE_NAME(pthread_self)(void)
 	newerrno = errno;
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_self,
-				   'p', ret_pthr, ret_pthr, THREAD_API_OTHER, "", 0);
+				   'p', ret_pthr, ret_pthr, THREAD_API_OTHER, call_type, caller, "", 0);
 
 	return ret_pthr;
 }
+HANDLER_WRAPPERS(pthread_t , pthread_self, void)
 
-int PROBE_NAME(pthread_equal)(pthread_t t1, pthread_t t2)
+HANDLER_DEF(int , pthread_equal, pthread_t t1, pthread_t t2)
 {
 	static int (*pthread_equalp)(pthread_t t1, pthread_t t2);
 
@@ -205,11 +210,12 @@ int PROBE_NAME(pthread_equal)(pthread_t t1, pthread_t t2)
 	ret = pthread_equalp(t1, t2);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_equal,
-				   'd', ret, t1, THREAD_API_OTHER, "xx",
+				   'd', ret, t1, THREAD_API_OTHER, call_type, caller, "xx",
 				   (uint64_t)(t1), (uint64_t)(t2));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_equal, pthread_t, t1, pthread_t, t2)
 
 int real_pthread_setcancelstate(int state, int *oldstate)
 {
@@ -220,7 +226,7 @@ int real_pthread_setcancelstate(int state, int *oldstate)
 	return pthread_setcancelstatep(state, oldstate);
 }
 
-int PROBE_NAME(pthread_setcancelstate)(int state, int *oldstate)
+HANDLER_DEF(int , pthread_setcancelstate, int state, int *oldstate)
 {
 	pthread_t pSelf;
 	static int (*pthread_setcancelstatep)(int state, int *oldstate);
@@ -231,13 +237,14 @@ int PROBE_NAME(pthread_setcancelstate)(int state, int *oldstate)
 	ret = pthread_setcancelstatep(state, oldstate);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_setcancelstate,
-				   'd', ret, pSelf, THREAD_API_OTHER,
+				   'd', ret, pSelf, THREAD_API_OTHER, call_type, caller,
 				   "dp", state, voidp_to_uint64(oldstate));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_setcancelstate, int, state, int *, oldstate)
 
-int PROBE_NAME(pthread_setcanceltype)(int type, int *oldtype)
+HANDLER_DEF(int , pthread_setcanceltype, int type, int *oldtype)
 {
 	pthread_t pSelf;
 	static int (*pthread_setcanceltypep)(int type, int *oldtype);
@@ -248,13 +255,14 @@ int PROBE_NAME(pthread_setcanceltype)(int type, int *oldtype)
 	ret = pthread_setcanceltypep(type, oldtype);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_setcanceltype,
-				   'd', ret, pSelf, THREAD_API_OTHER,
+				   'd', ret, pSelf, THREAD_API_OTHER, call_type, caller,
 				   "dp", type, voidp_to_uint64(oldtype));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_setcanceltype, int, type, int *, oldtype)
 
-int PROBE_NAME(pthread_attr_init)(pthread_attr_t *attr)
+HANDLER_DEF(int , pthread_attr_init, pthread_attr_t *attr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_initp)(pthread_attr_t *attr);
@@ -264,13 +272,14 @@ int PROBE_NAME(pthread_attr_init)(pthread_attr_t *attr)
 	ret = pthread_attr_initp(attr);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_init,
-				   'd', ret, thread, THREAD_API_OTHER, "p",
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller, "p",
 				   voidp_to_uint64(attr));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_init, pthread_attr_t *, attr)
 
-int PROBE_NAME(pthread_attr_destroy)(pthread_attr_t *attr)
+HANDLER_DEF(int , pthread_attr_destroy, pthread_attr_t *attr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_destroyp)(pthread_attr_t *attr);
@@ -280,13 +289,14 @@ int PROBE_NAME(pthread_attr_destroy)(pthread_attr_t *attr)
 	ret = pthread_attr_destroyp(attr);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_destroy,
-				   'd', ret, thread, THREAD_API_OTHER, "p",
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller, "p",
 				   voidp_to_uint64(attr));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_destroy, pthread_attr_t *, attr)
 
-int PROBE_NAME(pthread_attr_getdetachstate)(const pthread_attr_t *attr, int *detachstate)
+HANDLER_DEF(int , pthread_attr_getdetachstate, const pthread_attr_t *attr, int *detachstate)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getdetachstatep)(const pthread_attr_t *attr,
@@ -297,14 +307,15 @@ int PROBE_NAME(pthread_attr_getdetachstate)(const pthread_attr_t *attr, int *det
 	ret = pthread_attr_getdetachstatep(attr, detachstate);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getdetachstate,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(detachstate));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_getdetachstate, const pthread_attr_t *, attr, int *, detachstate)
 
-int PROBE_NAME(pthread_attr_setdetachstate)(pthread_attr_t *attr, int detachstate)
+HANDLER_DEF(int , pthread_attr_setdetachstate, pthread_attr_t *attr, int detachstate)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setdetachstatep)(pthread_attr_t *attr,
@@ -315,14 +326,15 @@ int PROBE_NAME(pthread_attr_setdetachstate)(pthread_attr_t *attr, int detachstat
 	ret = pthread_attr_setdetachstatep(attr, detachstate);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setdetachstate,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pd", voidp_to_uint64(attr),
 				   detachstate);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_setdetachstate, pthread_attr_t *, attr, int, detachstate)
 
-int PROBE_NAME(pthread_attr_getstacksize)(const pthread_attr_t *attr, size_t *stacksize)
+HANDLER_DEF(int , pthread_attr_getstacksize, const pthread_attr_t *attr, size_t *stacksize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getstacksizep)(const pthread_attr_t *attr,
@@ -333,14 +345,15 @@ int PROBE_NAME(pthread_attr_getstacksize)(const pthread_attr_t *attr, size_t *st
 	ret = pthread_attr_getstacksizep(attr, stacksize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getstacksize,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(stacksize));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_getstacksize, const pthread_attr_t *, attr, size_t *, stacksize)
 
-int PROBE_NAME(pthread_attr_setstacksize)(pthread_attr_t *attr, size_t stacksize)
+HANDLER_DEF(int , pthread_attr_setstacksize, pthread_attr_t *attr, size_t stacksize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setstacksizep)(pthread_attr_t *attr,
@@ -351,12 +364,13 @@ int PROBE_NAME(pthread_attr_setstacksize)(pthread_attr_t *attr, size_t stacksize
 	ret = pthread_attr_setstacksizep(attr, stacksize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setstacksize,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "px", voidp_to_uint64(attr),
 				   (uint64_t)(stacksize));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_setstacksize, pthread_attr_t *, attr, size_t, stacksize)
 
 #if 0
 /* TODO FIXME
@@ -368,7 +382,7 @@ int PROBE_NAME(pthread_attr_setstacksize)(pthread_attr_t *attr, size_t stacksize
  *
  * happens on pthread-2.18 (target TV emul), not happens on pthread-2.13
  */
-int PROBE_NAME(pthread_attr_getstackaddr)(const pthread_attr_t *attr, void **stackaddr)
+HANDLER_DEF(int , pthread_attr_getstackaddr, const pthread_attr_t *attr, void **stackaddr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getstackaddrp)(const pthread_attr_t *attr,
@@ -379,14 +393,15 @@ int PROBE_NAME(pthread_attr_getstackaddr)(const pthread_attr_t *attr, void **sta
 	ret = pthread_attr_getstackaddrp(attr, stackaddr);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getstackaddr,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(stackaddr));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_getstackaddr, const pthread_attr_t *, attr, void **, stackaddr)
 
-int PROBE_NAME(pthread_attr_setstackaddr)(pthread_attr_t *attr, void *stackaddr)
+HANDLER_DEF(int , pthread_attr_setstackaddr, pthread_attr_t *attr, void *stackaddr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setstackaddrp)(pthread_attr_t *attr,
@@ -397,16 +412,17 @@ int PROBE_NAME(pthread_attr_setstackaddr)(pthread_attr_t *attr, void *stackaddr)
 	ret = pthread_attr_setstackaddrp(attr, stackaddr);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setstackaddr,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pp",
 				   voidp_to_uint64(attr),
 				   voidp_to_uint64(stackaddr));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_setstackaddr, pthread_attr_t *, attr, void *, stackaddr)
 #endif
 
-int PROBE_NAME(pthread_attr_getinheritsched)(const pthread_attr_t *attr, int *inheritsched)
+HANDLER_DEF(int , pthread_attr_getinheritsched, const pthread_attr_t *attr, int *inheritsched)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getinheritschedp)(const pthread_attr_t *attr,
@@ -417,14 +433,15 @@ int PROBE_NAME(pthread_attr_getinheritsched)(const pthread_attr_t *attr, int *in
 	ret = pthread_attr_getinheritschedp(attr, inheritsched);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getinheritsched,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(inheritsched));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_getinheritsched, const pthread_attr_t *, attr, int *, inheritsched)
 
-int PROBE_NAME(pthread_attr_setinheritsched)(pthread_attr_t *attr, int inheritsched)
+HANDLER_DEF(int , pthread_attr_setinheritsched, pthread_attr_t *attr, int inheritsched)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setinheritschedp)(pthread_attr_t *attr,
@@ -435,15 +452,15 @@ int PROBE_NAME(pthread_attr_setinheritsched)(pthread_attr_t *attr, int inheritsc
 	ret = pthread_attr_setinheritschedp(attr, inheritsched);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setinheritsched,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pd", voidp_to_uint64(attr),
 				   inheritsched);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_setinheritsched, pthread_attr_t *, attr, int, inheritsched)
 
-int PROBE_NAME(pthread_attr_getschedparam)(const pthread_attr_t *attr,
-		struct sched_param *param)
+HANDLER_DEF(int, pthread_attr_getschedparam, const pthread_attr_t *attr, struct sched_param *param)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getschedparamp)(const pthread_attr_t *attr,
@@ -454,15 +471,15 @@ int PROBE_NAME(pthread_attr_getschedparam)(const pthread_attr_t *attr,
 	ret = pthread_attr_getschedparamp(attr, param);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getschedparam,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(param));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_attr_getschedparam, const pthread_attr_t *, attr, struct sched_param *, param)
 
-int PROBE_NAME(pthread_attr_setschedparam)(pthread_attr_t *attr,
-		const struct sched_param *param)
+HANDLER_DEF(int, pthread_attr_setschedparam, pthread_attr_t *attr, const struct sched_param *param)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setschedparamp)(pthread_attr_t *attr,
@@ -473,15 +490,16 @@ int PROBE_NAME(pthread_attr_setschedparam)(pthread_attr_t *attr,
 	ret = pthread_attr_setschedparamp(attr, param);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setschedparam,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pp",
 				   voidp_to_uint64(attr),
 				   voidp_to_uint64(param));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_attr_setschedparam, pthread_attr_t *, attr, const struct sched_param *, param)
 
-int PROBE_NAME(pthread_attr_getschedpolicy)(const pthread_attr_t *attr, int *policy)
+HANDLER_DEF(int , pthread_attr_getschedpolicy, const pthread_attr_t *attr, int *policy)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getschedpolicyp)(const pthread_attr_t *attr,
@@ -492,14 +510,15 @@ int PROBE_NAME(pthread_attr_getschedpolicy)(const pthread_attr_t *attr, int *pol
 	ret = pthread_attr_getschedpolicyp(attr, policy);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getschedpolicy,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(policy));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_getschedpolicy, const pthread_attr_t *, attr, int *, policy)
 
-int PROBE_NAME(pthread_attr_setschedpolicy)(pthread_attr_t *attr, int policy)
+HANDLER_DEF(int , pthread_attr_setschedpolicy, pthread_attr_t *attr, int policy)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setschedpolicyp)(pthread_attr_t *attr,
@@ -510,14 +529,15 @@ int PROBE_NAME(pthread_attr_setschedpolicy)(pthread_attr_t *attr, int policy)
 	ret = pthread_attr_setschedpolicyp(attr, policy);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setschedpolicy,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pd", voidp_to_uint64(attr),
 				   policy);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_setschedpolicy, pthread_attr_t *, attr, int, policy)
 
-int PROBE_NAME(pthread_attr_getguardsize)(const pthread_attr_t *attr, size_t *guardsize)
+HANDLER_DEF(int , pthread_attr_getguardsize, const pthread_attr_t *attr, size_t *guardsize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getguardsizep)(const pthread_attr_t *attr,
@@ -528,14 +548,15 @@ int PROBE_NAME(pthread_attr_getguardsize)(const pthread_attr_t *attr, size_t *gu
 	ret = pthread_attr_getguardsizep(attr, guardsize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getguardsize,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(guardsize));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_getguardsize, const pthread_attr_t *, attr, size_t *, guardsize)
 
-int PROBE_NAME(pthread_attr_setguardsize)(pthread_attr_t *attr, size_t guardsize)
+HANDLER_DEF(int , pthread_attr_setguardsize, pthread_attr_t *attr, size_t guardsize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setguardsizep)(pthread_attr_t *attr,
@@ -546,14 +567,15 @@ int PROBE_NAME(pthread_attr_setguardsize)(pthread_attr_t *attr, size_t guardsize
 	ret = pthread_attr_setguardsizep(attr, guardsize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setguardsize,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "px", voidp_to_uint64(attr),
 				   (uint64_t)(guardsize));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_setguardsize, pthread_attr_t *, attr, size_t, guardsize)
 
-int PROBE_NAME(pthread_attr_getscope)(const pthread_attr_t *attr, int *contentionscope)
+HANDLER_DEF(int , pthread_attr_getscope, const pthread_attr_t *attr, int *contentionscope)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getscopep)(const pthread_attr_t *attr,
@@ -564,14 +586,15 @@ int PROBE_NAME(pthread_attr_getscope)(const pthread_attr_t *attr, int *contentio
 	ret = pthread_attr_getscopep(attr, contentionscope);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getscope,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(contentionscope));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_getscope, const pthread_attr_t *, attr, int *, contentionscope)
 
-int PROBE_NAME(pthread_attr_setscope)(pthread_attr_t *attr, int contentionscope)
+HANDLER_DEF(int , pthread_attr_setscope, pthread_attr_t *attr, int contentionscope)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setscopep)(pthread_attr_t *attr,
@@ -582,14 +605,14 @@ int PROBE_NAME(pthread_attr_setscope)(pthread_attr_t *attr, int contentionscope)
 	ret = pthread_attr_setscopep(attr, contentionscope);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setscope,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "pd", voidp_to_uint64(attr), contentionscope);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int , pthread_attr_setscope, pthread_attr_t *, attr, int, contentionscope)
 
-int PROBE_NAME(pthread_attr_getstack)(const pthread_attr_t *attr,
-		void **stackaddr, size_t *stacksize)
+HANDLER_DEF(int, pthread_attr_getstack, const pthread_attr_t *attr, void **stackaddr, size_t *stacksize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getstackp)(const pthread_attr_t *attr,
@@ -600,16 +623,16 @@ int PROBE_NAME(pthread_attr_getstack)(const pthread_attr_t *attr,
 	ret = pthread_attr_getstackp(attr, stackaddr, stacksize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getstack,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "ppp", voidp_to_uint64(attr),
 				   voidp_to_uint64(stackaddr),
 				   voidp_to_uint64(stacksize));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_attr_getstack, const pthread_attr_t *, attr, void **, stackaddr, size_t *, stacksize)
 
-int PROBE_NAME(pthread_attr_setstack)(pthread_attr_t *attr,
-		void *stackaddr, size_t stacksize)
+HANDLER_DEF(int, pthread_attr_setstack, pthread_attr_t *attr, void *stackaddr, size_t stacksize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setstackp)(pthread_attr_t *attr,
@@ -620,13 +643,14 @@ int PROBE_NAME(pthread_attr_setstack)(pthread_attr_t *attr,
 	ret = pthread_attr_setstackp(attr, stackaddr, stacksize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setstack,
-				   'd', ret, thread, THREAD_API_OTHER,
+				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
 				   "ppx", voidp_to_uint64(attr),
 				   voidp_to_uint64(stackaddr),
 				   (uint64_t)(stacksize));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, pthread_attr_setstack, pthread_attr_t *, attr, void *, stackaddr, size_t, stacksize)
 
 /*
 void pthread_testcancel(void);
@@ -661,6 +685,11 @@ int pthread_atfork(void (*prepare)(void), void (*parent)(void),
 void _da_cleanup_handler(void *data)
 {
 	pthread_t pSelf;
+	/* TODO Arch dependent */
+	uint32_t caller;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
 
 	// unlock socket mutex to prevent deadlock
 	// in case of cancellation happened while log sending
@@ -674,7 +703,7 @@ void _da_cleanup_handler(void *data)
 	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
 			  API_ID__da_cleanup_handler,
 			  "p", voidp_to_uint64(data));
-	PACK_COMMON_END('v', 0, 0, 1);
+	PACK_COMMON_END('v', 0, 0, 1, caller);
 	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
 
@@ -691,6 +720,11 @@ void *_da_ThreadProc(void *params)
 	pthread_t pSelf;
 	int old_state;
 	int new_state = PTHREAD_CANCEL_DISABLE;
+	/* TODO Arch dependent */
+	uint32_t caller;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
 
 	// disable cancellation to prevent deadlock
 	real_pthread_setcancelstate(new_state, &old_state);
@@ -703,7 +737,7 @@ void *_da_ThreadProc(void *params)
 	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
 			  API_ID__da_ThreadProc,
 			  "p", voidp_to_uint64(params));
-	PACK_COMMON_END('p', 0, 0, 1);
+	PACK_COMMON_END('p', 0, 0, 1, caller);
 	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_START, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
 
@@ -728,7 +762,7 @@ void *_da_ThreadProc(void *params)
 	PACK_COMMON_BEGIN(MSG_PROBE_THREAD,
 			  API_ID__da_ThreadProc,
 			  "p", voidp_to_uint64(params));
-	PACK_COMMON_END('p', ret, 0, 1);
+	PACK_COMMON_END('p', ret, 0, 1, caller);
 	PACK_THREAD(pSelf, THREAD_PTHREAD, THREAD_API_INTERNAL_STOP, THREAD_CLASS_BLANK);
 	FLUSH_LOCAL_BUF();
 

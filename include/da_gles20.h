@@ -153,32 +153,32 @@ extern EGLContext eglGetCurrentContext(void);
 		error = eglGetError();					\
 	}
 
-#define AFTER(RET_TYPE, RET_VAL, APITYPE, CONTEXT_VAL, INPUTFORMAT, ...)	\
+#define AFTER(RET_TYPE, RET_VAL, APITYPE, CALL_TYPE, CALLER, CONTEXT_VAL, INPUTFORMAT, ...)	\
 	/* AFTER */								\
 	POST_PACK_PROBEBLOCK_BEGIN();						\
 	PREPARE_LOCAL_BUF();							\
 	PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, INPUTFORMAT, __VA_ARGS__);	\
-	PACK_COMMON_END(RET_TYPE, RET_VAL, error, blockresult);			\
+	PACK_COMMON_END(RET_TYPE, RET_VAL, error, CALL_TYPE, CALLER);			\
 	PACK_GL_ADD(APITYPE, get_current_nsec() - start_nsec, CONTEXT_VAL);	\
 	FLUSH_LOCAL_BUF();							\
 	POST_PACK_PROBEBLOCK_END()
 
-#define AFTER_NO_PARAM(RET_TYPE, RETVAL, APITYPE, CONTEXTVALUE) \
-		AFTER(RET_TYPE, RETVAL, APITYPE, CONTEXTVALUE, "", 0)
+#define AFTER_NO_PARAM(RET_TYPE, RETVAL, APITYPE, CALL_TYPE, CALLER, CONTEXTVALUE) \
+		AFTER(RET_TYPE, RETVAL, APITYPE, CALL_TYPE, CALLER, CONTEXTVALUE, "", 0)
 
 #define GL_GET_ERROR()							\
 	/* GL_GET_ERROR */						\
 	if (blockresult != 0) {						\
 		is_gl_error_external = 0;				\
-		error = REAL_NAME(glGetError)();			\
+		error = glGetError_internal();			\
 		is_gl_error_external = 1;				\
 	}
 
-#define AFTER_SHADER(RET_TYPE, RET_VAL, APITYPE, CONTEXT_VAL, CONTEXT_SIZE, INPUTFORMAT, ...)	\
+#define AFTER_SHADER(RET_TYPE, RET_VAL, APITYPE, CALL_TYPE, CALLER, CONTEXT_VAL, CONTEXT_SIZE, INPUTFORMAT, ...)	\
 	POST_PACK_PROBEBLOCK_BEGIN();						\
 	PREPARE_LOCAL_BUF();							\
 	PACK_COMMON_BEGIN(MSG_PROBE_GL, vAPI_ID, INPUTFORMAT, __VA_ARGS__);	\
-	PACK_COMMON_END(RET_TYPE, RET_VAL, error, blockresult);			\
+	PACK_COMMON_END(RET_TYPE, RET_VAL, error, CALL_TYPE, CALLER);			\
 	PACK_GL_SHADER(APITYPE, get_current_nsec() - start_nsec, CONTEXT_VAL, CONTEXT_SIZE);	\
 	FLUSH_LOCAL_BUF();							\
 	POST_PACK_PROBEBLOCK_END()
@@ -188,7 +188,11 @@ extern EGLContext eglGetCurrentContext(void);
 						   alias(FUNCSTR(FUNCNAME))	\
 						 ))
 
-#define FUNC_DECLAR(TYPE, FUNCNAME, ...)					\
+
+/* NOTIFY: uncomment to use with LD_PRELOAD */
+#if 0
+
+#define PUT_ALIASES(TYPE, FUNCNAME, ...)                    \
 	/* alias for C function prototype */					\
 	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE);			\
 	}/* extern C*/								\
@@ -196,18 +200,23 @@ extern EGLContext eglGetCurrentContext(void);
 	/* alias for C++ function prototype */					\
 	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE, __VA_ARGS__);	\
 	extern "C"								\
-	{									\
-	TYPE REAL_NAME(FUNCNAME)(__VA_ARGS__)					\
+	{
+
+#else
+
+#define PUT_ALIASES(TYPE, FUNCNAME, ...)
+
+#endif
+
+
+
+#define FUNC_DECLAR(TYPE, FUNCNAME, ...)					\
+	PUT_ALIASES(TYPE, FUNCNAME, __VA_ARGS__)				\
+	HANDLER_DEF(TYPE, REAL_NAME(FUNCNAME), __VA_ARGS__)
 
 #define FUNC_DECLAR_NOARGS(TYPE, FUNCNAME)					\
-	/* alias for C function prototype */					\
-	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE, int);		\
-	}									\
-	/* alias for C++ function prototype */					\
-	extern _ALIAS(FUNCNAME, REAL_NAME(FUNCNAME), TYPE);			\
-	extern "C"								\
-	{									\
-	TYPE REAL_NAME(FUNCNAME)()						\
+	PUT_ALIASES(TYPE, FUNCNAME)							\
+	HANDLER_DEF(TYPE, REAL_NAME(FUNCNAME))
 
 
 #define BEFORE_EVAS_GL(FUNCNAME)					\
@@ -260,7 +269,7 @@ extern EGLContext eglGetCurrentContext(void);
 		BEFORE(FUNCNAME);						\
 		CALL_ORIG(FUNCNAME, GET_ARGS(__VA_ARGS__));			\
 		GL_GET_ERROR();							\
-		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, "", PACK_ARGS,	\
+		AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", PACK_ARGS,	\
 			GET_ARGS(__VA_ARGS__));					\
 	}
 

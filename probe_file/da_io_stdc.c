@@ -56,7 +56,7 @@ static inline char *get_abs_path(FILE *file, const char *fname,
 	return path;
 }
 
-FILE* PROBE_NAME(fopen)(const char* filename, const char* mode)
+HANDLER_DEF(FILE*, fopen, const char* filename, const char* mode)
 {
 	static FILE* (*fopenp)(const char* filename, const char* mode);
 	char buffer[PATH_MAX];
@@ -69,13 +69,14 @@ FILE* PROBE_NAME(fopen)(const char* filename, const char* mode)
 	_filepath = get_abs_path(fret, filename, buffer, PATH_MAX);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fopen,
-				  'p', fret, 0, fret, FD_API_OPEN, "s4s",
+				  'p', fret, 0, fret, FD_API_OPEN, call_type, caller, "s4s",
 				  filename, mode);
 
 	return fret;
 }
+HANDLER_WRAPPERS(FILE*, fopen, const char*, filename, const char*, mode)
 
-FILE* PROBE_NAME(freopen)(const char * filename, const char * mode, FILE * stream)
+HANDLER_DEF(FILE*, freopen, const char * filename, const char * mode, FILE * stream)
 {
 	static FILE* (*freopenp)(const char *filename, const char *mode,
 				 FILE *stream);
@@ -88,14 +89,15 @@ FILE* PROBE_NAME(freopen)(const char * filename, const char * mode, FILE * strea
 
 	_filepath = get_abs_path(fret, filename, buffer, PATH_MAX);
 
-	AFTER_PACK_ORIGINAL_FILEP(API_ID_freopen, 'p', fret, 0, fret, FD_API_OPEN,
+	AFTER_PACK_ORIGINAL_FILEP(API_ID_freopen, 'p', fret, 0, fret, FD_API_OPEN, call_type, caller,
 				  "s4sp", filename, mode,
 				  voidp_to_uint64(stream));
 
 	return fret;
 }
+HANDLER_WRAPPERS(FILE*, freopen, const char *, filename, const char *, mode, FILE *, stream)
 
-FILE* PROBE_NAME(fdopen)(int fildes, const char *mode)
+HANDLER_DEF(FILE*, fdopen, int fildes, const char *mode)
 {
 	static FILE* (*fdopenp)(int fildes, const char *mode);
  	FILE* fret;
@@ -105,24 +107,26 @@ FILE* PROBE_NAME(fdopen)(int fildes, const char *mode)
 	fret = fdopenp(fildes, mode);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fdopen,
-				  'p', fret, 0, fret, FD_API_OPEN, "ds", fildes, mode);
+				  'p', fret, 0, fret, FD_API_OPEN, call_type, caller, "ds", fildes, mode);
 
 	return fret;
 }
+HANDLER_WRAPPERS(FILE*, fdopen, int, fildes, const char *, mode)
 
-int PROBE_NAME(fflush)(FILE* stream)
+HANDLER_DEF(int, fflush, FILE* stream)
 {
 	static int (*fflushp)(FILE* stream);
 
 	BEFORE_ORIGINAL_FILE(fflush, LIBC);
 	ret = fflushp(stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fflush,
-				  'd', ret, 0, stream, FD_API_OTHER, "p",
+				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "p",
 				  voidp_to_uint64(stream));
 	return ret;
 }
+HANDLER_WRAPPERS(int, fflush, FILE*, stream)
 
-int PROBE_NAME(fclose)(FILE* stream)
+HANDLER_DEF(int, fclose, FILE* stream)
 {
 	static int (*fclosep)(FILE* stream);
 	DECLARE_VARIABLE_FD;
@@ -143,14 +147,15 @@ int PROBE_NAME(fclose)(FILE* stream)
 	PACK_COMMON_BEGIN(MSG_PROBE_RESOURCE,
 			  API_ID_fclose,
 			  "p", voidp_to_uint64(stream));
-	PACK_COMMON_END('d', ret, newerrno, blockresult);
+	PACK_COMMON_END('d', ret, newerrno, call_type, caller);
 	POST_PACK_PROBEBLOCK_MIDDLE_FD(0, _fd, FD_API_CLOSE);
 	POST_PACK_PROBEBLOCK_END();
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fclose, FILE*, stream)
 
-FILE * PROBE_NAME(tmpfile )( void )
+HANDLER_DEF(FILE *, tmpfile)
 {
 	static FILE* (*tmpfilep) ( void );
 	FILE* fret;
@@ -159,49 +164,53 @@ FILE * PROBE_NAME(tmpfile )( void )
 	_filepath = "<temp file>";
 	fret = tmpfilep();
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_tmpfile,
-				  'p', fret, 0, fret, FD_API_OPEN, "s", "");
+				  'p', fret, 0, fret, FD_API_OPEN, call_type, caller, "s", "");
 	return fret;
 }
+HANDLER_WRAPPERS(FILE *, tmpfile)
 
-int PROBE_NAME(fgetpos)(FILE* stream, fpos_t* position)
+HANDLER_DEF(int, fgetpos, FILE* stream, fpos_t* position)
 {
 	static int (*fgetposp)(FILE* stream, fpos_t* position);
 
 	BEFORE_ORIGINAL_FILE(fgetpos, LIBC);
 	ret = fgetposp(stream, position);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fgetpos,
-				  'd', ret, 0, stream, FD_API_OTHER, "pp",
+				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "pp",
 				  voidp_to_uint64(stream),
 				  voidp_to_uint64(position));
 	return ret;
 }
+HANDLER_WRAPPERS(int, fgetpos, FILE*, stream, fpos_t*, position)
 
-int PROBE_NAME(fseek)(FILE* stream, long int offset, int origin)
+HANDLER_DEF(int, fseek, FILE* stream, long int offset, int origin)
 {
 	static int (*fseekp)(FILE* stream, long int offset, int origin);
 
 	BEFORE_ORIGINAL_FILE(fseek, LIBC);
 	ret = fseekp(stream, offset, origin);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fseek,
-				  'd', ret, (unsigned int)offset, stream, FD_API_OTHER,
+				  'd', ret, (unsigned int)offset, stream, FD_API_OTHER, call_type, caller,
 				  "pxd", voidp_to_uint64(stream),
 				  (uint64_t)(offset), origin);
 	return ret;
 }
+HANDLER_WRAPPERS(int, fseek, FILE*, stream, long int, offset, int, origin)
 
-int PROBE_NAME(fsetpos)(FILE* stream, const fpos_t* pos)
+HANDLER_DEF(int, fsetpos, FILE* stream, const fpos_t* pos)
 {
 	static int (*fsetposp)(FILE* stream, const fpos_t* pos);
 
 	BEFORE_ORIGINAL_FILE(fsetpos, LIBC);
 	ret = fsetposp(stream, pos);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fsetpos,
-				  'd', ret, 0, stream, FD_API_OTHER, "pp",
+				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "pp",
 				  voidp_to_uint64(stream), voidp_to_uint64(pos));
 	return ret;
 }
+HANDLER_WRAPPERS(int, fsetpos, FILE*, stream, const fpos_t*, pos)
 
-long int PROBE_NAME(ftell)(FILE* stream)
+HANDLER_DEF(long int, ftell, FILE* stream)
 {
 	static long int (*ftellp)(FILE* stream);
 	long int lret;
@@ -211,13 +220,14 @@ long int PROBE_NAME(ftell)(FILE* stream)
 	lret = ftellp(stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_ftell,
-				  'x', lret, 0, stream, FD_API_OTHER, "p",
+				  'x', lret, 0, stream, FD_API_OTHER, call_type, caller, "p",
 				  voidp_to_uint64(stream));
 
 	return lret;
 }
+HANDLER_WRAPPERS(long int, ftell, FILE*, stream)
 
-void PROBE_NAME(rewind)(FILE* stream)
+HANDLER_DEF(void, rewind, FILE* stream)
 {
 	static void (*rewindp)(FILE* stream);
 
@@ -226,11 +236,12 @@ void PROBE_NAME(rewind)(FILE* stream)
 	rewindp(stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_rewind,
-				  'v', 0, 0, stream, FD_API_OTHER, "p",
+				  'v', 0, 0, stream, FD_API_OTHER, call_type, caller, "p",
 				  voidp_to_uint64(stream));
 }
+HANDLER_WRAPPERS_VOID(void, rewind, FILE*, stream)
 
-void PROBE_NAME(clearerr)(FILE* stream)
+HANDLER_DEF(void, clearerr, FILE* stream)
 {
 	static void (*clearerrp)(FILE* stream);
 
@@ -239,45 +250,49 @@ void PROBE_NAME(clearerr)(FILE* stream)
 	clearerrp(stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_clearerr,
-				  'v', 0, 0, stream, FD_API_OTHER, "p",
+				  'v', 0, 0, stream, FD_API_OTHER, call_type, caller, "p",
 				  voidp_to_uint64(stream));
 }
+HANDLER_WRAPPERS_VOID(void, clearerr, FILE*, stream)
 
-int PROBE_NAME(feof)(FILE* stream)
+HANDLER_DEF(int, feof, FILE* stream)
 {
 	static int (*feofp)(FILE* stream);
 
 	BEFORE_ORIGINAL_FILE(feof, LIBC);
 	ret = feofp(stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_feof,
-				  'd', ret, 0, stream, FD_API_OTHER, "p",
+				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "p",
 				  voidp_to_uint64(stream));
 	return ret;
 }
+HANDLER_WRAPPERS(int, feof, FILE*, stream)
 
-int PROBE_NAME(ferror)(FILE* stream)
+HANDLER_DEF(int, ferror, FILE* stream)
 {
 	static int (*ferrorp)(FILE* stream);
 
 	BEFORE_ORIGINAL_FILE(ferror, LIBC);
 	ret = ferrorp(stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_ferror,
-				  'd', ret, 0, stream, FD_API_OTHER, "p",
+				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "p",
 				  voidp_to_uint64(stream));
 	return ret;
 }
+HANDLER_WRAPPERS(int, ferror, FILE*, stream)
 
-int PROBE_NAME(fileno)(FILE* stream)
+HANDLER_DEF(int, fileno, FILE* stream)
 {
 	static int (*filenop)(FILE* stream);
 
 	BEFORE_ORIGINAL_FILE(fileno, LIBC);
 	ret = filenop(stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fileno,
-				  'd', ret, 0, stream, FD_API_OTHER, "p",
+				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "p",
 				  voidp_to_uint64(stream));
 	return ret;
 }
+HANDLER_WRAPPERS(int, fileno, FILE*, stream)
 
 
 
@@ -285,167 +300,176 @@ int PROBE_NAME(fileno)(FILE* stream)
 // File read / write APIs
 // *******************************************************************
 
-int PROBE_NAME(vfprintf)(FILE* stream, const char* format, va_list arg)
+HANDLER_DEF(int, vfprintf, FILE* stream, const char* format, va_list arg)
 {
 	static int (*vfprintfp)(FILE* stream, const char* format, va_list arg);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_vfprintf, 'd', vfprintf, LIBC, stream,
-					FD_API_WRITE_START, "ps",
+					FD_API_WRITE_START, call_type, caller, "ps",
 					voidp_to_uint64(stream), format);
 
 	ret = vfprintfp(stream, format, arg);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_vfprintf, 'd', ret, ret, stream,
-				       FD_API_WRITE_END, "ps",
+				       FD_API_WRITE_END, call_type, caller, "ps",
 				       voidp_to_uint64(stream), format);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, vfprintf, FILE*, stream, const char*, format, va_list, arg)
 
-int PROBE_NAME(vfscanf)(FILE* stream, const char* format, va_list arg)
+HANDLER_DEF(int, vfscanf, FILE* stream, const char* format, va_list arg)
 {
 	static int (*vfscanfp)(FILE* stream, const char* format, va_list arg);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_vfscanf, 'd', vfscanf, LIBC, stream,
-					FD_API_READ_START, "ps",
+					FD_API_READ_START, call_type, caller, "ps",
 					voidp_to_uint64(stream), format);
 
 	ret = vfscanfp(stream, format, arg);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_vfscanf, 'd', ret, ret, stream,
-				       FD_API_READ_END, "ps",
+				       FD_API_READ_END, call_type, caller, "ps",
 				       voidp_to_uint64(stream), format);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, vfscanf, FILE*, stream, const char*, format, va_list, arg)
 
-int PROBE_NAME(fgetc)(FILE* stream)
+HANDLER_DEF(int, fgetc, FILE* stream)
 {
 	static int (*fgetcp)(FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fgetc, 'd', fgetc, LIBC, stream,
-					FD_API_READ_START, "p",
+					FD_API_READ_START, call_type, caller, "p",
 					voidp_to_uint64(stream));
 
 	ret = fgetcp(stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fgetc, 'd', ret, (ret != EOF), stream,
-				       FD_API_READ_END, "p",
+				       FD_API_READ_END, call_type, caller, "p",
 				       voidp_to_uint64(stream));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fgetc, FILE*, stream)
 
 #if 0	// why is this commented?
-char* PROBE_NAME(fgets)(char* str, int size, FILE* stream)
+HANDLER_DEF(char*, fgets, char* str, int size, FILE* stream)
 {
 	static char* (*fgetsp)(char* str, int num, FILE* stream);
 	char* cret;
 
-	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fgets, 'p', FD_API_READ_START,
+	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fgets, 'p', FD_API_READ_START, call_type, caller,
 				fgets, LIBC, stream, "sdp", str, size, stream);
 
 	cret = fgetsp(str, size, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fgets, 'p', cret, (ret == NULL ? 0 : strlen(cret)),
-			stream, FD_API_READ_END, "sdp", str, size, stream);
+			stream, FD_API_READ_END, call_type, caller, "sdp", str, size, stream);
 
 	return cret;
 }
+HANDLER_WRAPPERS(char*, fgets, char*, str, int, size, FILE*, stream)
 #endif
 
-int PROBE_NAME(fputc)(int character, FILE* stream)
+HANDLER_DEF(int, fputc, int character, FILE* stream)
 {
 	static int (*fputcp)(int character, FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fputc, 'd', fputc, LIBC, stream,
-					FD_API_WRITE_START, "dp", character,
+					FD_API_WRITE_START, call_type, caller, "dp", character,
 					voidp_to_uint64(stream));
 
 	ret = fputcp(character, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fputc, 'd', ret, (ret == EOF ? 0 : 1),
-				       stream, FD_API_WRITE_END, "dp",
+				       stream, FD_API_WRITE_END, call_type, caller, "dp",
 				       character, voidp_to_uint64(stream));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fputc, int, character, FILE*, stream)
 
-int PROBE_NAME(fputs)(const char* str, FILE* stream)
+HANDLER_DEF(int, fputs, const char* str, FILE* stream)
 {
 	static int (*fputsp)(const char* str, FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fputs, 'd', fputs, LIBC, stream,
-					FD_API_WRITE_START, "sp", str,
+					FD_API_WRITE_START, call_type, caller, "sp", str,
 					voidp_to_uint64(stream));
 
 	ret = fputsp(str, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fputs, 'd', ret, ret, stream,
-				       FD_API_WRITE_END, "sp", str,
+				       FD_API_WRITE_END, call_type, caller, "sp", str,
 				       voidp_to_uint64(stream));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fputs, const char*, str, FILE*, stream)
 
-int PROBE_NAME(getc)(FILE* stream)
+HANDLER_DEF(int, getc, FILE* stream)
 {
 	static int (*getcp)(FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_getc, 'd', getc, LIBC, stream,
-					FD_API_READ_START, "p",
+					FD_API_READ_START, call_type, caller, "p",
 					voidp_to_uint64(stream));
 
 	ret = getcp(stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_getc, 'd', ret, (ret == EOF ? 0 : 1), stream,
-				       FD_API_READ_END, "p",
+				       FD_API_READ_END, call_type, caller, "p",
 				       voidp_to_uint64(stream));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, getc, FILE*, stream)
 
-int PROBE_NAME(putc)(int character, FILE* stream)
+HANDLER_DEF(int, putc, int character, FILE* stream)
 {
 	static int (*putcp)(int character, FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_putc, 'd', putc, LIBC, stream,
-					FD_API_WRITE_START, "dp", character,
+					FD_API_WRITE_START, call_type, caller, "dp", character,
 					voidp_to_uint64(stream));
 
 	ret = putcp(character, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_putc, 'd', ret, (ret == EOF ? 0 : 1),
-				       stream, FD_API_WRITE_END, "dp",
+				       stream, FD_API_WRITE_END, call_type, caller, "dp",
 				       character, voidp_to_uint64(stream));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, putc, int, character, FILE*, stream)
 
-int PROBE_NAME(ungetc)(int character, FILE* stream)
+HANDLER_DEF(int, ungetc, int character, FILE* stream)
 {
 	static int (*ungetcp)(int character, FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_putc, 'd', ungetc, LIBC, stream,
-					FD_API_WRITE_START, "dp", character,
+					FD_API_WRITE_START, call_type, caller, "dp", character,
 					voidp_to_uint64(stream));
 
 	ret = ungetcp(character, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_ungetc, 'd', ret, 0, stream,
-				       FD_API_OTHER, "dp", character,
+				       FD_API_OTHER, call_type, caller, "dp", character,
 				       voidp_to_uint64(stream));
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, ungetc, int, character, FILE*, stream)
 
-size_t PROBE_NAME(fread)(void* ptr, size_t size, size_t count, FILE* stream)
+HANDLER_DEF(size_t, fread, void* ptr, size_t size, size_t count, FILE* stream)
 {
 	static size_t (*freadp)(void* ptr, size_t size, size_t count, FILE* stream);
 	size_t tret;
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fread, 'x', fread, LIBC, stream,
-					FD_API_READ_START, "pxxp",
+					FD_API_READ_START, call_type, caller, "pxxp",
 					voidp_to_uint64(ptr),
 					(uint64_t)(size),
 					(uint64_t)(count),
@@ -454,7 +478,7 @@ size_t PROBE_NAME(fread)(void* ptr, size_t size, size_t count, FILE* stream)
 	tret = freadp(ptr, size, count, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fread, 'x', tret, tret*size, stream,
-				       FD_API_READ_END, "pxxp",
+				       FD_API_READ_END, call_type, caller, "pxxp",
 				       voidp_to_uint64(ptr),
 				       (uint64_t)(size),
 				       (uint64_t)(count),
@@ -462,14 +486,15 @@ size_t PROBE_NAME(fread)(void* ptr, size_t size, size_t count, FILE* stream)
 
 	return tret;
 }
+HANDLER_WRAPPERS(size_t, fread, void*, ptr, size_t, size, size_t, count, FILE*, stream)
 
-size_t PROBE_NAME(fwrite)(const void* ptr, size_t size, size_t count, FILE* stream)
+HANDLER_DEF(size_t, fwrite, const void* ptr, size_t size, size_t count, FILE* stream)
 {
 	static size_t (*fwritep)(const void* ptr, size_t size, size_t count, FILE* stream);
 	size_t tret;
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fwrite, 'x', fwrite, LIBC, stream,
-					FD_API_WRITE_START, "pxxp",
+					FD_API_WRITE_START, call_type, caller, "pxxp",
 					voidp_to_uint64(ptr),
 					(uint64_t)(size),
 					(uint64_t)(count),
@@ -478,7 +503,7 @@ size_t PROBE_NAME(fwrite)(const void* ptr, size_t size, size_t count, FILE* stre
 	tret = fwritep(ptr, size, count, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fwrite, 'x', tret, tret*size, stream,
-				       FD_API_WRITE_END, "pxxp",
+				       FD_API_WRITE_END, call_type, caller, "pxxp",
 				       voidp_to_uint64(ptr),
 				       (uint64_t)(size),
 				       (uint64_t)(count),
@@ -486,16 +511,17 @@ size_t PROBE_NAME(fwrite)(const void* ptr, size_t size, size_t count, FILE* stre
 
 	return tret;
 }
+HANDLER_WRAPPERS(size_t, fwrite, const void*, ptr, size_t, size, size_t, count, FILE*, stream)
 
 // *********************************************************
 // variable parameter function
 // *********************************************************
-int PROBE_NAME(fprintf)(FILE* stream, const char* format, ...)
+HANDLER_DEF(int, fprintf, FILE* stream, const char* format, ...)
 {
 	static int (*vfprintfp)(FILE* stream, const char* format, ...);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fprintf, 'd', vfprintf, LIBC, stream,
-					FD_API_WRITE_START, "ps",
+					FD_API_WRITE_START, call_type, caller, "ps",
 					voidp_to_uint64(stream), format);
 
 	va_list arg;
@@ -504,20 +530,21 @@ int PROBE_NAME(fprintf)(FILE* stream, const char* format, ...)
 	ret = vfprintfp(stream, format, arg);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fprintf, 'd', ret, ret, stream,
-				       FD_API_WRITE_END, "ps",
+				       FD_API_WRITE_END, call_type, caller, "ps",
 				       voidp_to_uint64(stream), format);
 
 	va_end(arg);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fprintf, FILE*, stream, const char*, format, ...)
 
-int PROBE_NAME(fscanf)(FILE* stream, const char* format, ...)
+HANDLER_DEF(int, fscanf, FILE* stream, const char* format, ...)
 {
 	static int (*vfscanfp)(FILE* stream, const char* format, ...);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fscanf, 'd', vfscanf, LIBC, stream,
-					FD_API_READ_START, "ps",
+					FD_API_READ_START, call_type, caller, "ps",
 					voidp_to_uint64(stream), format);
 
 	va_list arg;
@@ -526,120 +553,127 @@ int PROBE_NAME(fscanf)(FILE* stream, const char* format, ...)
 	ret = vfscanfp(stream, format, arg);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fscanf, 'd', ret, ret, stream,
-				       FD_API_READ_END, "ps",
+				       FD_API_READ_END, call_type, caller, "ps",
 				       voidp_to_uint64(stream), format);
 
 	va_end(arg);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, fscanf, FILE*, stream, const char*, format, ...)
 
 #if !defined(DA_DEBUG_LOG) && !defined(PRINT_STDOUT)
-int PROBE_NAME(printf)(const char* format, ...)
+HANDLER_DEF(int, printf, const char* format, ...)
 {
 	static int (*vprintfp)(const char* format, ...);
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_printf, 'd', vprintf, LIBC,
-				FD_API_WRITE_START, "s", format);
+				FD_API_WRITE_START, call_type, caller, "s", format);
 
 	va_list arg;
 	va_start(arg, format);
 	ret = vprintfp(format, arg);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_printf, 'd', ret, ret,
-				FD_API_WRITE_END, "s", format);
+				FD_API_WRITE_END, call_type, caller, "s", format);
 
 	va_end(arg);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, printf, const char*, format, ...)
 #endif
 
-int PROBE_NAME(scanf)(const char* format, ...)
+HANDLER_DEF(int, scanf, const char* format, ...)
 {
 	static int (*vscanfp)(const char* format, ...);
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_scanf, 'd', vscanf, LIBC,
-				FD_API_READ_START, "s", format);
+				FD_API_READ_START, call_type, caller, "s", format);
 
 	va_list arg;
 	va_start(arg, format);
 	ret = vscanfp(format, arg);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_scanf, 'd', ret, ret,
-				 FD_API_READ_END, "s", format);
+				 FD_API_READ_END, call_type, caller, "s", format);
 
 	va_end(arg);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, scanf, const char*, format, ...)
 
-int PROBE_NAME(getchar)()
+HANDLER_DEF(int, getchar)
 {
 	static int (*getcharp)();
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_getchar, 'd', getchar, LIBC,
-				FD_API_READ_START, "", 0);
+				FD_API_READ_START, call_type, caller, "", 0);
 
 	ret = getcharp();
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_getchar, 'd', ret, (ret == EOF ? 0 : 1),
-				FD_API_READ_END, "", 0);
+				FD_API_READ_END, call_type, caller, "", 0);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, getchar)
 
-int PROBE_NAME(putchar)(int c)
+HANDLER_DEF(int, putchar, int c)
 {
 	static int (*putcharp)(int c);
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_putchar, 'd', putchar, LIBC,
-				FD_API_WRITE_START, "d", c);
+				FD_API_WRITE_START, call_type, caller, "d", c);
 
 	ret = putcharp(c);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_putchar, 'd', ret, (ret == EOF ? 0 : 1),
-				FD_API_WRITE_END, "d", c);
+				FD_API_WRITE_END, call_type, caller, "d", c);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, putchar, int, c)
 
-char* PROBE_NAME(gets)(char* str)
+HANDLER_DEF(char*, gets, char* str)
 {
 	static char* (*getsp)(char* str);
 	char* cret;
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_gets, 'p', gets, LIBC,
-				FD_API_READ_START, "s", str);
+				FD_API_READ_START, call_type, caller, "s", str);
 
 	cret = getsp(str);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_gets, 'p', cret, strlen(cret),
-				FD_API_READ_END, "s", str);
+				FD_API_READ_END, call_type, caller, "s", str);
 
 	return cret;
 }
+HANDLER_WRAPPERS(char*, gets, char*, str)
 
 #if !defined(DA_DEBUG_LOG) && !defined(PRINT_STDOUT)
-int PROBE_NAME(puts)(const char* str)
+HANDLER_DEF(int, puts, const char* str)
 {
 	static int (*putsp)(const char* str);
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_puts, 'd', puts, LIBC,
-				FD_API_WRITE_START, "s", str);
+				FD_API_WRITE_START, call_type, caller, "s", str);
 
 	ret = putsp(str);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_puts, 'd', ret, ret,
-				FD_API_WRITE_END, "s", str);
+				FD_API_WRITE_END, call_type, caller, "s", str);
 
 	return ret;
 }
+HANDLER_WRAPPERS(int, puts, const char*, str)
 #endif
 
 
 
-void PROBE_NAME(setbuf)(FILE* stream, char* buf)
+HANDLER_DEF(void, setbuf, FILE* stream, char* buf)
 {
 	static void (*setbufp)(FILE* stream, char* buf);
 
@@ -648,12 +682,13 @@ void PROBE_NAME(setbuf)(FILE* stream, char* buf)
 	setbufp(stream, buf);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_setbuf,
-				  'v', 0, 0, stream, FD_API_OTHER, "pp",
+				  'v', 0, 0, stream, FD_API_OTHER, call_type, caller, "pp",
 				  voidp_to_uint64(stream),
 				  voidp_to_uint64(buf));
 }
+HANDLER_WRAPPERS_VOID(void, setbuf, FILE*, stream, char*, buf)
 
-void PROBE_NAME(setbuffer)(FILE* stream, char* buf, size_t size)
+HANDLER_DEF(void, setbuffer, FILE* stream, char* buf, size_t size)
 {
 	static void (*setbufferp)(FILE* stream, char* buf, size_t size);
 
@@ -662,12 +697,13 @@ void PROBE_NAME(setbuffer)(FILE* stream, char* buf, size_t size)
 	setbufferp(stream, buf, size);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_setbuffer,
-				  'v', 0, size, stream, FD_API_OTHER,
+				  'v', 0, size, stream, FD_API_OTHER, call_type, caller,
 				  "ppx", voidp_to_uint64(stream),
 				  voidp_to_uint64(buf), (uint64_t)(size));
 }
+HANDLER_WRAPPERS_VOID(void, setbuffer, FILE*, stream, char*, buf, size_t, size)
 
-void PROBE_NAME(setlinebuf)(FILE* stream)
+HANDLER_DEF(void, setlinebuf, FILE* stream)
 {
 	static int (*setlinebufp)(FILE* stream);
 
@@ -676,24 +712,26 @@ void PROBE_NAME(setlinebuf)(FILE* stream)
 	setlinebufp(stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_setlinebuf,
-				  'v', 0, 0, stream, FD_API_OTHER, "p",
+				  'v', 0, 0, stream, FD_API_OTHER, call_type, caller, "p",
 				  voidp_to_uint64(stream));
 }
+HANDLER_WRAPPERS_VOID(void, setlinebuf, FILE*, stream)
 
-int PROBE_NAME(setvbuf)(FILE* stream, char* buf, int mode, size_t size)
+HANDLER_DEF(int, setvbuf, FILE* stream, char* buf, int mode, size_t size)
 {
 	static int (*setvbufp)(FILE* stream, char* buf, int mode, size_t size);
 
 	BEFORE_ORIGINAL_FILE(setvbuf, LIBC);
 	ret = setvbufp(stream,buf,mode,size);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_setvbuf,
-				  'd', ret, size, stream, FD_API_OTHER,
+				  'd', ret, size, stream, FD_API_OTHER, call_type, caller,
 				  "ppdx",
 				  voidp_to_uint64(stream),
 				  voidp_to_uint64(buf), mode,
 				  (uint64_t)(size));
 	return ret;
 }
+HANDLER_WRAPPERS(int, setvbuf, FILE*, stream, char*, buf, int, mode, size_t, size)
 
 /**************************** ALIASES *********************************/
 weak_alias_pref(__isoc99_scanf, scanf);
