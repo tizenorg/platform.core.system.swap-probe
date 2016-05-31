@@ -103,7 +103,6 @@ mkdir -p %{buildroot}/usr/local/bin
 %manifest swap-probe.manifest
 %defattr(-,root,root,-)
 %{_prefix}/lib/da_probe_tizen.so
-%{_prefix}/lib/libdaprobe.so
 
 %files -n swap-probe-devel
 /usr/local/include/ld_preload_*.h
