@@ -79,7 +79,6 @@ UTILITY_SRCS =				\
 	./helper/dacapture.c		\
 	./helper/daforkexec.c		\
 	./helper/dastdout.c			\
-	./custom_chart/da_chart.c	\
 
 PROBE_SRCS =	   				\
 	./probe_memory/libdamemalloc.c		\
@@ -95,7 +94,6 @@ PROBE_SRCS =	   				\
 	./probe_file/da_io_posix.c		\
 	./probe_file/da_io_stdc.c		\
 
-DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
 CAPI_SRCS = 	$(COMMON_SRCS)			\
 		./probe_capi/capi_appfw.c		\
 		./probe_ui/capi_capture.c
@@ -119,12 +117,10 @@ PARSE_ELF_BIN_SRC = ./elf_parsing/parse_elf.c
 ASM_OBJ = $(patsubst %.S,%.o, $(ASM_SRC))
 CAPI_OBJS = $(patsubst %.c,%.o, $(CAPI_SRCS)) $(ASM_OBJ)
 TIZEN_OBJS = $(patsubst %.cpp,%.o, $(patsubst %.c,%.o, $(TIZEN_SRCS))) $(ASM_OBJ)
-DUMMY_OBJS = $(patsubst %.c,%.o, $(DUMMY_SRCS))
 PARSE_ELF_LIB_OBJ = $(patsubst %.c,%.o, $(PARSE_ELF_LIB_SRC))
 PARSE_ELF_BIN_OBJ = $(patsubst %.c,%.o, $(PARSE_ELF_BIN_SRC))
 
 TIZEN_TARGET = da_probe_tizen.so
-DUMMY_TARGET = libdaprobe.so
 PARSE_ELF_LIB_TARGET = libparserelf.so
 PARSE_ELF_BIN_TARGET = parse_elf
 
@@ -136,9 +132,8 @@ TIZEN_CPPFLAGS = -DTIZENAPP $(SWAP_PROBE_DEFS)
 TIZEN_LDFLAGS = -lstdc++
 
 
-all:		elflib capi tizen dummy elfparser
+all:		elflib capi tizen elfparser
 tizen:		headers $(TIZEN_TARGET)
-dummy:		headers $(DUMMY_TARGET)
 elflib:		$(PARSE_ELF_LIB_OBJ) $(PARSE_ELF_LIB_TARGET)
 elfparser:	elflib $(PARSE_ELF_BIN_OBJ) $(PARSE_ELF_BIN_TARGET)
 
@@ -183,9 +178,6 @@ $(TIZEN_TARGET): CPPFLAGS+=$(DEBUG_FLAGS)
 $(TIZEN_TARGET): $(TIZEN_OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
-$(DUMMY_TARGET): $(DUMMY_OBJS)
-	$(CC) $(LDFLAGS) $^ -o $@
-
 $(PARSE_ELF_LIB_TARGET): $(PARSE_ELF_LIB_OBJ)
 	$(CC) $^ -shared -o $@
 
@@ -198,7 +190,7 @@ install: install_da install_ld install_elf
 
 install_da: all
 	[ -d "$(DESTDIR)/$(INSTALLDIR)" ] || mkdir -p $(DESTDIR)/$(INSTALLDIR)
-	install $(TIZEN_TARGET) $(DUMMY_TARGET) $(DESTDIR)/$(INSTALLDIR)/
+	install $(TIZEN_TARGET) $(DESTDIR)/$(INSTALLDIR)/
 
 
 install_ld: ldheader # var_addr
@@ -217,4 +209,4 @@ install_elf: elflib elfparser
 clean:
 	rm -f *.so $(TIZEN_OBJS) $(PARSE_ELF_LIB_OBJ) $(PARSE_ELF_BIN_OBJ) $(GENERATED_HEADERS) $(API_NAME_LIST) $(SOURCE_HEADERS)
 
-.PHONY: all capi tizen dummy clean install_ld install_da install_elf install headers
+.PHONY: all capi tizen clean install_ld install_da install_elf install headers
