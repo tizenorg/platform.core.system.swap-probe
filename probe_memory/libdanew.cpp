@@ -44,7 +44,8 @@
 #include "binproto.h"
 
 
-HANDLER_DEF_THROW(void *, new, (std::bad_alloc), std::size_t size)
+//HANDLER_DEF_THROW(void *, new, (std::bad_alloc), std::size_t size)
+HANDLER_WRAPPERS_THROW(void *, new, (std::bad_alloc), std::size_t, size)
 {
 	static void*(*newp)(std::size_t size);
 	DECLARE_VARIABLE_STANDARD;
@@ -73,9 +74,9 @@ HANDLER_DEF_THROW(void *, new, (std::bad_alloc), std::size_t size)
 
 	return pret;
 }
-HANDLER_WRAPPERS_THROW(void *, new, (std::bad_alloc), std::size_t, size)
 
-HANDLER_DEF_THROW(void *, new_array, (std::bad_alloc), std::size_t size)
+//HANDLER_DEF_THROW(void *, new_array, (std::bad_alloc), std::size_t size)
+HANDLER_WRAPPERS_THROW(void *, new_array, (std::bad_alloc), std::size_t, size)
 {
 	static void*(*newp)(std::size_t size);
 	DECLARE_VARIABLE_STANDARD;
@@ -104,9 +105,9 @@ HANDLER_DEF_THROW(void *, new_array, (std::bad_alloc), std::size_t size)
 
 	return pret;
 }
-HANDLER_WRAPPERS_THROW(void *, new_array, (std::bad_alloc), std::size_t, size)
 
-HANDLER_DEF_THROW(void, delete, (), void *ptr)
+//HANDLER_DEF_THROW(void, delete, (), void *ptr)
+HANDLER_WRAPPERS_THROW(void, delete, (), void *, ptr)
 {
 	static void (*deletep)(void *ptr);
     unsigned short ct;
@@ -141,9 +142,9 @@ HANDLER_DEF_THROW(void, delete, (), void *ptr)
 
 	POST_PACK_PROBEBLOCK_END();
 }
-HANDLER_WRAPPERS_THROW(void, delete, (), void *, ptr)
 
-HANDLER_DEF_THROW(void, delete_array, (), void *ptr)
+//HANDLER_DEF_THROW(void, delete_array, (), void *ptr)
+HANDLER_WRAPPERS_THROW(void, delete_array, (), void *, ptr)
 {
 	static void (*deletep)(void *ptr);
     unsigned short ct;
@@ -178,10 +179,11 @@ HANDLER_DEF_THROW(void, delete_array, (), void *ptr)
 
 	POST_PACK_PROBEBLOCK_END();
 }
-HANDLER_WRAPPERS_THROW(void, delete_array, (), void *, ptr)
 
-HANDLER_DEF_THROW(void *, new_nothrow, (), std::size_t size,
-		  const std::nothrow_t& nothrow)
+//HANDLER_DEF_THROW(void *, new_nothrow, (), std::size_t size,
+//		  const std::nothrow_t& nothrow)
+HANDLER_WRAPPERS_THROW(void *, new_nothrow, (), std::size_t, size,
+		       const std::nothrow_t&, nothrow)
 {
 	static void*(*newp)(std::size_t size, const std::nothrow_t& nothrow);
 	DECLARE_VARIABLE_STANDARD;
@@ -210,11 +212,11 @@ HANDLER_DEF_THROW(void *, new_nothrow, (), std::size_t size,
 
 	return pret;
 }
-HANDLER_WRAPPERS_THROW(void *, new_nothrow, (), std::size_t, size,
-		       const std::nothrow_t&, nothrow)
 
-HANDLER_DEF_THROW(void *, new_array_nothrow, (), std::size_t size,
-		  const std::nothrow_t& nothrow)
+//HANDLER_DEF_THROW(void *, new_array_nothrow, (), std::size_t size,
+//		  const std::nothrow_t& nothrow)
+HANDLER_WRAPPERS_THROW(void *, new_array_nothrow, (), std::size_t, size,
+		       const std::nothrow_t&, nothrow)
 {
 	static void*(*newp)(std::size_t size, const std::nothrow_t& nothrow);
 	DECLARE_VARIABLE_STANDARD;
@@ -243,11 +245,11 @@ HANDLER_DEF_THROW(void *, new_array_nothrow, (), std::size_t size,
 
 	return pret;
 }
-HANDLER_WRAPPERS_THROW(void *, new_array_nothrow, (), std::size_t, size,
-		       const std::nothrow_t&, nothrow)
 
-HANDLER_DEF_THROW(void, delete_nothrow, (), void *ptr,
-		  const std::nothrow_t& nothrow)
+//HANDLER_DEF_THROW(void, delete_nothrow, (), void *ptr,
+//		  const std::nothrow_t& nothrow)
+HANDLER_WRAPPERS_THROW(void, delete_nothrow, (), void *, ptr,
+		       const std::nothrow_t&, nothrow)
 {
 	static void (*deletep)(void *ptr, const std::nothrow_t& nothrow);
     unsigned short ct;
@@ -282,11 +284,11 @@ HANDLER_DEF_THROW(void, delete_nothrow, (), void *ptr,
 
 	POST_PACK_PROBEBLOCK_END();
 }
-HANDLER_WRAPPERS_THROW(void, delete_nothrow, (), void *, ptr,
-		       const std::nothrow_t&, nothrow)
 
-HANDLER_DEF_THROW(void, delete_array_nothrow, (), void *ptr,
-		  const std::nothrow_t& nothrow)
+//HANDLER_DEF_THROW(void, delete_array_nothrow, (), void *ptr,
+//		  const std::nothrow_t& nothrow)
+HANDLER_WRAPPERS_THROW(void, delete_array_nothrow, (), void *, ptr,
+		       const std::nothrow_t&, nothrow)
 {
 	static void (*deletep)(void *ptr, const std::nothrow_t& nothrow);
     unsigned short ct;
@@ -321,5 +323,3 @@ HANDLER_DEF_THROW(void, delete_array_nothrow, (), void *ptr,
 
 	POST_PACK_PROBEBLOCK_END();
 }
-HANDLER_WRAPPERS_THROW(void, delete_array_nothrow, (), void *, ptr,
-		       const std::nothrow_t&, nothrow)

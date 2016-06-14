@@ -45,7 +45,7 @@
 #include "real_functions.h"
 
 
-HANDLER_DEF(void *, memset, void *memblock, int c, size_t n)
+HANDLER_WRAPPERS(void *, memset, void *, memblock, int, c, size_t, n)
 {
 	static void *(*memsetp)(void *,int,size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -72,9 +72,9 @@ HANDLER_DEF(void *, memset, void *memblock, int c, size_t n)
 
 	return pret;
 }
-HANDLER_WRAPPERS(void *, memset, void *, memblock, int, c, size_t, n)
 
-HANDLER_DEF(int, memcmp, const void * ptr1, const void * ptr2, size_t num)
+HANDLER_WRAPPERS(int, memcmp, const void *, ptr1, const void *, ptr2,
+		 size_t, num)
 {
 	static int(*memcmpp)(const void *,const void *,size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -100,10 +100,9 @@ HANDLER_DEF(int, memcmp, const void * ptr1, const void * ptr2, size_t num)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, memcmp, const void *, ptr1, const void *, ptr2,
-		 size_t, num)
 
-HANDLER_DEF(void *, memcpy, void * destination, const void * source, size_t num)
+HANDLER_WRAPPERS(void *, memcpy, void *, destination, const void *, source,
+		 size_t, num)
 {
 	static void *(*memcpyp)(void *,const void *,size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -131,5 +130,3 @@ HANDLER_DEF(void *, memcpy, void * destination, const void * source, size_t num)
 
 	return pret;
 }
-HANDLER_WRAPPERS(void *, memcpy, void *, destination, const void *, source,
-		 size_t, num)
