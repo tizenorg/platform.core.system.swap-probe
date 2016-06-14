@@ -34,7 +34,8 @@
 
 /* Evas open gl API functions */
 
-HANDLER_DEF(void , evas_gl_free, Evas_GL *evas_gl)
+//HANDLER_DEF(void , evas_gl_free, Evas_GL *evas_gl)
+HANDLER_WRAPPERS(void , evas_gl_free, Evas_GL *, evas_gl)
 {
 	typedef void (*methodType)(Evas_GL *evas_gl);
 	BEFORE_EVAS_GL(evas_gl_free);
@@ -42,9 +43,9 @@ HANDLER_DEF(void , evas_gl_free, Evas_GL *evas_gl)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "p",
 	      voidp_to_uint64(evas_gl));
 }
-HANDLER_WRAPPERS(void , evas_gl_free, Evas_GL *, evas_gl)
 
-HANDLER_DEF(void , evas_gl_config_free, Evas_GL_Config *cfg)
+//HANDLER_DEF(void , evas_gl_config_free, Evas_GL_Config *cfg)
+HANDLER_WRAPPERS(void , evas_gl_config_free, Evas_GL_Config *, cfg)
 {
 	typedef void (*methodType)(Evas_GL_Config *cfg);
 	BEFORE_EVAS_GL(evas_gl_config_free);
@@ -52,10 +53,11 @@ HANDLER_DEF(void , evas_gl_config_free, Evas_GL_Config *cfg)
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "p",
 	      voidp_to_uint64(cfg));
 }
-HANDLER_WRAPPERS(void , evas_gl_config_free, Evas_GL_Config *, cfg)
 
-HANDLER_DEF(void , evas_gl_surface_destroy, Evas_GL *evas_gl,
-	    Evas_GL_Surface *surf)
+//HANDLER_DEF(void , evas_gl_surface_destroy, Evas_GL *evas_gl,
+//	    Evas_GL_Surface *surf)
+HANDLER_WRAPPERS(void , evas_gl_surface_destroy, Evas_GL *, evas_gl,
+		 Evas_GL_Surface *, surf)
 {
 	typedef void (*methodType)(Evas_GL *evas_gl, Evas_GL_Surface *surf);
 	BEFORE_EVAS_GL(evas_gl_surface_destroy);
@@ -63,11 +65,11 @@ HANDLER_DEF(void , evas_gl_surface_destroy, Evas_GL *evas_gl,
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "pp",
 	      voidp_to_uint64(evas_gl), voidp_to_uint64(surf));
 }
-HANDLER_WRAPPERS(void , evas_gl_surface_destroy, Evas_GL *, evas_gl,
-		 Evas_GL_Surface *, surf)
 
-HANDLER_DEF(void , evas_gl_context_destroy, Evas_GL *evas_gl,
-	    Evas_GL_Context *ctx)
+//HANDLER_DEF(void , evas_gl_context_destroy, Evas_GL *evas_gl,
+//	    Evas_GL_Context *ctx)
+HANDLER_WRAPPERS(void , evas_gl_context_destroy, Evas_GL *, evas_gl,
+		 Evas_GL_Context *, ctx)
 {
 	typedef void (*methodType)(Evas_GL *evas_gl, Evas_GL_Context *ctx);
 	BEFORE_EVAS_GL(evas_gl_context_destroy);
@@ -75,10 +77,9 @@ HANDLER_DEF(void , evas_gl_context_destroy, Evas_GL *evas_gl,
 	AFTER('v', NO_RETURN_VALUE, APITYPE_CONTEXT, call_type, caller, "", "pp",
 	      voidp_to_uint64(evas_gl), voidp_to_uint64(ctx));
 }
-HANDLER_WRAPPERS(void , evas_gl_context_destroy, Evas_GL *, evas_gl,
-		 Evas_GL_Context *, ctx)
 
-HANDLER_DEF(Evas_GL *, evas_gl_new, Evas *e)
+//HANDLER_DEF(Evas_GL *, evas_gl_new, Evas *e)
+HANDLER_WRAPPERS(Evas_GL *, evas_gl_new, Evas *, e)
 {
 	typedef Evas_GL *(*methodType)(Evas *e);
 	BEFORE_EVAS_GL(evas_gl_new);
@@ -87,9 +88,9 @@ HANDLER_DEF(Evas_GL *, evas_gl_new, Evas *e)
 	      voidp_to_uint64(e));
 	return res;
 }
-HANDLER_WRAPPERS(Evas_GL *, evas_gl_new, Evas *, e)
 
-HANDLER_DEF(Evas_GL_Config *, evas_gl_config_new)
+//HANDLER_DEF(Evas_GL_Config *, evas_gl_config_new)
+HANDLER_WRAPPERS(Evas_GL_Config *, evas_gl_config_new)
 {
 	typedef Evas_GL_Config *(*methodType)(void);
 	BEFORE_EVAS_GL(evas_gl_config_new);
@@ -97,10 +98,11 @@ HANDLER_DEF(Evas_GL_Config *, evas_gl_config_new)
 	AFTER_NO_PARAM('p', voidp_to_uint64(res), APITYPE_CONTEXT, call_type, caller, "");
 	return res;
 }
-HANDLER_WRAPPERS(Evas_GL_Config *, evas_gl_config_new)
 
-HANDLER_DEF(Evas_GL_Surface *, evas_gl_surface_create, Evas_GL *evas_gl,
-			Evas_GL_Config *cfg, int w, int h)
+//HANDLER_DEF(Evas_GL_Surface *, evas_gl_surface_create, Evas_GL *evas_gl,
+//			Evas_GL_Config *cfg, int w, int h)
+HANDLER_WRAPPERS(Evas_GL_Surface *, evas_gl_surface_create, Evas_GL *, evas_gl,
+		 Evas_GL_Config *, cfg, int, w, int, h)
 {
 	typedef Evas_GL_Surface *(*methodType)(Evas_GL *evas_gl,
 					       Evas_GL_Config *cfg,
@@ -111,11 +113,11 @@ HANDLER_DEF(Evas_GL_Surface *, evas_gl_surface_create, Evas_GL *evas_gl,
 	      voidp_to_uint64(evas_gl), voidp_to_uint64(cfg), w, h);
 	return res;
 }
-HANDLER_WRAPPERS(Evas_GL_Surface *, evas_gl_surface_create, Evas_GL *, evas_gl,
-		 Evas_GL_Config *, cfg, int, w, int, h)
 
-HANDLER_DEF(Evas_GL_Context *, evas_gl_context_create, Evas_GL *evas_gl,
-			Evas_GL_Context *share_ctx)
+//HANDLER_DEF(Evas_GL_Context *, evas_gl_context_create, Evas_GL *evas_gl,
+//			Evas_GL_Context *share_ctx)
+HANDLER_WRAPPERS(Evas_GL_Context *, evas_gl_context_create, Evas_GL *, evas_gl,
+		 Evas_GL_Context *, share_ctx)
 {
 	typedef Evas_GL_Context *(*methodType)(Evas_GL *evas_gl,
 					       Evas_GL_Context *share_ctx);
@@ -125,11 +127,11 @@ HANDLER_DEF(Evas_GL_Context *, evas_gl_context_create, Evas_GL *evas_gl,
 	      voidp_to_uint64(evas_gl), voidp_to_uint64(share_ctx));
 	return res;
 }
-HANDLER_WRAPPERS(Evas_GL_Context *, evas_gl_context_create, Evas_GL *, evas_gl,
-		 Evas_GL_Context *, share_ctx)
 
-HANDLER_DEF(Eina_Bool, evas_gl_make_current, Evas_GL *evas_gl,
-			Evas_GL_Surface *surf, Evas_GL_Context *ctx)
+//HANDLER_DEF(Eina_Bool, evas_gl_make_current, Evas_GL *evas_gl,
+//			Evas_GL_Surface *surf, Evas_GL_Context *ctx)
+HANDLER_WRAPPERS(Eina_Bool, evas_gl_make_current, Evas_GL *, evas_gl,
+		 Evas_GL_Surface *, surf, Evas_GL_Context *, ctx)
 {
 	typedef Eina_Bool (*methodType)(Evas_GL *evas_gl, Evas_GL_Surface *surf,
 					Evas_GL_Context *ctx);
@@ -139,10 +141,10 @@ HANDLER_DEF(Eina_Bool, evas_gl_make_current, Evas_GL *evas_gl,
 	      voidp_to_uint64(evas_gl), voidp_to_uint64(surf), voidp_to_uint64(ctx));
 	return res;
 }
-HANDLER_WRAPPERS(Eina_Bool, evas_gl_make_current, Evas_GL *, evas_gl,
-		 Evas_GL_Surface *, surf, Evas_GL_Context *, ctx)
 
-HANDLER_DEF(const char *, evas_gl_string_query, Evas_GL *evas_gl, int name)
+//HANDLER_DEF(const char *, evas_gl_string_query, Evas_GL *evas_gl, int name)
+HANDLER_WRAPPERS(const char *, evas_gl_string_query, Evas_GL *, evas_gl,
+		 int, name)
 {
 	typedef const char *(*methodType)(Evas_GL *evas_gl, int name);
 	BEFORE_EVAS_GL(evas_gl_string_query);
@@ -151,11 +153,11 @@ HANDLER_DEF(const char *, evas_gl_string_query, Evas_GL *evas_gl, int name)
 	      voidp_to_uint64(evas_gl), name);
 	return res;
 }
-HANDLER_WRAPPERS(const char *, evas_gl_string_query, Evas_GL *, evas_gl,
-		 int, name)
 
-HANDLER_DEF(Evas_GL_Func , evas_gl_proc_address_get, Evas_GL *evas_gl,
-			const char *name)
+//HANDLER_DEF(Evas_GL_Func , evas_gl_proc_address_get, Evas_GL *evas_gl,
+//			const char *name)
+HANDLER_WRAPPERS(Evas_GL_Func , evas_gl_proc_address_get, Evas_GL *, evas_gl,
+		 const char *, name)
 {
 	typedef Evas_GL_Func(*methodType)(Evas_GL *evas_gl, const char *name);
 	BEFORE_EVAS_GL(evas_gl_proc_address_get);
@@ -164,11 +166,11 @@ HANDLER_DEF(Evas_GL_Func , evas_gl_proc_address_get, Evas_GL *evas_gl,
 	      voidp_to_uint64(evas_gl), name);
 	return res;
 }
-HANDLER_WRAPPERS(Evas_GL_Func , evas_gl_proc_address_get, Evas_GL *, evas_gl,
-		 const char *, name)
 
-HANDLER_DEF(Eina_Bool, evas_gl_native_surface_get, Evas_GL *evas_gl,
-			Evas_GL_Surface *surf, Evas_Native_Surface *ns)
+//HANDLER_DEF(Eina_Bool, evas_gl_native_surface_get, Evas_GL *evas_gl,
+//			Evas_GL_Surface *surf, Evas_Native_Surface *ns)
+HANDLER_WRAPPERS(Eina_Bool, evas_gl_native_surface_get, Evas_GL *, evas_gl,
+		 Evas_GL_Surface *, surf, Evas_Native_Surface *, ns)
 {
 	typedef Eina_Bool(*methodType)(Evas_GL *evas_gl, Evas_GL_Surface *surf,
 				   Evas_Native_Surface *ns);
@@ -178,12 +180,11 @@ HANDLER_DEF(Eina_Bool, evas_gl_native_surface_get, Evas_GL *evas_gl,
 	      voidp_to_uint64(evas_gl), voidp_to_uint64(surf), voidp_to_uint64(ns));
 	return res;
 }
-HANDLER_WRAPPERS(Eina_Bool, evas_gl_native_surface_get, Evas_GL *, evas_gl,
-		 Evas_GL_Surface *, surf, Evas_Native_Surface *, ns)
 
 /* ----------------- api get functions -------------- */
 
-HANDLER_DEF(Evas_GL_API *, evas_gl_api_get, Evas_GL *evas_gl)
+//HANDLER_DEF(Evas_GL_API *, evas_gl_api_get, Evas_GL *evas_gl)
+HANDLER_WRAPPERS(Evas_GL_API *, evas_gl_api_get, Evas_GL *, evas_gl)
 {
 	typedef Evas_GL_API *(*methodType)(Evas_GL *evas_gl);
 	BEFORE_EVAS_GL(evas_gl_api_get);
@@ -202,9 +203,9 @@ HANDLER_DEF(Evas_GL_API *, evas_gl_api_get, Evas_GL *evas_gl)
 
 	return res;
 }
-HANDLER_WRAPPERS(Evas_GL_API *, evas_gl_api_get, Evas_GL *, evas_gl)
 
-HANDLER_DEF(Evas_GL_API* , elm_glview_gl_api_get, const Evas_Object *obj)
+//HANDLER_DEF(Evas_GL_API* , elm_glview_gl_api_get, const Evas_Object *obj)
+HANDLER_WRAPPERS(Evas_GL_API* , elm_glview_gl_api_get, const Evas_Object *, obj)
 {
 	typedef Evas_GL_API *(*methodType)(const Evas_Object *obj);
 	BEFORE_EVAS_GL(elm_glview_gl_api_get);
@@ -223,10 +224,11 @@ HANDLER_DEF(Evas_GL_API* , elm_glview_gl_api_get, const Evas_Object *obj)
 
 	return res;
 }
-HANDLER_WRAPPERS(Evas_GL_API* , elm_glview_gl_api_get, const Evas_Object *, obj)
 
-HANDLER_DEF(Evas_GL_API *, evas_gl_context_api_get, Evas_GL *evas_gl,
-			Evas_GL_Context *ctx)
+//HANDLER_DEF(Evas_GL_API *, evas_gl_context_api_get, Evas_GL *evas_gl,
+//			Evas_GL_Context *ctx)
+HANDLER_WRAPPERS(Evas_GL_API *, evas_gl_context_api_get, Evas_GL *, evas_gl,
+		 Evas_GL_Context *, ctx)
 {
 	typedef Evas_GL_API *(*methodType)(Evas_GL *evas_gl, Evas_GL_Context *ctx);
 	BEFORE_EVAS_GL(evas_gl_context_api_get);
@@ -245,5 +247,3 @@ HANDLER_DEF(Evas_GL_API *, evas_gl_context_api_get, Evas_GL *evas_gl,
 
 	return res;
 }
-HANDLER_WRAPPERS(Evas_GL_API *, evas_gl_context_api_get, Evas_GL *, evas_gl,
-		 Evas_GL_Context *, ctx)

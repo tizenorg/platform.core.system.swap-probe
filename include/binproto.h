@@ -359,6 +359,18 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 #define FUNC_DECL9(t1, n1, ...)     t1 n1, FUNC_DECL8(__VA_ARGS__)
 #define FUNC_DECL10(t1, n1, ...)     t1 n1, FUNC_DECL9(__VA_ARGS__)
 
+#define FUNC_DECL_H0(...)
+#define FUNC_DECL_H1(t1, n1, ...)     ,t1 n1
+#define FUNC_DECL_H2(t1, n1, ...)     ,t1 n1 FUNC_DECL_H1(__VA_ARGS__)
+#define FUNC_DECL_H3(t1, n1, ...)     ,t1 n1 FUNC_DECL_H2(__VA_ARGS__)
+#define FUNC_DECL_H4(t1, n1, ...)     ,t1 n1 FUNC_DECL_H3(__VA_ARGS__)
+#define FUNC_DECL_H5(t1, n1, ...)     ,t1 n1 FUNC_DECL_H4(__VA_ARGS__)
+#define FUNC_DECL_H6(t1, n1, ...)     ,t1 n1 FUNC_DECL_H5(__VA_ARGS__)
+#define FUNC_DECL_H7(t1, n1, ...)     ,t1 n1 FUNC_DECL_H6(__VA_ARGS__)
+#define FUNC_DECL_H8(t1, n1, ...)     ,t1 n1 FUNC_DECL_H7(__VA_ARGS__)
+#define FUNC_DECL_H9(t1, n1, ...)     ,t1 n1 FUNC_DECL_H8(__VA_ARGS__)
+#define FUNC_DECL_H10(t1, n1, ...)     ,t1 n1 FUNC_DECL_H9(__VA_ARGS__)
+
 #define FUNC_CALL0(...)
 #define FUNC_CALL1(t1, n1, ...)     ,n1
 #define FUNC_CALL2(t1, n1, ...)     ,n1 FUNC_CALL1(__VA_ARGS__)
@@ -381,15 +393,18 @@ static char __attribute__((used)) *pack_ret(char *to, char ret_type, ...)
 
 
 
-#define HANDLER_DEF(_ret, _name, ...)					 \
-	static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller,  \
-	    ##__VA_ARGS__)
-
-#define HANDLER_DEF_THROW(_ret, _name, _throw, ...)			   \
-	static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller,  \
-	    ##__VA_ARGS__) throw _throw
+//#define HANDLER_DEF(_ret, _name, ...)					 \
+//	static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller,  \
+//	    ##__VA_ARGS__)
+//
+//#define HANDLER_DEF_THROW(_ret, _name, _throw, ...)			   \
+//	static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller,  \
+//	    ##__VA_ARGS__) throw _throw
 
 #define HANDLER_WRAPPERS(_ret, _name, ...)				  \
+static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller     \
+				    FUNC_DECL_H(__VA_ARGS__));	      \
+									    \
 _ret PROBE_NAME(_name)(FUNC_DECL(__VA_ARGS__))			      \
 {									   \
 	/* TODO Arch dependent */					       \
@@ -410,9 +425,14 @@ _ret CONCAT(PROBE_NAME(_name), _always)(FUNC_DECL(__VA_ARGS__))	     \
 	    (__builtin_extract_return_addr(__builtin_return_address(0)));       \
 	return CONCAT(_name, _handler)(EXTERNAL_CALL, (uint64_t)caller	  \
 	    FUNC_CALL(__VA_ARGS__));\
-}
+}									   \
+static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller     \
+				    FUNC_DECL_H(__VA_ARGS__))
 
 #define HANDLER_WRAPPERS_VOID(_ret, _name, ...)			     \
+static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller     \
+				    FUNC_DECL_H(__VA_ARGS__));	      \
+									    \
 _ret PROBE_NAME(_name)(FUNC_DECL(__VA_ARGS__))			      \
 {									   \
 	/* TODO Arch dependent */					       \
@@ -433,9 +453,14 @@ _ret CONCAT(PROBE_NAME(_name), _always)(FUNC_DECL(__VA_ARGS__))	     \
 	    (__builtin_extract_return_addr(__builtin_return_address(0)));       \
 	CONCAT(_name, _handler)(EXTERNAL_CALL, (uint64_t)caller		 \
 	    FUNC_CALL(__VA_ARGS__));\
-}
+}									   \
+static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller     \
+				    FUNC_DECL_H(__VA_ARGS__))
 
 #define HANDLER_WRAPPERS_THROW(_ret, _name, _throw, ...)		    \
+static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller     \
+				    FUNC_DECL_H(__VA_ARGS__)) throw _throw;		 \
+									    \
 _ret PROBE_NAME(_name)(FUNC_DECL(__VA_ARGS__)) throw _throw		  \
 {									   \
 	/* TODO Arch dependent */					       \
@@ -456,7 +481,9 @@ _ret PROBE_NAME(_name##_always)(FUNC_DECL(__VA_ARGS__)) throw _throw	\
 	    (__builtin_extract_return_addr(__builtin_return_address(0)));       \
 	return CONCAT(_name, _handler)(EXTERNAL_CALL, (uint64_t)caller	  \
 	    FUNC_CALL(__VA_ARGS__));  \
-}
+}									   \
+static _ret CONCAT(_name, _handler)(uint32_t call_type, uint64_t caller     \
+				    FUNC_DECL_H(__VA_ARGS__)) throw _throw;		 \
 
 #define HANDLER_WRAPPERS_DEF(_ret, _name, ...)				  \
 _ret PROBE_NAME(_name)(FUNC_DECL(__VA_ARGS__));			      \

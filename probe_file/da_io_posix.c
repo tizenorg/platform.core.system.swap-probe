@@ -63,7 +63,8 @@ static inline char *get_abs_path(int fd, const char *fname,
 	return path;
 }
 
-HANDLER_DEF(int, open, const char* path, int oflag, ...)
+//HANDLER_DEF(int, open, const char* path, int oflag, ...)
+HANDLER_WRAPPERS(int, open, const char*, path, int, oflag, ...)
 {
 	static int (*openp)(const char* path, int oflag, ...);
 	char buffer[PATH_MAX];
@@ -88,9 +89,9 @@ HANDLER_DEF(int, open, const char* path, int oflag, ...)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, open, const char*, path, int, oflag, ...)
 
-HANDLER_DEF(int, openat, int fd, const char* path, int oflag, ...)
+//HANDLER_DEF(int, openat, int fd, const char* path, int oflag, ...)
+HANDLER_WRAPPERS(int, openat, int, fd, const char*, path, int, oflag, ...)
 {
 	static int (*openatp)(int fd, const char* path, int oflag, ...);
 	char buffer[PATH_MAX];
@@ -115,9 +116,9 @@ HANDLER_DEF(int, openat, int fd, const char* path, int oflag, ...)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, openat, int, fd, const char*, path, int, oflag, ...)
 
-HANDLER_DEF(int, creat, const char* path, mode_t mode)
+//HANDLER_DEF(int, creat, const char* path, mode_t mode)
+HANDLER_WRAPPERS(int, creat, const char*, path, mode_t, mode)
 {
 	static int (*creatp)(const char* path, mode_t mode);
 	char buffer[PATH_MAX];
@@ -133,9 +134,9 @@ HANDLER_DEF(int, creat, const char* path, mode_t mode)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, creat, const char*, path, mode_t, mode)
 
-HANDLER_DEF(int, close, int fd)
+//HANDLER_DEF(int, close, int fd)
+HANDLER_WRAPPERS(int, close, int, fd)
 {
 	static int (*closep)(int fd);
 	DECLARE_VARIABLE_FD;
@@ -159,9 +160,9 @@ HANDLER_DEF(int, close, int fd)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, close, int, fd)
 
-HANDLER_DEF(off_t, lseek, int fd, off_t offset, int whence)
+//HANDLER_DEF(off_t, lseek, int fd, off_t offset, int whence)
+HANDLER_WRAPPERS(off_t, lseek, int, fd, off_t, offset, int, whence)
 {
 	static int (*lseekp)(int fd, off_t offset, int whence);
 	off_t offret;
@@ -176,9 +177,9 @@ HANDLER_DEF(off_t, lseek, int fd, off_t offset, int whence)
 
 	return offret;
 }
-HANDLER_WRAPPERS(off_t, lseek, int, fd, off_t, offset, int, whence)
 
-HANDLER_DEF(int, fsync, int fd)
+//HANDLER_DEF(int, fsync, int fd)
+HANDLER_WRAPPERS(int, fsync, int, fd)
 {
 	static int (*fsyncp)(int fd);
 
@@ -191,9 +192,9 @@ HANDLER_DEF(int, fsync, int fd)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, fsync, int, fd)
 
-HANDLER_DEF(int, fdatasync, int fd)
+//HANDLER_DEF(int, fdatasync, int fd)
+HANDLER_WRAPPERS(int, fdatasync, int, fd)
 {
 	static int (*fdatasyncp)(int fd);
 
@@ -206,11 +207,9 @@ HANDLER_DEF(int, fdatasync, int fd)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, fdatasync, int, fd)
 
-
-
-HANDLER_DEF(int, ftruncate, int fd, off_t length)
+//HANDLER_DEF(int, ftruncate, int fd, off_t length)
+HANDLER_WRAPPERS(int, ftruncate, int, fd, off_t, length)
 {
 	static int (*ftruncatep)(int fd, off_t length);
 
@@ -225,9 +224,9 @@ HANDLER_DEF(int, ftruncate, int fd, off_t length)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, ftruncate, int, fd, off_t, length)
 
-HANDLER_DEF(int, fchown, int fd, uid_t owner, gid_t group)
+//HANDLER_DEF(int, fchown, int fd, uid_t owner, gid_t group)
+HANDLER_WRAPPERS(int, fchown, int, fd, uid_t, owner, gid_t, group)
 {
 	static int (*fchownp)(int fd, uid_t owner, gid_t group);
 
@@ -237,12 +236,9 @@ HANDLER_DEF(int, fchown, int fd, uid_t owner, gid_t group)
 			  call_type, caller, "ddd", fd, owner, group);
 	return ret;
 }
-HANDLER_WRAPPERS(int, fchown, int, fd, uid_t, owner, gid_t, group)
 
-
-
-
-HANDLER_DEF(int, lockf, int fd, int function, off_t size)
+//HANDLER_DEF(int, lockf, int fd, int function, off_t size)
+HANDLER_WRAPPERS(int, lockf, int, fd, int, function, off_t, size)
 {
 	static int (*lockfp)(int fd, int function, off_t size);
 	int api_type = FD_API_PERMISSION;
@@ -265,11 +261,9 @@ HANDLER_DEF(int, lockf, int fd, int function, off_t size)
 			       call_type, caller, "ddx", fd, function, (uint64_t)(size));
 	return ret;
 }
-HANDLER_WRAPPERS(int, lockf, int, fd, int, function, off_t, size)
 
-
-
-HANDLER_DEF(int, fchmod, int fd, mode_t mode)
+//HANDLER_DEF(int, fchmod, int fd, mode_t mode)
+HANDLER_WRAPPERS(int, fchmod, int, fd, mode_t, mode)
 {
 	static int (*fchmodp)(int fd, mode_t mode);
 
@@ -280,13 +274,14 @@ HANDLER_DEF(int, fchmod, int fd, mode_t mode)
 				   "dd", fd, mode);
 	return ret;
 }
-HANDLER_WRAPPERS(int, fchmod, int, fd, mode_t, mode)
 
 // *****************************************************************
 // Read / Write APIs
 // *****************************************************************
 
-HANDLER_DEF(ssize_t, pread, int fd, void *buf, size_t nbyte, off_t offset)
+//HANDLER_DEF(ssize_t, pread, int fd, void *buf, size_t nbyte, off_t offset)
+HANDLER_WRAPPERS(ssize_t, pread, int, fd, void *, buf, size_t, nbyte,
+		 off_t, offset)
 {
 	static ssize_t (*preadp)(int fd, void *buf, size_t nbyte, off_t offset);
 	ssize_t sret;
@@ -307,10 +302,9 @@ HANDLER_DEF(ssize_t, pread, int fd, void *buf, size_t nbyte, off_t offset)
 
 	return sret;
 }
-HANDLER_WRAPPERS(ssize_t, pread, int, fd, void *, buf, size_t, nbyte,
-		 off_t, offset)
 
-HANDLER_DEF(ssize_t, read, int fd, void *buf, size_t nbyte)
+//HANDLER_DEF(ssize_t, read, int fd, void *buf, size_t nbyte)
+HANDLER_WRAPPERS(ssize_t, read, int, fd, void *, buf, size_t, nbyte)
 {
 	static ssize_t (*readp)(int fildes, void *buf, size_t nbyte);
 	ssize_t sret;
@@ -328,10 +322,11 @@ HANDLER_DEF(ssize_t, read, int fd, void *buf, size_t nbyte)
 
 	return sret;
 }
-HANDLER_WRAPPERS(ssize_t, read, int, fd, void *, buf, size_t, nbyte)
 
-HANDLER_DEF(ssize_t, pwrite, int fd, const void *buf, size_t nbyte,
-	    off_t offset)
+//HANDLER_DEF(ssize_t, pwrite, int fd, const void *buf, size_t nbyte,
+//	    off_t offset)
+HANDLER_WRAPPERS(ssize_t, pwrite, int, fd, const void *, buf, size_t, nbyte,
+		 off_t, offset)
 {
 	static ssize_t (*pwritep)(int fd, const void *buf, size_t nbyte, off_t offset);
 	ssize_t sret;
@@ -352,10 +347,9 @@ HANDLER_DEF(ssize_t, pwrite, int fd, const void *buf, size_t nbyte,
 
 	return sret;
 }
-HANDLER_WRAPPERS(ssize_t, pwrite, int, fd, const void *, buf, size_t, nbyte,
-		 off_t, offset)
 
-HANDLER_DEF(ssize_t, write, int fd, const void *buf, size_t nbyte)
+//HANDLER_DEF(ssize_t, write, int fd, const void *buf, size_t nbyte)
+HANDLER_WRAPPERS(ssize_t, write, int, fd, const void *, buf, size_t, nbyte)
 {
 	static ssize_t (*writep)(int fildes, const void *buf, size_t nbyte);
 	ssize_t sret;
@@ -374,10 +368,10 @@ HANDLER_DEF(ssize_t, write, int fd, const void *buf, size_t nbyte)
 
 	return sret;
 }
-HANDLER_WRAPPERS(ssize_t, write, int, fd, const void *, buf, size_t, nbyte)
 
 
-HANDLER_DEF(ssize_t, readv, int fd, const struct iovec *iov, int iovcnt)
+//HANDLER_DEF(ssize_t, readv, int fd, const struct iovec *iov, int iovcnt)
+HANDLER_WRAPPERS(ssize_t, readv, int, fd, const struct iovec *, iov, int, iovcnt)
 {
 	static ssize_t (*readvp)(int fd, const struct iovec *iov, int iovcnt);
 	ssize_t sret;
@@ -393,11 +387,11 @@ HANDLER_DEF(ssize_t, readv, int fd, const struct iovec *iov, int iovcnt)
 
 	return sret;
 }
-HANDLER_WRAPPERS(ssize_t, readv, int, fd, const struct iovec *, iov, int, iovcnt)
 
 // why writev is commented ?
 #if 0
-HANDLER_DEF(ssize_t, writev, int fd, const struct iovec *iov, int iovcnt)
+//HANDLER_DEF(ssize_t, writev, int fd, const struct iovec *iov, int iovcnt)
+HANDLER_WRAPPERS(ssize_t, writev, int, fd, const struct iovec *, iov, int, iovcnt)
 {
 	static ssize_t (*writevp)(int fd, const struct iovec *iov, int iovcnt);
 
@@ -407,7 +401,6 @@ HANDLER_DEF(ssize_t, writev, int fd, const struct iovec *iov, int iovcnt)
 	MAKE_RESOURCE_POSTBLOCK(VT_SSIZE_T,ret,VT_SSIZE_T,ret,VT_INT,fd, FD_API_WRITE);
 	return ret;
 }
-HANDLER_WRAPPERS(ssize_t, writev, int, fd, const struct iovec *, iov, int, iovcnt)
 #endif
 
 

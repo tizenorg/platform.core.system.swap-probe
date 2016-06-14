@@ -92,7 +92,8 @@ void getAddress(const struct sockaddr *sa, char *address) {
 }
 
 //FD
-HANDLER_DEF(int , socket, int domain, int type, int protocol)
+//HANDLER_DEF(int , socket, int domain, int type, int protocol)
+HANDLER_WRAPPERS(int , socket, int, domain, int, type, int, protocol)
 {
 	static int (*socketp)(int domain, int type, int protocol);
 	BEFORE_ORIGINAL_SOCK(socket, LIBC);
@@ -103,10 +104,11 @@ HANDLER_DEF(int , socket, int domain, int type, int protocol)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , socket, int, domain, int, type, int, protocol)
 
-HANDLER_DEF(int, accept, int socket, struct sockaddr *address,
-	    socklen_t *address_len)
+//HANDLER_DEF(int, accept, int socket, struct sockaddr *address,
+//	    socklen_t *address_len)
+HANDLER_WRAPPERS(int, accept, int, socket, struct sockaddr *, address,
+		 socklen_t *, address_len)
 {
 
 	static int (*acceptp)(int socket, struct sockaddr *address,
@@ -134,11 +136,11 @@ HANDLER_DEF(int, accept, int socket, struct sockaddr *address,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, accept, int, socket, struct sockaddr *, address,
-		 socklen_t *, address_len)
 
-HANDLER_DEF(int, accept4, int sockfd, struct sockaddr *addr, socklen_t *addrlen, 
-	    int flags)
+//HANDLER_DEF(int, accept4, int sockfd, struct sockaddr *addr, socklen_t *addrlen, 
+//	    int flags)
+HANDLER_WRAPPERS(int, accept4, int, sockfd, struct sockaddr *, addr,
+		 socklen_t *, addrlen, int, flags)
 {
 	static int (*accept4p)(int sockfd, struct sockaddr *addr,
 			socklen_t *addrlen, int flags);
@@ -166,11 +168,11 @@ HANDLER_DEF(int, accept4, int sockfd, struct sockaddr *addr, socklen_t *addrlen,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, accept4, int, sockfd, struct sockaddr *, addr,
-		 socklen_t *, addrlen, int, flags)
 
-HANDLER_DEF(int, connect, int socket, const struct sockaddr *address,
-	    socklen_t address_len)
+//HANDLER_DEF(int, connect, int socket, const struct sockaddr *address,
+//	    socklen_t address_len)
+HANDLER_WRAPPERS(int, connect, int, socket, const struct sockaddr *, address,
+		 socklen_t, address_len)
 {
 	static int (*connectp)(int socket, const struct sockaddr *address,
 			socklen_t address_len);
@@ -189,10 +191,9 @@ HANDLER_DEF(int, connect, int socket, const struct sockaddr *address,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, connect, int, socket, const struct sockaddr *, address,
-		 socklen_t, address_len)
 
-HANDLER_DEF(int, shutdown, int socket, int how)
+//HANDLER_DEF(int, shutdown, int socket, int how)
+HANDLER_WRAPPERS(int, shutdown, int, socket, int, how)
 {
 	static int (*shutdownp)(int socket, int how);
 
@@ -205,10 +206,11 @@ HANDLER_DEF(int, shutdown, int socket, int how)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, shutdown, int, socket, int, how)
 
-HANDLER_DEF(int, bind, int socket, const struct sockaddr *address,
-	    socklen_t address_len)
+//HANDLER_DEF(int, bind, int socket, const struct sockaddr *address,
+//	    socklen_t address_len)
+HANDLER_WRAPPERS(int, bind, int, socket, const struct sockaddr *, address,
+		 socklen_t, address_len)
 {
 	static int (*bindp)(int socket, const struct sockaddr *address,
 			socklen_t address_len);
@@ -226,10 +228,9 @@ HANDLER_DEF(int, bind, int socket, const struct sockaddr *address,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, bind, int, socket, const struct sockaddr *, address,
-		 socklen_t, address_len)
 
-HANDLER_DEF(int, listen, int socket, int backlog)
+//HANDLER_DEF(int, listen, int socket, int backlog)
+HANDLER_WRAPPERS(int, listen, int, socket, int, backlog)
 {
 	static int (*listenp)(int socket, int backlog);
 	BEFORE_ORIGINAL_SOCK(listen, LIBC);
@@ -240,10 +241,11 @@ HANDLER_DEF(int, listen, int socket, int backlog)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, listen, int, socket, int, backlog)
 
-HANDLER_DEF(ssize_t, send, int socket, const void *message, size_t length,
-	    int flags)
+//HANDLER_DEF(ssize_t, send, int socket, const void *message, size_t length,
+//	    int flags)
+HANDLER_WRAPPERS(ssize_t, send, int, socket, const void *, message,
+		 size_t, length, int, flags)
 {
 	static ssize_t (*sendp)(int socket, const void *message, size_t length,
 			int flags);
@@ -273,10 +275,10 @@ HANDLER_DEF(ssize_t, send, int socket, const void *message, size_t length,
 					       length, flags);
 	return sret;
 }
-HANDLER_WRAPPERS(ssize_t, send, int, socket, const void *, message,
-		 size_t, length, int, flags)
 
-HANDLER_DEF(ssize_t, recv, int socket, void *buffer, size_t length, int flags)
+//HANDLER_DEF(ssize_t, recv, int socket, void *buffer, size_t length, int flags)
+HANDLER_WRAPPERS(ssize_t, recv, int, socket, void *, buffer, size_t, length,
+		 int, flags)
 {
 	static ssize_t (*recvp)(int socket, void *buffer, size_t length, int flags);
 	ssize_t sret, result;
@@ -306,11 +308,12 @@ HANDLER_DEF(ssize_t, recv, int socket, void *buffer, size_t length, int flags)
 					       length, flags);
 	return sret;
 }
-HANDLER_WRAPPERS(ssize_t, recv, int, socket, void *, buffer, size_t, length,
-		 int, flags)
 
-HANDLER_DEF(ssize_t, sendto, int socket, const void *message, size_t length,
-	    int flags, const struct sockaddr *dest_addr, socklen_t dest_len)
+//HANDLER_DEF(ssize_t, sendto, int socket, const void *message, size_t length,
+//	    int flags, const struct sockaddr *dest_addr, socklen_t dest_len)
+HANDLER_WRAPPERS(ssize_t, sendto, int, socket, const void *, message,
+		 size_t, length, int, flags, const struct sockaddr *, dest_addr,
+		 socklen_t, dest_len)
 {
 	static ssize_t (*sendtop)(int socket, const void *message, size_t length,
 			int flags, const struct sockaddr *dest_addr, socklen_t dest_len);
@@ -345,12 +348,12 @@ HANDLER_DEF(ssize_t, sendto, int socket, const void *message, size_t length,
 					       voidp_to_uint64(dest_addr), dest_len);
 	return sret;
 }
-HANDLER_WRAPPERS(ssize_t, sendto, int, socket, const void *, message,
-		 size_t, length, int, flags, const struct sockaddr *, dest_addr,
-		 socklen_t, dest_len)
 
-HANDLER_DEF(ssize_t, recvfrom, int socket, void *buffer, size_t length,
-	    int flags, struct sockaddr *address, socklen_t *address_len)
+//HANDLER_DEF(ssize_t, recvfrom, int socket, void *buffer, size_t length,
+//	    int flags, struct sockaddr *address, socklen_t *address_len)
+HANDLER_WRAPPERS(ssize_t, recvfrom, int, socket, void *, buffer, size_t, length,
+		 int, flags, struct sockaddr *, address,
+		 socklen_t *, address_len)
 {
 	static ssize_t (*recvfromp)(int socket, void *buffer, size_t length,
 			int flags, struct sockaddr *address, socklen_t *address_len);
@@ -387,11 +390,10 @@ HANDLER_DEF(ssize_t, recvfrom, int socket, void *buffer, size_t length,
 					       voidp_to_uint64(address_len));
 	return sret;
 }
-HANDLER_WRAPPERS(ssize_t, recvfrom, int, socket, void *, buffer, size_t, length,
-		 int, flags, struct sockaddr *, address,
-		 socklen_t *, address_len)
 
-HANDLER_DEF(ssize_t, recvmsg, int socket, struct msghdr *message, int flags)
+//HANDLER_DEF(ssize_t, recvmsg, int socket, struct msghdr *message, int flags)
+HANDLER_WRAPPERS(ssize_t, recvmsg, int, socket, struct msghdr *,message,
+		 int, flags)
 {
 	static ssize_t (*recvmsgp)(int socket, struct msghdr *message, int flags);
 	ssize_t sret;
@@ -433,11 +435,11 @@ HANDLER_DEF(ssize_t, recvmsg, int socket, struct msghdr *message, int flags)
 	free(out);
 	return sret;
 }
-HANDLER_WRAPPERS(ssize_t, recvmsg, int, socket, struct msghdr *,message,
-		 int, flags)
 
-HANDLER_DEF(ssize_t, sendmsg, int socket, const struct msghdr *message,
-	    int flags)
+//HANDLER_DEF(ssize_t, sendmsg, int socket, const struct msghdr *message,
+//	    int flags)
+HANDLER_WRAPPERS(ssize_t, sendmsg, int, socket, const struct msghdr *, message,
+		 int, flags)
 {
 	static ssize_t (*sendmsgp)(int socket, const struct msghdr *message,
 			int flags);
@@ -478,11 +480,11 @@ HANDLER_DEF(ssize_t, sendmsg, int socket, const struct msghdr *message,
 	free(out);
 	return sret;
 }
-HANDLER_WRAPPERS(ssize_t, sendmsg, int, socket, const struct msghdr *, message,
-		 int, flags)
 
-HANDLER_DEF(int, getsockopt, int socket, int level, int option_name,
-	    void *option_value, socklen_t *option_len)
+//HANDLER_DEF(int, getsockopt, int socket, int level, int option_name,
+//	    void *option_value, socklen_t *option_len)
+HANDLER_WRAPPERS(int, getsockopt, int, socket, int, level, int, option_name,
+		 void *, option_value, socklen_t *, option_len)
 {
 	static int (*getsockoptp)(int socket, int level, int option_name,
 			void *option_value, socklen_t *option_len);
@@ -498,11 +500,11 @@ HANDLER_DEF(int, getsockopt, int socket, int level, int option_name,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getsockopt, int, socket, int, level, int, option_name,
-		 void *, option_value, socklen_t *, option_len)
 
-HANDLER_DEF(int, setsockopt, int socket, int level, int option_name,
-	    const void *option_value, socklen_t option_len)
+//HANDLER_DEF(int, setsockopt, int socket, int level, int option_name,
+//	    const void *option_value, socklen_t option_len)
+HANDLER_WRAPPERS(int, setsockopt, int, socket, int, level, int, option_name,
+		 const void *, option_value, socklen_t, option_len)
 {
 	static int (*setsockoptp)(int socket, int level, int option_name,
 			const void *option_value, socklen_t option_len);
@@ -517,10 +519,10 @@ HANDLER_DEF(int, setsockopt, int socket, int level, int option_name,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, setsockopt, int, socket, int, level, int, option_name,
-		 const void *, option_value, socklen_t, option_len)
 
-HANDLER_DEF(int, getpeername, int fd, struct sockaddr *addr, socklen_t *len)
+//HANDLER_DEF(int, getpeername, int fd, struct sockaddr *addr, socklen_t *len)
+HANDLER_WRAPPERS(int, getpeername, int, fd, struct sockaddr *, addr,
+		 socklen_t *, len)
 {
 	static int (*getpeernamep)(int s, struct sockaddr *addr, socklen_t *len);
 
@@ -537,11 +539,11 @@ HANDLER_DEF(int, getpeername, int fd, struct sockaddr *addr, socklen_t *len)
 				 voidp_to_uint64(len));
 	return ret;
 }
-HANDLER_WRAPPERS(int, getpeername, int, fd, struct sockaddr *, addr,
-		 socklen_t *, len)
 
-HANDLER_DEF(int, getsockname, int sockfd, struct sockaddr *addr,
-	    socklen_t *addrlen)
+//HANDLER_DEF(int, getsockname, int sockfd, struct sockaddr *addr,
+//	    socklen_t *addrlen)
+HANDLER_WRAPPERS(int, getsockname, int, sockfd, struct sockaddr *, addr,
+		 socklen_t *, addrlen)
 {
 	static int (*getsocknamep)(int sockfd, struct sockaddr *addr,
 			socklen_t *addrlen);
@@ -560,11 +562,11 @@ HANDLER_DEF(int, getsockname, int sockfd, struct sockaddr *addr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getsockname, int, sockfd, struct sockaddr *, addr,
-		 socklen_t *, addrlen)
 
-HANDLER_DEF(int, socketpair, int domain, int type, int protocol,
-	    int socket_vector[2])
+//HANDLER_DEF(int, socketpair, int domain, int type, int protocol,
+//	    int socket_vector[2])
+HANDLER_WRAPPERS(int, socketpair, int, domain, int, type, int, protocol,
+		 int *, socket_vector)
 {
 	static int (*socketpairp)(int domain, int type, int protocol,
 			int socket_vector[2]);
@@ -579,10 +581,9 @@ HANDLER_DEF(int, socketpair, int domain, int type, int protocol,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, socketpair, int, domain, int, type, int, protocol,
-		 int *, socket_vector)
 
-HANDLER_DEF(int, sockatmark, int __fd)
+//HANDLER_DEF(int, sockatmark, int __fd)
+HANDLER_WRAPPERS(int, sockatmark, int, __fd)
 {
 	static int (*sockatmarkp)(int __fd);
 
@@ -594,9 +595,9 @@ HANDLER_DEF(int, sockatmark, int __fd)
 			SOCKET_API_OTHER, call_type, caller, info, "d", __fd);
 	return ret;
 }
-HANDLER_WRAPPERS(int, sockatmark, int, __fd)
 
-HANDLER_DEF(int, isfdtype, int __fd, int __fdtype)
+//HANDLER_DEF(int, isfdtype, int __fd, int __fdtype)
+HANDLER_WRAPPERS(int, isfdtype, int, __fd, int, __fdtype)
 {
 	static int (*isfdtypep)(int __fd, int __fdtype);
 
@@ -608,10 +609,11 @@ HANDLER_DEF(int, isfdtype, int __fd, int __fdtype)
 			     call_type, caller, info, "dd", __fd, __fdtype);
 	return ret;
 }
-HANDLER_WRAPPERS(int, isfdtype, int, __fd, int, __fdtype)
 
-HANDLER_DEF(int, select, int nfds, fd_set *readfds, fd_set *writefds,
-	    fd_set *exceptfds, struct timeval *timeout)
+//HANDLER_DEF(int, select, int nfds, fd_set *readfds, fd_set *writefds,
+//	    fd_set *exceptfds, struct timeval *timeout)
+HANDLER_WRAPPERS(int, select, int, nfds, fd_set *, readfds, fd_set *, writefds,
+		 fd_set *, exceptfds, struct timeval *, timeout)
 {
 	static int (*selectp)(int nfds, fd_set *readfds, fd_set *writefds,
 			fd_set *exceptfds, struct timeval *timeout);
@@ -638,12 +640,13 @@ HANDLER_DEF(int, select, int nfds, fd_set *readfds, fd_set *writefds,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, select, int, nfds, fd_set *, readfds, fd_set *, writefds,
-		 fd_set *, exceptfds, struct timeval *, timeout)
 
-HANDLER_DEF(int, pselect, int nfds, fd_set *readfds, fd_set *writefds,
-	    fd_set *exceptfds, const struct timespec *ntimeout,
-	    const sigset_t *sigmask)
+//HANDLER_DEF(int, pselect, int nfds, fd_set *readfds, fd_set *writefds,
+//	    fd_set *exceptfds, const struct timespec *ntimeout,
+//	    const sigset_t *sigmask)
+HANDLER_WRAPPERS(int, pselect, int, nfds, fd_set *, readfds, fd_set *, writefds,
+		 fd_set *, exceptfds, const struct timespec *, ntimeout,
+		 const sigset_t *, sigmask)
 {
 	static int (*pselectp)(int nfds, fd_set *readfds, fd_set *writefds,
 			fd_set *exceptfds, const struct timespec *ntimeout,
@@ -673,11 +676,9 @@ HANDLER_DEF(int, pselect, int nfds, fd_set *readfds, fd_set *writefds,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, pselect, int, nfds, fd_set *, readfds, fd_set *, writefds,
-		 fd_set *, exceptfds, const struct timespec *, ntimeout,
-		 const sigset_t *, sigmask)
 
-HANDLER_DEF(int, poll, struct pollfd *fds, nfds_t nfds, int timeout)
+//HANDLER_DEF(int, poll, struct pollfd *fds, nfds_t nfds, int timeout)
+HANDLER_WRAPPERS(int, poll, struct pollfd *, fds, nfds_t, nfds, int, timeout)
 {
 	static int (*pollp)(struct pollfd *ufds, unsigned int nfds, int timeout);
 
@@ -697,10 +698,11 @@ HANDLER_DEF(int, poll, struct pollfd *fds, nfds_t nfds, int timeout)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, poll, struct pollfd *, fds, nfds_t, nfds, int, timeout)
 
-HANDLER_DEF(int, ppoll, struct pollfd *fds, nfds_t nfds,
-	    const struct timespec *timeout_ts, const sigset_t *sigmask)
+//HANDLER_DEF(int, ppoll, struct pollfd *fds, nfds_t nfds,
+//	    const struct timespec *timeout_ts, const sigset_t *sigmask)
+HANDLER_WRAPPERS(int, ppoll, struct pollfd *, fds, nfds_t, nfds,
+		 const struct timespec *, timeout_ts, const sigset_t *,sigmask)
 {
 	static int (*ppollp)(struct pollfd *fds, nfds_t nfds,
 			const struct timespec *timeout_ts, const sigset_t *sigmask);
@@ -727,10 +729,9 @@ HANDLER_DEF(int, ppoll, struct pollfd *fds, nfds_t nfds,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, ppoll, struct pollfd *, fds, nfds_t, nfds,
-		 const struct timespec *, timeout_ts, const sigset_t *,sigmask)
 
-HANDLER_DEF(int, epoll_create, int __size)
+//HANDLER_DEF(int, epoll_create, int __size)
+HANDLER_WRAPPERS(int, epoll_create, int, __size)
 {
 	static int (*epoll_createp)(int __size);
 	BEFORE_ORIGINAL_SOCK(epoll_create, LIBC);
@@ -741,9 +742,9 @@ HANDLER_DEF(int, epoll_create, int __size)
 			     call_type, caller, info, "d", __size);
 	return ret;
 }
-HANDLER_WRAPPERS(int, epoll_create, int, __size)
 
-HANDLER_DEF(int, epoll_create1, int __flags)
+//HANDLER_DEF(int, epoll_create1, int __flags)
+HANDLER_WRAPPERS(int, epoll_create1, int, __flags)
 {
 	static int (*epoll_create1p)(int __size);
 	BEFORE_ORIGINAL_SOCK(epoll_create1, LIBC);
@@ -754,10 +755,11 @@ HANDLER_DEF(int, epoll_create1, int __flags)
 			     call_type, caller,  info, "d", __flags);
 	return ret;
 }
-HANDLER_WRAPPERS(int, epoll_create1, int, __flags)
 
-HANDLER_DEF(int, epoll_wait, int __epfd, struct epoll_event *__events,
-	    int __maxevents, int __timeout)
+//HANDLER_DEF(int, epoll_wait, int __epfd, struct epoll_event *__events,
+//	    int __maxevents, int __timeout)
+HANDLER_WRAPPERS(int, epoll_wait, int, __epfd, struct epoll_event *, __events,
+		 int, __maxevents, int, __timeout)
 {
 	static int (*epoll_waitp)(int __epfd, struct epoll_event *__events,
 			int __maxevents, int __timeout);
@@ -779,11 +781,11 @@ HANDLER_DEF(int, epoll_wait, int __epfd, struct epoll_event *__events,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, epoll_wait, int, __epfd, struct epoll_event *, __events,
-		 int, __maxevents, int, __timeout)
 
-HANDLER_DEF(int, epoll_pwait, int __epfd, struct epoll_event *__events,
-	    int __maxevents, int __timeout, __const __sigset_t * __ss)
+//HANDLER_DEF(int, epoll_pwait, int __epfd, struct epoll_event *__events,
+//	    int __maxevents, int __timeout, __const __sigset_t * __ss)
+HANDLER_WRAPPERS(int, epoll_pwait, int, __epfd, struct epoll_event *, __events,
+		 int, __maxevents, int, __timeout, __const __sigset_t *, __ss)
 {
 	static int (*epoll_pwaitp)(int __epfd, struct epoll_event *__events,
 			int __maxevents, int __timeout, __const __sigset_t *__ss);
@@ -807,11 +809,11 @@ HANDLER_DEF(int, epoll_pwait, int __epfd, struct epoll_event *__events,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, epoll_pwait, int, __epfd, struct epoll_event *, __events,
-		 int, __maxevents, int, __timeout, __const __sigset_t *, __ss)
 
-HANDLER_DEF(int, epoll_ctl, int __epfd, int __op, int __fd,
-	    struct epoll_event *__event)
+//HANDLER_DEF(int, epoll_ctl, int __epfd, int __op, int __fd,
+//	    struct epoll_event *__event)
+HANDLER_WRAPPERS(int, epoll_ctl, int, __epfd, int, __op, int, __fd,
+		 struct epoll_event *, __event)
 {
 	static int (*epoll_ctlp)(int __epfd, int __op, int __fd,
 			struct epoll_event *__event);
@@ -825,13 +827,12 @@ HANDLER_DEF(int, epoll_ctl, int __epfd, int __op, int __fd,
 				 voidp_to_uint64(__event));
 	return ret;
 }
-HANDLER_WRAPPERS(int, epoll_ctl, int, __epfd, int, __op, int, __fd,
-		 struct epoll_event *, __event)
 
 #if 0
 //OPTION _//NO FD
 
-HANDLER_DEF(uint32_t, htonl, uint32_t hostlong)
+//HANDLER_DEF(uint32_t, htonl, uint32_t hostlong)
+HANDLER_WRAPPERS(uint32_t, htonl, uint32_t, hostlong)
 {
 	static uint32_t (*htonlp)(uint32_t hostlong);
 	uint32_t uret;
@@ -845,9 +846,9 @@ HANDLER_DEF(uint32_t, htonl, uint32_t hostlong)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint32_t, htonl, uint32_t, hostlong)
 
-HANDLER_DEF(uint16_t , htons, uint16_t hostshort)
+//HANDLER_DEF(uint16_t , htons, uint16_t hostshort)
+HANDLER_WRAPPERS(uint16_t , htons, uint16_t, hostshort)
 {
 	static uint16_t (*htonsp)(uint16_t hostshort);
 	uint16_t uret;
@@ -861,9 +862,9 @@ HANDLER_DEF(uint16_t , htons, uint16_t hostshort)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint16_t , htons, uint16_t, hostshort)
 
-HANDLER_DEF(int , inet_aton, const char *cp, struct in_addr *inp)
+//HANDLER_DEF(int , inet_aton, const char *cp, struct in_addr *inp)
+HANDLER_WRAPPERS(int , inet_aton, const char *, cp, struct in_addr *, inp)
 {
 	static int (*inet_atonp)(const char *cp, struct in_addr *inp);
 
@@ -877,9 +878,9 @@ HANDLER_DEF(int , inet_aton, const char *cp, struct in_addr *inp)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , inet_aton, const char *, cp, struct in_addr *, inp)
 
-HANDLER_DEF(in_addr_t , inet_addr, const char *cp)
+//HANDLER_DEF(in_addr_t , inet_addr, const char *cp)
+HANDLER_WRAPPERS(in_addr_t , inet_addr, const char *, cp)
 {
 	static in_addr_t (*inet_addrp)(const char *cp);
 	in_addr_t iret;
@@ -893,9 +894,9 @@ HANDLER_DEF(in_addr_t , inet_addr, const char *cp)
 
 	return iret;
 }
-HANDLER_WRAPPERS(in_addr_t , inet_addr, const char *, cp)
 
-HANDLER_DEF(in_addr_t , inet_network, const char *cp)
+//HANDLER_DEF(in_addr_t , inet_network, const char *cp)
+HANDLER_WRAPPERS(in_addr_t , inet_network, const char *, cp)
 {
 	static in_addr_t (*inet_networkp)(const char *cp);
 	in_addr_t iret;
@@ -909,9 +910,9 @@ HANDLER_DEF(in_addr_t , inet_network, const char *cp)
 
 	return iret;
 }
-HANDLER_WRAPPERS(in_addr_t , inet_network, const char *, cp)
 
-HANDLER_DEF(char *, inet_ntoa, struct in_addr in)
+//HANDLER_DEF(char *, inet_ntoa, struct in_addr in)
+HANDLER_WRAPPERS(char *, inet_ntoa, struct in_addr, in)
 {
 	static char * (*inet_ntoap)(struct in_addr in);
 	char* sret;
@@ -925,9 +926,9 @@ HANDLER_DEF(char *, inet_ntoa, struct in_addr in)
 
 	return sret;
 }
-HANDLER_WRAPPERS(char *, inet_ntoa, struct in_addr, in)
 
-HANDLER_DEF(uint32_t , ntohl, uint32_t netlong)
+//HANDLER_DEF(uint32_t , ntohl, uint32_t netlong)
+HANDLER_WRAPPERS(uint32_t , ntohl, uint32_t, netlong)
 {
 	static uint32_t (*ntohlp)(uint32_t netlong);
 	uint32_t uret;
@@ -941,9 +942,9 @@ HANDLER_DEF(uint32_t , ntohl, uint32_t netlong)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint32_t , ntohl, uint32_t, netlong)
 
-HANDLER_DEF(uint16_t , ntohs, uint16_t netshort)
+//HANDLER_DEF(uint16_t , ntohs, uint16_t netshort)
+HANDLER_WRAPPERS(uint16_t , ntohs, uint16_t, netshort)
 {
 	static uint16_t (*ntohsp)(uint16_t netshort);
 	uint16_t uret;
@@ -957,9 +958,9 @@ HANDLER_DEF(uint16_t , ntohs, uint16_t netshort)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint16_t , ntohs, uint16_t, netshort)
 
-HANDLER_DEF(in_addr_t , inet_lnaof, struct in_addr in)
+//HANDLER_DEF(in_addr_t , inet_lnaof, struct in_addr in)
+HANDLER_WRAPPERS(in_addr_t , inet_lnaof, struct in_addr, in)
 {
 	static in_addr_t (*inet_lnaofp)(struct in_addr in);
 	in_addr_t iret;
@@ -973,9 +974,9 @@ HANDLER_DEF(in_addr_t , inet_lnaof, struct in_addr in)
 
 	return iret;
 }
-HANDLER_WRAPPERS(in_addr_t , inet_lnaof, struct in_addr, in)
 
-HANDLER_DEF(in_addr_t , inet_netof, struct in_addr in)
+//HANDLER_DEF(in_addr_t , inet_netof, struct in_addr in)
+HANDLER_WRAPPERS(in_addr_t , inet_netof, struct in_addr, in)
 {
 	static in_addr_t (*inet_netofp)(struct in_addr in);
 	in_addr_t iret;
@@ -989,10 +990,11 @@ HANDLER_DEF(in_addr_t , inet_netof, struct in_addr in)
 
 	return iret;
 }
-HANDLER_WRAPPERS(in_addr_t , inet_netof, struct in_addr, in)
 
-HANDLER_DEF(const char *, inet_ntop, int af, const void *src, char *dst,
-	    socklen_t size)
+//HANDLER_DEF(const char *, inet_ntop, int af, const void *src, char *dst,
+//	    socklen_t size)
+HANDLER_WRAPPERS(const char *, inet_ntop, int, af, const void *, src,
+		 char *, dst, socklen_t, size)
 {
 	static const char* (*inet_ntopp)(int af, const void *src, char *dst,
 			socklen_t size);
@@ -1007,10 +1009,9 @@ HANDLER_DEF(const char *, inet_ntop, int af, const void *src, char *dst,
 
 	return cret;
 }
-HANDLER_WRAPPERS(const char *, inet_ntop, int, af, const void *, src,
-		 char *, dst, socklen_t, size)
 
-HANDLER_DEF(int , inet_pton, int af, const char *src, void *dst)
+//HANDLER_DEF(int , inet_pton, int af, const char *src, void *dst)
+HANDLER_WRAPPERS(int , inet_pton, int, af, const char *, src, void *, dst)
 {
 	static int (*inet_ptonp)(int af, const char *src, void *dst);
 
@@ -1023,10 +1024,11 @@ HANDLER_DEF(int , inet_pton, int af, const char *src, void *dst)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , inet_pton, int, af, const char *, src, void *, dst)
 
-HANDLER_DEF(int, getaddrinfo, const char *node, const char *service,
-	    const struct addrinfo *hints, struct addrinfo **res)
+//HANDLER_DEF(int, getaddrinfo, const char *node, const char *service,
+//	    const struct addrinfo *hints, struct addrinfo **res)
+HANDLER_WRAPPERS(int, getaddrinfo, const char *, node, const char *, service,
+		 const struct addrinfo *, hints, struct addrinfo **, res)
 {
 	static int (*getaddrinfop)(const char *node, const char *service,
 			const struct addrinfo *hints, struct addrinfo **res);
@@ -1040,10 +1042,9 @@ HANDLER_DEF(int, getaddrinfo, const char *node, const char *service,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getaddrinfo, const char *, node, const char *, service,
-		 const struct addrinfo *, hints, struct addrinfo **, res)
 
-HANDLER_DEF(void , freeaddrinfo, struct addrinfo *res)
+//HANDLER_DEF(void , freeaddrinfo, struct addrinfo *res)
+HANDLER_WRAPPERS(void , freeaddrinfo, struct addrinfo *, res)
 {
 	static void (*freeaddrinfop)(struct addrinfo *res);
 
@@ -1054,9 +1055,9 @@ HANDLER_DEF(void , freeaddrinfo, struct addrinfo *res)
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 call_type, caller, info, "p", voidp_to_uint64(res));
 }
-HANDLER_WRAPPERS(void , freeaddrinfo, struct addrinfo *, res)
 
-HANDLER_DEF(const char *, gai_strerror, int errcode)
+//HANDLER_DEF(const char *, gai_strerror, int errcode)
+HANDLER_WRAPPERS(const char *, gai_strerror, int, errcode)
 {
 	static const char * (*gai_strerrorp)(int errcode);
 	const char * cret;
@@ -1070,10 +1071,11 @@ HANDLER_DEF(const char *, gai_strerror, int errcode)
 
 	return cret;
 }
-HANDLER_WRAPPERS(const char *, gai_strerror, int, errcode)
 
-HANDLER_DEF(int, gai_suspend, const struct gaicb* const list[], int nitems,
-	    const struct timespec *timeout)
+//HANDLER_DEF(int, gai_suspend, const struct gaicb* const list[], int nitems,
+//	    const struct timespec *timeout)
+HANDLER_WRAPPERS(int, gai_suspend, const struct gaicb** const, list,
+		 int, nitems, const struct timespec *, timeout)
 {
 	static int (*gai_suspendp)(const struct gaicb* const list[], int nitems,
 			const struct timespec *timeout);
@@ -1087,10 +1089,9 @@ HANDLER_DEF(int, gai_suspend, const struct gaicb* const list[], int nitems,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, gai_suspend, const struct gaicb** const, list,
-		 int, nitems, const struct timespec *, timeout)
 
-HANDLER_DEF(int , gai_error, struct gaicb *req)
+//HANDLER_DEF(int , gai_error, struct gaicb *req)
+HANDLER_WRAPPERS(int , gai_error, struct gaicb *, req)
 {
 	static int (*gai_errorp)(struct gaicb *req);
 
@@ -1103,9 +1104,9 @@ HANDLER_DEF(int , gai_error, struct gaicb *req)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , gai_error, struct gaicb *, req)
 
-HANDLER_DEF(int , gai_cancel, struct gaicb *req)
+//HANDLER_DEF(int , gai_cancel, struct gaicb *req)
+HANDLER_WRAPPERS(int , gai_cancel, struct gaicb *, req)
 {
 	static int (*gai_cancelp)(struct gaicb *req);
 
@@ -1118,10 +1119,11 @@ HANDLER_DEF(int , gai_cancel, struct gaicb *req)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , gai_cancel, struct gaicb *, req)
 
-HANDLER_DEF(int, getaddrinfo_a, int mode, struct gaicb *list[], int nitems,
-	    struct sigevent *sevp)
+//HANDLER_DEF(int, getaddrinfo_a, int mode, struct gaicb *list[], int nitems,
+//	    struct sigevent *sevp)
+HANDLER_WRAPPERS(int, getaddrinfo_a, int, mode, struct gaicb **, list,
+		 int, nitems, struct sigevent *, sevp)
 {
 	static int (*getaddrinfo_ap)(int mode, struct gaicb *list[], int nitems,
 			struct sigevent *sevp);
@@ -1135,10 +1137,9 @@ HANDLER_DEF(int, getaddrinfo_a, int mode, struct gaicb *list[], int nitems,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getaddrinfo_a, int, mode, struct gaicb **, list,
-		 int, nitems, struct sigevent *, sevp)
 
-HANDLER_DEF(int , getdomainname, char *name, size_t len)
+//HANDLER_DEF(int , getdomainname, char *name, size_t len)
+HANDLER_WRAPPERS(int , getdomainname, char *, name, size_t, len)
 {
 	static int (*getdomainnamep)(char *name, size_t len);
 
@@ -1153,9 +1154,9 @@ HANDLER_DEF(int , getdomainname, char *name, size_t len)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , getdomainname, char *, name, size_t, len)
 
-HANDLER_DEF(int , setdomainname, const char *name, size_t len)
+//HANDLER_DEF(int , setdomainname, const char *name, size_t len)
+HANDLER_WRAPPERS(int , setdomainname, const char *, name, size_t, len)
 {
 	static int (*setdomainnamep)(const char *name, size_t len);
 
@@ -1168,9 +1169,9 @@ HANDLER_DEF(int , setdomainname, const char *name, size_t len)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , setdomainname, const char *, name, size_t, len)
 
-HANDLER_DEF(int , gethostname, char *name, size_t len)
+//HANDLER_DEF(int , gethostname, char *name, size_t len)
+HANDLER_WRAPPERS(int , gethostname, char *, name, size_t, len)
 {
 	static int (*gethostnamep)(char *name, size_t len);
 
@@ -1183,9 +1184,9 @@ HANDLER_DEF(int , gethostname, char *name, size_t len)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , gethostname, char *, name, size_t, len)
 
-HANDLER_DEF(int , sethostname, const char *name, size_t len)
+//HANDLER_DEF(int , sethostname, const char *name, size_t len)
+HANDLER_WRAPPERS(int , sethostname, const char *, name, size_t, len)
 {
 	static int (*sethostnamep)(const char *name, size_t len);
 
@@ -1198,11 +1199,13 @@ HANDLER_DEF(int , sethostname, const char *name, size_t len)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , sethostname, const char *, name, size_t, len)
 
-HANDLER_DEF(int, getnameinfo, const struct sockaddr *sa, socklen_t salen,
-	    char *host, socklen_t hostlen, char *serv, socklen_t servlen,
-	    unsigned int flags)
+//HANDLER_DEF(int, getnameinfo, const struct sockaddr *sa, socklen_t salen,
+//	    char *host, socklen_t hostlen, char *serv, socklen_t servlen,
+//	    unsigned int flags)
+HANDLER_WRAPPERS(int, getnameinfo, const struct sockaddr *, sa,
+		 socklen_t, salen, char *, host, socklen_t, hostlen,
+		 char *, serv, socklen_t, servlen, unsigned int, flags)
 {
 	static int (*getnameinfop)(const struct sockaddr *sa, socklen_t salen,
 			char *host, socklen_t hostlen, char *serv, socklen_t servlen,
@@ -1219,11 +1222,9 @@ HANDLER_DEF(int, getnameinfo, const struct sockaddr *sa, socklen_t salen,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getnameinfo, const struct sockaddr *, sa,
-		 socklen_t, salen, char *, host, socklen_t, hostlen,
-		 char *, serv, socklen_t, servlen, unsigned int, flags)
 
-HANDLER_DEF(struct hostent *, gethostbyname, const char *name)
+//HANDLER_DEF(struct hostent *, gethostbyname, const char *name)
+HANDLER_WRAPPERS(struct hostent *, gethostbyname, const char *, name)
 {
 	static struct hostent * (*gethostbynamep)(const char *name);
 	struct hostent* pret;
@@ -1237,10 +1238,11 @@ HANDLER_DEF(struct hostent *, gethostbyname, const char *name)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct hostent *, gethostbyname, const char *, name)
 
-HANDLER_DEF(struct hostent *, gethostbyaddr, const void *addr, socklen_t len,
-	    int type)
+//HANDLER_DEF(struct hostent *, gethostbyaddr, const void *addr, socklen_t len,
+//	    int type)
+HANDLER_WRAPPERS(struct hostent *, gethostbyaddr, const void *, addr,
+		 socklen_t, len, int, type)
 {
 	static struct hostent * (*gethostbyaddrp)(const void *addr, socklen_t len,
 			int type);
@@ -1255,10 +1257,9 @@ HANDLER_DEF(struct hostent *, gethostbyaddr, const void *addr, socklen_t len,
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct hostent *, gethostbyaddr, const void *, addr,
-		 socklen_t, len, int, type)
 
-HANDLER_DEF(void , sethostent, int stayopen)
+//HANDLER_DEF(void , sethostent, int stayopen)
+HANDLER_WRAPPERS(void , sethostent, int, stayopen)
 {
 	static void (*sethostentp)(int stayopen);
 
@@ -1269,9 +1270,9 @@ HANDLER_DEF(void , sethostent, int stayopen)
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 			call_type, caller, info, "d", stayopen);
 }
-HANDLER_WRAPPERS(void , sethostent, int, stayopen)
 
-HANDLER_DEF(void , endhostent, void)
+//HANDLER_DEF(void , endhostent, void)
+HANDLER_WRAPPERS(void , endhostent, void)
 {
 	static void (*endhostentp)(void);
 
@@ -1284,9 +1285,9 @@ HANDLER_DEF(void , endhostent, void)
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 			call_type, caller, info, "s", "");
 }
-HANDLER_WRAPPERS(void , endhostent, void)
 
-HANDLER_DEF(void , herror, const char *s)
+//HANDLER_DEF(void , herror, const char *s)
+HANDLER_WRAPPERS(void , herror, const char *, s)
 {
 	static void (*herrorp)(const char *s);
 
@@ -1297,9 +1298,9 @@ HANDLER_DEF(void , herror, const char *s)
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 call_type, caller, info, "p", voidp_to_uint64(s));
 }
-HANDLER_WRAPPERS(void , herror, const char *, s)
 
-HANDLER_DEF(const char *, hstrerror, int err)
+//HANDLER_DEF(const char *, hstrerror, int err)
+HANDLER_WRAPPERS(const char *, hstrerror, int, err)
 {
 	static const char* (*hstrerrorp)(int err);
 	const char* cret;
@@ -1313,9 +1314,9 @@ HANDLER_DEF(const char *, hstrerror, int err)
 
 	return cret;
 }
-HANDLER_WRAPPERS(const char *, hstrerror, int, err)
 
-HANDLER_DEF(struct hostent *, gethostent, void)
+//HANDLER_DEF(struct hostent *, gethostent, void)
+HANDLER_WRAPPERS(struct hostent *, gethostent, void)
 {
 	static struct hostent* (*gethostentp)(void);
 	struct hostent* pret;
@@ -1329,9 +1330,9 @@ HANDLER_DEF(struct hostent *, gethostent, void)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct hostent *, gethostent, void)
 
-HANDLER_DEF(struct hostent *, gethostbyname2, const char *name, int af)
+//HANDLER_DEF(struct hostent *, gethostbyname2, const char *name, int af)
+HANDLER_WRAPPERS(struct hostent *, gethostbyname2, const char *, name, int, af)
 {
 	static struct hostent * (*gethostbyname2p)(const char *name, int af);
 	struct hostent* pret;
@@ -1345,10 +1346,11 @@ HANDLER_DEF(struct hostent *, gethostbyname2, const char *name, int af)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct hostent *, gethostbyname2, const char *, name, int, af)
 
-HANDLER_DEF(int, gethostent_r, struct hostent *rret, char *buf, size_t buflen,
-	    struct hostent **result, int *h_errnop)
+//HANDLER_DEF(int, gethostent_r, struct hostent *rret, char *buf, size_t buflen,
+//	    struct hostent **result, int *h_errnop)
+HANDLER_WRAPPERS(int, gethostent_r, struct hostent *, rret, char *, buf,
+		 size_t, buflen, struct hostent **, result, int *, h_errnop)
 {
 	static int (*gethostent_rp)(struct hostent *rret, char *buf, size_t buflen,
 			struct hostent **result, int *h_errnop);
@@ -1365,12 +1367,13 @@ HANDLER_DEF(int, gethostent_r, struct hostent *rret, char *buf, size_t buflen,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, gethostent_r, struct hostent *, rret, char *, buf,
-		 size_t, buflen, struct hostent **, result, int *, h_errnop)
 
-HANDLER_DEF(int, gethostbyaddr_r, const void *addr, socklen_t len, int type,
-	    struct hostent *rret, char *buf, size_t buflen,
-	    struct hostent **result, int *h_errnop)
+//HANDLER_DEF(int, gethostbyaddr_r, const void *addr, socklen_t len, int type,
+//	    struct hostent *rret, char *buf, size_t buflen,
+//	    struct hostent **result, int *h_errnop)
+HANDLER_WRAPPERS(int, gethostbyaddr_r, const void *, addr, socklen_t, len,
+		 int, type, struct hostent *, rret, char *, buf, size_t, buflen,
+		 struct hostent **, result, int *, h_errnop)
 {
 	static int (*gethostbyaddr_rp)(const void *addr, socklen_t len, int type,
 			struct hostent *rret, char *buf, size_t buflen,
@@ -1390,12 +1393,12 @@ HANDLER_DEF(int, gethostbyaddr_r, const void *addr, socklen_t len, int type,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, gethostbyaddr_r, const void *, addr, socklen_t, len,
-		 int, type, struct hostent *, rret, char *, buf, size_t, buflen,
-		 struct hostent **, result, int *, h_errnop)
 
-HANDLER_DEF(int, gethostbyname_r, const char *name, struct hostent *rret,
-	    char *buf, size_t buflen, struct hostent **result, int *h_errnop)
+//HANDLER_DEF(int, gethostbyname_r, const char *name, struct hostent *rret,
+//	    char *buf, size_t buflen, struct hostent **result, int *h_errnop)
+HANDLER_WRAPPERS(int, gethostbyname_r, const char *, name,
+		 struct hostent *, rret, char *, buf, size_t, buflen,
+		 struct hostent **, result, int *, h_errnop)
 {
 	static int (*gethostbyname_rp)(const char *name, struct hostent *rret,
 			char *buf, size_t buflen, struct hostent **result, int *h_errnop);
@@ -1412,13 +1415,13 @@ HANDLER_DEF(int, gethostbyname_r, const char *name, struct hostent *rret,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, gethostbyname_r, const char *, name,
+
+//HANDLER_DEF(int, gethostbyname2_r, const char *name, int af,
+//	    struct hostent *rret, char *buf, size_t buflen,
+//	    struct hostent **result, int *h_errnop)
+HANDLER_WRAPPERS(int, gethostbyname2_r, const char *, name, int, af,
 		 struct hostent *, rret, char *, buf, size_t, buflen,
 		 struct hostent **, result, int *, h_errnop)
-
-HANDLER_DEF(int, gethostbyname2_r, const char *name, int af,
-	    struct hostent *rret, char *buf, size_t buflen,
-	    struct hostent **result, int *h_errnop)
 {
 	static int (*gethostbyname2_rp)(const char *name, int af,
 			struct hostent *rret, char *buf, size_t buflen,
@@ -1436,12 +1439,11 @@ HANDLER_DEF(int, gethostbyname2_r, const char *name, int af,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, gethostbyname2_r, const char *, name, int, af,
-		 struct hostent *, rret, char *, buf, size_t, buflen,
-		 struct hostent **, result, int *, h_errnop)
 
-HANDLER_DEF(struct servent *, getservbyname, const char *name,
-	    const char *proto)
+//HANDLER_DEF(struct servent *, getservbyname, const char *name,
+//	    const char *proto)
+HANDLER_WRAPPERS(struct servent *, getservbyname, const char *, name,
+		 const char *, proto)
 {
 	static struct servent * (*getservbynamep)(const char *name,
 			const char *proto);
@@ -1457,10 +1459,9 @@ HANDLER_DEF(struct servent *, getservbyname, const char *name,
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct servent *, getservbyname, const char *, name,
-		 const char *, proto)
 
-HANDLER_DEF(void , setservent, int stayopen)
+//HANDLER_DEF(void , setservent, int stayopen)
+HANDLER_WRAPPERS(void , setservent, int, stayopen)
 {
 	static void (*setserventp)(int stayopen);
 
@@ -1471,9 +1472,9 @@ HANDLER_DEF(void , setservent, int stayopen)
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 			call_type, caller, info, "d", stayopen);
 }
-HANDLER_WRAPPERS(void , setservent, int, stayopen)
 
-HANDLER_DEF(void , endservent, void)
+//HANDLER_DEF(void , endservent, void)
+HANDLER_WRAPPERS(void , endservent, void)
 {
 	static void (*endserventp)(void);
 
@@ -1484,9 +1485,9 @@ HANDLER_DEF(void , endservent, void)
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 			call_type, caller, info, "s", "");
 }
-HANDLER_WRAPPERS(void , endservent, void)
 
-HANDLER_DEF(struct servent *, getservent, void)
+//HANDLER_DEF(struct servent *, getservent, void)
+HANDLER_WRAPPERS(struct servent *, getservent, void)
 {
 	static struct servent * (*getserventp)(void);
 	struct servent* pret;
@@ -1500,9 +1501,10 @@ HANDLER_DEF(struct servent *, getservent, void)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct servent *, getservent, void)
 
-HANDLER_DEF(struct servent *, getservbyport, int port, const char *proto)
+//HANDLER_DEF(struct servent *, getservbyport, int port, const char *proto)
+HANDLER_WRAPPERS(struct servent *, getservbyport, int, port,
+		 const char *, proto)
 {
 	static struct servent * (*getservbyportp)(int port, const char *proto);
 	struct servent* pret;
@@ -1516,11 +1518,11 @@ HANDLER_DEF(struct servent *, getservbyport, int port, const char *proto)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct servent *, getservbyport, int, port,
-		 const char *, proto)
 
-HANDLED_DEF(int, getservent_r, struct servent *result_buf, char *buf,
-	    size_t buflen, struct servent **result)
+//HANDLED_DEF(int, getservent_r, struct servent *result_buf, char *buf,
+//	    size_t buflen, struct servent **result)
+HANDLED_WRAPPERS(int, getservent_r, struct servent *, result_buf, char *, buf,
+		 size_t, buflen, struct servent **, result)
 {
 	static int (*getservent_rp)(struct servent *result_buf, char *buf,
 			size_t buflen, struct servent **result);
@@ -1536,12 +1538,13 @@ HANDLED_DEF(int, getservent_r, struct servent *result_buf, char *buf,
 
 	return ret;
 }
-HANDLED_WRAPPERS(int, getservent_r, struct servent *, result_buf, char *, buf,
-		 size_t, buflen, struct servent **, result)
 
-HANDLER_DEF(int, getservbyname_r, const char *name, const char *proto,
-	    struct servent *result_buf, char *buf, size_t buflen,
-	    struct servent **result)
+//HANDLER_DEF(int, getservbyname_r, const char *name, const char *proto,
+//	    struct servent *result_buf, char *buf, size_t buflen,
+//	    struct servent **result)
+HANDLER_WRAPPERS(int, getservbyname_r, const char *, name, const char *, proto,
+		 struct servent *, result_buf, char *, buf, size_t, buflen,
+		 struct servent **, result)
 {
 	static int (*getservbyname_rp)(const char *name, const char *proto,
 			struct servent *result_buf, char *buf, size_t buflen,
@@ -1560,13 +1563,13 @@ HANDLER_DEF(int, getservbyname_r, const char *name, const char *proto,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getservbyname_r, const char *, name, const char *, proto,
+
+//HANDLER_DEF(int, getservbyport_r, int port, const char *proto,
+//	    struct servent *result_buf, char *buf, size_t buflen,
+//	    struct servent **result)
+HANDLER_WRAPPERS(int, getservbyport_r, int, port, const char *, proto,
 		 struct servent *, result_buf, char *, buf, size_t, buflen,
 		 struct servent **, result)
-
-HANDLER_DEF(int, getservbyport_r, int port, const char *proto,
-	    struct servent *result_buf, char *buf, size_t buflen,
-	    struct servent **result)
 {
 	static int (*getservbyport_rp)(int port, const char *proto,
 			struct servent *result_buf, char *buf, size_t buflen,
@@ -1584,11 +1587,9 @@ HANDLER_DEF(int, getservbyport_r, int port, const char *proto,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getservbyport_r, int, port, const char *, proto,
-		 struct servent *, result_buf, char *, buf, size_t, buflen,
-		 struct servent **, result)
 
-HANDLER_DEF(struct netent* , getnetent, void)
+//HANDLER_DEF(struct netent* , getnetent, void)
+HANDLER_WRAPPERS(struct netent* , getnetent, void)
 {
 	static struct netent * (*getnetentp)(void);
 	struct netent* pret;
@@ -1602,9 +1603,9 @@ HANDLER_DEF(struct netent* , getnetent, void)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct netent* , getnetent, void)
 
-HANDLER_DEF(struct netent *, getnetbyname, const char *name)
+//HANDLER_DEF(struct netent *, getnetbyname, const char *name)
+HANDLER_WRAPPERS(struct netent *, getnetbyname, const char *, name)
 {
 	static struct netent * (*getnetbynamep)(const char *name);
 	struct netent* pret;
@@ -1618,9 +1619,9 @@ HANDLER_DEF(struct netent *, getnetbyname, const char *name)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct netent *, getnetbyname, const char *, name)
 
-HANDLER_DEF(struct netent *, getnetbyaddr, uint32_t net, int type)
+//HANDLER_DEF(struct netent *, getnetbyaddr, uint32_t net, int type)
+HANDLER_WRAPPERS(struct netent *, getnetbyaddr, uint32_t, net, int, type)
 {
 	static struct netent * (*getnetbyaddrp)(uint32_t net, int type);
 	struct netent * pret;
@@ -1634,9 +1635,9 @@ HANDLER_DEF(struct netent *, getnetbyaddr, uint32_t net, int type)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct netent *, getnetbyaddr, uint32_t, net, int, type)
 
-HANDLER_DEF(void , setnetent, int stayopen)
+//HANDLER_DEF(void , setnetent, int stayopen)
+HANDLER_WRAPPERS(void , setnetent, int, stayopen)
 {
 	static void (*setnetentp)(int stayopen);
 
@@ -1647,9 +1648,9 @@ HANDLER_DEF(void , setnetent, int stayopen)
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 			call_type, caller, info, "d", stayopen);
 }
-HANDLER_WRAPPERS(void , setnetent, int, stayopen)
 
-HANDLER_DEF(void , endnetent, void)
+//HANDLER_DEF(void , endnetent, void)
+HANDLER_WRAPPERS(void , endnetent)
 {
 	static void (*endnetentp)(void);
 
@@ -1660,10 +1661,11 @@ HANDLER_DEF(void , endnetent, void)
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 			call_type, caller, info, "s", "");
 }
-HANDLER_WRAPPERS(void , endnetent)
 
-HANDLER_DEF(int, getnetent_r, struct netent *result_buf, char *buf,
-	    size_t buflen, struct netent **result, int *h_errnop)
+//HANDLER_DEF(int, getnetent_r, struct netent *result_buf, char *buf,
+//	    size_t buflen, struct netent **result, int *h_errnop)
+HANDLER_WRAPPERS(int, getnetent_r, struct netent *, result_buf, char *, buf,
+		 size_t, buflen, struct netent **, result, int *, h_errnop)
 {
 	static int (*getnetent_rp)(struct netent *result_buf, char *buf,
 			size_t buflen, struct netent **result, int *h_errnop);
@@ -1680,11 +1682,12 @@ HANDLER_DEF(int, getnetent_r, struct netent *result_buf, char *buf,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getnetent_r, struct netent *, result_buf, char *, buf,
-		 size_t, buflen, struct netent **, result, int *, h_errnop)
 
-HANDLER_DEF(int, getnetbyname_r, const char *name, struct netent *result_buf,
-	    char *buf, size_t buflen, struct netent **result, int *h_errnop)
+//HANDLER_DEF(int, getnetbyname_r, const char *name, struct netent *result_buf,
+//	    char *buf, size_t buflen, struct netent **result, int *h_errnop)
+HANDLER_WRAPPERS(int, getnetbyname_r, const char *, name,
+		 struct netent *, result_buf, char *, buf, size_t, buflen,
+		 struct netent **, result, int *, h_errnop)
 {
 	static int (*getnetbyname_rp)(const char *name, struct netent *result_buf,
 			char *buf, size_t buflen, struct netent **result, int *h_errnop);
@@ -1702,13 +1705,13 @@ HANDLER_DEF(int, getnetbyname_r, const char *name, struct netent *result_buf,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getnetbyname_r, const char *, name,
+
+//HANDLER_DEF(int, getnetbyaddr_r, uint32_t net, int type,
+//	    struct netent *result_buf, char *buf, size_t buflen,
+//	    struct netent **result, int *h_errnop)
+HANDLER_WRAPPERS(int, getnetbyaddr_r, uint32_t, net, int, type,
 		 struct netent *, result_buf, char *, buf, size_t, buflen,
 		 struct netent **, result, int *, h_errnop)
-
-HANDLER_DEF(int, getnetbyaddr_r, uint32_t net, int type,
-	    struct netent *result_buf, char *buf, size_t buflen,
-	    struct netent **result, int *h_errnop)
 {
 	static int (*getnetbyaddr_rp)(uint32_t net, int type,
 			struct netent *result_buf, char *buf, size_t buflen,
@@ -1727,11 +1730,9 @@ HANDLER_DEF(int, getnetbyaddr_r, uint32_t net, int type,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getnetbyaddr_r, uint32_t, net, int, type,
-		 struct netent *, result_buf, char *, buf, size_t, buflen,
-		 struct netent **, result, int *, h_errnop)
 
-HANDLER_DEF(struct protoent *, getprotoent, void)
+//HANDLER_DEF(struct protoent *, getprotoent, void)
+HANDLER_WRAPPERS(struct protoent *, getprotoent, void)
 {
 	static struct protoent * (*getprotoentp)(void);
 	struct protoent * pret;
@@ -1745,9 +1746,9 @@ HANDLER_DEF(struct protoent *, getprotoent, void)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct protoent *, getprotoent, void)
 
-HANDLER_DEF(struct protoent *, getprotobyname, const char *name)
+//HANDLER_DEF(struct protoent *, getprotobyname, const char *name)
+HANDLER_WRAPPERS(struct protoent *, getprotobyname, const char *, name)
 {
 	static struct protoent * (*getprotobynamep)(const char *name);
 	struct protoent * pret;
@@ -1761,9 +1762,9 @@ HANDLER_DEF(struct protoent *, getprotobyname, const char *name)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct protoent *, getprotobyname, const char *, name)
 
-HANDLER_DEF(struct protoent *, getprotobynumber, int proto)
+//HANDLER_DEF(struct protoent *, getprotobynumber, int proto)
+HANDLER_WRAPPERS(struct protoent *, getprotobynumber, int, proto)
 {
 	static struct protoent * (*getprotobynumberp)(int proto);
 	struct protoent * pret;
@@ -1777,9 +1778,9 @@ HANDLER_DEF(struct protoent *, getprotobynumber, int proto)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct protoent *, getprotobynumber, int, proto)
 
-HANDLER_DEF(void , setprotoent, int stayopen)
+//HANDLER_DEF(void , setprotoent, int stayopen)
+HANDLER_WRAPPERS(void , setprotoent, int, stayopen)
 {
 	static void (*setprotoentp)(int stayopen);
 
@@ -1790,9 +1791,9 @@ HANDLER_DEF(void , setprotoent, int stayopen)
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 			call_type, caller, info, "d", stayopen);
 }
-HANDLER_WRAPPERS(void , setprotoent, int, stayopen)
 
-HANDLER_DEF(void , endprotoent)
+//HANDLER_DEF(void , endprotoent)
+HANDLER_WRAPPERS(void , endprotoent)
 {
 	static void (*endprotoentp)(void);
 
@@ -1803,10 +1804,11 @@ HANDLER_DEF(void , endprotoent)
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 			call_type, caller, info, "s", "");
 }
-HANDLER_WRAPPERS(void , endprotoent)
 
-HANDLER_DEF(int, getprotoent_r, struct protoent *result_buf, char *buf,
-	    size_t buflen, struct protoent **result)
+//HANDLER_DEF(int, getprotoent_r, struct protoent *result_buf, char *buf,
+//	    size_t buflen, struct protoent **result)
+HANDLER_WRAPPERS(int, getprotoent_r, struct protoent *, result_buf, char *, buf,
+		 size_t, buflen, struct protoent **, result)
 {
 	static int (*getprotoent_rp)(struct protoent *result_buf, char *buf,
 			size_t buflen, struct protoent **result);
@@ -1822,12 +1824,13 @@ HANDLER_DEF(int, getprotoent_r, struct protoent *result_buf, char *buf,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getprotoent_r, struct protoent *, result_buf, char *, buf,
-		 size_t, buflen, struct protoent **, result)
 
-HANDLER_DEF(int, getprotobyname_r, const char *name,
-	    struct protoent *result_buf, char *buf, size_t buflen,
-	    struct protoent **result)
+//HANDLER_DEF(int, getprotobyname_r, const char *name,
+//	    struct protoent *result_buf, char *buf, size_t buflen,
+//	    struct protoent **result)
+HANDLER_WRAPPERS(int, getprotobyname_r, const char *, name,
+		 struct protoent *, result_buf, char *, buf, size_t, buflen,
+		 struct protoent **, result)
 {
 	static int (*getprotobyname_rp)(const char *name,
 			struct protoent *result_buf, char *buf, size_t buflen,
@@ -1845,12 +1848,12 @@ HANDLER_DEF(int, getprotobyname_r, const char *name,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getprotobyname_r, const char *, name,
+
+//HANDLER_DEF(int, getprotobynumber_r, int proto, struct protoent *result_buf,
+//	    char *buf, size_t buflen, struct protoent **result)
+HANDLER_WRAPPERS(int, getprotobynumber_r, int, proto,
 		 struct protoent *, result_buf, char *, buf, size_t, buflen,
 		 struct protoent **, result)
-
-HANDLER_DEF(int, getprotobynumber_r, int proto, struct protoent *result_buf,
-	    char *buf, size_t buflen, struct protoent **result)
 {
 	static int (*getprotobynumber_rp)(int proto, struct protoent *result_buf,
 			char *buf, size_t buflen, struct protoent **result);
@@ -1867,11 +1870,9 @@ HANDLER_DEF(int, getprotobynumber_r, int proto, struct protoent *result_buf,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getprotobynumber_r, int, proto,
-		 struct protoent *, result_buf, char *, buf, size_t, buflen,
-		 struct protoent **, result)
 
-HANDLER_DEF(unsigned int , if_nametoindex, __const char *__ifname)
+//HANDLER_DEF(unsigned int , if_nametoindex, __const char *__ifname)
+HANDLER_WRAPPERS(unsigned int , if_nametoindex, __const char *, __ifname)
 {
 	static unsigned int (*if_nametoindexp)(__const char *__ifname);
 	unsigned int uret;
@@ -1885,9 +1886,10 @@ HANDLER_DEF(unsigned int , if_nametoindex, __const char *__ifname)
 
 	return uret;
 }
-HANDLER_WRAPPERS(unsigned int , if_nametoindex, __const char *, __ifname)
 
-HANDLER_DEF(char *, if_indextoname, unsigned int __ifindex, char *__ifname)
+//HANDLER_DEF(char *, if_indextoname, unsigned int __ifindex, char *__ifname)
+HANDLER_WRAPPERS(char *, if_indextoname, unsigned int, __ifindex,
+		 char *, __ifname)
 {
 	static char * (*if_indextonamep)(unsigned int __ifindex, char *__ifname);
 	char * cret;
@@ -1902,10 +1904,9 @@ HANDLER_DEF(char *, if_indextoname, unsigned int __ifindex, char *__ifname)
 
 	return cret;
 }
-HANDLER_WRAPPERS(char *, if_indextoname, unsigned int, __ifindex,
-		 char *, __ifname)
 
-HANDLER_DEF(struct if_nameindex *, if_nameindex, void)
+//HANDLER_DEF(struct if_nameindex *, if_nameindex, void)
+HANDLER_WRAPPERS(struct if_nameindex *, if_nameindex, void)
 {
 	static struct if_nameindex * (*if_nameindexp)(void);
 	struct if_nameindex * pret;
@@ -1919,9 +1920,9 @@ HANDLER_DEF(struct if_nameindex *, if_nameindex, void)
 
 	return pret;
 }
-HANDLER_WRAPPERS(struct if_nameindex *, if_nameindex, void)
 
-HANDLER_DEF(void , if_freenameindex, struct if_nameindex *__ptr)
+//HANDLER_DEF(void , if_freenameindex, struct if_nameindex *__ptr)
+HANDLER_WRAPPERS(void , if_freenameindex, struct if_nameindex *, __ptr)
 {
 	static void (*if_freenameindexp)(struct if_nameindex *__ptr);
 
@@ -1932,9 +1933,9 @@ HANDLER_DEF(void , if_freenameindex, struct if_nameindex *__ptr)
 	AFTER_ORIGINAL_LIBC_SOCK(NULL, OBJ_DUMMY, 0, SOCKET_API_OTHER,
 				 call_type, caller, info, "p", voidp_to_uint64(__ptr));
 }
-HANDLER_WRAPPERS(void , if_freenameindex, struct if_nameindex *, __ptr)
 
-HANDLER_DEF(int , getifaddrs, struct ifaddrs **ifap)
+//HANDLER_DEF(int , getifaddrs, struct ifaddrs **ifap)
+HANDLER_WRAPPERS(int , getifaddrs, struct ifaddrs **, ifap)
 {
 	static int (*getifaddrsp)(struct ifaddrs **ifap);
 
@@ -1947,9 +1948,9 @@ HANDLER_DEF(int , getifaddrs, struct ifaddrs **ifap)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , getifaddrs, struct ifaddrs **, ifap)
 
-HANDLER_DEF(void , freeifaddrs, struct ifaddrs *ifa)
+//HANDLER_DEF(void , freeifaddrs, struct ifaddrs *ifa)
+HANDLER_WRAPPERS(void , freeifaddrs, struct ifaddrs *, ifa)
 {
 	static void (*freeifaddrsp)(struct ifaddrs *ifa);
 
@@ -1961,11 +1962,11 @@ HANDLER_DEF(void , freeifaddrs, struct ifaddrs *ifa)
 			     call_type, caller, info,
 			     "p", voidp_to_uint64(ifa));
 }
-HANDLER_WRAPPERS(void , freeifaddrs, struct ifaddrs *, ifa)
 
 //To do
 
-HANDLER_DEF(uint16_t , htobe16, uint16_t host_16bits)
+//HANDLER_DEF(uint16_t , htobe16, uint16_t host_16bits)
+HANDLER_WRAPPERS(uint16_t , htobe16, uint16_t, host_16bits)
 {
 	static uint16_t (*htobe16p)(uint16_t host_16bits);
 	uint16_t uret;
@@ -1979,9 +1980,9 @@ HANDLER_DEF(uint16_t , htobe16, uint16_t host_16bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint16_t , htobe16, uint16_t, host_16bits)
 
-HANDLER_DEF(uint16_t , htole16, uint16_t host_16bits)
+//HANDLER_DEF(uint16_t , htole16, uint16_t host_16bits)
+HANDLER_WRAPPERS(uint16_t , htole16, uint16_t, host_16bits)
 {
 	static uint16_t (*htole16p)(uint16_t host_16bits);
 	uint16_t uret;
@@ -1995,9 +1996,9 @@ HANDLER_DEF(uint16_t , htole16, uint16_t host_16bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint16_t , htole16, uint16_t, host_16bits)
 
-HANDLER_DEF(uint16_t , be16toh, uint16_t big_endian_16bits)
+//HANDLER_DEF(uint16_t , be16toh, uint16_t big_endian_16bits)
+HANDLER_WRAPPERS(uint16_t , be16toh, uint16_t, big_endian_16bits)
 {
 	static uint16_t (*be16tohp)(uint16_t big_endian_16bits);
 	uint16_t uret;
@@ -2011,9 +2012,9 @@ HANDLER_DEF(uint16_t , be16toh, uint16_t big_endian_16bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint16_t , be16toh, uint16_t, big_endian_16bits)
 
-HANDLER_DEF(uint16_t , le16toh, uint16_t little_endian_16bits)
+//HANDLER_DEF(uint16_t , le16toh, uint16_t little_endian_16bits)
+HANDLER_WRAPPERS(uint16_t , le16toh, uint16_t, little_endian_16bits)
 {
 	static uint16_t (*le16tohp)(uint16_t little_endian_16bits);
 	uint16_t uret;
@@ -2027,9 +2028,9 @@ HANDLER_DEF(uint16_t , le16toh, uint16_t little_endian_16bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint16_t , le16toh, uint16_t, little_endian_16bits)
 
-HANDLER_DEF(uint32_t , htobe32, uint32_t host_32bits)
+//HANDLER_DEF(uint32_t , htobe32, uint32_t host_32bits)
+HANDLER_WRAPPERS(uint32_t , htobe32, uint32_t, host_32bits)
 {
 	static uint32_t (*htobe32p)(uint32_t host_32bits);
 	uint32_t uret;
@@ -2043,9 +2044,9 @@ HANDLER_DEF(uint32_t , htobe32, uint32_t host_32bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint32_t , htobe32, uint32_t, host_32bits)
 
-HANDLER_DEF(uint32_t , htole32, uint32_t host_32bits)
+//HANDLER_DEF(uint32_t , htole32, uint32_t host_32bits)
+HANDLER_WRAPPERS(uint32_t , htole32, uint32_t, host_32bits)
 {
 	static uint32_t (*htole32p)(uint32_t host_32bits);
 	uint32_t uret;
@@ -2059,9 +2060,9 @@ HANDLER_DEF(uint32_t , htole32, uint32_t host_32bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint32_t , htole32, uint32_t, host_32bits)
 
-HANDLER_DEF(uint32_t , be32toh, uint32_t big_endian_32bits)
+//HANDLER_DEF(uint32_t , be32toh, uint32_t big_endian_32bits)
+HANDLER_WRAPPERS(uint32_t , be32toh, uint32_t, big_endian_32bits)
 {
 	static uint32_t (*be32tohp)(uint32_t big_endian_32bits);
 	uint32_t uret;
@@ -2075,9 +2076,9 @@ HANDLER_DEF(uint32_t , be32toh, uint32_t big_endian_32bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint32_t , be32toh, uint32_t, big_endian_32bits)
 
-HANDLER_DEF(uint32_t , le32toh, uint32_t little_endian_32bits)
+//HANDLER_DEF(uint32_t , le32toh, uint32_t little_endian_32bits)
+HANDLER_WRAPPERS(uint32_t , le32toh, uint32_t, little_endian_32bits)
 {
 	static uint32_t (*le32tohp)(uint32_t little_endian_32bits);
 	uint32_t uret;
@@ -2091,9 +2092,9 @@ HANDLER_DEF(uint32_t , le32toh, uint32_t little_endian_32bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint32_t , le32toh, uint32_t, little_endian_32bits)
 
-HANDLER_DEF(uint64_t , htobe64, uint64_t host_64bits)
+//HANDLER_DEF(uint64_t , htobe64, uint64_t host_64bits)
+HANDLER_WRAPPERS(uint64_t , htobe64, uint64_t, host_64bits)
 {
 	static uint64_t (*htobe64p)(uint64_t host_64bits);
 	uint64_t uret;
@@ -2107,9 +2108,9 @@ HANDLER_DEF(uint64_t , htobe64, uint64_t host_64bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint64_t , htobe64, uint64_t, host_64bits)
 
-HANDLER_DEF(uint64_t , htole64, uint64_t host_64bits)
+//HANDLER_DEF(uint64_t , htole64, uint64_t host_64bits)
+HANDLER_WRAPPERS(uint64_t , htole64, uint64_t, host_64bits)
 {
 	static uint64_t (*htole64p)(uint64_t host_64bits);
 	uint64_t uret;
@@ -2123,9 +2124,9 @@ HANDLER_DEF(uint64_t , htole64, uint64_t host_64bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint64_t , htole64, uint64_t, host_64bits)
 
-HANDLER_DEF(uint64_t , be64toh, uint64_t big_endian_64bits)
+//HANDLER_DEF(uint64_t , be64toh, uint64_t big_endian_64bits)
+HANDLER_WRAPPERS(uint64_t , be64toh, uint64_t, big_endian_64bits)
 {
 	static uint64_t (*be64tohp)(uint64_t big_endian_64bits);
 	uint64_t uret;
@@ -2139,9 +2140,9 @@ HANDLER_DEF(uint64_t , be64toh, uint64_t big_endian_64bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint64_t , be64toh, uint64_t, big_endian_64bits)
 
-HANDLER_DEF(uint64_t , le64toh, uint64_t little_endian_64bits)
+//HANDLER_DEF(uint64_t , le64toh, uint64_t little_endian_64bits)
+HANDLER_WRAPPERS(uint64_t , le64toh, uint64_t, little_endian_64bits)
 {
 	static uint64_t (*le64tohp)(uint64_t little_endian_64bits);
 	uint64_t uret;
@@ -2155,9 +2156,9 @@ HANDLER_DEF(uint64_t , le64toh, uint64_t little_endian_64bits)
 
 	return uret;
 }
-HANDLER_WRAPPERS(uint64_t , le64toh, uint64_t, little_endian_64bits)
 
-HANDLER_DEF(struct in_addr , inet_makeaddr, int net, int host)
+//HANDLER_DEF(struct in_addr , inet_makeaddr, int net, int host)
+HANDLER_WRAPPERS(struct in_addr , inet_makeaddr, int, net, int, host)
 {
 	static struct in_addr (*inet_makeaddrp)(int net, int host);
 	struct in_addr iret;
@@ -2171,6 +2172,5 @@ HANDLER_DEF(struct in_addr , inet_makeaddr, int net, int host)
 
 	return iret;
 }
-HANDLER_WRAPPERS(struct in_addr , inet_makeaddr, int, net, int, host)
 
 #endif
