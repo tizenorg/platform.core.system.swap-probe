@@ -56,7 +56,8 @@ static inline char *get_abs_path(FILE *file, const char *fname,
 	return path;
 }
 
-HANDLER_DEF(FILE*, fopen, const char* filename, const char* mode)
+//HANDLER_DEF(FILE*, fopen, const char* filename, const char* mode)
+HANDLER_WRAPPERS(FILE*, fopen, const char*, filename, const char*, mode)
 {
 	static FILE* (*fopenp)(const char* filename, const char* mode);
 	char buffer[PATH_MAX];
@@ -74,10 +75,10 @@ HANDLER_DEF(FILE*, fopen, const char* filename, const char* mode)
 
 	return fret;
 }
-HANDLER_WRAPPERS(FILE*, fopen, const char*, filename, const char*, mode)
 
-HANDLER_DEF(FILE*, freopen, const char * filename, const char * mode,
-	    FILE * stream)
+//HANDLER_DEF(FILE*, freopen, const char * filename, const char * mode,
+//	    FILE * stream)
+HANDLER_WRAPPERS(FILE*, freopen, const char *, filename, const char *, mode, FILE *, stream)
 {
 	static FILE* (*freopenp)(const char *filename, const char *mode,
 				 FILE *stream);
@@ -96,9 +97,9 @@ HANDLER_DEF(FILE*, freopen, const char * filename, const char * mode,
 
 	return fret;
 }
-HANDLER_WRAPPERS(FILE*, freopen, const char *, filename, const char *, mode, FILE *, stream)
 
-HANDLER_DEF(FILE*, fdopen, int fildes, const char *mode)
+//HANDLER_DEF(FILE*, fdopen, int fildes, const char *mode)
+HANDLER_WRAPPERS(FILE*, fdopen, int, fildes, const char *, mode)
 {
 	static FILE* (*fdopenp)(int fildes, const char *mode);
  	FILE* fret;
@@ -112,9 +113,9 @@ HANDLER_DEF(FILE*, fdopen, int fildes, const char *mode)
 
 	return fret;
 }
-HANDLER_WRAPPERS(FILE*, fdopen, int, fildes, const char *, mode)
 
-HANDLER_DEF(int, fflush, FILE* stream)
+//HANDLER_DEF(int, fflush, FILE* stream)
+HANDLER_WRAPPERS(int, fflush, FILE*, stream)
 {
 	static int (*fflushp)(FILE* stream);
 
@@ -125,9 +126,9 @@ HANDLER_DEF(int, fflush, FILE* stream)
 				  voidp_to_uint64(stream));
 	return ret;
 }
-HANDLER_WRAPPERS(int, fflush, FILE*, stream)
 
-HANDLER_DEF(int, fclose, FILE* stream)
+//HANDLER_DEF(int, fclose, FILE* stream)
+HANDLER_WRAPPERS(int, fclose, FILE*, stream)
 {
 	static int (*fclosep)(FILE* stream);
 	DECLARE_VARIABLE_FD;
@@ -154,9 +155,9 @@ HANDLER_DEF(int, fclose, FILE* stream)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, fclose, FILE*, stream)
 
-HANDLER_DEF(FILE *, tmpfile)
+//HANDLER_DEF(FILE *, tmpfile)
+HANDLER_WRAPPERS(FILE *, tmpfile)
 {
 	static FILE* (*tmpfilep) ( void );
 	FILE* fret;
@@ -168,9 +169,9 @@ HANDLER_DEF(FILE *, tmpfile)
 				  'p', fret, 0, fret, FD_API_OPEN, call_type, caller, "s", "");
 	return fret;
 }
-HANDLER_WRAPPERS(FILE *, tmpfile)
 
-HANDLER_DEF(int, fgetpos, FILE* stream, fpos_t* position)
+//HANDLER_DEF(int, fgetpos, FILE* stream, fpos_t* position)
+HANDLER_WRAPPERS(int, fgetpos, FILE*, stream, fpos_t*, position)
 {
 	static int (*fgetposp)(FILE* stream, fpos_t* position);
 
@@ -182,9 +183,9 @@ HANDLER_DEF(int, fgetpos, FILE* stream, fpos_t* position)
 				  voidp_to_uint64(position));
 	return ret;
 }
-HANDLER_WRAPPERS(int, fgetpos, FILE*, stream, fpos_t*, position)
 
-HANDLER_DEF(int, fseek, FILE* stream, long int offset, int origin)
+//HANDLER_DEF(int, fseek, FILE* stream, long int offset, int origin)
+HANDLER_WRAPPERS(int, fseek, FILE*, stream, long int, offset, int, origin)
 {
 	static int (*fseekp)(FILE* stream, long int offset, int origin);
 
@@ -196,9 +197,9 @@ HANDLER_DEF(int, fseek, FILE* stream, long int offset, int origin)
 				  (uint64_t)(offset), origin);
 	return ret;
 }
-HANDLER_WRAPPERS(int, fseek, FILE*, stream, long int, offset, int, origin)
 
-HANDLER_DEF(int, fsetpos, FILE* stream, const fpos_t* pos)
+//HANDLER_DEF(int, fsetpos, FILE* stream, const fpos_t* pos)
+HANDLER_WRAPPERS(int, fsetpos, FILE*, stream, const fpos_t*, pos)
 {
 	static int (*fsetposp)(FILE* stream, const fpos_t* pos);
 
@@ -209,9 +210,9 @@ HANDLER_DEF(int, fsetpos, FILE* stream, const fpos_t* pos)
 				  voidp_to_uint64(stream), voidp_to_uint64(pos));
 	return ret;
 }
-HANDLER_WRAPPERS(int, fsetpos, FILE*, stream, const fpos_t*, pos)
 
-HANDLER_DEF(long int, ftell, FILE* stream)
+//HANDLER_DEF(long int, ftell, FILE* stream)
+HANDLER_WRAPPERS(long int, ftell, FILE*, stream)
 {
 	static long int (*ftellp)(FILE* stream);
 	long int lret;
@@ -226,9 +227,9 @@ HANDLER_DEF(long int, ftell, FILE* stream)
 
 	return lret;
 }
-HANDLER_WRAPPERS(long int, ftell, FILE*, stream)
 
-HANDLER_DEF(void, rewind, FILE* stream)
+//HANDLER_DEF(void, rewind, FILE* stream)
+HANDLER_WRAPPERS_VOID(void, rewind, FILE*, stream)
 {
 	static void (*rewindp)(FILE* stream);
 
@@ -240,9 +241,9 @@ HANDLER_DEF(void, rewind, FILE* stream)
 				  'v', 0, 0, stream, FD_API_OTHER, call_type, caller, "p",
 				  voidp_to_uint64(stream));
 }
-HANDLER_WRAPPERS_VOID(void, rewind, FILE*, stream)
 
-HANDLER_DEF(void, clearerr, FILE* stream)
+//HANDLER_DEF(void, clearerr, FILE* stream)
+HANDLER_WRAPPERS_VOID(void, clearerr, FILE*, stream)
 {
 	static void (*clearerrp)(FILE* stream);
 
@@ -254,9 +255,9 @@ HANDLER_DEF(void, clearerr, FILE* stream)
 				  'v', 0, 0, stream, FD_API_OTHER, call_type, caller, "p",
 				  voidp_to_uint64(stream));
 }
-HANDLER_WRAPPERS_VOID(void, clearerr, FILE*, stream)
 
-HANDLER_DEF(int, feof, FILE* stream)
+//HANDLER_DEF(int, feof, FILE* stream)
+HANDLER_WRAPPERS(int, feof, FILE*, stream)
 {
 	static int (*feofp)(FILE* stream);
 
@@ -267,9 +268,9 @@ HANDLER_DEF(int, feof, FILE* stream)
 				  voidp_to_uint64(stream));
 	return ret;
 }
-HANDLER_WRAPPERS(int, feof, FILE*, stream)
 
-HANDLER_DEF(int, ferror, FILE* stream)
+//HANDLER_DEF(int, ferror, FILE* stream)
+HANDLER_WRAPPERS(int, ferror, FILE*, stream)
 {
 	static int (*ferrorp)(FILE* stream);
 
@@ -280,9 +281,9 @@ HANDLER_DEF(int, ferror, FILE* stream)
 				  voidp_to_uint64(stream));
 	return ret;
 }
-HANDLER_WRAPPERS(int, ferror, FILE*, stream)
 
-HANDLER_DEF(int, fileno, FILE* stream)
+//HANDLER_DEF(int, fileno, FILE* stream)
+HANDLER_WRAPPERS(int, fileno, FILE*, stream)
 {
 	static int (*filenop)(FILE* stream);
 
@@ -293,7 +294,6 @@ HANDLER_DEF(int, fileno, FILE* stream)
 				  voidp_to_uint64(stream));
 	return ret;
 }
-HANDLER_WRAPPERS(int, fileno, FILE*, stream)
 
 
 
@@ -301,7 +301,8 @@ HANDLER_WRAPPERS(int, fileno, FILE*, stream)
 // File read / write APIs
 // *******************************************************************
 
-HANDLER_DEF(int, vfprintf, FILE* stream, const char* format, va_list arg)
+//HANDLER_DEF(int, vfprintf, FILE* stream, const char* format, va_list arg)
+HANDLER_WRAPPERS(int, vfprintf, FILE*, stream, const char*, format, va_list, arg)
 {
 	static int (*vfprintfp)(FILE* stream, const char* format, va_list arg);
 
@@ -317,9 +318,9 @@ HANDLER_DEF(int, vfprintf, FILE* stream, const char* format, va_list arg)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, vfprintf, FILE*, stream, const char*, format, va_list, arg)
 
-HANDLER_DEF(int, vfscanf, FILE* stream, const char* format, va_list arg)
+//HANDLER_DEF(int, vfscanf, FILE* stream, const char* format, va_list arg)
+HANDLER_WRAPPERS(int, vfscanf, FILE*, stream, const char*, format, va_list, arg)
 {
 	static int (*vfscanfp)(FILE* stream, const char* format, va_list arg);
 
@@ -335,9 +336,9 @@ HANDLER_DEF(int, vfscanf, FILE* stream, const char* format, va_list arg)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, vfscanf, FILE*, stream, const char*, format, va_list, arg)
 
-HANDLER_DEF(int, fgetc, FILE* stream)
+//HANDLER_DEF(int, fgetc, FILE* stream)
+HANDLER_WRAPPERS(int, fgetc, FILE*, stream)
 {
 	static int (*fgetcp)(FILE* stream);
 
@@ -353,10 +354,10 @@ HANDLER_DEF(int, fgetc, FILE* stream)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, fgetc, FILE*, stream)
 
 #if 0	// why is this commented?
-HANDLER_DEF(char*, fgets, char* str, int size, FILE* stream)
+//HANDLER_DEF(char*, fgets, char* str, int size, FILE* stream)
+HANDLER_WRAPPERS(char*, fgets, char*, str, int, size, FILE*, stream)
 {
 	static char* (*fgetsp)(char* str, int num, FILE* stream);
 	char* cret;
@@ -371,10 +372,10 @@ HANDLER_DEF(char*, fgets, char* str, int size, FILE* stream)
 
 	return cret;
 }
-HANDLER_WRAPPERS(char*, fgets, char*, str, int, size, FILE*, stream)
 #endif
 
-HANDLER_DEF(int, fputc, int character, FILE* stream)
+//HANDLER_DEF(int, fputc, int character, FILE* stream)
+HANDLER_WRAPPERS(int, fputc, int, character, FILE*, stream)
 {
 	static int (*fputcp)(int character, FILE* stream);
 
@@ -390,9 +391,9 @@ HANDLER_DEF(int, fputc, int character, FILE* stream)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, fputc, int, character, FILE*, stream)
 
-HANDLER_DEF(int, fputs, const char* str, FILE* stream)
+//HANDLER_DEF(int, fputs, const char* str, FILE* stream)
+HANDLER_WRAPPERS(int, fputs, const char*, str, FILE*, stream)
 {
 	static int (*fputsp)(const char* str, FILE* stream);
 
@@ -408,9 +409,9 @@ HANDLER_DEF(int, fputs, const char* str, FILE* stream)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, fputs, const char*, str, FILE*, stream)
 
-HANDLER_DEF(int, getc, FILE* stream)
+//HANDLER_DEF(int, getc, FILE* stream)
+HANDLER_WRAPPERS(int, getc, FILE*, stream)
 {
 	static int (*getcp)(FILE* stream);
 
@@ -426,9 +427,9 @@ HANDLER_DEF(int, getc, FILE* stream)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getc, FILE*, stream)
 
-HANDLER_DEF(int, putc, int character, FILE* stream)
+//HANDLER_DEF(int, putc, int character, FILE* stream)
+HANDLER_WRAPPERS(int, putc, int, character, FILE*, stream)
 {
 	static int (*putcp)(int character, FILE* stream);
 
@@ -444,9 +445,9 @@ HANDLER_DEF(int, putc, int character, FILE* stream)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, putc, int, character, FILE*, stream)
 
-HANDLER_DEF(int, ungetc, int character, FILE* stream)
+//HANDLER_DEF(int, ungetc, int character, FILE* stream)
+HANDLER_WRAPPERS(int, ungetc, int, character, FILE*, stream)
 {
 	static int (*ungetcp)(int character, FILE* stream);
 
@@ -462,9 +463,9 @@ HANDLER_DEF(int, ungetc, int character, FILE* stream)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, ungetc, int, character, FILE*, stream)
 
-HANDLER_DEF(size_t, fread, void* ptr, size_t size, size_t count, FILE* stream)
+//HANDLER_DEF(size_t, fread, void* ptr, size_t size, size_t count, FILE* stream)
+HANDLER_WRAPPERS(size_t, fread, void*, ptr, size_t, size, size_t, count, FILE*, stream)
 {
 	static size_t (*freadp)(void* ptr, size_t size, size_t count, FILE* stream);
 	size_t tret;
@@ -487,10 +488,10 @@ HANDLER_DEF(size_t, fread, void* ptr, size_t size, size_t count, FILE* stream)
 
 	return tret;
 }
-HANDLER_WRAPPERS(size_t, fread, void*, ptr, size_t, size, size_t, count, FILE*, stream)
 
-HANDLER_DEF(size_t, fwrite, const void* ptr, size_t size, size_t count,
-	    FILE* stream)
+//HANDLER_DEF(size_t, fwrite, const void* ptr, size_t size, size_t count,
+//	    FILE* stream)
+HANDLER_WRAPPERS(size_t, fwrite, const void*, ptr, size_t, size, size_t, count, FILE*, stream)
 {
 	static size_t (*fwritep)(const void* ptr, size_t size, size_t count, FILE* stream);
 	size_t tret;
@@ -513,12 +514,12 @@ HANDLER_DEF(size_t, fwrite, const void* ptr, size_t size, size_t count,
 
 	return tret;
 }
-HANDLER_WRAPPERS(size_t, fwrite, const void*, ptr, size_t, size, size_t, count, FILE*, stream)
 
 // *********************************************************
 // variable parameter function
 // *********************************************************
-HANDLER_DEF(int, fprintf, FILE* stream, const char* format, ...)
+//HANDLER_DEF(int, fprintf, FILE* stream, const char* format, ...)
+DEF_H(int, fprintf, FILE*, stream, const char*, format, va_list, args)
 {
 	static int (*vfprintfp)(FILE* stream, const char* format, ...);
 
@@ -526,22 +527,54 @@ HANDLER_DEF(int, fprintf, FILE* stream, const char* format, ...)
 					FD_API_WRITE_START, call_type, caller, "ps",
 					voidp_to_uint64(stream), format);
 
-	va_list arg;
-	va_start(arg, format);
+//	va_list arg;
+//	va_start(arg, format);
 
-	ret = vfprintfp(stream, format, arg);
+	ret = vfprintfp(stream, format, args);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fprintf, 'd', ret, ret, stream,
 				       FD_API_WRITE_END, call_type, caller, "ps",
 				       voidp_to_uint64(stream), format);
 
-	va_end(arg);
+//	va_end(arg);
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, fprintf, FILE*, stream, const char*, format, ...)
 
-HANDLER_DEF(int, fscanf, FILE* stream, const char* format, ...)
+DEF_WV(int, fprintf, FILE*, stream, const char*, format, ...)
+{ 
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, format);
+	ret = fprintf_handler(INTERNAL_CALL, caller, stream, format, args);
+	va_end(args);
+
+	return ret;
+}
+
+DEF_WAV(int, fprintf, FILE*, stream, const char*, format, ...)
+{ 
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, format);
+	ret = fprintf_handler(EXTERNAL_CALL, caller, stream, format, args);
+	va_end(args);
+
+	return ret;
+}
+
+//HANDLER_DEF(int, fscanf, FILE* stream, const char* format, ...)
+DEF_H(int, fscanf, FILE*, stream, const char*, format, va_list, args)
 {
 	static int (*vfscanfp)(FILE* stream, const char* format, ...);
 
@@ -549,64 +582,161 @@ HANDLER_DEF(int, fscanf, FILE* stream, const char* format, ...)
 					FD_API_READ_START, call_type, caller, "ps",
 					voidp_to_uint64(stream), format);
 
-	va_list arg;
-	va_start(arg, format);
+//	va_list arg;
+//	va_start(arg, format);
 
-	ret = vfscanfp(stream, format, arg);
+	ret = vfscanfp(stream, format, args);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fscanf, 'd', ret, ret, stream,
 				       FD_API_READ_END, call_type, caller, "ps",
 				       voidp_to_uint64(stream), format);
 
-	va_end(arg);
+//	va_end(arg);
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, fscanf, FILE*, stream, const char*, format, ...)
+
+DEF_WV(int, fscanf, FILE*, stream, const char*, format, ...)
+{ 
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, format);
+	ret = fscanf_handler(INTERNAL_CALL, caller, stream, format, args);
+	va_end(args);
+
+	return ret;
+}
+
+DEF_WAV(int, fscanf, FILE*, stream, const char*, format, ...)
+{ 
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, format);
+	ret = fscanf_handler(EXTERNAL_CALL, caller, stream, format, args);
+	va_end(args);
+
+	return ret;
+}
 
 #if !defined(DA_DEBUG_LOG) && !defined(PRINT_STDOUT)
-HANDLER_DEF(int, printf, const char* format, ...)
+//HANDLER_DEF(int, printf, const char* format, ...)
+DEF_H(int, printf, const char*, format, va_list, args)
 {
 	static int (*vprintfp)(const char* format, ...);
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_printf, 'd', vprintf, LIBC,
 				FD_API_WRITE_START, call_type, caller, "s", format);
 
-	va_list arg;
-	va_start(arg, format);
-	ret = vprintfp(format, arg);
+//	va_list arg;
+//	va_start(arg, format);
+	ret = vprintfp(format, args);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_printf, 'd', ret, ret,
 				FD_API_WRITE_END, call_type, caller, "s", format);
 
-	va_end(arg);
+//	va_end(arg);
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, printf, const char*, format, ...)
+
+DEF_WV(int, printf, const char*, format, ...)
+{ 
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, format);
+	ret = printf_handler(INTERNAL_CALL, caller, format, args);
+	va_end(args);
+
+	return ret;
+}
+
+DEF_WAV(int, printf, const char*, format, ...)
+{ 
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, format);
+	ret = printf_handler(EXTERNAL_CALL, caller, format, args);
+	va_end(args);
+
+	return ret;
+}
 #endif
 
-HANDLER_DEF(int, scanf, const char* format, ...)
+//HANDLER_DEF(int, scanf, const char* format, ...)
+DEF_H(int, scanf, const char*, format, va_list, args)
 {
 	static int (*vscanfp)(const char* format, ...);
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_scanf, 'd', vscanf, LIBC,
 				FD_API_READ_START, call_type, caller, "s", format);
 
-	va_list arg;
-	va_start(arg, format);
-	ret = vscanfp(format, arg);
+//	va_list arg;
+//	va_start(arg, format);
+	ret = vscanfp(format, args);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_scanf, 'd', ret, ret,
 				 FD_API_READ_END, call_type, caller, "s", format);
 
-	va_end(arg);
+//	va_end(arg);
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, scanf, const char*, format, ...)
 
-HANDLER_DEF(int, getchar)
+DEF_WV(int, scanf, const char*, format, ...)
+{ 
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, format);
+	ret = scanf_handler(INTERNAL_CALL, caller, format, args);
+	va_end(args);
+
+	return ret;
+}
+
+DEF_WAV(int, scanf, const char*, format, ...)
+{ 
+	uint32_t caller;
+	va_list args;
+	int ret;
+
+	caller = (uint32_t)
+	    (__builtin_extract_return_addr(__builtin_return_address(0)));
+
+	va_start(args, format);
+	ret = scanf_handler(EXTERNAL_CALL, caller, format, args);
+	va_end(args);
+
+	return ret;
+}
+
+
+//HANDLER_DEF(int, getchar)
+HANDLER_WRAPPERS(int, getchar)
 {
 	static int (*getcharp)();
 
@@ -620,9 +750,9 @@ HANDLER_DEF(int, getchar)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, getchar)
 
-HANDLER_DEF(int, putchar, int c)
+//HANDLER_DEF(int, putchar, int c)
+HANDLER_WRAPPERS(int, putchar, int, c)
 {
 	static int (*putcharp)(int c);
 
@@ -636,9 +766,9 @@ HANDLER_DEF(int, putchar, int c)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, putchar, int, c)
 
-HANDLER_DEF(char*, gets, char* str)
+//HANDLER_DEF(char*, gets, char* str)
+HANDLER_WRAPPERS(char*, gets, char*, str)
 {
 	static char* (*getsp)(char* str);
 	char* cret;
@@ -653,10 +783,10 @@ HANDLER_DEF(char*, gets, char* str)
 
 	return cret;
 }
-HANDLER_WRAPPERS(char*, gets, char*, str)
 
 #if !defined(DA_DEBUG_LOG) && !defined(PRINT_STDOUT)
-HANDLER_DEF(int, puts, const char* str)
+//HANDLER_DEF(int, puts, const char* str)
+HANDLER_WRAPPERS(int, puts, const char*, str)
 {
 	static int (*putsp)(const char* str);
 
@@ -670,12 +800,12 @@ HANDLER_DEF(int, puts, const char* str)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, puts, const char*, str)
 #endif
 
 
 
-HANDLER_DEF(void, setbuf, FILE* stream, char* buf)
+//HANDLER_DEF(void, setbuf, FILE* stream, char* buf)
+HANDLER_WRAPPERS_VOID(void, setbuf, FILE*, stream, char*, buf)
 {
 	static void (*setbufp)(FILE* stream, char* buf);
 
@@ -688,9 +818,9 @@ HANDLER_DEF(void, setbuf, FILE* stream, char* buf)
 				  voidp_to_uint64(stream),
 				  voidp_to_uint64(buf));
 }
-HANDLER_WRAPPERS_VOID(void, setbuf, FILE*, stream, char*, buf)
 
-HANDLER_DEF(void, setbuffer, FILE* stream, char* buf, size_t size)
+//HANDLER_DEF(void, setbuffer, FILE* stream, char* buf, size_t size)
+HANDLER_WRAPPERS_VOID(void, setbuffer, FILE*, stream, char*, buf, size_t, size)
 {
 	static void (*setbufferp)(FILE* stream, char* buf, size_t size);
 
@@ -703,9 +833,9 @@ HANDLER_DEF(void, setbuffer, FILE* stream, char* buf, size_t size)
 				  "ppx", voidp_to_uint64(stream),
 				  voidp_to_uint64(buf), (uint64_t)(size));
 }
-HANDLER_WRAPPERS_VOID(void, setbuffer, FILE*, stream, char*, buf, size_t, size)
 
-HANDLER_DEF(void, setlinebuf, FILE* stream)
+//HANDLER_DEF(void, setlinebuf, FILE* stream)
+HANDLER_WRAPPERS_VOID(void, setlinebuf, FILE*, stream)
 {
 	static int (*setlinebufp)(FILE* stream);
 
@@ -717,9 +847,9 @@ HANDLER_DEF(void, setlinebuf, FILE* stream)
 				  'v', 0, 0, stream, FD_API_OTHER, call_type, caller, "p",
 				  voidp_to_uint64(stream));
 }
-HANDLER_WRAPPERS_VOID(void, setlinebuf, FILE*, stream)
 
-HANDLER_DEF(int, setvbuf, FILE* stream, char* buf, int mode, size_t size)
+//HANDLER_DEF(int, setvbuf, FILE* stream, char* buf, int mode, size_t size)
+HANDLER_WRAPPERS(int, setvbuf, FILE*, stream, char*, buf, int, mode, size_t, size)
 {
 	static int (*setvbufp)(FILE* stream, char* buf, int mode, size_t size);
 
@@ -733,7 +863,6 @@ HANDLER_DEF(int, setvbuf, FILE* stream, char* buf, int mode, size_t size)
 				  (uint64_t)(size));
 	return ret;
 }
-HANDLER_WRAPPERS(int, setvbuf, FILE*, stream, char*, buf, int, mode, size_t, size)
 
 /**************************** ALIASES *********************************/
 weak_alias_pref(__isoc99_scanf, scanf);

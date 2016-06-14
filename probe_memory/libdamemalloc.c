@@ -47,7 +47,8 @@
 
 
 
-HANDLER_DEF(void *, malloc, size_t size)
+//HANDLER_DEF(void *, malloc, size_t size)
+HANDLER_WRAPPERS(void *, malloc, size_t, size)
 {
 	static void* (*mallocp)(size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -75,9 +76,9 @@ HANDLER_DEF(void *, malloc, size_t size)
 
 	return pret;
 }
-HANDLER_WRAPPERS(void *, malloc, size_t, size)
 
-HANDLER_DEF(void, free, void* ptr)
+//HANDLER_DEF(void, free, void* ptr)
+HANDLER_WRAPPERS_VOID(void, free, void*, ptr)
 {
 	static void (*freep)(void *);
 	DECLARE_VARIABLE_STANDARD;
@@ -103,10 +104,9 @@ HANDLER_DEF(void, free, void* ptr)
 	POST_PACK_PROBEBLOCK_END();
 }
 
-HANDLER_WRAPPERS_VOID(void, free, void*, ptr)
 
-
-HANDLER_DEF(void *, realloc, void *memblock, size_t size)
+//HANDLER_DEF(void *, realloc, void *memblock, size_t size)
+HANDLER_WRAPPERS(void *, realloc, void *, memblock, size_t, size)
 {
 	static void* (*reallocp)(void*, size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -137,7 +137,6 @@ HANDLER_DEF(void *, realloc, void *memblock, size_t size)
 	return pret;
 }
 
-HANDLER_WRAPPERS(void *, realloc, void *, memblock, size_t, size)
 
 
 void *temp_calloc(size_t nelem, size_t elsize)
@@ -149,7 +148,8 @@ void *temp_calloc(size_t nelem, size_t elsize)
 		: NULL;
 }
 
-HANDLER_DEF(void *, calloc, size_t nelem, size_t elsize)
+//HANDLER_DEF(void *, calloc, size_t nelem, size_t elsize)
+HANDLER_WRAPPERS(void *, calloc, size_t, nelem, size_t, elsize)
 {
 	static void* (*callocp)(size_t, size_t);
 	DECLARE_VARIABLE_STANDARD;
@@ -186,4 +186,3 @@ HANDLER_DEF(void *, calloc, size_t nelem, size_t elsize)
 	return pret;
 }
 
-HANDLER_WRAPPERS(void *, calloc, size_t, nelem, size_t, elsize)

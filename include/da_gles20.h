@@ -216,11 +216,13 @@ extern EGLContext eglGetCurrentContext(void);
 
 #define FUNC_DECLAR(TYPE, FUNCNAME, ...)					\
 	PUT_ALIASES(TYPE, FUNCNAME, __VA_ARGS__)			\
-	HANDLER_DEF(TYPE, REAL_NAME(FUNCNAME), __VA_ARGS__)
+	HANDLER_WRAPPERS(TYPE, FUNCNAME, __VA_ARGS__)
+//	HANDLER_DEF(TYPE, REAL_NAME(FUNCNAME), __VA_ARGS__)
 
 #define FUNC_DECLAR_NOARGS(TYPE, FUNCNAME)					\
 	PUT_ALIASES(TYPE, FUNCNAME)							\
-	HANDLER_DEF(TYPE, REAL_NAME(FUNCNAME))
+	HANDLER_WRAPPERS(TYPE, FUNCNAME)
+//	HANDLER_DEF(TYPE, REAL_NAME(FUNCNAME))
 
 
 #define BEFORE_EVAS_GL(FUNCNAME)					\
@@ -258,16 +260,12 @@ extern EGLContext eglGetCurrentContext(void);
 #define GET0(a,b) GET1(a,b)
 #define GET_FIRST_(...)  GET0(GET_FIRST_, NUM(__VA_ARGS__))
 
-#define GET_ALL_(...)  GET0(GET_ALL_, NUM(__VA_ARGS__))
-
 
 #define GET_ARGS(type1, ...) GET_FIRST_(type1, __VA_ARGS__)(__VA_ARGS__, type1)
 #define GET_TYPES(...) GET_FIRST_(__VA_ARGS__)(__VA_ARGS__)
 
-#define GET_TYPES_AND_ARGS(...) GET_ALL_(__VA_ARGS__)(__VA_ARGS__)
-
 #define DECLARE_GL_DEFAULT_VOID(TYPE, FUNCNAME, PACK_ARGS, ...)			\
-	DECLARE(TYPE, FUNCNAME, GET_TYPES_AND_ARGS(__VA_ARGS__))		\
+	DECLARE(TYPE, FUNCNAME, __VA_ARGS__)		\
 	{									\
 		TYPEDEF(void (*methodType)(GET_TYPES(__VA_ARGS__)));		\
 		BEFORE(FUNCNAME);						\

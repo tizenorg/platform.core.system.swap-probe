@@ -51,8 +51,11 @@ void *_da_ThreadProc(void *params);
 /* Typedef to make HANDLER_WRAPPERS macro work with func pointer */
 typedef void *(*start_routine_t)(void *);
 
-HANDLER_DEF(int, pthread_create, pthread_t *thread, const pthread_attr_t *attr,
-	    start_routine_t start_routine, void *arg)
+//HANDLER_DEF(int, pthread_create, pthread_t *thread, const pthread_attr_t *attr,
+//	    start_routine_t start_routine, void *arg)
+HANDLER_WRAPPERS(int, pthread_create, pthread_t *, thread,
+		 const pthread_attr_t *, attr, start_routine_t, start_routine,
+		 void *, arg)
 {
 	static int (*pthread_createp)(pthread_t *thread,
 			const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg);
@@ -83,11 +86,9 @@ HANDLER_DEF(int, pthread_create, pthread_t *thread, const pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, pthread_create, pthread_t *, thread,
-		 const pthread_attr_t *, attr, start_routine_t, start_routine,
-		 void *, arg)
 
-HANDLER_DEF(int , pthread_join, pthread_t thread, void **retval)
+//HANDLER_DEF(int , pthread_join, pthread_t thread, void **retval)
+HANDLER_WRAPPERS(int , pthread_join, pthread_t, thread, void **, retval)
 {
 	static int (*pthread_joinp)(pthread_t thread, void **retval);
 
@@ -126,9 +127,9 @@ HANDLER_DEF(int , pthread_join, pthread_t thread, void **retval)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_join, pthread_t, thread, void **, retval)
 
-HANDLER_DEF(void , pthread_exit, void *retval)
+//HANDLER_DEF(void , pthread_exit, void *retval)
+HANDLER_WRAPPERS(void , pthread_exit, void *, retval)
 {
 	pthread_t pSelf;
 	static void (*pthread_exitp)(void *retval) __attribute__((noreturn));
@@ -155,9 +156,9 @@ HANDLER_DEF(void , pthread_exit, void *retval)
 	pthread_exitp(retval);
 
 }
-HANDLER_WRAPPERS(void , pthread_exit, void *, retval)
 
-HANDLER_DEF(int , pthread_cancel, pthread_t thread)
+//HANDLER_DEF(int , pthread_cancel, pthread_t thread)
+HANDLER_WRAPPERS(int , pthread_cancel, pthread_t, thread)
 {
 	static int (*pthread_cancelp)(pthread_t thread);
 
@@ -171,9 +172,9 @@ HANDLER_DEF(int , pthread_cancel, pthread_t thread)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_cancel, pthread_t, thread)
 
-HANDLER_DEF(int , pthread_detach, pthread_t thread)
+//HANDLER_DEF(int , pthread_detach, pthread_t thread)
+HANDLER_WRAPPERS(int , pthread_detach, pthread_t, thread)
 {
 	static int (*pthread_detachp)(pthread_t thread);
 
@@ -187,9 +188,9 @@ HANDLER_DEF(int , pthread_detach, pthread_t thread)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_detach, pthread_t, thread)
 
-HANDLER_DEF(pthread_t , pthread_self)
+//HANDLER_DEF(pthread_t , pthread_self)
+HANDLER_WRAPPERS(pthread_t , pthread_self, void)
 {
 	pthread_t ret_pthr;
 	static pthread_t (*pthread_selfp)(void);
@@ -205,9 +206,9 @@ HANDLER_DEF(pthread_t , pthread_self)
 
 	return ret_pthr;
 }
-HANDLER_WRAPPERS(pthread_t , pthread_self, void)
 
-HANDLER_DEF(int , pthread_equal, pthread_t t1, pthread_t t2)
+//HANDLER_DEF(int , pthread_equal, pthread_t t1, pthread_t t2)
+HANDLER_WRAPPERS(int , pthread_equal, pthread_t, t1, pthread_t, t2)
 {
 	static int (*pthread_equalp)(pthread_t t1, pthread_t t2);
 
@@ -221,7 +222,6 @@ HANDLER_DEF(int , pthread_equal, pthread_t t1, pthread_t t2)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_equal, pthread_t, t1, pthread_t, t2)
 
 int real_pthread_setcancelstate(int state, int *oldstate)
 {
@@ -232,7 +232,8 @@ int real_pthread_setcancelstate(int state, int *oldstate)
 	return pthread_setcancelstatep(state, oldstate);
 }
 
-HANDLER_DEF(int , pthread_setcancelstate, int state, int *oldstate)
+//HANDLER_DEF(int , pthread_setcancelstate, int state, int *oldstate)
+HANDLER_WRAPPERS(int , pthread_setcancelstate, int, state, int *, oldstate)
 {
 	pthread_t pSelf;
 	static int (*pthread_setcancelstatep)(int state, int *oldstate);
@@ -248,9 +249,9 @@ HANDLER_DEF(int , pthread_setcancelstate, int state, int *oldstate)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_setcancelstate, int, state, int *, oldstate)
 
-HANDLER_DEF(int , pthread_setcanceltype, int type, int *oldtype)
+//HANDLER_DEF(int , pthread_setcanceltype, int type, int *oldtype)
+HANDLER_WRAPPERS(int , pthread_setcanceltype, int, type, int *, oldtype)
 {
 	pthread_t pSelf;
 	static int (*pthread_setcanceltypep)(int type, int *oldtype);
@@ -266,9 +267,9 @@ HANDLER_DEF(int , pthread_setcanceltype, int type, int *oldtype)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_setcanceltype, int, type, int *, oldtype)
 
-HANDLER_DEF(int , pthread_attr_init, pthread_attr_t *attr)
+//HANDLER_DEF(int , pthread_attr_init, pthread_attr_t *attr)
+HANDLER_WRAPPERS(int , pthread_attr_init, pthread_attr_t *, attr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_initp)(pthread_attr_t *attr);
@@ -283,9 +284,9 @@ HANDLER_DEF(int , pthread_attr_init, pthread_attr_t *attr)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_init, pthread_attr_t *, attr)
 
-HANDLER_DEF(int , pthread_attr_destroy, pthread_attr_t *attr)
+//HANDLER_DEF(int , pthread_attr_destroy, pthread_attr_t *attr)
+HANDLER_WRAPPERS(int , pthread_attr_destroy, pthread_attr_t *, attr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_destroyp)(pthread_attr_t *attr);
@@ -300,10 +301,11 @@ HANDLER_DEF(int , pthread_attr_destroy, pthread_attr_t *attr)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_destroy, pthread_attr_t *, attr)
 
-HANDLER_DEF(int , pthread_attr_getdetachstate, const pthread_attr_t *attr,
-	    int *detachstate)
+//HANDLER_DEF(int , pthread_attr_getdetachstate, const pthread_attr_t *attr,
+//	    int *detachstate)
+HANDLER_WRAPPERS(int , pthread_attr_getdetachstate,
+		 const pthread_attr_t *, attr, int *, detachstate)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getdetachstatep)(const pthread_attr_t *attr,
@@ -320,11 +322,11 @@ HANDLER_DEF(int , pthread_attr_getdetachstate, const pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_getdetachstate,
-		 const pthread_attr_t *, attr, int *, detachstate)
 
-HANDLER_DEF(int, pthread_attr_setdetachstate, pthread_attr_t *attr,
-	    int detachstate)
+//HANDLER_DEF(int, pthread_attr_setdetachstate, pthread_attr_t *attr,
+//	    int detachstate)
+HANDLER_WRAPPERS(int , pthread_attr_setdetachstate, pthread_attr_t *, attr,
+		 int, detachstate)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setdetachstatep)(pthread_attr_t *attr,
@@ -341,11 +343,11 @@ HANDLER_DEF(int, pthread_attr_setdetachstate, pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_setdetachstate, pthread_attr_t *, attr,
-		 int, detachstate)
 
-HANDLER_DEF(int, pthread_attr_getstacksize, const pthread_attr_t *attr,
-	    size_t *stacksize)
+//HANDLER_DEF(int, pthread_attr_getstacksize, const pthread_attr_t *attr,
+//	    size_t *stacksize)
+HANDLER_WRAPPERS(int , pthread_attr_getstacksize, const pthread_attr_t *, attr,
+		 size_t *, stacksize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getstacksizep)(const pthread_attr_t *attr,
@@ -362,11 +364,11 @@ HANDLER_DEF(int, pthread_attr_getstacksize, const pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_getstacksize, const pthread_attr_t *, attr,
-		 size_t *, stacksize)
 
-HANDLER_DEF(int , pthread_attr_setstacksize, pthread_attr_t *attr,
-	    size_t stacksize)
+//HANDLER_DEF(int , pthread_attr_setstacksize, pthread_attr_t *attr,
+//	    size_t stacksize)
+HANDLER_WRAPPERS(int , pthread_attr_setstacksize, pthread_attr_t *, attr,
+		 size_t, stacksize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setstacksizep)(pthread_attr_t *attr,
@@ -383,8 +385,6 @@ HANDLER_DEF(int , pthread_attr_setstacksize, pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_setstacksize, pthread_attr_t *, attr,
-		 size_t, stacksize)
 
 #if 0
 /* TODO FIXME
@@ -396,8 +396,10 @@ HANDLER_WRAPPERS(int , pthread_attr_setstacksize, pthread_attr_t *, attr,
  *
  * happens on pthread-2.18 (target TV emul), not happens on pthread-2.13
  */
-HANDLER_DEF(int , pthread_attr_getstackaddr, const pthread_attr_t *attr,
-	    void **stackaddr)
+//HANDLER_DEF(int , pthread_attr_getstackaddr, const pthread_attr_t *attr,
+//	    void **stackaddr)
+HANDLER_WRAPPERS(int , pthread_attr_getstackaddr, const pthread_attr_t *, attr,
+		 void **, stackaddr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getstackaddrp)(const pthread_attr_t *attr,
@@ -414,11 +416,11 @@ HANDLER_DEF(int , pthread_attr_getstackaddr, const pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_getstackaddr, const pthread_attr_t *, attr,
-		 void **, stackaddr)
 
-HANDLER_DEF(int , pthread_attr_setstackaddr, pthread_attr_t *attr,
-	    void *stackaddr)
+//HANDLER_DEF(int , pthread_attr_setstackaddr, pthread_attr_t *attr,
+//	    void *stackaddr)
+HANDLER_WRAPPERS(int , pthread_attr_setstackaddr, pthread_attr_t *, attr,
+		 void *, stackaddr)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setstackaddrp)(pthread_attr_t *attr,
@@ -436,12 +438,12 @@ HANDLER_DEF(int , pthread_attr_setstackaddr, pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_setstackaddr, pthread_attr_t *, attr,
-		 void *, stackaddr)
 #endif
 
-HANDLER_DEF(int , pthread_attr_getinheritsched, const pthread_attr_t *attr,
-	    int *inheritsched)
+//HANDLER_DEF(int , pthread_attr_getinheritsched, const pthread_attr_t *attr,
+//	    int *inheritsched)
+HANDLER_WRAPPERS(int , pthread_attr_getinheritsched,
+		 const pthread_attr_t *, attr, int *, inheritsched)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getinheritschedp)(const pthread_attr_t *attr,
@@ -458,11 +460,11 @@ HANDLER_DEF(int , pthread_attr_getinheritsched, const pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_getinheritsched,
-		 const pthread_attr_t *, attr, int *, inheritsched)
 
-HANDLER_DEF(int , pthread_attr_setinheritsched, pthread_attr_t *attr,
-	    int inheritsched)
+//HANDLER_DEF(int , pthread_attr_setinheritsched, pthread_attr_t *attr,
+//	    int inheritsched)
+HANDLER_WRAPPERS(int , pthread_attr_setinheritsched, pthread_attr_t *, attr,
+		 int, inheritsched)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setinheritschedp)(pthread_attr_t *attr,
@@ -479,11 +481,11 @@ HANDLER_DEF(int , pthread_attr_setinheritsched, pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_setinheritsched, pthread_attr_t *, attr,
-		 int, inheritsched)
 
-HANDLER_DEF(int, pthread_attr_getschedparam, const pthread_attr_t *attr,
-	    struct sched_param *param)
+//HANDLER_DEF(int, pthread_attr_getschedparam, const pthread_attr_t *attr,
+//	    struct sched_param *param)
+HANDLER_WRAPPERS(int, pthread_attr_getschedparam, const pthread_attr_t *, attr,
+		 struct sched_param *, param)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getschedparamp)(const pthread_attr_t *attr,
@@ -500,11 +502,11 @@ HANDLER_DEF(int, pthread_attr_getschedparam, const pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, pthread_attr_getschedparam, const pthread_attr_t *, attr,
-		 struct sched_param *, param)
 
-HANDLER_DEF(int, pthread_attr_setschedparam, pthread_attr_t *attr,
-	    const struct sched_param *param)
+//HANDLER_DEF(int, pthread_attr_setschedparam, pthread_attr_t *attr,
+//	    const struct sched_param *param)
+HANDLER_WRAPPERS(int, pthread_attr_setschedparam, pthread_attr_t *, attr,
+		 const struct sched_param *, param)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setschedparamp)(pthread_attr_t *attr,
@@ -522,11 +524,11 @@ HANDLER_DEF(int, pthread_attr_setschedparam, pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, pthread_attr_setschedparam, pthread_attr_t *, attr,
-		 const struct sched_param *, param)
 
-HANDLER_DEF(int , pthread_attr_getschedpolicy, const pthread_attr_t *attr,
-	    int *policy)
+//HANDLER_DEF(int , pthread_attr_getschedpolicy, const pthread_attr_t *attr,
+//	    int *policy)
+HANDLER_WRAPPERS(int , pthread_attr_getschedpolicy,
+		 const pthread_attr_t *, attr, int *, policy)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getschedpolicyp)(const pthread_attr_t *attr,
@@ -543,10 +545,10 @@ HANDLER_DEF(int , pthread_attr_getschedpolicy, const pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_getschedpolicy,
-		 const pthread_attr_t *, attr, int *, policy)
 
-HANDLER_DEF(int , pthread_attr_setschedpolicy, pthread_attr_t *attr, int policy)
+//HANDLER_DEF(int , pthread_attr_setschedpolicy, pthread_attr_t *attr, int policy)
+HANDLER_WRAPPERS(int , pthread_attr_setschedpolicy, pthread_attr_t *, attr,
+		 int, policy)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setschedpolicyp)(pthread_attr_t *attr,
@@ -563,11 +565,11 @@ HANDLER_DEF(int , pthread_attr_setschedpolicy, pthread_attr_t *attr, int policy)
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_setschedpolicy, pthread_attr_t *, attr,
-		 int, policy)
 
-HANDLER_DEF(int , pthread_attr_getguardsize, const pthread_attr_t *attr,
-	    size_t *guardsize)
+//HANDLER_DEF(int , pthread_attr_getguardsize, const pthread_attr_t *attr,
+//	    size_t *guardsize)
+HANDLER_WRAPPERS(int , pthread_attr_getguardsize, const pthread_attr_t *, attr,
+		 size_t *, guardsize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getguardsizep)(const pthread_attr_t *attr,
@@ -584,11 +586,11 @@ HANDLER_DEF(int , pthread_attr_getguardsize, const pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_getguardsize, const pthread_attr_t *, attr,
-		 size_t *, guardsize)
 
-HANDLER_DEF(int , pthread_attr_setguardsize, pthread_attr_t *attr,
-	    size_t guardsize)
+//HANDLER_DEF(int , pthread_attr_setguardsize, pthread_attr_t *attr,
+//	    size_t guardsize)
+HANDLER_WRAPPERS(int , pthread_attr_setguardsize, pthread_attr_t *, attr,
+		 size_t, guardsize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setguardsizep)(pthread_attr_t *attr,
@@ -605,11 +607,11 @@ HANDLER_DEF(int , pthread_attr_setguardsize, pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_setguardsize, pthread_attr_t *, attr,
-		 size_t, guardsize)
 
-HANDLER_DEF(int , pthread_attr_getscope, const pthread_attr_t *attr,
-	    int *contentionscope)
+//HANDLER_DEF(int , pthread_attr_getscope, const pthread_attr_t *attr,
+//	    int *contentionscope)
+HANDLER_WRAPPERS(int , pthread_attr_getscope, const pthread_attr_t *, attr,
+		 int *, contentionscope)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getscopep)(const pthread_attr_t *attr,
@@ -626,11 +628,11 @@ HANDLER_DEF(int , pthread_attr_getscope, const pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_getscope, const pthread_attr_t *, attr,
-		 int *, contentionscope)
 
-HANDLER_DEF(int , pthread_attr_setscope, pthread_attr_t *attr,
-	    int contentionscope)
+//HANDLER_DEF(int , pthread_attr_setscope, pthread_attr_t *attr,
+//	    int contentionscope)
+HANDLER_WRAPPERS(int , pthread_attr_setscope, pthread_attr_t *, attr,
+		 int, contentionscope)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setscopep)(pthread_attr_t *attr,
@@ -646,11 +648,11 @@ HANDLER_DEF(int , pthread_attr_setscope, pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int , pthread_attr_setscope, pthread_attr_t *, attr,
-		 int, contentionscope)
 
-HANDLER_DEF(int, pthread_attr_getstack, const pthread_attr_t *attr,
-	    void **stackaddr, size_t *stacksize)
+//HANDLER_DEF(int, pthread_attr_getstack, const pthread_attr_t *attr,
+//	    void **stackaddr, size_t *stacksize)
+HANDLER_WRAPPERS(int, pthread_attr_getstack, const pthread_attr_t *, attr,
+		 void **, stackaddr, size_t *, stacksize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_getstackp)(const pthread_attr_t *attr,
@@ -668,11 +670,11 @@ HANDLER_DEF(int, pthread_attr_getstack, const pthread_attr_t *attr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, pthread_attr_getstack, const pthread_attr_t *, attr,
-		 void **, stackaddr, size_t *, stacksize)
 
-HANDLER_DEF(int, pthread_attr_setstack, pthread_attr_t *attr, void *stackaddr,
-	    size_t stacksize)
+//HANDLER_DEF(int, pthread_attr_setstack, pthread_attr_t *attr, void *stackaddr,
+//	    size_t stacksize)
+HANDLER_WRAPPERS(int, pthread_attr_setstack, pthread_attr_t *, attr,
+		 void *, stackaddr, size_t, stacksize)
 {
 	pthread_t thread = 0;
 	static int (*pthread_attr_setstackp)(pthread_attr_t *attr,
@@ -690,8 +692,6 @@ HANDLER_DEF(int, pthread_attr_setstack, pthread_attr_t *attr, void *stackaddr,
 
 	return ret;
 }
-HANDLER_WRAPPERS(int, pthread_attr_setstack, pthread_attr_t *, attr,
-		 void *, stackaddr, size_t, stacksize)
 
 /*
 void pthread_testcancel(void);
