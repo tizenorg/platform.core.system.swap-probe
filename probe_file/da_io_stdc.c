@@ -69,7 +69,7 @@ HANDLER_WRAPPERS(FILE*, fopen, const char*, filename, const char*, mode)
 	_filepath = get_abs_path(fret, filename, buffer, PATH_MAX);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fopen,
-				  'p', fret, 0, fret, FD_API_OPEN, call_type, caller, "s4s",
+				  'p', fret, 0, fret, FD_API_OPEN, "s4s",
 				  filename, mode);
 
 	return fret;
@@ -88,7 +88,7 @@ HANDLER_WRAPPERS(FILE*, freopen, const char *, filename, const char *, mode, FIL
 
 	_filepath = get_abs_path(fret, filename, buffer, PATH_MAX);
 
-	AFTER_PACK_ORIGINAL_FILEP(API_ID_freopen, 'p', fret, 0, fret, FD_API_OPEN, call_type, caller,
+	AFTER_PACK_ORIGINAL_FILEP(API_ID_freopen, 'p', fret, 0, fret, FD_API_OPEN,
 				  "s4sp", filename, mode,
 				  voidp_to_uint64(stream));
 
@@ -105,7 +105,7 @@ HANDLER_WRAPPERS(FILE*, fdopen, int, fildes, const char *, mode)
 	fret = fdopenp(fildes, mode);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fdopen,
-				  'p', fret, 0, fret, FD_API_OPEN, call_type, caller, "ds", fildes, mode);
+				  'p', fret, 0, fret, FD_API_OPEN, "ds", fildes, mode);
 
 	return fret;
 }
@@ -117,7 +117,7 @@ HANDLER_WRAPPERS(int, fflush, FILE*, stream)
 	BEFORE_ORIGINAL_FILE(fflush, LIBC);
 	ret = fflushp(stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fflush,
-				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "p",
+				  'd', ret, 0, stream, FD_API_OTHER, "p",
 				  voidp_to_uint64(stream));
 	return ret;
 }
@@ -159,7 +159,7 @@ HANDLER_WRAPPERS(FILE *, tmpfile)
 	_filepath = "<temp file>";
 	fret = tmpfilep();
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_tmpfile,
-				  'p', fret, 0, fret, FD_API_OPEN, call_type, caller, "s", "");
+				  'p', fret, 0, fret, FD_API_OPEN, "s", "");
 	return fret;
 }
 
@@ -170,7 +170,7 @@ HANDLER_WRAPPERS(int, fgetpos, FILE*, stream, fpos_t*, position)
 	BEFORE_ORIGINAL_FILE(fgetpos, LIBC);
 	ret = fgetposp(stream, position);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fgetpos,
-				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "pp",
+				  'd', ret, 0, stream, FD_API_OTHER, "pp",
 				  voidp_to_uint64(stream),
 				  voidp_to_uint64(position));
 	return ret;
@@ -183,7 +183,7 @@ HANDLER_WRAPPERS(int, fseek, FILE*, stream, long int, offset, int, origin)
 	BEFORE_ORIGINAL_FILE(fseek, LIBC);
 	ret = fseekp(stream, offset, origin);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fseek,
-				  'd', ret, (unsigned int)offset, stream, FD_API_OTHER, call_type, caller,
+				  'd', ret, (unsigned int)offset, stream, FD_API_OTHER,
 				  "pxd", voidp_to_uint64(stream),
 				  (uint64_t)(offset), origin);
 	return ret;
@@ -196,7 +196,7 @@ HANDLER_WRAPPERS(int, fsetpos, FILE*, stream, const fpos_t*, pos)
 	BEFORE_ORIGINAL_FILE(fsetpos, LIBC);
 	ret = fsetposp(stream, pos);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fsetpos,
-				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "pp",
+				  'd', ret, 0, stream, FD_API_OTHER, "pp",
 				  voidp_to_uint64(stream), voidp_to_uint64(pos));
 	return ret;
 }
@@ -211,7 +211,7 @@ HANDLER_WRAPPERS(long int, ftell, FILE*, stream)
 	lret = ftellp(stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_ftell,
-				  'x', lret, 0, stream, FD_API_OTHER, call_type, caller, "p",
+				  'x', lret, 0, stream, FD_API_OTHER, "p",
 				  voidp_to_uint64(stream));
 
 	return lret;
@@ -226,7 +226,7 @@ HANDLER_WRAPPERS_VOID(void, rewind, FILE*, stream)
 	rewindp(stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_rewind,
-				  'v', 0, 0, stream, FD_API_OTHER, call_type, caller, "p",
+				  'v', 0, 0, stream, FD_API_OTHER, "p",
 				  voidp_to_uint64(stream));
 }
 
@@ -239,7 +239,7 @@ HANDLER_WRAPPERS_VOID(void, clearerr, FILE*, stream)
 	clearerrp(stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_clearerr,
-				  'v', 0, 0, stream, FD_API_OTHER, call_type, caller, "p",
+				  'v', 0, 0, stream, FD_API_OTHER, "p",
 				  voidp_to_uint64(stream));
 }
 
@@ -250,7 +250,7 @@ HANDLER_WRAPPERS(int, feof, FILE*, stream)
 	BEFORE_ORIGINAL_FILE(feof, LIBC);
 	ret = feofp(stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_feof,
-				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "p",
+				  'd', ret, 0, stream, FD_API_OTHER, "p",
 				  voidp_to_uint64(stream));
 	return ret;
 }
@@ -262,7 +262,7 @@ HANDLER_WRAPPERS(int, ferror, FILE*, stream)
 	BEFORE_ORIGINAL_FILE(ferror, LIBC);
 	ret = ferrorp(stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_ferror,
-				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "p",
+				  'd', ret, 0, stream, FD_API_OTHER, "p",
 				  voidp_to_uint64(stream));
 	return ret;
 }
@@ -274,7 +274,7 @@ HANDLER_WRAPPERS(int, fileno, FILE*, stream)
 	BEFORE_ORIGINAL_FILE(fileno, LIBC);
 	ret = filenop(stream);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_fileno,
-				  'd', ret, 0, stream, FD_API_OTHER, call_type, caller, "p",
+				  'd', ret, 0, stream, FD_API_OTHER, "p",
 				  voidp_to_uint64(stream));
 	return ret;
 }
@@ -290,13 +290,13 @@ HANDLER_WRAPPERS(int, vfprintf, FILE*, stream, const char*, format, va_list, arg
 	static int (*vfprintfp)(FILE* stream, const char* format, va_list arg);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_vfprintf, 'd', vfprintf, LIBC, stream,
-					FD_API_WRITE_START, call_type, caller, "ps",
+					FD_API_WRITE_START, "ps",
 					voidp_to_uint64(stream), format);
 
 	ret = vfprintfp(stream, format, arg);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_vfprintf, 'd', ret, ret, stream,
-				       FD_API_WRITE_END, call_type, caller, "ps",
+				       FD_API_WRITE_END, "ps",
 				       voidp_to_uint64(stream), format);
 
 	return ret;
@@ -307,13 +307,13 @@ HANDLER_WRAPPERS(int, vfscanf, FILE*, stream, const char*, format, va_list, arg)
 	static int (*vfscanfp)(FILE* stream, const char* format, va_list arg);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_vfscanf, 'd', vfscanf, LIBC, stream,
-					FD_API_READ_START, call_type, caller, "ps",
+					FD_API_READ_START, "ps",
 					voidp_to_uint64(stream), format);
 
 	ret = vfscanfp(stream, format, arg);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_vfscanf, 'd', ret, ret, stream,
-				       FD_API_READ_END, call_type, caller, "ps",
+				       FD_API_READ_END, "ps",
 				       voidp_to_uint64(stream), format);
 
 	return ret;
@@ -324,13 +324,13 @@ HANDLER_WRAPPERS(int, fgetc, FILE*, stream)
 	static int (*fgetcp)(FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fgetc, 'd', fgetc, LIBC, stream,
-					FD_API_READ_START, call_type, caller, "p",
+					FD_API_READ_START, "p",
 					voidp_to_uint64(stream));
 
 	ret = fgetcp(stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fgetc, 'd', ret, (ret != EOF), stream,
-				       FD_API_READ_END, call_type, caller, "p",
+				       FD_API_READ_END, "p",
 				       voidp_to_uint64(stream));
 
 	return ret;
@@ -342,13 +342,13 @@ HANDLER_WRAPPERS(char*, fgets, char*, str, int, size, FILE*, stream)
 	static char* (*fgetsp)(char* str, int num, FILE* stream);
 	char* cret;
 
-	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fgets, 'p', FD_API_READ_START, call_type, caller,
+	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fgets, 'p', FD_API_READ_START,
 				fgets, LIBC, stream, "sdp", str, size, stream);
 
 	cret = fgetsp(str, size, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fgets, 'p', cret, (ret == NULL ? 0 : strlen(cret)),
-			stream, FD_API_READ_END, call_type, caller, "sdp", str, size, stream);
+			stream, FD_API_READ_END, "sdp", str, size, stream);
 
 	return cret;
 }
@@ -359,13 +359,13 @@ HANDLER_WRAPPERS(int, fputc, int, character, FILE*, stream)
 	static int (*fputcp)(int character, FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fputc, 'd', fputc, LIBC, stream,
-					FD_API_WRITE_START, call_type, caller, "dp", character,
+					FD_API_WRITE_START, "dp", character,
 					voidp_to_uint64(stream));
 
 	ret = fputcp(character, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fputc, 'd', ret, (ret == EOF ? 0 : 1),
-				       stream, FD_API_WRITE_END, call_type, caller, "dp",
+				       stream, FD_API_WRITE_END, "dp",
 				       character, voidp_to_uint64(stream));
 
 	return ret;
@@ -376,13 +376,13 @@ HANDLER_WRAPPERS(int, fputs, const char*, str, FILE*, stream)
 	static int (*fputsp)(const char* str, FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fputs, 'd', fputs, LIBC, stream,
-					FD_API_WRITE_START, call_type, caller, "sp", str,
+					FD_API_WRITE_START, "sp", str,
 					voidp_to_uint64(stream));
 
 	ret = fputsp(str, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fputs, 'd', ret, ret, stream,
-				       FD_API_WRITE_END, call_type, caller, "sp", str,
+				       FD_API_WRITE_END, "sp", str,
 				       voidp_to_uint64(stream));
 
 	return ret;
@@ -393,13 +393,13 @@ HANDLER_WRAPPERS(int, getc, FILE*, stream)
 	static int (*getcp)(FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_getc, 'd', getc, LIBC, stream,
-					FD_API_READ_START, call_type, caller, "p",
+					FD_API_READ_START, "p",
 					voidp_to_uint64(stream));
 
 	ret = getcp(stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_getc, 'd', ret, (ret == EOF ? 0 : 1), stream,
-				       FD_API_READ_END, call_type, caller, "p",
+				       FD_API_READ_END, "p",
 				       voidp_to_uint64(stream));
 
 	return ret;
@@ -410,13 +410,13 @@ HANDLER_WRAPPERS(int, putc, int, character, FILE*, stream)
 	static int (*putcp)(int character, FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_putc, 'd', putc, LIBC, stream,
-					FD_API_WRITE_START, call_type, caller, "dp", character,
+					FD_API_WRITE_START, "dp", character,
 					voidp_to_uint64(stream));
 
 	ret = putcp(character, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_putc, 'd', ret, (ret == EOF ? 0 : 1),
-				       stream, FD_API_WRITE_END, call_type, caller, "dp",
+				       stream, FD_API_WRITE_END, "dp",
 				       character, voidp_to_uint64(stream));
 
 	return ret;
@@ -427,13 +427,13 @@ HANDLER_WRAPPERS(int, ungetc, int, character, FILE*, stream)
 	static int (*ungetcp)(int character, FILE* stream);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_putc, 'd', ungetc, LIBC, stream,
-					FD_API_WRITE_START, call_type, caller, "dp", character,
+					FD_API_WRITE_START, "dp", character,
 					voidp_to_uint64(stream));
 
 	ret = ungetcp(character, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_ungetc, 'd', ret, 0, stream,
-				       FD_API_OTHER, call_type, caller, "dp", character,
+				       FD_API_OTHER, "dp", character,
 				       voidp_to_uint64(stream));
 
 	return ret;
@@ -445,7 +445,7 @@ HANDLER_WRAPPERS(size_t, fread, void*, ptr, size_t, size, size_t, count, FILE*, 
 	size_t tret;
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fread, 'x', fread, LIBC, stream,
-					FD_API_READ_START, call_type, caller, "pxxp",
+					FD_API_READ_START, "pxxp",
 					voidp_to_uint64(ptr),
 					(uint64_t)(size),
 					(uint64_t)(count),
@@ -454,7 +454,7 @@ HANDLER_WRAPPERS(size_t, fread, void*, ptr, size_t, size, size_t, count, FILE*, 
 	tret = freadp(ptr, size, count, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fread, 'x', tret, tret*size, stream,
-				       FD_API_READ_END, call_type, caller, "pxxp",
+				       FD_API_READ_END, "pxxp",
 				       voidp_to_uint64(ptr),
 				       (uint64_t)(size),
 				       (uint64_t)(count),
@@ -469,7 +469,7 @@ HANDLER_WRAPPERS(size_t, fwrite, const void*, ptr, size_t, size, size_t, count, 
 	size_t tret;
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fwrite, 'x', fwrite, LIBC, stream,
-					FD_API_WRITE_START, call_type, caller, "pxxp",
+					FD_API_WRITE_START, "pxxp",
 					voidp_to_uint64(ptr),
 					(uint64_t)(size),
 					(uint64_t)(count),
@@ -478,7 +478,7 @@ HANDLER_WRAPPERS(size_t, fwrite, const void*, ptr, size_t, size, size_t, count, 
 	tret = fwritep(ptr, size, count, stream);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fwrite, 'x', tret, tret*size, stream,
-				       FD_API_WRITE_END, call_type, caller, "pxxp",
+				       FD_API_WRITE_END, "pxxp",
 				       voidp_to_uint64(ptr),
 				       (uint64_t)(size),
 				       (uint64_t)(count),
@@ -495,13 +495,13 @@ DEF_H(int, fprintf, FILE*, stream, const char*, format, va_list, args)
 	static int (*vfprintfp)(FILE* stream, const char* format, ...);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fprintf, 'd', vfprintf, LIBC, stream,
-					FD_API_WRITE_START, call_type, caller, "ps",
+					FD_API_WRITE_START, "ps",
 					voidp_to_uint64(stream), format);
 
 	ret = vfprintfp(stream, format, args);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fprintf, 'd', ret, ret, stream,
-				       FD_API_WRITE_END, call_type, caller, "ps",
+				       FD_API_WRITE_END, "ps",
 				       voidp_to_uint64(stream), format);
 
 	return ret;
@@ -544,13 +544,13 @@ DEF_H(int, fscanf, FILE*, stream, const char*, format, va_list, args)
 	static int (*vfscanfp)(FILE* stream, const char* format, ...);
 
 	BEFORE_ORIGINAL_START_END_FILEP(API_ID_fscanf, 'd', vfscanf, LIBC, stream,
-					FD_API_READ_START, call_type, caller, "ps",
+					FD_API_READ_START, "ps",
 					voidp_to_uint64(stream), format);
 
 	ret = vfscanfp(stream, format, args);
 
 	AFTER_ORIGINAL_START_END_FILEP(API_ID_fscanf, 'd', ret, ret, stream,
-				       FD_API_READ_END, call_type, caller, "ps",
+				       FD_API_READ_END, "ps",
 				       voidp_to_uint64(stream), format);
 
 	return ret;
@@ -594,12 +594,12 @@ DEF_H(int, printf, const char*, format, va_list, args)
 	static int (*vprintfp)(const char* format, ...);
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_printf, 'd', vprintf, LIBC,
-				FD_API_WRITE_START, call_type, caller, "s", format);
+				FD_API_WRITE_START, "s", format);
 
 	ret = vprintfp(format, args);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_printf, 'd', ret, ret,
-				FD_API_WRITE_END, call_type, caller, "s", format);
+				FD_API_WRITE_END, "s", format);
 
 	return ret;
 }
@@ -642,12 +642,12 @@ DEF_H(int, scanf, const char*, format, va_list, args)
 	static int (*vscanfp)(const char* format, ...);
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_scanf, 'd', vscanf, LIBC,
-				FD_API_READ_START, call_type, caller, "s", format);
+				FD_API_READ_START, "s", format);
 
 	ret = vscanfp(format, args);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_scanf, 'd', ret, ret,
-				 FD_API_READ_END, call_type, caller, "s", format);
+				 FD_API_READ_END, "s", format);
 
 	return ret;
 }
@@ -690,12 +690,12 @@ HANDLER_WRAPPERS(int, getchar)
 	static int (*getcharp)();
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_getchar, 'd', getchar, LIBC,
-				FD_API_READ_START, call_type, caller, "", 0);
+				FD_API_READ_START, "", 0);
 
 	ret = getcharp();
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_getchar, 'd', ret, (ret == EOF ? 0 : 1),
-				FD_API_READ_END, call_type, caller, "", 0);
+				FD_API_READ_END, "", 0);
 
 	return ret;
 }
@@ -705,12 +705,12 @@ HANDLER_WRAPPERS(int, putchar, int, c)
 	static int (*putcharp)(int c);
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_putchar, 'd', putchar, LIBC,
-				FD_API_WRITE_START, call_type, caller, "d", c);
+				FD_API_WRITE_START, "d", c);
 
 	ret = putcharp(c);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_putchar, 'd', ret, (ret == EOF ? 0 : 1),
-				FD_API_WRITE_END, call_type, caller, "d", c);
+				FD_API_WRITE_END, "d", c);
 
 	return ret;
 }
@@ -721,12 +721,12 @@ HANDLER_WRAPPERS(char*, gets, char*, str)
 	char* cret;
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_gets, 'p', gets, LIBC,
-				FD_API_READ_START, call_type, caller, "s", str);
+				FD_API_READ_START, "s", str);
 
 	cret = getsp(str);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_gets, 'p', cret, strlen(cret),
-				FD_API_READ_END, call_type, caller, "s", str);
+				FD_API_READ_END, "s", str);
 
 	return cret;
 }
@@ -737,12 +737,12 @@ HANDLER_WRAPPERS(int, puts, const char*, str)
 	static int (*putsp)(const char* str);
 
 	BEFORE_ORIGINAL_START_END_NOFD(API_ID_puts, 'd', puts, LIBC,
-				FD_API_WRITE_START, call_type, caller, "s", str);
+				FD_API_WRITE_START, "s", str);
 
 	ret = putsp(str);
 
 	AFTER_ORIGINAL_START_END_NOFD(API_ID_puts, 'd', ret, ret,
-				FD_API_WRITE_END, call_type, caller, "s", str);
+				FD_API_WRITE_END, "s", str);
 
 	return ret;
 }
@@ -759,7 +759,7 @@ HANDLER_WRAPPERS_VOID(void, setbuf, FILE*, stream, char*, buf)
 	setbufp(stream, buf);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_setbuf,
-				  'v', 0, 0, stream, FD_API_OTHER, call_type, caller, "pp",
+				  'v', 0, 0, stream, FD_API_OTHER, "pp",
 				  voidp_to_uint64(stream),
 				  voidp_to_uint64(buf));
 }
@@ -773,7 +773,7 @@ HANDLER_WRAPPERS_VOID(void, setbuffer, FILE*, stream, char*, buf, size_t, size)
 	setbufferp(stream, buf, size);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_setbuffer,
-				  'v', 0, size, stream, FD_API_OTHER, call_type, caller,
+				  'v', 0, size, stream, FD_API_OTHER,
 				  "ppx", voidp_to_uint64(stream),
 				  voidp_to_uint64(buf), (uint64_t)(size));
 }
@@ -787,7 +787,7 @@ HANDLER_WRAPPERS_VOID(void, setlinebuf, FILE*, stream)
 	setlinebufp(stream);
 
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_setlinebuf,
-				  'v', 0, 0, stream, FD_API_OTHER, call_type, caller, "p",
+				  'v', 0, 0, stream, FD_API_OTHER, "p",
 				  voidp_to_uint64(stream));
 }
 
@@ -798,7 +798,7 @@ HANDLER_WRAPPERS(int, setvbuf, FILE*, stream, char*, buf, int, mode, size_t, siz
 	BEFORE_ORIGINAL_FILE(setvbuf, LIBC);
 	ret = setvbufp(stream,buf,mode,size);
 	AFTER_PACK_ORIGINAL_FILEP(API_ID_setvbuf,
-				  'd', ret, size, stream, FD_API_OTHER, call_type, caller,
+				  'd', ret, size, stream, FD_API_OTHER,
 				  "ppdx",
 				  voidp_to_uint64(stream),
 				  voidp_to_uint64(buf), mode,

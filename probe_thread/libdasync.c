@@ -53,7 +53,7 @@ HANDLER_WRAPPERS(int, pthread_mutex_init, pthread_mutex_t * ,mutex,
 	ret = pthread_mutex_initp(mutex, attr);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_init,
-				 'd', ret, mutex, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, mutex, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(mutex), voidp_to_uint64(attr));
 
@@ -69,7 +69,7 @@ HANDLER_WRAPPERS(int , pthread_mutex_destroy, pthread_mutex_t *, mutex)
 	ret = pthread_mutex_destroyp(mutex);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_destroy,
-				 'd', ret, mutex, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, mutex, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "p", voidp_to_uint64(mutex));
 
 	return ret;
@@ -172,7 +172,7 @@ HANDLER_WRAPPERS(int , pthread_mutex_trylock, pthread_mutex_t *, mutex)
 	ret = pthread_mutex_trylockp(mutex);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_trylock,
-				 'd', ret, mutex, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, mutex, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_TRY_ACQUIRE, "p",
 				 voidp_to_uint64(mutex));
 
@@ -196,7 +196,7 @@ HANDLER_WRAPPERS(int , pthread_mutex_unlock, pthread_mutex_t *, mutex)
 	ret = pthread_mutex_unlockp(mutex);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutex_unlock,
-				 'd', ret, mutex, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, mutex, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_RELEASE, "p",
 				 voidp_to_uint64(mutex));
 
@@ -212,7 +212,7 @@ HANDLER_WRAPPERS(int , pthread_mutexattr_init, pthread_mutexattr_t *, attr)
 	ret = pthread_mutexattr_initp(attr);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_init,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "p",
 				 voidp_to_uint64(attr));
 
@@ -228,7 +228,7 @@ HANDLER_WRAPPERS(int , pthread_mutexattr_destroy, pthread_mutexattr_t *, attr)
 	ret = pthread_mutexattr_destroyp(attr);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_destroy,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "p",
 				 voidp_to_uint64(attr));
 
@@ -246,7 +246,7 @@ HANDLER_WRAPPERS(int, pthread_mutexattr_getprioceiling,
 	ret = pthread_mutexattr_getprioceilingp(attr, prioceiling);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_getprioceiling,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(attr),
 				 voidp_to_uint64(prioceiling));
@@ -265,7 +265,7 @@ HANDLER_WRAPPERS(int, pthread_mutexattr_setprioceiling,
 	ret = pthread_mutexattr_setprioceilingp(attr, prioceiling);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_setprioceiling,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "pd", voidp_to_uint64(attr),
 				 prioceiling);
 
@@ -283,7 +283,7 @@ HANDLER_WRAPPERS(int, pthread_mutexattr_getprotocol,
 	ret = pthread_mutexattr_getprotocolp(attr, protocol);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_getprotocol,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(attr),
 				 voidp_to_uint64(protocol));
@@ -302,7 +302,7 @@ HANDLER_WRAPPERS(int, pthread_mutexattr_setprotocol,
 	ret = pthread_mutexattr_setprotocolp(attr, protocol);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_setprotocol,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "pd", voidp_to_uint64(attr),
 				 protocol);
 
@@ -320,7 +320,7 @@ HANDLER_WRAPPERS(int, pthread_mutexattr_getpshared,
 	ret = pthread_mutexattr_getpsharedp(attr, pshared);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_getpshared,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(attr),
 				 voidp_to_uint64(pshared));
@@ -339,7 +339,7 @@ HANDLER_WRAPPERS(int, pthread_mutexattr_setpshared,
 	ret = pthread_mutexattr_setpsharedp(attr, pshared);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_setpshared,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "pd", voidp_to_uint64(attr),
 				 pshared);
 
@@ -357,7 +357,7 @@ HANDLER_WRAPPERS(int , pthread_mutexattr_gettype,
 	ret = pthread_mutexattr_gettypep(attr, type);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_gettype,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(attr),
 				 voidp_to_uint64(type));
@@ -376,7 +376,7 @@ HANDLER_WRAPPERS(int , pthread_mutexattr_settype,
 	ret = pthread_mutexattr_settypep(attr, type);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_mutexattr_settype,
-				 'd', ret, 0, SYNC_PTHREAD_MUTEX, call_type, caller,
+				 'd', ret, 0, SYNC_PTHREAD_MUTEX,
 				 SYNC_API_OTHER, "pd",
 				 voidp_to_uint64(attr),
 				 type);
@@ -402,7 +402,7 @@ HANDLER_WRAPPERS(int , pthread_cond_init, pthread_cond_t *, cond,
 	ret = pthread_cond_initp(cond, attr);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_init,
-				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE, call_type, caller,
+				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE,
 				 SYNC_API_OTHER, "pp",
 				 voidp_to_uint64(cond),
 				 voidp_to_uint64(attr));
@@ -419,7 +419,7 @@ HANDLER_WRAPPERS(int , pthread_cond_destroy, pthread_cond_t *, cond)
 	ret = pthread_cond_destroyp(cond);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_destroy,
-				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE, call_type, caller,
+				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE,
 				 SYNC_API_OTHER, "p",
 				 voidp_to_uint64(cond));
 
@@ -527,7 +527,7 @@ HANDLER_WRAPPERS(int , pthread_cond_signal, pthread_cond_t *, cond)
 	ret = pthread_cond_signalp(cond);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_signal,
-				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE, call_type, caller,
+				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE,
 				 SYNC_API_NOTIFY, "p", voidp_to_uint64(cond));
 
 	return ret;
@@ -542,7 +542,7 @@ HANDLER_WRAPPERS(int , pthread_cond_broadcast, pthread_cond_t *, cond)
 	ret = pthread_cond_broadcastp(cond);
 
 	AFTER_PACK_ORIGINAL_SYNC(API_ID_pthread_cond_broadcast,
-				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE, call_type, caller,
+				 'd', ret, cond, SYNC_PTHREAD_COND_VARIABLE,
 				 SYNC_API_NOTIFY_ALL, "p", voidp_to_uint64(cond));
 
 	return ret;

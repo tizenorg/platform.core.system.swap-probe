@@ -79,7 +79,7 @@ DEF_H(int, open, const char*, path, int, oflag, va_list, args)
 	_filepath = get_abs_path(ret, path, buffer, PATH_MAX);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_open, 'd', ret, 0, ret, FD_API_OPEN,
-			       call_type, caller, "s4dd", path, oflag, mode);
+			       "s4dd", path, oflag, mode);
 
 	return ret;
 }
@@ -132,7 +132,7 @@ DEF_H(int, openat, int, fd, const char*, path, int, oflag, va_list, args)
 	_filepath = get_abs_path(ret, path, buffer, PATH_MAX);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_openat, 'd', ret, 0, ret, FD_API_OPEN,
-			       call_type, caller, "ds4dd", fd, path, oflag, mode);
+			       "ds4dd", fd, path, oflag, mode);
 
 	return ret;
 }
@@ -181,7 +181,7 @@ HANDLER_WRAPPERS(int, creat, const char*, path, mode_t, mode)
 	_filepath = get_abs_path(ret, path, buffer, PATH_MAX);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_creat, 'd', ret, 0, ret, FD_API_OPEN,
-			       call_type, caller, "s4d", path, mode);
+			       "s4d", path, mode);
 
 	return ret;
 }
@@ -222,7 +222,7 @@ HANDLER_WRAPPERS(off_t, lseek, int, fd, off_t, offset, int, whence)
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_lseek,
 				   'x', offret, (unsigned int)offset, fd, FD_API_OTHER,
-				   call_type, caller, "dxd", fd, (uint64_t)(offset), whence);
+				   "dxd", fd, (uint64_t)(offset), whence);
 
 	return offret;
 }
@@ -236,7 +236,7 @@ HANDLER_WRAPPERS(int, fsync, int, fd)
 	ret = fsyncp(fd);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_fsync,
-				   'd', ret, 0, fd, FD_API_OTHER, call_type, caller, "d", fd);
+				   'd', ret, 0, fd, FD_API_OTHER, "d", fd);
 
 	return ret;
 }
@@ -250,7 +250,7 @@ HANDLER_WRAPPERS(int, fdatasync, int, fd)
 	ret = fdatasyncp(fd);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_fdatasync,
-				   'd', ret, 0, fd, FD_API_OTHER, call_type, caller, "d", fd);
+				   'd', ret, 0, fd, FD_API_OTHER, "d", fd);
 
 	return ret;
 }
@@ -265,7 +265,7 @@ HANDLER_WRAPPERS(int, ftruncate, int, fd, off_t, length)
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_ftruncate,
 			       'd', ret, (unsigned int)length, fd,
-			       FD_API_DIRECTORY, call_type, caller,
+			       FD_API_DIRECTORY,
 			       "dx", fd, (uint64_t)(length));
 
 	return ret;
@@ -278,7 +278,7 @@ HANDLER_WRAPPERS(int, fchown, int, fd, uid_t, owner, gid_t, group)
 	BEFORE_ORIGINAL_FILE(fchown, LIBC);
 	ret = fchownp(fd, owner, group);
 	AFTER_PACK_ORIGINAL_FD(API_ID_fchown, 'd', ret, 0, fd, FD_API_PERMISSION,
-			  call_type, caller, "ddd", fd, owner, group);
+			  "ddd", fd, owner, group);
 	return ret;
 }
 
@@ -302,7 +302,7 @@ HANDLER_WRAPPERS(int, lockf, int, fd, int, function, off_t, size)
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_lockf,
 			       'd', ret, (unsigned int)size, fd, api_type,
-			       call_type, caller, "ddx", fd, function, (uint64_t)(size));
+			       "ddx", fd, function, (uint64_t)(size));
 	return ret;
 }
 
@@ -313,7 +313,7 @@ HANDLER_WRAPPERS(int, fchmod, int, fd, mode_t, mode)
 	BEFORE_ORIGINAL_FILE(fchmod, LIBC);
 	ret = fchmodp(fd, mode);
 	AFTER_PACK_ORIGINAL_FD(API_ID_fchmod,
-				   'd', ret, 0, fd, FD_API_PERMISSION, call_type, caller,
+				   'd', ret, 0, fd, FD_API_PERMISSION,
 				   "dd", fd, mode);
 	return ret;
 }
@@ -329,7 +329,7 @@ HANDLER_WRAPPERS(ssize_t, pread, int, fd, void *, buf, size_t, nbyte,
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_pread, 'x', pread, LIBC, fd,
-				     FD_API_READ_START, call_type, caller, "dpxx", fd,
+				     FD_API_READ_START, "dpxx", fd,
 				     voidp_to_uint64(buf),
 				     (uint64_t)(nbyte),
 				     (uint64_t)(offset));
@@ -337,7 +337,7 @@ HANDLER_WRAPPERS(ssize_t, pread, int, fd, void *, buf, size_t, nbyte,
 	sret = preadp(fd, buf, nbyte, offset);
 
 	AFTER_ORIGINAL_START_END_FD(API_ID_pread, 'x', sret, (unsigned int)sret, fd,
-				    FD_API_READ_END, call_type, caller, "dpxx", fd,
+				    FD_API_READ_END, "dpxx", fd,
 				    voidp_to_uint64(buf),
 				    (uint64_t)(nbyte),
 				    (uint64_t)(offset));
@@ -351,13 +351,13 @@ HANDLER_WRAPPERS(ssize_t, read, int, fd, void *, buf, size_t, nbyte)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_read, 'x', read, LIBC, fd, FD_API_READ_START,
-				     call_type, caller, "dpx", fd, voidp_to_uint64(buf),
+				     "dpx", fd, voidp_to_uint64(buf),
 				     (uint64_t)(nbyte));
 
 	sret = readp(fd, buf, nbyte);
 
 	AFTER_ORIGINAL_START_END_FD(API_ID_read, 'x', sret, (unsigned int)sret, fd,
-				    FD_API_READ_END, call_type, caller, "dpx", fd,
+				    FD_API_READ_END, "dpx", fd,
 				    voidp_to_uint64(buf),
 				    (uint64_t)(nbyte));
 
@@ -371,7 +371,7 @@ HANDLER_WRAPPERS(ssize_t, pwrite, int, fd, const void *, buf, size_t, nbyte,
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_pwrite, 'x', pwrite, LIBC, fd, FD_API_WRITE_START,
-				     call_type, caller, "dpxx", fd, voidp_to_uint64(buf),
+				     "dpxx", fd, voidp_to_uint64(buf),
 				     (uint64_t)(nbyte),
 				     (uint64_t)(offset));
 
@@ -379,7 +379,7 @@ HANDLER_WRAPPERS(ssize_t, pwrite, int, fd, const void *, buf, size_t, nbyte,
 
 	DEFINE_FILESIZE_FD(fd);
 	AFTER_ORIGINAL_START_END_FD(API_ID_pwrite, 'x', sret, (unsigned int)sret, fd,
-				   FD_API_WRITE_END, call_type, caller, "dpxx", fd,
+				   FD_API_WRITE_END, "dpxx", fd,
 				    voidp_to_uint64(buf),
 				    (uint64_t)(nbyte),
 				    (uint64_t)(offset));
@@ -393,14 +393,14 @@ HANDLER_WRAPPERS(ssize_t, write, int, fd, const void *, buf, size_t, nbyte)
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_write, 'x', write, LIBC, fd, FD_API_WRITE_START,
-				     call_type, caller, "dpx", fd, voidp_to_uint64(buf),
+				     "dpx", fd, voidp_to_uint64(buf),
 				     (uint64_t)(nbyte));
 
 	sret = writep(fd, buf, nbyte);
 
 	DEFINE_FILESIZE_FD(fd);
 	AFTER_ORIGINAL_START_END_FD(API_ID_write, 'x', sret, (unsigned int)sret, fd,
-				    FD_API_WRITE_END, call_type, caller, "dpx", fd,
+				    FD_API_WRITE_END, "dpx", fd,
 				    voidp_to_uint64(buf),
 				    (uint64_t)(nbyte));
 
@@ -414,12 +414,12 @@ HANDLER_WRAPPERS(ssize_t, readv, int, fd, const struct iovec *, iov, int, iovcnt
 	ssize_t sret;
 
 	BEFORE_ORIGINAL_START_END_FD(API_ID_readv, 'x', readv, LIBC, fd, FD_API_READ_START,
-				     call_type, caller, "dpd", fd, voidp_to_uint64(iov), iovcnt);
+				     "dpd", fd, voidp_to_uint64(iov), iovcnt);
 
 	sret = readvp(fd,iov,iovcnt);
 
 	AFTER_ORIGINAL_START_END_FD(API_ID_readv, 'x', sret, (unsigned int)sret, fd,
-				    FD_API_READ_END, call_type, caller, "dpd", fd,
+				    FD_API_READ_END, "dpd", fd,
 				    voidp_to_uint64(iov), iovcnt);
 
 	return sret;
@@ -484,7 +484,7 @@ DEF_H(int, fcntl, int, fd, int, cmd, va_list, args)
 	if (api_type == FD_API_LOCK_START)
 		AFTER_PACK_ORIGINAL_FD_MIDDLE(API_ID_fcntl,
 					      'd', ret, 0, fd, api_type,
-					      call_type, caller, "ddddxx", fd, cmd, type,
+					      "ddddxx", fd, cmd, type,
 					      whence, start, len);
 
 	/* call original lock function */
@@ -497,13 +497,13 @@ DEF_H(int, fcntl, int, fd, int, cmd, va_list, args)
 		/* pack FD_API_LOCK_END or FD_API_UNLOCK events */
 		AFTER_PACK_ORIGINAL_FD(API_ID_fcntl,
 				       'd', ret, 0, fd, api_type,
-				       call_type, caller, "ddddxx", fd, cmd, type,
+				       "ddddxx", fd, cmd, type,
 				       whence, start, len);
 	} else {
 		/* pack FD_API_OTHER */
 		AFTER_PACK_ORIGINAL_FD(API_ID_fcntl,
 				       'd', ret, 0, fd, api_type,
-				       call_type, caller, "ddd", fd, cmd, arg);
+				       "ddd", fd, cmd, arg);
 	}
 
 	return ret;
@@ -550,7 +550,7 @@ HANDLER_WRAPPERS(int, dup, int, fd)
 	ret = dupp(fd);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_dup,
-				   'd', ret, 0, ret, FD_API_OPEN, call_type, caller, "d", fd);
+				   'd', ret, 0, ret, FD_API_OPEN, "d", fd);
 
 	return ret;
 }
@@ -564,7 +564,7 @@ HANDLER_WRAPPERS(int, dup2, int, fd, int, fd2)
 	ret = dup2p(fd, fd2);
 
 	AFTER_PACK_ORIGINAL_FD(API_ID_dup2,
-				   'd', ret, 0, ret, FD_API_OPEN, call_type, caller, "dd", fd, fd2);
+				   'd', ret, 0, ret, FD_API_OPEN, "dd", fd, fd2);
 
 	return ret;
 }
@@ -578,7 +578,7 @@ HANDLER_WRAPPERS(int, fstat, int, fd, struct stat *, buf)
 
 	BEFORE_ORIGINAL_FILE(fstat, LIBC);
 	ret = fstatp(fd, buf);
-	AFTER_PACK_ORIGINAL_FD(ret, 0, fd, FD_API_OTHER, call_type, caller, "dp", fd,
+	AFTER_PACK_ORIGINAL_FD(ret, 0, fd, FD_API_OTHER, "dp", fd,
 			       voidp_to_uint64(buf));
 	return ret;
 }
@@ -591,7 +591,7 @@ HANDLER_WRAPPERS(int, futimens, int, fd, const struct timespec *, times)
 	BEFORE_ORIGINAL_FILE(futimens, LIBC);
 	ret = futimensp(fd, times);
 	AFTER_PACK_ORIGINAL_FD(API_ID_futimens,
-			       'd', ret, 0, fd, FD_API_OTHER, call_type, caller, "dp", fd,
+			       'd', ret, 0, fd, FD_API_OTHER, "dp", fd,
 			       voidp_to_uint64(times));
 	return ret;
 }

@@ -75,7 +75,7 @@ HANDLER_WRAPPERS(int, pthread_create, pthread_t *, thread,
 	}
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_create,
-				   'd', ret, *thread, THREAD_API_START, call_type, caller,
+				   'd', ret, *thread, THREAD_API_START,
 				   "pppp",
 				   voidp_to_uint64(thread),
 				   voidp_to_uint64(attr),
@@ -162,7 +162,7 @@ HANDLER_WRAPPERS(int , pthread_cancel, pthread_t, thread)
 	ret = pthread_cancelp(thread);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_cancel,
-				   'd', ret, thread, THREAD_API_STOP, call_type, caller, "x",
+				   'd', ret, thread, THREAD_API_STOP, "x",
 				   (uint64_t)(thread));
 
 	return ret;
@@ -177,7 +177,7 @@ HANDLER_WRAPPERS(int , pthread_detach, pthread_t, thread)
 	ret = pthread_detachp(thread);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_detach,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller, "x",
+				   'd', ret, thread, THREAD_API_OTHER, "x",
 				   (uint64_t)(thread));
 
 	return ret;
@@ -195,7 +195,7 @@ HANDLER_WRAPPERS(pthread_t , pthread_self, void)
 	newerrno = errno;
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_self,
-				   'p', ret_pthr, ret_pthr, THREAD_API_OTHER, call_type, caller, "", 0);
+				   'p', ret_pthr, ret_pthr, THREAD_API_OTHER, "", 0);
 
 	return ret_pthr;
 }
@@ -209,7 +209,7 @@ HANDLER_WRAPPERS(int , pthread_equal, pthread_t, t1, pthread_t, t2)
 	ret = pthread_equalp(t1, t2);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_equal,
-				   'd', ret, t1, THREAD_API_OTHER, call_type, caller, "xx",
+				   'd', ret, t1, THREAD_API_OTHER, "xx",
 				   (uint64_t)(t1), (uint64_t)(t2));
 
 	return ret;
@@ -235,7 +235,7 @@ HANDLER_WRAPPERS(int , pthread_setcancelstate, int, state, int *, oldstate)
 	ret = pthread_setcancelstatep(state, oldstate);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_setcancelstate,
-				   'd', ret, pSelf, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, pSelf, THREAD_API_OTHER,
 				   "dp", state, voidp_to_uint64(oldstate));
 
 	return ret;
@@ -252,7 +252,7 @@ HANDLER_WRAPPERS(int , pthread_setcanceltype, int, type, int *, oldtype)
 	ret = pthread_setcanceltypep(type, oldtype);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_setcanceltype,
-				   'd', ret, pSelf, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, pSelf, THREAD_API_OTHER,
 				   "dp", type, voidp_to_uint64(oldtype));
 
 	return ret;
@@ -268,7 +268,7 @@ HANDLER_WRAPPERS(int , pthread_attr_init, pthread_attr_t *, attr)
 	ret = pthread_attr_initp(attr);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_init,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller, "p",
+				   'd', ret, thread, THREAD_API_OTHER, "p",
 				   voidp_to_uint64(attr));
 
 	return ret;
@@ -284,7 +284,7 @@ HANDLER_WRAPPERS(int , pthread_attr_destroy, pthread_attr_t *, attr)
 	ret = pthread_attr_destroyp(attr);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_destroy,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller, "p",
+				   'd', ret, thread, THREAD_API_OTHER, "p",
 				   voidp_to_uint64(attr));
 
 	return ret;
@@ -302,7 +302,7 @@ HANDLER_WRAPPERS(int , pthread_attr_getdetachstate,
 	ret = pthread_attr_getdetachstatep(attr, detachstate);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getdetachstate,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(detachstate));
 
@@ -321,7 +321,7 @@ HANDLER_WRAPPERS(int , pthread_attr_setdetachstate, pthread_attr_t *, attr,
 	ret = pthread_attr_setdetachstatep(attr, detachstate);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setdetachstate,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pd", voidp_to_uint64(attr),
 				   detachstate);
 
@@ -340,7 +340,7 @@ HANDLER_WRAPPERS(int , pthread_attr_getstacksize, const pthread_attr_t *, attr,
 	ret = pthread_attr_getstacksizep(attr, stacksize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getstacksize,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(stacksize));
 
@@ -359,7 +359,7 @@ HANDLER_WRAPPERS(int , pthread_attr_setstacksize, pthread_attr_t *, attr,
 	ret = pthread_attr_setstacksizep(attr, stacksize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setstacksize,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "px", voidp_to_uint64(attr),
 				   (uint64_t)(stacksize));
 
@@ -388,7 +388,7 @@ HANDLER_WRAPPERS(int , pthread_attr_getstackaddr, const pthread_attr_t *, attr,
 	ret = pthread_attr_getstackaddrp(attr, stackaddr);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getstackaddr,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(stackaddr));
 
@@ -407,7 +407,7 @@ HANDLER_WRAPPERS(int , pthread_attr_setstackaddr, pthread_attr_t *, attr,
 	ret = pthread_attr_setstackaddrp(attr, stackaddr);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setstackaddr,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pp",
 				   voidp_to_uint64(attr),
 				   voidp_to_uint64(stackaddr));
@@ -428,7 +428,7 @@ HANDLER_WRAPPERS(int , pthread_attr_getinheritsched,
 	ret = pthread_attr_getinheritschedp(attr, inheritsched);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getinheritsched,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(inheritsched));
 
@@ -447,7 +447,7 @@ HANDLER_WRAPPERS(int , pthread_attr_setinheritsched, pthread_attr_t *, attr,
 	ret = pthread_attr_setinheritschedp(attr, inheritsched);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setinheritsched,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pd", voidp_to_uint64(attr),
 				   inheritsched);
 
@@ -466,7 +466,7 @@ HANDLER_WRAPPERS(int, pthread_attr_getschedparam, const pthread_attr_t *, attr,
 	ret = pthread_attr_getschedparamp(attr, param);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getschedparam,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(param));
 
@@ -485,7 +485,7 @@ HANDLER_WRAPPERS(int, pthread_attr_setschedparam, pthread_attr_t *, attr,
 	ret = pthread_attr_setschedparamp(attr, param);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setschedparam,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pp",
 				   voidp_to_uint64(attr),
 				   voidp_to_uint64(param));
@@ -505,7 +505,7 @@ HANDLER_WRAPPERS(int , pthread_attr_getschedpolicy,
 	ret = pthread_attr_getschedpolicyp(attr, policy);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getschedpolicy,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(policy));
 
@@ -524,7 +524,7 @@ HANDLER_WRAPPERS(int , pthread_attr_setschedpolicy, pthread_attr_t *, attr,
 	ret = pthread_attr_setschedpolicyp(attr, policy);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setschedpolicy,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pd", voidp_to_uint64(attr),
 				   policy);
 
@@ -543,7 +543,7 @@ HANDLER_WRAPPERS(int , pthread_attr_getguardsize, const pthread_attr_t *, attr,
 	ret = pthread_attr_getguardsizep(attr, guardsize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getguardsize,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(guardsize));
 
@@ -562,7 +562,7 @@ HANDLER_WRAPPERS(int , pthread_attr_setguardsize, pthread_attr_t *, attr,
 	ret = pthread_attr_setguardsizep(attr, guardsize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setguardsize,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "px", voidp_to_uint64(attr),
 				   (uint64_t)(guardsize));
 
@@ -581,7 +581,7 @@ HANDLER_WRAPPERS(int , pthread_attr_getscope, const pthread_attr_t *, attr,
 	ret = pthread_attr_getscopep(attr, contentionscope);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getscope,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pp", voidp_to_uint64(attr),
 				   voidp_to_uint64(contentionscope));
 
@@ -600,7 +600,7 @@ HANDLER_WRAPPERS(int , pthread_attr_setscope, pthread_attr_t *, attr,
 	ret = pthread_attr_setscopep(attr, contentionscope);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setscope,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "pd", voidp_to_uint64(attr), contentionscope);
 
 	return ret;
@@ -618,7 +618,7 @@ HANDLER_WRAPPERS(int, pthread_attr_getstack, const pthread_attr_t *, attr,
 	ret = pthread_attr_getstackp(attr, stackaddr, stacksize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_getstack,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "ppp", voidp_to_uint64(attr),
 				   voidp_to_uint64(stackaddr),
 				   voidp_to_uint64(stacksize));
@@ -638,7 +638,7 @@ HANDLER_WRAPPERS(int, pthread_attr_setstack, pthread_attr_t *, attr,
 	ret = pthread_attr_setstackp(attr, stackaddr, stacksize);
 
 	AFTER_PACK_ORIGINAL_THREAD(API_ID_pthread_attr_setstack,
-				   'd', ret, thread, THREAD_API_OTHER, call_type, caller,
+				   'd', ret, thread, THREAD_API_OTHER,
 				   "ppx", voidp_to_uint64(attr),
 				   voidp_to_uint64(stackaddr),
 				   (uint64_t)(stacksize));
