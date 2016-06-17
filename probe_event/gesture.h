@@ -44,12 +44,4 @@ struct __elm_gesture_layer_cb_set_data{
 	void *data;
 };
 
-//int kh_gesture_cmp(struct __elm_gesture_layer_cb_set_data *elm1,
-//		   struct __elm_gesture_layer_cb_set_data *elm2);
-//uint32_t kh_gesture_calc_hash(struct __elm_gesture_layer_cb_set_data *elm);
-
-int kh_gesture_cmp(void *elm1, void *elm2);
-uint32_t kh_gesture_calc_hash(void *elm);
-
-
 #endif
