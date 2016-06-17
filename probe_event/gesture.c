@@ -217,18 +217,19 @@ void PROBE_NAME(elm_gesture_layer_cb_set)(Evas_Object *obj, Elm_Gesture_Type idx
 			      Elm_Gesture_State cb_type, Elm_Gesture_Event_Cb cb,
 			      void *data)
 {
-	struct __elm_gesture_layer_cb_set_data d, *elm;
+	struct __elm_gesture_layer_cb_set_data *elm;
 	static void (*elm_gesture_layer_cb_setp)(Evas_Object *obj, Elm_Gesture_Type idx,
 		      Elm_Gesture_State cb_type, Elm_Gesture_Event_Cb cb,
 		      void *data);
 
-	d.obj = obj;
-	d.idx = idx;
-	d.cb_type = cb_type;
-	d.cb = cb;
-	d.data = data;
+	/* TODO Free memory on cb remove */
+	elm = real_malloc(sizeof(*elm));
 
-	elm = add_gesture_hash(&d);
+	elm->obj = obj;
+	elm->idx = idx;
+	elm->cb_type = cb_type;
+	elm->cb = cb;
+	elm->data = data;
 
 	GET_REAL_FUNCP_RTLD_DEFAULT(elm_gesture_layer_cb_set, elm_gesture_layer_cb_setp);
 
