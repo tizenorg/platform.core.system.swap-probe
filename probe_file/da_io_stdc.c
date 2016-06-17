@@ -44,6 +44,16 @@
 #include "binproto.h"
 #include "real_functions.h"
 #include "aliases.h"
+#include "file_probes_list.h"
+
+
+#define X(func_name, orig_name)         \
+	CONCAT(func_name, _ID),
+
+enum {
+	PROBES_LIST
+};
+#undef X
 
 static inline char *get_abs_path(FILE *file, const char *fname,
 				 char *buf, size_t bufsiz)

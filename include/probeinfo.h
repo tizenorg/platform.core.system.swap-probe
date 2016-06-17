@@ -37,6 +37,7 @@
 extern "C"{
 #endif
 
+#include <link.h>
 #include "app_protocol.h"
 
 
@@ -234,9 +235,10 @@ enum {
 };
 
 struct probe_desc_t {
-	void *handler_ptr;
+	ElfW(Addr) handler_ptr;
 	const char *orig_name;
 	unsigned char flags;
+	ElfW(Addr) orig_ptr;
 };
 
 

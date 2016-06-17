@@ -51,6 +51,16 @@
 
 #include "binproto.h"
 #include "real_functions.h"
+#include "event_probes_list.h"
+
+
+#define X(func_name, orig_name)         \
+	CONCAT(func_name, _ID),
+
+enum {
+	PROBES_LIST
+};
+#undef X
 
 bool touch_pressed = false;
 

@@ -40,7 +40,16 @@
 
 #include "binproto.h"
 #include "real_functions.h"
+#include "thread_probes_list.h"
 
+
+#define X(func_name, orig_name)         \
+	CONCAT(func_name, _ID),
+
+enum {
+	PROBES_LIST
+};
+#undef X
 
 HANDLER_WRAPPERS(int, pthread_mutex_init, pthread_mutex_t * ,mutex,
 		 const pthread_mutexattr_t *, attr)

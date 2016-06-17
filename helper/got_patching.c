@@ -219,7 +219,7 @@ static int _patch_bin(struct dl_phdr_info *info, size_t __unused size, void *dat
 		orig = _get_orig_addr(addr);
 		if (orig != NULL) {
 //			feature->probes[i].orig_ptr = orig;
-			*(void **)addr = feature->probes[i].handler_ptr;
+			*(ElfW(Addr) *)addr = feature->probes[i].handler_ptr;
 		}
 	}
 
@@ -287,20 +287,15 @@ __dl_fixup_wrapper (
 	   struct link_map *l, ElfW(Word) reloc_arg)
 {
 	const char *func_name;
-//	DL_FIXUP_VALUE_TYPE orig_addr;
 	unsigned int i, j;
 	unsigned long got_addr;
-	unsigned long handler_addr;
+	ElfW(Addr) exec_addr;
 
 	/* TODO App binaries in link_map structures have no name in l_name field.
 	 * Check whether it is equal to '\0' */
 	if (!check_binary(l->l_name) && l->l_name[0] != '\0')
 		/* Just call original and go away */
 		return dl_fixup_p(l, reloc_arg);
-
-
-
-
 
 	func_name = lmap_get_name(l, reloc_arg);
 	if (func_name == NULL)
@@ -310,11 +305,7 @@ __dl_fixup_wrapper (
 //	got_addr = lmap_reladdr_by_offset(l, reloc_arg);
 	got_addr = lmap_reladdr_by_name(l, func_name);
 
-//	orig_addr = dl_fixup_p(l, reloc_arg);
-	/* TODO It is going to be used to get original address of a functions.
-	 * Temporary all original functions are searched in probes, so this call
-	 * is useless */
-	handler_addr = dl_fixup_p(l, reloc_arg);
+	exec_addr = dl_fixup_p(l, reloc_arg);
 
 	/* Iterate features to find target probe */
 	for (i = 0; i < features_cnt; i++) {
@@ -335,12 +326,9 @@ __dl_fixup_wrapper (
 				 * - set probe right after _dl_fixup() exec
 				 *   and patch all entries by it;
 				 * - check where are treads when we starting. */
-//				features[i]->probes[j].orig_ptr = (void *)orig_addr;
-				*(void **)got_addr = features[i]->probes[j].handler_ptr;
-				memcpy((void *)got_addr,
-				       (void *)&features[i]->probes[j].handler_ptr,
-				       sizeof(features[i]->probes[j].handler_ptr));
-				handler_addr = (unsigned long)features[i]->probes[j].handler_ptr;
+				features[i]->probes[j].orig_ptr = exec_addr;
+				*(ElfW(Addr) *)got_addr = features[i]->probes[j].handler_ptr;
+				exec_addr = (unsigned long)features[i]->probes[j].handler_ptr;
 			}
 		}
 	}
@@ -351,7 +339,7 @@ __dl_fixup_wrapper (
 	/* TODO Think of several handlers at the same time (malloc()/free() can be
 	 * gathered always and profiled for a special binary, for example): which
 	 * of them should be executed? */
-	return handler_addr;
+	return exec_addr;
 }
 
 

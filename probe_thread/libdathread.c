@@ -39,6 +39,17 @@
 #include "da_sync.h"
 #include "binproto.h"
 #include "real_functions.h"
+#include "thread_probes_list.h"
+
+
+
+#define X(func_name, orig_name)         \
+	CONCAT(func_name, _ID),
+
+enum {
+	PROBES_LIST
+};
+#undef X
 
 typedef struct thread_routine_call_t {
 	void *(*thread_routine)(void *);

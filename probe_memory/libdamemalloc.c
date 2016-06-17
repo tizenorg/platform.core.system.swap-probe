@@ -44,8 +44,17 @@
 #include "dacollection.h"
 #include "da_memory.h"
 #include "binproto.h"
+#include "memory_probes_list.h"
 
 
+
+#define X(func_name, orig_name, type)   \
+	CONCAT(func_name, _ID),
+
+enum {
+	PROBES_LIST
+};
+#undef X
 
 HANDLER_WRAPPERS(void *, malloc, size_t, size)
 {

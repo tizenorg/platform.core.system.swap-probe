@@ -34,6 +34,16 @@
 #include "daprobe.h"
 #include "probeinfo.h"
 #include "da_ui.h"
+#include "ui_probes_list.h"
+
+
+#define X(func_name, orig_name)         \
+	CONCAT(func_name, _ID),
+
+enum {
+	PROBES_LIST
+};
+#undef X
 
 void PROBE_NAME(evas_object_show)(Evas_Object *obj)
 {

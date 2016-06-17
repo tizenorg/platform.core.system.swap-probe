@@ -43,7 +43,17 @@
 #include "binproto.h"
 #include "common_probe_init.h"
 #include "real_functions.h"
+#include "memory_probes_list.h"
 
+
+
+#define X(func_name, orig_name, type)   \
+	CONCAT(func_name, _ID),
+
+enum {
+	PROBES_LIST
+};
+#undef X
 
 HANDLER_WRAPPERS(void *, memset, void *, memblock, int, c, size_t, n)
 {

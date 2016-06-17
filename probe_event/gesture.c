@@ -39,6 +39,17 @@
 
 #include "gesture.h"
 #include "da_event.h"
+#include "event_probes_list.h"
+
+
+#define X(func_name, orig_name)         \
+	CONCAT(func_name, _ID),
+
+enum {
+	PROBES_LIST
+};
+#undef X
+
 
 #define LOGW PRINTWRN
 

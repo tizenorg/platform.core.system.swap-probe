@@ -4,15 +4,7 @@
 //#include "gesture_probes.h"
 //#include "keytouch.h"
 //#include "orientation.h"
-
-#define PROBES_LIST \
-	X(PROBE_NAME(elm_gesture_layer_cb_set), "elm_gesture_layer_cb_set") \
-	X(PROBE_NAME(ecore_event_evas_key_down), "ecore_event_evas_key_down") \
-	X(PROBE_NAME(ecore_event_evas_key_up), "ecore_event_evas_key_up") \
-	X(PROBE_NAME(ecore_event_evas_mouse_button_down), "ecore_event_evas_mouse_button_down") \
-	X(PROBE_NAME(ecore_event_evas_mouse_button_up), "ecore_event_evas_mouse_button_up") \
-	X(PROBE_NAME(ecore_event_evas_mouse_move), "ecore_event_evas_mouse_move") \
-	X(PROBE_NAME(ecore_x_init), "ecore_x_init")
+#include "event_probes_list.h"
 
 
 /* X-macros replaced by function defenitions */
@@ -28,7 +20,8 @@ PROBES_LIST
 
 /* X-macros replaced by structures defenitions */
 /* Used only for probes from target file */
-#define X(func_name, orig_name) { & func_name, orig_name, GT_TARGET_PROBE },
+#define X(func_name, orig_name)         \
+        { (ElfW(Addr))& func_name, orig_name, GT_TARGET_PROBE, NULL },
 
 static struct probe_desc_t event_probes[] = {
 	PROBES_LIST

@@ -34,7 +34,17 @@
 #include "daprobe.h"
 #include "dahelper.h"
 #include "common_probe_init.h"
+#include "event_probes_list.h"
 
+
+
+#define X(func_name, orig_name)         \
+	CONCAT(func_name, _ID),
+
+enum {
+	PROBES_LIST
+};
+#undef X
 
 Ecore_Event_Handler *register_orientation_event_listener();
 void unregister_orientation_event_listener(Ecore_Event_Handler *handler);
