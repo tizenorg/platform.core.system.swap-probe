@@ -35,7 +35,6 @@
 
 #include "khash.h"
 #include "real_functions.h"
-#include "gesture.h"
 
 #ifdef __cplusplus
 extern "C"{
@@ -44,10 +43,6 @@ extern "C"{
 #define MEMORYHASH			_hashinfo.memHash
 #define MEMORYHASH_LOCK		pthread_mutex_lock(&(_hashinfo.memHashMutex))
 #define MEMORYHASH_UNLOCK	pthread_mutex_unlock(&(_hashinfo.memHashMutex))
-
-#define GESTUREHASH		_hashinfo.gestHash
-#define GESTUREHASH_LOCK	pthread_mutex_lock(&(_hashinfo.gestHashMutex))
-#define GESTUREHASH_UNLOCK	pthread_mutex_unlock(&(_hashinfo.gestHashMutex))
 
 #define MEMTYPE_ALLOC	0x01
 #define MEMTYPE_FREE	0x01
@@ -75,14 +70,11 @@ typedef struct
 } _uiobjectinfo;
 
 KHASH_INIT_TYPE_VOIDP(allocmap, uint64_t)
-KHASH_INIT_TYPE_VOIDP(gesture, void *)
 
 typedef struct
 {
 	khash_t(allocmap)*	memHash;
 	pthread_mutex_t		memHashMutex;
-	khash_t(gesture)*	gestHash;
-	pthread_mutex_t		gestHashMutex;
 } __hashInfo;
 
 extern __hashInfo _hashinfo;
@@ -99,10 +91,6 @@ int finalize_hash_table();
 
 int add_memory_hash(void* ptr, size_t size, unsigned short type, unsigned short caller);
 int del_memory_hash(void* ptr, unsigned short type, unsigned short* caller);
-
-int find_gesture_hash(void *data);
-void *add_gesture_hash(void *data);
-int del_gesture_hash(void *data);
 
 #ifdef __cplusplus
 }

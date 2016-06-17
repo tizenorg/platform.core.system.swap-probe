@@ -36,21 +36,16 @@
 #include "dahelper.h"
 #include "daerror.h"
 #include "dacollection.h"
-#include "gesture.h"
 
 // khash table function definition
 
 KHASH_MAP_INIT_VOIDP(allocmap, uint64_t)
-
-KHASH_INIT(gesture, void *, void *, 1, kh_gesture_calc_hash, kh_gesture_cmp)
 
 // hash table variable
 __hashInfo _hashinfo =
 {
 	NULL,						// khash_t(allocmap)*	memHash
 	PTHREAD_MUTEX_INITIALIZER,	// pthread_mutex_t memHashMutex
-	NULL,						// khash_t(gesture)*	gestHash
-	PTHREAD_MUTEX_INITIALIZER	// pthread_mutex_t gestHashMutex
 };
 
 // glist typedef and variable
@@ -78,9 +73,6 @@ int initialize_hash_table()
 	MEMORYHASH = kh_init(allocmap);
 	MEMORYHASH_UNLOCK;
 
-	GESTUREHASH_LOCK;
-	GESTUREHASH = kh_init(gesture);
-	GESTUREHASH_UNLOCK;
 	return 0;
 }
 
@@ -93,24 +85,6 @@ int finalize_hash_table()
 		MEMORYHASH = NULL;
 		MEMORYHASH_UNLOCK;
 	}
-
-	if (GESTUREHASH) {
-		khiter_t k;
-		void *val;
-
-		GESTUREHASH_LOCK;
-		for(k = kh_begin(GESTUREHASH); k != kh_end(GESTUREHASH); k++) {
-			if (kh_exist(GESTUREHASH, k)) {
-				val = kh_value(GESTUREHASH, k);
-				if (likely(val != NULL))
-					free(val);
-			}
-		}
-		kh_destroy(gesture, GESTUREHASH);
-		GESTUREHASH = NULL;
-		GESTUREHASH_UNLOCK;
-	}
-
 
 	return 0;
 }
@@ -327,112 +301,4 @@ void* find_glist(char* key)
 		return elm->dataptr;
 	else
 		return NULL;
-}
-
-
-/***********************************************************
- * gesture hash related functions
- ***********************************************************
- * return 0 if succeed
- * return 1 if key is already exist in hash table
- * return negative value if other error occurred
- */
-//uint32_t kh_gesture_calc_hash(struct __elm_gesture_layer_cb_set_data *elm)
-uint32_t kh_gesture_calc_hash(void *data)
-{
-	struct __elm_gesture_layer_cb_set_data *elm = data;
-
-	/* FIXME cast to uint64 */
-	uint32_t res = ((uint32_t)elm->obj << 16) +
-		       ((uint32_t)elm->idx << 8) +
-		       ((uint32_t)elm->cb_type << 0);
-	return res;
-}
-
-int kh_gesture_cmp(void *data1, void *data2)
-{
-	int res = 1;
-	struct __elm_gesture_layer_cb_set_data *elm1 = data1;
-	struct __elm_gesture_layer_cb_set_data *elm2 = data2;
-
-	if (elm1 == NULL || elm2 == NULL) {
-		PRINTERR("wrong incoming data");
-		goto exit;
-	}
-
-	res = (elm1->obj == elm2->obj &&
-	       elm1->idx == elm2->idx &&
-	       elm1->cb_type == elm2->cb_type);
-
-exit:
-	return res;
-}
-
-int gesture_update(struct __elm_gesture_layer_cb_set_data *elm1,
-		   struct __elm_gesture_layer_cb_set_data *elm2)
-{
-	int res = 0;
-	if (elm1 == NULL || elm2 == NULL) {
-		PRINTERR("wrong incoming data");
-		res = 1;
-		goto exit;
-	} else {
-		elm1->cb = elm2->cb;
-		elm1->data = elm2->data;
-	}
-
-exit:
-	return res;
-}
-
-void *add_gesture_hash(void *ptr)
-{
-	khiter_t k;
-	int rethash;
-	void *ret = NULL;
-	struct __elm_gesture_layer_cb_set_data *data;
-
-	if (GESTUREHASH == NULL) {
-		PRINTERR("gesture hash not initialized");
-		goto exit;
-	}
-
-	if (ptr == NULL) {
-		PRINTERR("wrong incoming data");
-		goto exit;
-	}
-
-	GESTUREHASH_LOCK;
-
-	data = (struct __elm_gesture_layer_cb_set_data *)ptr;
-	k = kh_put(gesture, GESTUREHASH, data, &rethash);
-	if (rethash != 0) {
-		// succeed to add in hash table
-		if (data != NULL) {
-			data = (struct __elm_gesture_layer_cb_set_data *)real_malloc(sizeof(*data));
-			memcpy(data, ptr, sizeof(*data));
-
-			kh_key(GESTUREHASH, k) = data;
-			kh_value(GESTUREHASH, k) = data;
-			ret = data;
-		} else {
-			PRINTERR("Cannot alloc memory.");
-			goto exit_unlock;
-		}
-	} else {
-		// key is already exist in hash
-		// update memory info
-		data = kh_value(GESTUREHASH, k);
-		if (gesture_update(data, (struct __elm_gesture_layer_cb_set_data *)ptr) != 0) {
-			PRINTERR("Cannot update hash data");
-			goto exit_unlock;
-		}
-		ret = data;
-	}
-
-exit_unlock:
-	GESTUREHASH_UNLOCK;
-
-exit:
-	return ret;
 }
