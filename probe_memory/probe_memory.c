@@ -3,24 +3,7 @@
 #include "binproto.h"
 //#include "libdamemalloc.h"
 //#include "libdamemmange.h"
-
-#define PROBES_LIST_MEMORY \
-	X(PROBE_NAME(malloc), "malloc", GT_TARGET_PROBE | GT_INVERTED_PROBE) \
-	X(PROBE_NAME(free), "free", GT_TARGET_PROBE | GT_INVERTED_PROBE) \
-	X(PROBE_NAME(realloc), "realloc", GT_TARGET_PROBE | GT_INVERTED_PROBE) \
-	X(PROBE_NAME(calloc), "calloc", GT_TARGET_PROBE | GT_INVERTED_PROBE) \
-	X(PROBE_NAME(memset), "memset", GT_TARGET_PROBE) \
-	X(PROBE_NAME(memcmp), "memcmp", GT_TARGET_PROBE) \
-	X(PROBE_NAME(memcpy), "memcpy", GT_TARGET_PROBE)
-
-#define PROBES_LIST_MEMORY_ALWAYS \
-	X(CONCAT(PROBE_NAME(malloc), _always), "malloc", GT_ALWAYS_PROBE) \
-	X(CONCAT(PROBE_NAME(free), _always), "free", GT_ALWAYS_PROBE) \
-	X(CONCAT(PROBE_NAME(realloc), _always), "realloc", GT_ALWAYS_PROBE) \
-	X(CONCAT(PROBE_NAME(calloc), _always), "calloc", GT_ALWAYS_PROBE) \
-	X(CONCAT(PROBE_NAME(memset), _always), "memset", GT_ALWAYS_PROBE) \
-	X(CONCAT(PROBE_NAME(memcmp), _always), "memcmp", GT_ALWAYS_PROBE) \
-	X(CONCAT(PROBE_NAME(memcpy), _always), "memcpy", GT_ALWAYS_PROBE)
+#include "memory_probes_list.h"
 
 
 
@@ -40,7 +23,8 @@ PROBES_LIST_MEMORY_ALWAYS
 
 /* X-macros replaced by structures defenitions */
 /* For target binaries probes */
-#define X(func_name, orig_name, type) { & func_name, orig_name, type },
+#define X(func_name, orig_name, type)   \
+	{ (ElfW(Addr))& func_name, orig_name, type, NULL },
 
 static struct probe_desc_t memory_probes[] = {
 	PROBES_LIST_MEMORY

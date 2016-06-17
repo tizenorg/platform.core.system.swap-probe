@@ -2,10 +2,7 @@
 #include "api_names_global.h"
 #include "probeinfo.h"
 //#include "capi_appfw.h"
-
-#define PROBES_LIST \
-	X(PROBE_NAME(ui_app_main), "ui_app_main")
-
+#include "capi_probes_list.h"
 
 /* X-macros replaced by function defenitions */
 /* We need this only to get symbol address - so don't care
@@ -20,7 +17,8 @@ PROBES_LIST
 
 /* X-macros replaced by structures defenitions */
 /* Used only for probes from target file */
-#define X(func_name, orig_name) { & func_name, orig_name, GT_TARGET_PROBE },
+#define X(func_name, orig_name)         \
+        { (ElfW(Addr)) & func_name, orig_name, GT_TARGET_PROBE, NULL },
 
 static struct probe_desc_t capi_probes[] = {
 	PROBES_LIST

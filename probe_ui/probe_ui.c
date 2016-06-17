@@ -2,9 +2,8 @@
 #include "api_names_global.h"
 #include "probeinfo.h"
 //#include "capi_capture.h"
+#include "ui_probes_list.h"
 
-#define PROBES_LIST \
-	X(PROBE_NAME(evas_object_show), "evas_object_show")
 
 
 /* X-macros replaced by function defenitions */
@@ -19,7 +18,8 @@ PROBES_LIST
 
 
 /* X-macros replaced by structures defenitions */
-#define X(func_name, orig_name) { & func_name, orig_name, GT_TARGET_PROBE },
+#define X(func_name, orig_name)         \
+	{ (ElfW(Addr))& func_name, orig_name, GT_TARGET_PROBE, NULL },
 
 static struct probe_desc_t ui_probes[] = {
 	PROBES_LIST

@@ -26,7 +26,8 @@ PROBES_LIST
 
 
 /* X-macros replaced by structures defenitions */
-#define X(func_name, orig_name) { & func_name, orig_name, GT_TARGET_PROBE },
+#define X(func_name, orig_name)         \
+	{ (ElfW(Addr)) & func_name, orig_name, GT_TARGET_PROBE, NULL },
 
 static struct probe_desc_t helper_probes[] = {
 	PROBES_LIST
