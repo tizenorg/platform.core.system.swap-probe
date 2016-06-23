@@ -103,38 +103,89 @@ static void __rotation_changed_cb(sensor_t __attribute__((unused)) sensor,
 
 }
 
-
 static int __rotate_event_init(void)
 {
 	bool r;
 	sensor_data_t data;
-	sensor_t sensor = sensord_get_sensor(AUTO_ROTATION_SENSOR);
+	const char *fname;
+	static bool (*__sensord_start)(int handle, int option);
+	static int (*__sensord_connect)(sensor_t sensor);
+	static bool (*__sensord_disconnect)(int handle);
+	static sensor_t (*__sensord_get_sensor)(sensor_type_t type);
+	static bool (*__sensord_register_event)(int handle,
+						unsigned int event_type,
+						unsigned int interval,
+						unsigned int max_batch_latency,
+						sensor_cb_t cb,
+						void *user_data);
+	static bool (*__sensord_unregister_event)(int handle,
+						  unsigned int event_type);
+	static bool (*__sensord_get_data)(int handle, unsigned int data_id,
+					  sensor_data_t* sensor_data);
+
+	fname = "sensord_start";
+	rtld_default_set_once(__sensord_start, fname);
+	if (!__sensord_start)
+		goto not_found;
+
+
+	fname = "sensord_connect";
+	rtld_default_set_once(__sensord_connect, fname);
+	if (!__sensord_connect)
+		goto not_found;
+
+	fname = "sensord_disconnect";
+	rtld_default_set_once(__sensord_disconnect, fname);
+	if (!__sensord_disconnect)
+		goto not_found;
+
+	fname = "sensord_get_sensor";
+	rtld_default_set_once(__sensord_get_sensor, fname);
+	if (!__sensord_get_sensor)
+		goto not_found;
+
+	fname = "sensord_register_event";
+	rtld_default_set_once(__sensord_register_event, fname);
+	if (!__sensord_register_event)
+		goto not_found;
+
+	fname = "sensord_unregister_event";
+	rtld_default_set_once(__sensord_unregister_event, fname);
+	if (!__sensord_unregister_event)
+		goto not_found;
+
+	fname = "sensord_get_data";
+	rtld_default_set_once(__sensord_get_data, fname);
+	if (!__sensord_get_data)
+		goto not_found;
+
+	sensor_t sensor = __sensord_get_sensor(AUTO_ROTATION_SENSOR);
 
 	rotation.angle = 0;
-	rotation.handle = sensord_connect(sensor);
+	rotation.handle = __sensord_connect(sensor);
 	if (rotation.handle < 0) {
 		PRINTERR("Failed to connect sensord");
 		return -1;
 	}
 
-	r = sensord_register_event(rotation.handle,
-				   AUTO_ROTATION_CHANGE_STATE_EVENT,
-				   SENSOR_INTERVAL_NORMAL,
-				   0,
-				   __rotation_changed_cb,
-				   NULL);
+	r = __sensord_register_event(rotation.handle,
+				     AUTO_ROTATION_CHANGE_STATE_EVENT,
+				     SENSOR_INTERVAL_NORMAL,
+				     0,
+				     __rotation_changed_cb,
+				     NULL);
 	if (!r) {
 		PRINTERR("Failed to register event");
-		sensord_disconnect(rotation.handle);
+		__sensord_disconnect(rotation.handle);
 		return -1;
 	}
 
-	r = sensord_start(rotation.handle, 0);
+	r = __sensord_start(rotation.handle, 0);
 	if (!r) {
 		PRINTERR("Failed to start sensord");
-		sensord_unregister_event(rotation.handle,
-					 AUTO_ROTATION_CHANGE_STATE_EVENT);
-		sensord_disconnect(rotation.handle);
+		__sensord_unregister_event(rotation.handle,
+					   AUTO_ROTATION_CHANGE_STATE_EVENT);
+		__sensord_disconnect(rotation.handle);
 		return -1;
 	}
 
@@ -147,9 +198,9 @@ static int __rotate_event_init(void)
 		PRINTERR("Failed to register callback for %s",
 			 VCONFKEY_SETAPPL_AUTO_ROTATE_SCREEN_BOOL);
 
-	r = sensord_get_data(rotation.handle, AUTO_ROTATION_SENSOR, &data);
+	r = __sensord_get_data(rotation.handle, AUTO_ROTATION_SENSOR, &data);
 	if (!r) {
-		PRINTERR("sensord_get_data failed");
+		PRINTMSG("sensord_get_data failed");
 		rotation.angle = 0;
 	} else {
 		rotation.angle = __get_angle(&data);
@@ -158,6 +209,11 @@ static int __rotate_event_init(void)
 	rotation_initialized = 1;
 
 	return 0;
+
+not_found:
+	PRINTERR("Failed to get symbol \"%s\"\n", fname);
+
+	return -1;
 }
 
 EAPI int PROBE_NAME(ecore_wl_init)(const char *name)
