@@ -121,7 +121,6 @@ int PROBE_NAME(ui_app_main)(int argc, char **argv, ui_app_lifecycle_callback_s *
 	/* TODO Support old preload */
 //	static int (*ui_app_mainp)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data);
 	int (*ui_app_mainp)(int argc, char **argv, ui_app_lifecycle_callback_s *callback, void *user_data);
-	Ecore_Event_Handler* handler;
 	int ret;
 
 //	GET_REAL_FUNCP_RTLD_DEFAULT(ui_app_main, ui_app_mainp);

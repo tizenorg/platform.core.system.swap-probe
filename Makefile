@@ -193,7 +193,7 @@ $(SOURCE_HEADERS): ./scripts/gen_headers.py
 ifeq (arm, $(findstring arm, $(shell uname -sm)))
 LINKER_PATH = /lib/ld-linux.so.3
 else
-LINKER_PATH = /lib/ld-linux.so.2
+LINKER_PATH = /lib/ld-2.20-2014.11.so
 endif
 
 DEBUG_POSTFIX = .debug

@@ -25,6 +25,7 @@ BuildRequires: elementary-devel
 BuildRequires: capi-appfw-application-devel
 BuildRequires: capi-system-runtime-info-devel
 BuildRequires: python
+BuildRequires: glibc-debuginfo
 
 
 # Applied python acceleration
