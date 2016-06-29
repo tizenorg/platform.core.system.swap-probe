@@ -69,6 +69,8 @@ LDFLAGS = -shared   	\
 	-lpthread			\
 	-lrt				\
 	-ldl				\
+	-lwayland-client	\
+	-lsensor			\
 	-Wl,-z,noexecstack
 
 ASMFLAG = -O0 -g -Werror
@@ -132,12 +134,13 @@ CAPI_SRCS = 	$(COMMON_SRCS)			\
 
 TIZEN_SRCS =	$(COMMON_SRCS) $(CAPI_SRCS)\
 		./helper/common_probe_init.c				\
-		./probe_memory/libdanew.cpp					\
 		./probe_graphics/da_evas_gl.c				\
 		./probe_graphics/da_gl_api_init.c			\
 		./probe_graphics/da_gles20_tizen.cpp			\
 		./probe_graphics/da_gles20_native.cpp			\
 		./probe_graphics/da_gles30_native.cpp
+## FIXME: new,delete and etc. operators not configured properly for SWAP-Preload
+#		./probe_memory/libdanew.cpp
 
 ASM_SRC = ./helper/da_call_original.S
 
@@ -184,7 +187,7 @@ $(API_NAME_LIST):
 
 $(SOURCE_HEADERS): $(API_NAME_LIST)
 $(SOURCE_HEADERS): ./scripts/gen_headers.py
-	python $< $(API_NAME_LIST) $(TIZEN_TARGET) $(INSTALLDIR) > $@ >&2
+	python -m cProfile $< $(API_NAME_LIST) $(TIZEN_TARGET) $(INSTALLDIR) > $@ >&2
 	cat $@
 
 include/api_id_mapping.h: ./scripts/gen_api_id_mapping_header.awk
