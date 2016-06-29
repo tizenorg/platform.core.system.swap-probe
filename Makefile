@@ -69,6 +69,8 @@ LDFLAGS = -shared   	\
 	-lpthread			\
 	-lrt				\
 	-ldl				\
+	-lwayland-client	\
+	-lsensor			\
 	-Wl,-z,noexecstack
 
 ASMFLAG = -O0 -g -Werror
