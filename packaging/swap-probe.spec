@@ -25,7 +25,7 @@ BuildRequires: elementary-devel
 BuildRequires: capi-appfw-application-devel
 BuildRequires: capi-system-runtime-info-devel
 BuildRequires: python
-
+BuildRequires: capi-appfw-application
 
 # Applied python acceleration
 %ifarch armv7l
