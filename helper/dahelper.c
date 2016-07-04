@@ -33,6 +33,7 @@
 #include <sys/types.h>
 #include <dirent.h>			// for opendir, readdir
 #include <assert.h>
+#include <errno.h>
 #include "dahelper.h"
 
 const char *lib_string[NUM_ORIGINAL_LIBRARY] = {
@@ -180,11 +181,19 @@ int add_binary(char *path)
 {
 	struct bin_info_t *bin_info;
 	int ret = 0;
+	char *real_path;
+
+	real_path = realpath(path, NULL);
+	if (real_path == NULL) {
+		PRINTERR("Cannot resolve real path for <%s> due to <%s>\n",
+			 strerror(errno));
+		return -EINVAL;
+	}
 
 	pthread_mutex_lock(&gTraceInfo.bins_info.bins_mutex);
 
 	if (!SLIST_EMPTY(&gTraceInfo.bins_info.bins_list) &&
-		(_find_binary_no_lock(path) != NULL)) {
+		(_find_binary_no_lock(real_path) != NULL)) {
 		ret = -EALREADY;
 		goto add_bin_unlock;
 	}
@@ -196,7 +205,7 @@ int add_binary(char *path)
 	}
 
 	// TODO Slow copy / cleanup of memory allocated somewhere else?
-	bin_info->path = path;
+	bin_info->path = real_path;
 	SLIST_INSERT_HEAD(&gTraceInfo.bins_info.bins_list, bin_info, list);
 
 add_bin_unlock:
@@ -210,6 +219,14 @@ int remove_binary(char *path)
 {
 	struct bin_info_t *bin_info;
 	int ret = 0;
+	char *real_path;
+
+	real_path = realpath(path, NULL);
+	if (real_path == NULL) {
+		PRINTERR("Cannot resolve real path for <%s> due to <%s>\n",
+			 strerror(errno));
+		return -EINVAL;
+	}
 
 	pthread_mutex_lock(&gTraceInfo.bins_info.bins_mutex);
 
@@ -218,7 +235,7 @@ int remove_binary(char *path)
 		goto remove_bin_unlock;
 	}
 
-	bin_info = _find_binary_no_lock(path);
+	bin_info = _find_binary_no_lock(real_path);
 	if (bin_info == NULL) {
 		ret = -EINVAL;
 		goto remove_bin_unlock;
@@ -237,13 +254,21 @@ bool check_binary(const char *path)
 {
 	struct bin_info_t *bin_info;
 	bool ret = false;
+	char orig_path[PATH_MAX + 1] = {0};
+	char *real_path;
+
+	real_path = realpath(path, orig_path);
+	if (real_path == NULL) {
+		PRINTERR("No real path for <%s> path!\n", path);
+		return ret;
+	}
 
 	pthread_mutex_lock(&gTraceInfo.bins_info.bins_mutex);
 
 	if (SLIST_EMPTY(&gTraceInfo.bins_info.bins_list))
 		goto check_bin_unlock;
 
-	bin_info = _find_binary_no_lock(path);
+	bin_info = _find_binary_no_lock(real_path);
 	if (bin_info != NULL)
 		ret = true;
 

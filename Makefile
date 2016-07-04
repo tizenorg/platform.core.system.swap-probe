@@ -193,13 +193,14 @@ $(SOURCE_HEADERS): ./scripts/gen_headers.py
 ifeq (arm, $(findstring arm, $(shell uname -sm)))
 LINKER_PATH = /lib/ld-linux.so.3
 else
-LINKER_PATH = /lib/ld-2.20-2014.11.so
+LINKER_PATH = /lib/ld-linux.so.2
 endif
+LINKER_DEBUG_PATH = /lib/ld-2.20-2014.11.so.debug
 
 DEBUG_POSTFIX = .debug
 
 $(LINKER_HEADER): ./scripts/gen_linker_header.sh
-	sh $^ $@ $(LINKER_PATH) $(DEBUG_POSTFIX)
+	sh $^ $@ $(LINKER_PATH) $(LINKER_DEBUG_PATH)
 
 include/api_id_mapping.h: ./scripts/gen_api_id_mapping_header.awk
 include/x_define_api_id_list.h: ./scripts/gen_api_id_mapping_list.awk

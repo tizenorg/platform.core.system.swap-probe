@@ -108,7 +108,10 @@ static void _process_target_bins(char *bins_data)
 		/* TODO Think about removing binaries */
 		ret = add_binary(path);
 		if (ret != 0)
-			free(path);
+			PRINTERR("Adding failed, error code %d", ret);
+		/* add_binary() allocates new buffer with realpath(), so this
+		 * path should be freed */
+		free(path);
 	}
 }
 
@@ -146,14 +149,18 @@ static inline bool _is_ignored(const char *path)
 {
 	const char probe_lib[] = "/usr/lib/da_probe_tizen.so";
 	const char linux_gate[] = "linux-gate.so.1";
+        const char linker[] = "/lib/ld-linux.so.2";
 	/* TODO Find why these libs leads to fail */
 	const char systemd[] = "/usr/lib/libsystemd.so.0";
+	const char systemd_lib[] = "/lib/libsystemd.so.0";
 	const char udev[] = "/usr/lib/libudev.so.1";
 
 	if (path[0] == '\0' ||
 	    !strcmp(probe_lib, path) ||
 	    !strcmp(linux_gate, path) ||
+	    !strcmp(linker, path) ||
 	    !strcmp(systemd, path) ||
+	    !strcmp(systemd_lib, path) ||
 	    !strcmp(udev, path))
 		return true;
 
@@ -291,11 +298,11 @@ __dl_fixup_wrapper (
 	unsigned long got_addr;
 	ElfW(Addr) exec_addr;
 
-	/* TODO App binaries in link_map structures have no name in l_name field.
-	 * Check whether it is equal to '\0' */
-	if (!check_binary(l->l_name) && l->l_name[0] != '\0')
-		/* Just call original and go away */
-		return dl_fixup_p(l, reloc_arg);
+//	/* TODO App binaries in link_map structures have no name in l_name field.
+//	 * Check whether it is equal to '\0' */
+//	if (!check_binary(l->l_name) && l->l_name[0] != '\0')
+//		/* Just call original and go away */
+//		return dl_fixup_p(l, reloc_arg);
 
 	func_name = lmap_get_name(l, reloc_arg);
 	if (func_name == NULL)
