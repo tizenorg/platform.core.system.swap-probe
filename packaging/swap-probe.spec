@@ -27,6 +27,15 @@ BuildRequires: capi-system-runtime-info-devel
 BuildRequires: python
 BuildRequires: capi-appfw-application
 
+%if "%{_with_wayland}" == "1"
+BuildRequires:  pkgconfig(wayland-server)
+BuildRequires:  pkgconfig(wayland-tbm-client)
+BuildRequires:  pkgconfig(screenshooter-client)
+BuildRequires:  pkgconfig(ecore-wayland)
+BuildRequires:  pkgconfig(wayland-client) >= 1.0.0
+BuildRequires:  pkgconfig(tizen-extension-client)
+%endif
+
 # Applied python acceleration
 %ifarch armv7l
 BuildRequires: python-accel-armv7l-cross-arm

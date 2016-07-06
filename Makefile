@@ -109,10 +109,20 @@ PROBE_SRCS =	   				\
 	./probe_file/da_io_stdc.c		\
 
 ifeq ($(WAYLAND_SUPPORT),y)
-UTILITY_SRCS += ./helper/wayland-api.c
 UTILITY_SRCS += ./helper/dacapture.c
 PROBE_SRCS += ./probe_event/orientation.c
 CFLAGS += -DWAYLAND_SUPPORT
+CFLAGS += -I/usr/include/wayland-extension/
+LDFLAGS+=-lecore			\
+	 -levas				\
+	 -ltizen-extension-client	\
+	 -ltbm				\
+	 -leina				\
+	 -lecore_wayland		\
+	 -lwayland-client		\
+	 -lwayland-tbm-client 		\
+	 -lcapi-base-common		\
+	 -lscreenshooter-client
 endif # WAYLAND_SUPPORT
 
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
