@@ -27,7 +27,7 @@
 #define _DACAPTURE_H_
 
 
-#ifdef WAYLAND_SUPPORT
+#ifdef TIZEN_FEATURE_WAYLAND
 
 #include <Evas.h>
 
@@ -38,7 +38,7 @@ void _cb_render_post(void *data, Evas *e, void *eventinfo);
 int initialize_screencapture();
 int finalize_screencapture();
 
-#else /* WAYLAND_SUPPORT */
+#else /* TIZEN_FEATURE_WAYLAND */
 
 #include "daprobe.h"
 
@@ -68,7 +68,7 @@ static inline int finalize_screencapture()
 	return -1;
 }
 
-#endif /* WAYLAND_SUPPORT */
+#endif /* TIZEN_FEATURE_WAYLAND */
 
 
 #endif /* _DACAPTURE_H_ */

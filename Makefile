@@ -108,10 +108,10 @@ PROBE_SRCS =	   				\
 	./probe_file/da_io_posix.c		\
 	./probe_file/da_io_stdc.c		\
 
-ifeq ($(WAYLAND_SUPPORT),y)
+ifeq ($(TIZEN_FEATURE_WAYLAND),y)
 UTILITY_SRCS += ./helper/dacapture.c
 PROBE_SRCS += ./probe_event/orientation.c
-CFLAGS += -DWAYLAND_SUPPORT
+CFLAGS += -DTIZEN_FEATURE_WAYLAND
 CFLAGS += -I/usr/include/wayland-extension/
 LDFLAGS+=-lecore			\
 	 -levas				\
@@ -123,7 +123,7 @@ LDFLAGS+=-lecore			\
 	 -lwayland-tbm-client 		\
 	 -lcapi-base-common		\
 	 -lscreenshooter-client
-endif # WAYLAND_SUPPORT
+endif # TIZEN_FEATURE_WAYLAND
 
 DUMMY_SRCS = ./custom_chart/da_chart_dummy.c
 CAPI_SRCS = 	$(COMMON_SRCS)			\
