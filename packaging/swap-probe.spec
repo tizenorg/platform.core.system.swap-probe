@@ -8,10 +8,10 @@ Source:    %{name}_%{version}.tar.gz
 
 
 # setup config
-%define WAYLAND_SUPPORT 0
+%define TIZEN_FEATURE_WAYLAND 0
 
 %if "%{_with_wayland}" == "1"
-%define WAYLAND_SUPPORT 1
+%define TIZEN_FEATURE_WAYLAND 1
 %endif # _with_wayland
 
 
@@ -88,7 +88,7 @@ This tool will be installed in target
 %setup -q -n %{name}_%{version}
 
 %build
-export WAYLAND_SUPPORT=y
+export TIZEN_FEATURE_WAYLAND=y
 
 make rmheaders
 make headers
