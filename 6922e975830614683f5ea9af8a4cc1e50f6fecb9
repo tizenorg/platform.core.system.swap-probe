@@ -1,0 +1,8 @@
+Code-Review+1: Vitaliy Cherepanov <v.cherepanov@samsung.com>
+Verified+1: Dmitry Kovalenko <d.kovalenko@samsung.com>
+Code-Review+2: Dmitry Kovalenko <d.kovalenko@samsung.com>
+Submitted-by: Dmitry Kovalenko <d.kovalenko@samsung.com>
+Submitted-at: Mon, 11 Jul 2016 05:21:33 -0700
+Reviewed-on: https://review.tizen.org/gerrit/77389
+Project: platform/core/system/swap-probe
+Branch: refs/heads/tizen
