@@ -121,8 +121,10 @@ def parse_apis(func_list_file):
 
 def __lib_syms(libname):
     probe_data = {}
-    p = subprocess.Popen(["LD_LIBRARY_PATH=./ ./parse_elf \"" + libname + "\" -sa"], shell=True, stdout=subprocess.PIPE)
+    p = subprocess.Popen(["LD_LIBRARY_PATH=./ ./parse_elf \"" + libname + "\" -saf"], shell=True, stdout=subprocess.PIPE)
     read_probe = p.communicate()
+    if p.returncode != 0:
+        return probe_data
     for line in read_probe:
         if line is None:
             continue
@@ -161,16 +163,9 @@ def __get_addr_by_funcname_lib(lib_data, funcname):
     if funcname in lib_data:
         result[funcname] = lib_data[funcname]
     else:
-        funcname_short = re.sub("@\*", "$", funcname)
-        funcname_postfix = re.sub("\*", ".*", funcname)
+        funcname_re = funcname.replace("@*", "$") + "|" + funcname.replace("*", ".*")
         for i in lib_data:
-            tokens = re.findall("^(" + funcname_short + ")\n", i + "\n")
-            if tokens != []:
-                result[i] = lib_data[i]
-                continue
-
-            tokens = re.findall("^(" + funcname_postfix + ")\n", i + "\n")
-            if tokens != []:
+            if re.match(funcname_re, i) != None:
                 result[i] = lib_data[i]
 
     if result == {}:
