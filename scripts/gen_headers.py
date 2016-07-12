@@ -8,6 +8,10 @@ import os
 
 defines={}
 
+def __debug(str):
+    print str
+    sys.stdout.flush()
+
 def __add_item(data_dict, dict_keys, data):
     """ dict_keys is supposed to be a list with length 2, where the first element is the
         key for data_dict and the second one is the key for data_dict[first_element]
@@ -41,9 +45,40 @@ def __add_item(data_dict, dict_keys, data):
 
 
 #################### Parsing api_names_all.txt #####################
+libs_in_dir = {}
+def __get_libs_in_dir_by_mask(path_mask):
+    if path_mask in libs_in_dir:
+        return libs_in_dir[path_mask]
 
+    libs_in_dir_tmp = []
+    libs_paths = ""
+
+    __debug("---> generate list on mask %s" % path_mask)
+    libs_paths = libs_paths + path_mask + " "
+
+    for root, dirnames, filenames in os.walk(os.path.dirname(path_mask)):
+        for dirname in dirnames:
+            file_full_name = os.path.join(root, dirname)
+            file_full_name = file_full_name.replace(" ", "\ ") + "/*"
+            libs_paths = libs_paths + file_full_name + " "
+
+    p = subprocess.Popen(["/usr/bin/file " + libs_paths + " | grep ELF | awk '{print $1}' | sed 's/://'"], shell=True, stdout=subprocess.PIPE)
+    list = p.communicate()
+
+    for lines in list:
+        if lines is None:
+            continue
+        for line in lines.split("\n"):
+            if line != "":
+                libs_in_dir_tmp.append(os.path.realpath(line))
+
+    libs_in_dir[path_mask] = libs_in_dir_tmp
+    __debug("<--- generate list on mask %s" % path_mask)
+
+    return libs_in_dir_tmp
 
 def __parse_file(libs_data, file):
+    __debug("---> __parse_file")
     defines_tag = "#define"
     filename_tag = "#filename"
     lib_tag = "#lib"
@@ -56,6 +91,7 @@ def __parse_file(libs_data, file):
 
     for line in file:
         current_line = current_line + 1
+
         if line == "\n":
             continue
         elif line[:9] == filename_tag:
@@ -64,9 +100,7 @@ def __parse_file(libs_data, file):
             lib_tmp = re.sub("\"", "", line.split()[1])
             current_libs = []
             if os.path.basename(lib_tmp) == "*":
-                for root, dirnames, filenames in os.walk(os.path.dirname(lib_tmp)):
-                    for filename in filenames:
-                        current_libs.append(os.path.realpath(os.path.join(root, filename)))
+                current_libs = __get_libs_in_dir_by_mask(lib_tmp)
             else:
                 current_libs = [lib_tmp]
         elif line[:8] == feature_tag:
@@ -74,21 +108,21 @@ def __parse_file(libs_data, file):
         elif line[:7] == defines_tag:
             list = line.split()
             if len(list) < 2 or len(list) > 3:
-                print "[WARN]: Wrong string in api_names.txt +" + str(current_line) + ": <" + line + ">"
+                __debug("[WARN]: Wrong string in api_names.txt +" + str(current_line) + ": <" + line + ">")
             if len(list) != 3:
                 continue
 
             global defines
-            print "defines[" + list[1] + "] = " + list[2]
+            __debug("defines[" + list[1] + "] = " + list[2])
             defines[list[1]] = list[2]
         elif line[:1] == "#":
-                #print "[WARN]: commented code : <" + line + ">"
+                #__debug("[WARN]: commented code : <" + line + ">")
                 continue
         else:
             splitted = line.split(';')
 
             if len(splitted) < 3:
-                print "[WARN]: Wrong string in api_names.txt +" + str(current_line) + ": <" + line + ">"
+                __debug("[WARN]: Wrong string in api_names.txt +" + str(current_line) + ": <" + line + ">")
                 continue
             for i in range(0, len(splitted)):
                 splitted[i] = re.sub(" ", "", splitted[i])
@@ -99,30 +133,38 @@ def __parse_file(libs_data, file):
             probe_type = splitted[2]
 
             if len(current_libs) == 1 and (current_libs[0] == "???" or current_libs[0] == "---"):
-                print "[WARN]: Skip func <" + func + "> file <" + current_filename + "> lib <" + current_libs[0] + ">"
+                __debug("[WARN]: Skip func <" + func + "> file <" + current_filename + "> lib <" + current_libs[0] + ">")
                 continue
 
             libs_data = __add_item(libs_data, [current_libs, [func, [current_feature]]], (handler, probe_type))
 
+    __debug("<--- __parse_file")
     return libs_data
 
 
 def parse_apis(func_list_file):
-    print "parse_apis"
+    __debug("---> parse_apis")
     libs_data = {}
 
     with open(func_list_file) as f:
         libs_data = __parse_file(libs_data, f)
+
+    __debug("---< parse_apis")
     return libs_data
 
 ####################################################################
 
 #################### Parsing library binaries ######################
-
 def __lib_syms(libname):
     probe_data = {}
-    p = subprocess.Popen(["LD_LIBRARY_PATH=./ ./parse_elf \"" + libname + "\" -sa"], shell=True, stdout=subprocess.PIPE)
+
+    if not os.path.isfile(libname):
+        return None
+
+    p = subprocess.Popen(["LD_LIBRARY_PATH=./ ./parse_elf \"" + libname + "\" -saf"], shell=True, stdout=subprocess.PIPE)
     read_probe = p.communicate()
+    if p.returncode != 0:
+        return probe_data
     for line in read_probe:
         if line is None:
             continue
@@ -143,9 +185,8 @@ def __lib_syms(libname):
 
     return probe_data
 
-
 def parse_probe_lib(da_lib):
-    print "parse_probe_lib"
+    __debug("parse_probe_lib")
     return __lib_syms(da_lib)
 
 ####################################################################
@@ -161,16 +202,9 @@ def __get_addr_by_funcname_lib(lib_data, funcname):
     if funcname in lib_data:
         result[funcname] = lib_data[funcname]
     else:
-        funcname_short = re.sub("@\*", "$", funcname)
-        funcname_postfix = re.sub("\*", ".*", funcname)
+        funcname_re = funcname.replace("@*", "$") + "|" + funcname.replace("*", ".*")
         for i in lib_data:
-            tokens = re.findall("^(" + funcname_short + ")\n", i + "\n")
-            if tokens != []:
-                result[i] = lib_data[i]
-                continue
-
-            tokens = re.findall("^(" + funcname_postfix + ")\n", i + "\n")
-            if tokens != []:
+            if re.match(funcname_re, i) != None:
                 result[i] = lib_data[i]
 
     if result == {}:
@@ -199,10 +233,12 @@ def get_function_search_error(function_name):
     return err_str % (function_name, err)
 
 def iterate_over_libs(data, probe_lib):
-    print "iterate_over_libs"
+    __debug("iterate_over_libs")
     feature_dict = {}
     for libname in data:
         lib_data = __lib_syms(libname)
+        if lib_data is None:
+            continue
         for funcname in data[libname]:
             addr = __get_addr_by_funcname_lib(lib_data, funcname)
             if funcname not in function_errors:
@@ -401,17 +437,17 @@ def __print_types(file):
 def __print_probe_lib(file, da_inst_dir, da_lib, probe_lib):
     get_caller_addr = __get_addr_by_funcname_handler(probe_lib, "get_caller_addr")
     if get_caller_addr is None:
-        print "[WARN]: <get_caller> address is not found!"
+        __debug("[WARN]: <get_caller> address is not found!")
         return
 
     get_call_type_addr = __get_addr_by_funcname_handler(probe_lib, "get_call_type")
     if get_call_type_addr is None:
-        print "[WARN]: <get_call_type> address is not found!"
+        __debug("[WARN]: <get_call_type> address is not found!")
         return
 
     write_msg_addr = __get_addr_by_funcname_handler(probe_lib, "write_msg")
     if write_msg_addr is None:
-        print "[WARN]: <write_msg> address is not found!"
+        __debug("[WARN]: <write_msg> address is not found!")
         return
 
     file.write("static const char *probe_lib = \"" + da_inst_dir + "/" + da_lib + "\";\n")
@@ -421,7 +457,6 @@ def __print_probe_lib(file, da_inst_dir, da_lib, probe_lib):
 
 
 def generate_headers(dict, da_inst_dir, da_lib, probe_lib):
-    print "generate_headers"
     c_output="include/ld_preload_probes.h"
     c_output_types="include/ld_preload_types.h"
     c_output_probe_lib="include/ld_preload_probe_lib.h"
@@ -433,6 +468,7 @@ def generate_headers(dict, da_inst_dir, da_lib, probe_lib):
     if os.path.isfile(c_output_probe_lib):
         os.remove(c_output_probe_lib)
 
+    __debug("----- generate <%s>" % c_output)
     with open(c_output, 'w') as file:
         __print_license(file)
         __print_include_guard_top(file, "__LD_PRELOAD_PROBES__")
@@ -440,12 +476,14 @@ def generate_headers(dict, da_inst_dir, da_lib, probe_lib):
         __print_features(file, dict)
         __print_include_guard_bottom(file, "__LD_PRELOAD_PROBES__")
 
+    __debug("----- generate <%s>" % c_output_types)
     with open(c_output_types, 'w') as file:
         __print_license(file)
         __print_include_guard_top(file, "__LD_PRELOAD_TYPES__")
         __print_types(file)
         __print_include_guard_bottom(file, "__LD_PRELOAD_TYPES__")
 
+    __debug("----- generate <%s>" % c_output_probe_lib)
     with open(c_output_probe_lib, 'w') as file:
         __print_license(file)
         __print_include_guard_top(file, "__LD_PRELOAD_PROBE_LIB__")
@@ -467,4 +505,4 @@ generate_headers(feature_dict, da_inst_dir, da_lib, probe_lib)
 
 for i in function_errors:
     if function_errors[i] != ERR_NO:
-        print "%s" % get_function_search_error(i)
+        __debug("%s" % get_function_search_error(i))

@@ -42,7 +42,7 @@ static const char *name_by_type(unsigned int type)
 	return "UNKNOWN";
 }
 
-void print_sym_table(struct sym_table_entry *entry)
+void print_sym_table(struct sym_table_entry *entry,int fast)
 {
 	struct sym_table_entry *first;
 	int i;
@@ -53,7 +53,8 @@ void print_sym_table(struct sym_table_entry *entry)
 	first = entry;
 
 	do {
-		printf("%08x %s %s\n", entry->addr, name_by_type(entry->type), entry->name);
+		if (!(fast && entry->addr == 0))
+			printf("%08x %s %s\n", entry->addr, name_by_type(entry->type), entry->name);
 		entry = entry->next;
 	} while (entry != NULL);
 }
@@ -91,6 +92,21 @@ void print_usage(const char* pr_path)
 	);
 }
 
+int parse_sa(const char *filename, int fast)
+{
+	struct sym_table_entry *syms = NULL;
+	int ret = 0;
+
+	ret = get_all_symbols(filename, &syms);
+	if (ret != 0) {
+		printf("Error: %s\n", get_str_error(ret));
+		return ret;
+	}
+	print_sym_table(syms, fast);
+	clean_syms(syms);
+	return ret;
+}
+
 int main(int argc, char **argv)
 {
 	const char *filename = argv[1];
@@ -113,15 +129,9 @@ int main(int argc, char **argv)
 					printf("%s\n", interp);
 
 			} else if (!strcmp(argv[2], "-sa")) {
-				struct sym_table_entry *syms = NULL;
-
-				ret = get_all_symbols(filename, &syms);
-				if (ret != 0) {
-					printf("Error: %s\n", get_str_error(ret));
-					goto fail_exit;
-				}
-				print_sym_table(syms);
-				clean_syms(syms);
+				ret = parse_sa(filename, 0);
+			} else if (!strcmp(argv[2], "-saf")) {
+				ret = parse_sa(filename, 1);
 			} else {
 				ret = -1;
 				goto print_usage_exit;
