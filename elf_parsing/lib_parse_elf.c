@@ -71,6 +71,22 @@ exit:
 	return ret;
 }
 
+int fast_check_elf(const char *filename)
+{
+	void *elf;
+	size_t elf_len;
+	int ret = 0;
+	elf = mmap_file(filename, &elf_len);
+	if (!elf)
+		return ELF_PARSE_MMAP_ERROR;
+
+	ret = check_elf(elf);
+	munmap_file(elf, &elf_len);
+
+	return ret;
+}
+
+
 static Elf_Half get_machine_type(const void *elf)
 {
 	const Elf_Ehdr *elf_header = elf;
